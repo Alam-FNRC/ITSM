@@ -27,10 +27,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8 SDK
+      # Projects target net8.0; global.json pins the 9.0 SDK to build them
+      - name: Setup .NET SDKs
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: |
+            8.0.x
+            9.0.x
 
       - name: Restore Dependencies
         run: dotnet restore ItsTool.sln
