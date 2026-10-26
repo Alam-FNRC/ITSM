@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITSM Tool - Login</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, var(--primary) 0%, #002255 100%);
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
+        .login-box { 
+            background: var(--bg-surface); padding: var(--spacing-xl); 
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-md); 
+            width: 100%; max-width: 400px; text-align: center;
+        }
+        .login-logo {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 48px; height: 48px; background-color: var(--primary-light);
+            color: var(--primary); border-radius: var(--radius-md); margin-bottom: var(--spacing-md);
+        }
+        .login-logo svg { width: 24px; height: 24px; fill: currentColor; }
+        h1 { margin-bottom: var(--spacing-lg); color: var(--text-main); font-size: 24px; }
+        .form-group { text-align: left; }
+        .error { color: var(--danger); text-align: center; margin-top: var(--spacing-md); display: none; font-size: 13px; font-weight: 500; }
+    </style>
+
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('itsm_theme') || 'light';
+                document.documentElement.dataset.theme = savedTheme;
+                const savedLang = localStorage.getItem('itsm_lang') || 'en';
+                document.documentElement.lang = savedLang;
+            } catch (e) {
+                console.warn('Could not load theme/lang:', e);
+            }
+        })();
+    </script>
+
+</head>
+<body>
+
+    <div style="position: absolute; top: 20px; right: 20px; display: flex; gap: 8px;">
+        <div class="dropdown" style="position:relative;">
+            <button class="btn btn-ghost d-flex align-items-center gap-sm" onclick="this.nextElementSibling.classList.toggle('show')" id="langMenuBtn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c1.96-1.66 3.49-2.93 5.33-3.56C9.81 5.55 9.35 6.75 9.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.34.16-2h4.68c.09.66.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.24 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
+                <span id="currentLangText">EN</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" style="position:absolute; right:0; top:100%;">
+                <li><a class="dropdown-item login-lang-opt" href="#" data-lang="tr">🇹🇷 Türkçe</a></li>
+                <li><a class="dropdown-item login-lang-opt" href="#" data-lang="en">🇬🇧 English</a></li>
+            </ul>
+        </div>
+<!-- 
+            
+            
+        -->
+        <div class="dropdown" style="position:relative;">
+            <button class="btn btn-ghost d-flex align-items-center gap-sm" onclick="this.nextElementSibling.classList.toggle('show')" id="themeMenuBtn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" style="position:absolute; right:0; top:100%;">
+                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="light">Light</a></li>
+                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="dark">Dark</a></li>
+                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="dracula">Dracula</a></li>
+                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="monokai">Monokai</a></li>
+                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="github-dark">GitHub Dark</a></li>
+            </ul>
+        </div>
+<!-- 
+            
+            
+            
+            
+            
+        -->
+    </div>
+
+    <div class="login-box">
+        <div class="login-logo">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z"/></svg>
+        </div>
+        <h1 id="lbl_welcome">Welcome Back</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="username" id="lbl_username">Username or Email</label>
+                <input id="username" class="form-control" autocomplete="username" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="password" id="lbl_password">Password</label>
+                <div style="position: relative;">
+                    <input type="password" id="password" class="form-control" autocomplete="current-password" required style="padding-right: 40px;">
+                    <button type="button" id="togglePassword" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;">
+                        <svg id="eyeIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+                <button type="button" class="btn-link" onclick="openForgotPasswordModal()" style="background: none; border: none; padding: 0; font-size: 12px; color: var(--primary); cursor: pointer; text-decoration: underline;" id="lbl_forgot_pass">
+                    Şifremi Unuttum?
+                </button>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: var(--spacing-md); padding: 10px;" id="lbl_signin">Sign In</button>
+            <div id="errorMessage" class="error"></div>
+            
+            <div id="demoHint" style="margin-top: 24px; padding: 12px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 8px; text-align: left; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                <strong style="color: var(--text-main); display: block; margin-bottom: 8px;">Demo Accounts (Pwd: *123!)</strong>
+                <button type="button" class="btn-link" onclick="fillLogin('admin')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">admin</button> : SuperAdmin<br>
+                <button type="button" class="btn-link" onclick="fillLogin('manager')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">manager</button> : Manager<br>
+                <button type="button" class="btn-link" onclick="fillLogin('agent1')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">agent1</button> : Agent<br>
+                <button type="button" class="btn-link" onclick="fillLogin('agent2')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">agent2</button> : Agent (+ticket.close)<br>
+                <button type="button" class="btn-link" onclick="fillLogin('user1')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">user1</button> : EndUser
+            </div>
+        </form>
+
+        <!-- Force Password Change Container -->
+        <div id="forcePasswordContainer" style="display: none; text-align: left;">
+            <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-left: 4px solid var(--primary); padding: 12px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; color: var(--text-main, #1E40AF); line-height: 1.5;">
+                <strong id="lbl_force_alert_title">Şifreniz Sıfırlandı</strong><br>
+                <span id="lbl_force_alert_desc">Geçici şifrenizle giriş yaptınız. Güvenliğiniz için lütfen yeni ve kalıcı bir şifre belirleyiniz.</span>
+            </div>
+
+            <form id="forcePasswordForm">
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label" for="forceNewPassword" id="lbl_force_new_pwd" style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">Yeni Şifre</label>
+                    <div style="position: relative;">
+                        <input type="password" id="forceNewPassword" class="form-control" autocomplete="new-password" required minlength="6" placeholder="Yeni şifrenizi girin" style="padding-right: 40px;">
+                        <button type="button" id="toggleForceNewPassword" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Şifreyi Göster/Gizle">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="lbl_force_min_chars">En az 6 karakter olmalıdır.</div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label" for="forceConfirmPassword" id="lbl_force_confirm_pwd" style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">Yeni Şifre (Tekrar)</label>
+                    <div style="position: relative;">
+                        <input type="password" id="forceConfirmPassword" class="form-control" autocomplete="new-password" required minlength="6" placeholder="Yeni şifrenizi tekrar girin" style="padding-right: 40px;">
+                        <button type="button" id="toggleForceConfirmPassword" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Şifreyi Göster/Gizle">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="forcePasswordError" class="error" style="margin-bottom: 12px; display: none;"></div>
+                <div id="forcePasswordSuccess" style="color: var(--success); font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 12px; display: none;"></div>
+
+                <button type="submit" class="btn btn-primary" id="btnSubmitForcePassword" style="width: 100%; justify-content: center; padding: 10px; font-weight: 600;">Şifremi Belirle ve Giriş Yap</button>
+            </form>
+        </div>
+
+    <script>
+        function fillLogin(username) {
+            document.getElementById("username").value = username;
+            document.getElementById("password").value = "*123!";
+            document.getElementById("loginForm").dispatchEvent(new Event("submit"));
+        }
+    </script>
+    </div>
+
+    <script type="module">
+        import './js/api.js';
+
+        const translations = {
+            en: { 
+                welcome: 'Welcome Back', 
+                username: 'Username or Email', 
+                password: 'Password', 
+                signin: 'Sign In',
+                forgot: 'Forgot Password?',
+                forceTitle: 'Set Your New Password',
+                forceAlertTitle: 'Temporary Password — Set Your Password',
+                forceAlertDesc: 'You logged in with a temporary password. For security, please set your new permanent password.',
+                forceNewPwd: 'New Password',
+                forceConfirmPwd: 'Confirm New Password',
+                forceMinChars: 'Must be at least 6 characters.',
+                forceBtn: 'Save Password & Sign In',
+                forceMismatch: 'Passwords do not match.',
+                forceEmpty: 'Please fill in both password fields.',
+                forceShort: 'Password must be at least 6 characters.',
+                forceSuccess: 'Password set successfully! Redirecting...'
+            },
+            tr: { 
+                welcome: 'Tekrar Hoşgeldiniz', 
+                username: 'Kullanıcı Adı veya E-posta', 
+                password: 'Şifre', 
+                signin: 'Giriş Yap',
+                forgot: 'Şifremi Unuttum?',
+                forceTitle: 'Yeni Şifrenizi Belirleyin',
+                forceAlertTitle: 'Geçici Şifre — Yeni Şifrenizi Belirleyin',
+                forceAlertDesc: 'Geçici şifrenizle giriş yaptınız. Güvenliğiniz için lütfen yeni ve kalıcı bir şifre belirleyiniz.',
+                forceNewPwd: 'Yeni Şifre',
+                forceConfirmPwd: 'Yeni Şifre (Tekrar)',
+                forceMinChars: 'En az 6 karakter olmalıdır.',
+                forceBtn: 'Şifremi Belirle ve Giriş Yap',
+                forceMismatch: 'Girilen şifreler birbiriyle eşleşmiyor.',
+                forceEmpty: 'Lütfen tüm şifre alanlarını doldurunuz.',
+                forceShort: 'Yeni şifre en az 6 karakter olmalıdır.',
+                forceSuccess: 'Şifreniz başarıyla belirlendi! Yönlendiriliyorsunuz...'
+            }
+        };
+
+        const updateLoginLang = (lang) => {
+            const t = translations[lang] || translations['en'];
+            const welcomeEl = document.getElementById('lbl_welcome');
+            const forceContainer = document.getElementById('forcePasswordContainer');
+            if (forceContainer && forceContainer.style.display !== 'none') {
+                welcomeEl.textContent = t.forceTitle;
+            } else {
+                welcomeEl.textContent = t.welcome;
+            }
+            document.getElementById('lbl_username').textContent = t.username;
+            document.getElementById('lbl_password').textContent = t.password;
+            document.getElementById('lbl_signin').textContent = t.signin;
+            const forgotEl = document.getElementById('lbl_forgot_pass');
+            if (forgotEl) forgotEl.textContent = t.forgot;
+
+            document.getElementById('lbl_force_alert_title').textContent = t.forceAlertTitle;
+            document.getElementById('lbl_force_alert_desc').textContent = t.forceAlertDesc;
+            document.getElementById('lbl_force_new_pwd').textContent = t.forceNewPwd;
+            document.getElementById('lbl_force_confirm_pwd').textContent = t.forceConfirmPwd;
+            document.getElementById('lbl_force_min_chars').textContent = t.forceMinChars;
+            document.getElementById('btnSubmitForcePassword').textContent = t.forceBtn;
+        };
+
+        const currentLang = localStorage.getItem('itsm_lang') || 'en';
+        const langText = document.getElementById('currentLangText');
+        langText.textContent = currentLang.toUpperCase();
+        updateLoginLang(currentLang);
+
+        document.querySelectorAll('.login-lang-opt').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.preventDefault();
+                const val = e.target.dataset.lang;
+                localStorage.setItem('itsm_lang', val);
+                document.documentElement.lang = val;
+                langText.textContent = val.toUpperCase();
+                updateLoginLang(val);
+                e.target.closest('ul').classList.remove('show');
+            });
+        });
+
+        const currentTheme = localStorage.getItem('itsm_theme') || 'light';
+        document.documentElement.dataset.theme = currentTheme;
+
+        document.querySelectorAll('.login-theme-opt').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.preventDefault();
+                const val = e.target.dataset.theme;
+                localStorage.setItem('itsm_theme', val);
+                document.documentElement.dataset.theme = val;
+                e.target.closest('ul').classList.remove('show');
+            });
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // Eye toggle helper
+        const EYE_OPEN = 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z';
+        const EYE_CLOSED = 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-2.5c4.73 0 9 3.11 11 7.5-1.73 4.39-6 7.5-11 7.5S2 16.39.27 12c1.73-4.39 6-7.5 11-7.5zm0 13c3.87 0 7.33-2.11 9.17-5.5C19.33 8.61 15.87 6.5 12 6.5S4.67 8.61 2.83 12c1.84 3.39 5.3 5.5 9.17 5.5zm4.07-7.96l-1.42 1.42C14.54 10.5 14 11.19 14 12c0 1.1-.9 2-2 2-.81 0-1.5-.54-1.84-1.28l-1.42 1.42C9.43 14.85 10.63 15.5 12 15.5c1.93 0 3.5-1.57 3.5-3.5 0-1.37-.65-2.57-1.36-3.26z';
+
+        function bindEyeToggle(inputId, buttonId) {
+            const btn = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+            if (!btn || !input) return;
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const icon = btn.querySelector('svg path');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    btn.style.color = 'var(--primary)';
+                    if (icon) icon.setAttribute('d', EYE_CLOSED);
+                } else {
+                    input.type = 'password';
+                    btn.style.color = 'var(--text-muted)';
+                    if (icon) icon.setAttribute('d', EYE_OPEN);
+                }
+            });
+        }
+
+        bindEyeToggle('password', 'togglePassword');
+        bindEyeToggle('forceNewPassword', 'toggleForceNewPassword');
+        bindEyeToggle('forceConfirmPassword', 'toggleForceConfirmPassword');
+
+        // Normal Login Form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('lbl_signin');
+            
+            errorDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = '...';
+
+            try {
+                const res = await window.api.login(username, password);
+                if (res && res.mustChangePassword) {
+                    // Switch to Force Password Change step!
+                    const lang = localStorage.getItem('itsm_lang') || 'tr';
+                    const t = translations[lang] || translations['tr'];
+                    document.getElementById('loginForm').style.display = 'none';
+                    const demoHint = document.getElementById('demoHint');
+                    if (demoHint) demoHint.style.display = 'none';
+                    document.getElementById('lbl_welcome').textContent = t.forceTitle;
+                    document.getElementById('forcePasswordContainer').style.display = 'block';
+                    document.getElementById('forceNewPassword').focus();
+                } else {
+                    window.location.href = '/dashboard.html?v=' + Date.now();
+                }
+            } catch (err) {
+                console.error(err);
+                const lang = localStorage.getItem('itsm_lang') || 'tr';
+                errorDiv.textContent = lang === 'tr' ? 'Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz.' : 'Login failed. Please check your credentials.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = translations[lang]?.signin || 'Sign In';
+            }
+        });
+
+        // Force Password Form
+        document.getElementById('forcePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPass = document.getElementById('forceNewPassword').value;
+            const confirmPass = document.getElementById('forceConfirmPassword').value;
+            const errDiv = document.getElementById('forcePasswordError');
+            const successDiv = document.getElementById('forcePasswordSuccess');
+            const btn = document.getElementById('btnSubmitForcePassword');
+            const lang = localStorage.getItem('itsm_lang') || 'tr';
+            const t = translations[lang] || translations['tr'];
+
+            errDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            if (!newPass || !confirmPass) {
+                errDiv.textContent = t.forceEmpty;
+                errDiv.style.display = 'block';
+                return;
+            }
+            if (newPass.length < 6) {
+                errDiv.textContent = t.forceShort;
+                errDiv.style.display = 'block';
+                return;
+            }
+            if (newPass !== confirmPass) {
+                errDiv.textContent = t.forceMismatch;
+                errDiv.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = lang === 'tr' ? 'Kaydediliyor...' : 'Saving...';
+
+            try {
+                await window.api.changePassword(newPass, confirmPass);
+                successDiv.textContent = t.forceSuccess;
+                successDiv.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html?v=' + Date.now();
+                }, 1000);
+            } catch (err) {
+                console.error('Password change error:', err);
+                errDiv.textContent = err.message || (lang === 'tr' ? 'Şifre güncellenirken bir hata oluştu.' : 'Error updating password.');
+                errDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = t.forceBtn;
+            }
+        });
+
+        window.openForgotPasswordModal = function() {
+            const m = document.getElementById('forgotPasswordModal');
+            if (m) {
+                m.style.display = 'flex';
+                m.getBoundingClientRect(); // force reflow for smooth transition
+                m.classList.add('active');
+            }
+        };
+        window.closeForgotPasswordModal = function() {
+            const m = document.getElementById('forgotPasswordModal');
+            if (m) {
+                m.classList.remove('active');
+                setTimeout(() => {
+                    if (!m.classList.contains('active')) {
+                        m.style.display = 'none';
+                    }
+                }, 200);
+            }
+        };
+
+        // Close on backdrop click
+        document.getElementById('forgotPasswordModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                window.closeForgotPasswordModal();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.closeForgotPasswordModal();
+            }
+        });
+    </script>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); align-items: center; justify-content: center; z-index: 1000; padding: 16px;">
+        <div class="modal" style="width: min(460px, 100%); background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border);">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main);">Parola Sıfırlama & Kurtarma</h3>
+                <button type="button" class="close-btn" onclick="closeForgotPasswordModal()" style="border: none; background: none; cursor: pointer; font-size: 22px; color: var(--text-muted); line-height: 1;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; font-size: 13.5px; line-height: 1.6; color: var(--text-main);">
+                <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-left: 4px solid var(--primary); padding: 12px; border-radius: 6px; margin-bottom: 16px; color: var(--text-main, #1E40AF);">
+                    <strong>Kurumsal Güvenlik Politikası:</strong><br>
+                    Hesabınızın parolasını unuttuysanız veya erişiminiz kilitlendiyse sistem yöneticiniz (Admin) ile iletişime geçiniz.
+                </div>
+                <p style="margin: 0 0 12px 0;">
+                    Yöneticiniz, <strong>Kullanıcı Yönetimi</strong> ekranından hesabınızı doğrulayarak size özel anında yeni bir geçici şifre tanımlayacak ve güvenli bir kanal ile sizinle paylaşacaktır.
+                </p>
+                <div style="background: var(--bg-hover); padding: 10px 14px; border-radius: 6px; font-size: 12.5px; color: var(--text-muted);">
+                    <strong>BT Destek & Sistem Yöneticisi İletişim:</strong><br>
+                    E-Posta: <a href="mailto:admin@itsm.local" style="color: var(--primary); font-weight: 600;">admin@itsm.local</a><br>
+                    Dahili Hat: <strong>4444 (IT Helpdesk)</strong>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; display: flex; justify-content: flex-end; border-top: 1px solid var(--border);">
+                <button type="button" class="btn btn-primary btn-sm" onclick="closeForgotPasswordModal()" style="padding: 6px 16px;">Tamam</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

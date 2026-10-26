@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITSM Tool - Tickets</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .filter-bar { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); align-items: center; flex-wrap: wrap; }
+        .search-input { width: 300px; }
+        .ticket-title { font-weight: 600; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: var(--spacing-sm); }
+        .ticket-title:hover { color: var(--primary); text-decoration: underline; }
+        .ticket-number { color: var(--text-muted); font-size: 12px; }
+        .row-actions { 
+            display: flex; 
+            gap: 4px; 
+            align-items: center; 
+            justify-content: flex-end; 
+            opacity: 1 !important; 
+            white-space: nowrap;
+        }
+        .row-actions .btn {
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .sla-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: none;
+            white-space: nowrap;
+            line-height: 1.3;
+        }
+
+        .sla-subtext {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        
+        @media (max-width: 768px) { .table { min-width: 100% !important; } }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell" data-shell>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+
+                    <h2 data-i18n="t_title">Tickets</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                        <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
+                            <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
+                            <div id="notificationItems"></div>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item text-center text-muted" onclick="markAllAsRead(event)" data-i18n="topbar_mark_all_read" style="width: 100%; border: none; background: none;">Mark all as read</button></li>
+                        </ul>
+                    </div>
+                    <div class="avatar">U</div>
+                    <button class="btn btn-ghost" id="shellLogoutBtn" data-i18n="topbar_logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="filter-bar">
+                    <div style="position: relative; width: 300px;">
+                        <input type="text" id="searchInput" class="form-control search-input" style="width: 100%; padding-right: 32px;" aria-label="Search Tickets" placeholder="Search by Ticket Number, Title, or Description..." data-i18n="t_search_placeholder" data-i18n-target="placeholder">
+                        <kbd style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: monospace; font-size: 11px; color: var(--text-muted); font-weight: 600;" title="Klavye Kısayolu: /">/</kbd>
+                    </div>
+                    <button type="button" id="btnSearch" class="btn btn-secondary" data-i18n="t_btn_search">Search</button>
+                    <button type="button" id="btnSaveFilter" class="btn btn-secondary" data-i18n="t_btn_save_filter">Save Filter</button>
+                    <select id="savedFilters" class="form-control" style="width: 200px;" aria-label="Saved Filters">
+                        <option value="" data-i18n="t_saved_filters">Saved Filters...</option>
+                    </select>
+                    <button type="button" id="btnExportCsv" class="btn btn-ghost" data-i18n="t_export_csv">Export CSV</button>
+                    <a href="/ticket-create.html" class="btn btn-primary ml-auto" data-i18n="t_btn_new">+ New Ticket</a>
+                </div>
+
+                <div class="filter-bar" style="margin-top: 12px; margin-bottom: 24px;">
+                    <fieldset class="btn-group" id="statusFilterGroup" style="border:none; padding:0; margin:0;">
+                        <legend style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;">Ticket Status Filter</legend>
+                        <button type="button" class="btn btn-secondary active" id="filterActive" aria-pressed="true" data-i18n="t_filter_active">Aktif</button>
+                        <button type="button" class="btn btn-secondary" id="filterClosed" aria-pressed="false" data-i18n="t_filter_closed">Kapalı</button>
+                        <button type="button" class="btn btn-secondary" id="filterAll" aria-pressed="false" data-i18n="t_filter_all">Tümü</button>
+                    </fieldset>
+                <div id="recentTicketsContainer" style="display: none; align-items: center; gap: 8px; margin-bottom: 16px; padding: 8px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; flex-wrap: wrap;">
+                    <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                        <span data-i18n="recent_tickets_title">Son İnceledikleriniz:</span>
+                    </span>
+                    <div id="recentTicketsList" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"></div>
+                    <button type="button" class="btn btn-ghost btn-sm" id="btnClearRecentTickets" onclick="window.clearRecentTickets()" style="margin-left: auto; font-size: 11px; padding: 2px 6px; color: var(--text-muted);" title="Geçmişi Temizle" data-i18n="recent_tickets_clear">Temizle</button>
+                </div>
+
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="table" style="table-layout: fixed; width: 100%; min-width: 920px;">
+                        <colgroup>
+                            <col style="width: 25%;">
+                            <col style="width: 11%;">
+                            <col style="width: 10%;">
+                            <col style="width: 15%;">
+                            <col style="width: 20%;">
+                            <col style="width: 19%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th data-i18n="t_col_ticket">Ticket</th>
+                                <th data-i18n="t_col_status">Status</th>
+                                <th data-i18n="t_col_priority">Priority</th>
+                                <th data-i18n="t_col_assignee">Assignee</th>
+                                <th data-i18n="t_col_sla" style="min-width: 140px;">SLA Süresi</th>
+                                <th style="min-width: 160px; text-align: right;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import './js/api.js?v=1006';
+        import { injectShell } from './js/layout.js?v=1006';
+        import { bindShellActions, showToast, showConfirmModal, showUndoToast } from './js/ui.js?v=1006';
+        import { t } from './js/i18n.js?v=1006';
+        injectShell();
+        
+        if (!window.api.token) window.location.href = '/login.html';
+        bindShellActions();
+
+        let activeFilterState = 'active'; // 'active', 'closed', 'all'
+        
+        function processActiveAssignments(activeAssignments) {
+            const mainAssignee = activeAssignments[0];
+            let assigneeName = t('t_unassigned');
+            let assigneeInitialId = null;
+
+            if (mainAssignee.userId) {
+                const u = allUsers.find(x => x.id === mainAssignee.userId);
+                assigneeName = u ? (u.firstName + ' ' + u.lastName) : (mainAssignee.assigneeName || `User ${mainAssignee.userId}`);
+                assigneeInitialId = assigneeName;
+            } else if (mainAssignee.groupId) {
+                const g = lookupData.groups?.find(x => x.id === mainAssignee.groupId);
+                assigneeName = g ? g.name : (mainAssignee.assigneeName || `Group ${mainAssignee.groupId}`);
+                assigneeInitialId = assigneeName;
+            }
+            if (activeAssignments.length > 1) {
+                assigneeName += ` (+${activeAssignments.length - 1})`;
+            }
+            
+            let details = [];
+            activeAssignments.forEach(a => {
+                if (a.userId) {
+                    const u = allUsers.find(x => x.id === a.userId);
+                    const name = u ? (u.firstName + ' ' + u.lastName) : (a.assigneeName || `User ${a.userId}`);
+                    details.push({ type: 'user', id: a.userId, name: name, email: u ? u.email : '', initial: name.charAt(0).toUpperCase(), isSubItem: false });
+                } else if (a.groupId) {
+                    const g = lookupData.groups?.find(x => x.id === a.groupId);
+                    const name = g ? g.name : (a.assigneeName || `Group ${a.groupId}`);
+                    details.push({ type: 'group', id: a.groupId, name: name, initial: name.charAt(0).toUpperCase(), isSubItem: false });
+                    
+                    const groupMembers = allUsers.filter(u => u.groupIds && u.groupIds.includes(a.groupId));
+                    if (groupMembers.length > 0) {
+                        groupMembers.forEach(mu => {
+                            const muName = mu.firstName + ' ' + mu.lastName;
+                            details.push({ type: 'user', id: mu.id, name: muName, email: mu.email, initial: muName.charAt(0).toUpperCase(), isSubItem: true, parentGroupId: a.groupId });
+                        });
+                    } else {
+                        details.push({ type: 'empty', id: 0, name: 'Ekipte kullanıcı yok', initial: '-', isSubItem: true, parentGroupId: a.groupId });
+                    }
+                }
+            });
+            return { assigneeName, assigneeInitialId, assigneeDetails: details };
+        }
+
+        document.getElementById('statusFilterGroup').addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const stateMap = { 'filterActive': 'active', 'filterClosed': 'closed', 'filterAll': 'all' };
+                const state = stateMap[e.target.id];
+                if (state) {
+                    activeFilterState = state;
+                    document.querySelectorAll('#statusFilterGroup .btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    e.target.classList.add('active');
+                    e.target.setAttribute('aria-pressed', 'true');
+                    search();
+                }
+            }
+        });
+
+        const getStatusBadge = (status) => {
+            const map = { 'Open': 'info', 'Açık': 'info', 'In Progress': 'warning', 'Devam Ediyor': 'warning', 'Pending': 'warning', 'Beklemede': 'warning', 'Resolved': 'success', 'Çözüldü': 'success', 'Closed': 'default', 'Kapatıldı': 'default' };
+            const labelKey = status ? 'db_' + status.toLowerCase().replaceAll(' ', '_') : 'dash_unknown';
+            const label = t(labelKey) || status;
+            return `<span class="badge badge-${map[status] || 'default'}">${label}</span>`;
+        };
+
+        const getPriorityBadge = (priority) => {
+            const map = { 'Critical': 'danger', 'Kritik': 'danger', 'High': 'warning', 'Yüksek': 'warning', 'Medium': 'info', 'Orta': 'info', 'Low': 'success', 'Düşük': 'success' };
+            const labelKey = priority ? 'db_' + priority.toLowerCase() : 'dash_unknown';
+            const label = t(labelKey) || priority;
+            return `<span class="badge badge-${map[priority] || 'default'}">${label}</span>`;
+        };
+
+        const getAvatar = (id, fallback) => {
+            if (!id || id === '-') return `<div class="avatar" style="background: var(--bg-hover); color: var(--text-muted); border: 1px dashed var(--border); visibility: hidden;"></div>`;
+            const initial = String(fallback || id).charAt(0).toUpperCase();
+            return `<div class="avatar" title="${fallback}">${initial}</div>`;
+        };
+
+        let lookupData = {};
+        let allUsers = [];
+        async function loadLookup() {
+            try { 
+                lookupData = await window.api.getLookup();
+                allUsers = (await window.api.getUsers()).items || [];
+            } catch (e) { console.error(e);  console.warn('Lookup failed', e);  }
+        }
+
+        async function search() {
+            if (!lookupData.statuses) await loadLookup();
+            const keyword = document.getElementById('searchInput').value;
+            try {
+                const res = await window.api.searchTickets({ keyword, pageSize: 50 });
+                const tbody = document.getElementById('ticketList');
+                tbody.innerHTML = '';
+                
+                // Apply front-end filter for active/closed/all
+                let filteredItems = res.items;
+                if (activeFilterState === 'active') {
+                    filteredItems = filteredItems.filter(t => {
+                        const s = lookupData.statuses?.find(st => st.id === t.statusId);
+                        return !(s?.isClosedStatus ?? false);
+                    });
+                } else if (activeFilterState === 'closed') {
+                    filteredItems = filteredItems.filter(t => {
+                        const s = lookupData.statuses?.find(st => st.id === t.statusId);
+                        return s?.isClosedStatus ?? false;
+                    });
+                }
+
+                if (filteredItems.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
+                            <h3>${t('t_no_tickets')}</h3>
+                            <p style="margin-bottom: 12px;">${t('t_adjust_search')}</p>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.clearTicketFilters()">${t('btn_reset_filter') || 'Filtreleri Temizle'}</button>
+                        </div>
+                    </td></tr>`;
+                    return;
+                }
+
+                filteredItems.forEach(ticketItem => {
+                    const statusObj = lookupData.statuses?.find(s => s.id === ticketItem.statusId);
+                    const statusName = statusObj?.name || 'Unknown';
+                    const isClosed = statusObj?.isClosedStatus ?? false;
+                    const prioName = lookupData.priorities?.find(p => p.id === ticketItem.priorityId)?.name || 'Normal';
+                    
+                    let assigneeName = t('t_unassigned');
+                    let assigneeInitialId = null;
+                    
+                    let assigneeDetails = [];
+                    if (ticketItem.assignments && ticketItem.assignments.length > 0) {
+                        const activeAssignments = ticketItem.assignments.filter(a => a.isActive);
+                        if (activeAssignments.length > 0) {
+                            const result = processActiveAssignments(activeAssignments);
+                            assigneeName = result.assigneeName;
+                            assigneeInitialId = result.assigneeInitialId;
+                            assigneeDetails = result.assigneeDetails;
+                        }
+                    }
+
+                    const encodedAssignees = encodeURIComponent(JSON.stringify(assigneeDetails));
+                    
+                    const userRoles = new Set((window.api.decodedToken?.roles || []).map(r => String(r).toLowerCase()));
+                    const userPerms = new Set((window.api.decodedToken?.permissions || []).map(p => String(p).toLowerCase()));
+                    const isManagerOrAdmin = userRoles.has('manager') || userRoles.has('superadmin') || userRoles.has('admin');
+                    const canEdit = isManagerOrAdmin || userPerms.has('ticket.edit') || userPerms.has('ticket.manage') || userPerms.has('ticket.assign');
+                    const canDelete = isManagerOrAdmin || userPerms.has('ticket.delete') || userPerms.has('ticket.manage') || userPerms.has('ticket.assign');
+                    
+                    const editBtnHtml = canEdit ? `<a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost" style="color: var(--primary);">${t('ticket_btn_edit', 'Düzenle')}</a>` : '';
+                    const deleteBtnHtml = canDelete ? `<button type="button" onclick="window.deleteTicket(${ticketItem.id}, '${escapeHtml(ticketItem.ticketNumber)}')" class="btn btn-ghost" style="color: var(--danger); font-weight: 500;">${t('ticket_btn_delete', 'Sil')}</button>` : '';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <a href="/ticket-detail.html?id=${ticketItem.id}" class="ticket-title" style="display: block;">
+                                <div>
+                                    <span class="ticket-number" style="display:inline-block; font-size: 14px; font-weight: 600; color: var(--primary);">${escapeHtml(ticketItem.ticketNumber)}</span>
+                                    <span style="font-size: 11px; color: var(--text-muted); margin-left: 4px;">#${ticketItem.id}</span>
+                                </div>
+                                <div style="margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;">${escapeHtml(ticketItem.title)}</div>
+                            </a>
+                        </td>
+                        <td>${getStatusBadge(statusName)}</td>
+                        <td>${getPriorityBadge(prioName)}</td>
+                        <td><button type="button" style="cursor:pointer; border:none; background:none; padding:0; text-align:left; font:inherit; color:inherit; max-width:100%; display:flex; align-items:center; gap:var(--spacing-sm);" title="Tüm atananları gör" onclick="window.showAssigneesModal('${encodedAssignees}')">${getAvatar(assigneeInitialId, assigneeName)} <span style="pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(assigneeName)}</span></button></td>
+                        <td>${renderSlaCell(ticketItem.sla, isClosed)}</td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <div class="row-actions">
+                                <a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost">${t('t_btn_view', 'Görüntüle')}</a>
+                                ${editBtnHtml}
+                                ${deleteBtnHtml}
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) { console.error(e); showToast('Search failed', 'error'); }
+        }
+
+        function renderSlaCell(sla, isClosed) {
+            if (!sla) {
+                return `<span style="color: var(--text-muted); font-size: 12px;">—</span>`;
+            }
+
+            const now = new Date();
+            
+            // First Response
+            const hasFirstResp = !!sla.firstResponseDueAt;
+            const firstRespDate = hasFirstResp ? new Date(sla.firstResponseDueAt) : null;
+            const isFirstRespMet = !!sla.firstResponseMetAt;
+            const isFirstRespBreached = sla.firstResponseBreached || (!isFirstRespMet && firstRespDate && firstRespDate < now);
+
+            // Resolution
+            const hasRes = !!sla.resolutionDueAt;
+            const resDate = hasRes ? new Date(sla.resolutionDueAt) : null;
+            const isResMet = !!sla.resolutionMetAt || isClosed;
+            const isResBreached = sla.resolutionBreached || (!isResMet && resDate && resDate < now);
+
+            if (isClosed) {
+                if (isResBreached || isFirstRespBreached) {
+                    return `<div>
+                        <span class="sla-badge" style="background:#FEE2E2; color:#B91C1C; border:1px solid #FCA5A5;">${t('sla_breached', 'SLA Aşıldı')}</span>
+                        <div class="sla-subtext">${t('t_filter_closed', 'Kapatıldı')}</div>
+                    </div>`;
+                }
+                return `<div>
+                    <span class="sla-badge" style="background:#DCFCE7; color:#15803D; border:1px solid #86EFAC;">${t('sla_met', 'Karşılandı')}</span>
+                    <div class="sla-subtext">${t('sla_completed', 'Tamamlandı')}</div>
+                </div>`;
+            }
+
+            if (sla.pausedAt) {
+                return `<div>
+                    <span class="sla-badge" style="background:#F1F5F9; color:#475569; border:1px solid #CBD5E1;">${t('sla_paused', 'Duraklatıldı')}</span>
+                    <div class="sla-subtext">${t('sla_on_hold', 'Beklemede')}</div>
+                </div>`;
+            }
+
+            // Active ticket:
+            // 1. Resolution breached:
+            if (isResBreached) {
+                const resDateStr = resDate ? resDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                return `<div>
+                    <span class="sla-badge" style="background:#FEE2E2; color:#B91C1C; border:1px solid #FCA5A5;">${t('sla_res_breached', 'Çözüm Aşıldı')}</span>
+                    <div class="sla-subtext" style="color:var(--danger); font-weight:500;">${t('sla_target_prefix', 'Hedef:')} ${resDateStr}</div>
+                </div>`;
+            }
+
+            // 2. First response breached (resolution still pending):
+            if (isFirstRespBreached) {
+                const resDiffMs = resDate ? resDate - now : 0;
+                const resRemainStr = formatRemaining(resDiffMs);
+                const resDateStr = resDate ? resDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                return `<div>
+                    <span class="sla-badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D;">${t('sla_first_resp_breached', 'İlk Yanıt Aşıldı')}</span>
+                    <div class="sla-subtext" title="${t('sla_target_prefix', 'Hedef:')} ${resDateStr}">${t('sla_resolution_prefix', 'Çözüm:')} ${resRemainStr}</div>
+                </div>`;
+            }
+
+            // 3. Normal countdown
+            if (resDate) {
+                const diffMs = resDate - now;
+                const diffMins = Math.floor(diffMs / 60000);
+                const resDateStr = resDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+                let badgeStyle = '';
+                let badgeText = '';
+
+                if (diffMins <= 0) {
+                    badgeStyle = 'background:#FEE2E2; color:#B91C1C; border:1px solid #FCA5A5;';
+                    badgeText = `${t('sla_breached', 'Süre Doldu')}`;
+                } else if (diffMins <= 60) {
+                    badgeStyle = 'background:#FEF2F2; color:#DC2626; border:1px solid #FECACA;';
+                    badgeText = `${Math.max(1, diffMins)} ${t('sla_mins_left', 'dk kaldı')}`;
+                } else if (diffMins <= 1440) {
+                    const hrs = Math.floor(diffMins / 60);
+                    const mins = diffMins % 60;
+                    badgeStyle = 'background:#FEF3C7; color:#92400E; border:1px solid #FCD34D;';
+                    badgeText = `${hrs} ${t('sla_short_hr', 'sa')} ${mins} ${t('sla_mins_left', 'dk kaldı')}`;
+                } else {
+                    const days = Math.ceil(diffMins / 1440);
+                    badgeStyle = 'background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE;';
+                    badgeText = `${days} ${t('sla_days_left', 'gün kaldı')}`;
+                }
+
+                return `<div>
+                    <span class="sla-badge" style="${badgeStyle}">${badgeText}</span>
+                    <div class="sla-subtext" title="${t('sla_target_prefix', 'Hedef:')} ${resDateStr}">${t('sla_target_prefix', 'Hedef:')} ${resDateStr}</div>
+                </div>`;
+            }
+
+            return `<span style="color: var(--text-muted); font-size: 12px;">—</span>`;
+        }
+
+        function formatRemaining(diffMs) {
+            if (diffMs <= 0) return t('sla_expired', 'Süre doldu');
+            const mins = Math.floor(diffMs / 60000);
+            if (mins <= 60) return `${Math.max(1, mins)} ${t('sla_mins_left', 'dk kaldı')}`;
+            if (mins <= 1440) {
+                const hrs = Math.floor(mins / 60);
+                const rm = mins % 60;
+                return `${hrs} ${t('sla_short_hr', 'sa')} ${rm} ${t('sla_mins_left', 'dk kaldı')}`;
+            }
+            const days = Math.ceil(mins / 1440);
+            return `${days} ${t('sla_days_left', 'gün kaldı')}`;
+        }
+
+        async function exportCsv() {
+            const keyword = document.getElementById('searchInput').value;
+            try {
+                const blob = await window.api.exportTickets({ keyword });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'tickets.csv';
+                a.click();
+            } catch (e) {
+                console.error(e);
+                showToast('Export failed', 'error');
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            return (unsafe || '').toString()
+                .replaceAll('&', "&amp;")
+                .replaceAll('<', "&lt;")
+                .replaceAll('>', "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        let savedFiltersList = [];
+
+        async function loadFiltersDropdown() {
+            try {
+                savedFiltersList = await window.api.getSavedFilters();
+                const sel = document.getElementById('savedFilters');
+                sel.innerHTML = `<option value="">${t('t_saved_filters')}</option>`;
+                savedFiltersList.forEach(f => {
+                    const opt = document.createElement('option');
+                    opt.value = f.id;
+                    opt.textContent = f.name;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.error(e); 
+                let errEl = document.querySelector('tbody') || document.querySelector('#overviewCards') || document.querySelector('#board') || document.querySelector('#articleList') || document.querySelector('.content-area');
+                if (errEl) {
+                    if (errEl.tagName === 'TBODY') {
+                        errEl.innerHTML = '<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</td></tr>';
+                     } else {
+                        errEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</div>';
+                    }
+                }
+ console.error(e); }
+        }
+
+        async function saveFilter() {
+            const name = prompt(t('t_prompt_filter_name'));
+            if (!name) return;
+            const queryJson = JSON.stringify({ keyword: document.getElementById('searchInput').value });
+            try {
+                await window.api.createSavedFilter({ name, queryJson });
+                loadFiltersDropdown();
+                showToast(t('t_toast_filter_saved'));
+            } catch (e) {
+                console.error(e);
+                showToast(t('t_toast_filter_err'), 'error');
+            }
+        }
+
+        function loadFilter() {
+            const id = document.getElementById('savedFilters').value;
+            if (!id) return;
+            const filter = savedFiltersList.find(f => f.id == id);
+            if (filter) {
+                const q = JSON.parse(filter.queryJson);
+                document.getElementById('searchInput').value = q.keyword || '';
+                search();
+            }
+        }
+
+        window.deleteTicket = async function(id, ticketNumber) {
+            const confirmed = await showConfirmModal(
+                'Bileti Sil',
+                `${ticketNumber} numaralı bileti silmek istediğinize emin misiniz?\n(Bu işlem sistem denetim kaydına/loguna yazılacaktır)`,
+                'Sil',
+                'İptal'
+            );
+            if (!confirmed) return;
+
+            try {
+                await window.api.request(`/Ticket/${id}`, { method: 'DELETE' });
+                await search();
+
+                // Undo Pattern (Geri Al Bildirimi)
+                showUndoToast(`${ticketNumber} numaralı bilet silindi.`, async () => {
+                    try {
+                        await window.api.request(`/Ticket/${id}/restore`, { method: 'POST' });
+                        showToast(`${ticketNumber} başarıyla geri yüklendi!`, 'success');
+                        await search();
+                    } catch (restoreErr) {
+                        console.error('Geri yükleme hatası', restoreErr);
+                        showToast('Bilet geri yüklenirken bir hata oluştu.', 'error');
+                    }
+                }, 7000, 'Geri Al');
+
+            } catch (e) {
+                console.error('Bilet silme hatası', e);
+                showToast('Bilet silinirken bir hata oluştu.', 'error');
+            }
+        };
+
+        function renderRecentTickets() {
+            const container = document.getElementById('recentTicketsContainer');
+            const list = document.getElementById('recentTicketsList');
+            if (!container || !list) return;
+
+            try {
+                const raw = localStorage.getItem('itsm_recent_tickets');
+                const tickets = JSON.parse(raw || '[]');
+                if (!Array.isArray(tickets) || tickets.length === 0) {
+                    container.style.display = 'none';
+                    return;
+                }
+
+                list.innerHTML = '';
+                tickets.forEach(item => {
+                    const chip = document.createElement('div');
+                    chip.style.display = 'inline-flex';
+                    chip.style.alignItems = 'center';
+                    chip.style.gap = '4px';
+                    chip.style.background = 'var(--bg-hover)';
+                    chip.style.border = '1px solid var(--border)';
+                    chip.style.borderRadius = '16px';
+                    chip.style.padding = '2px 8px';
+                    chip.style.fontSize = '12px';
+
+                    chip.innerHTML = `
+                        <a href="/ticket-detail.html?id=${item.id}" style="color: var(--text-main); text-decoration: none; font-weight: 500;" title="${escapeHtml(item.title || '')}">
+                            <span style="color: var(--primary); font-weight: 600;">${escapeHtml(item.ticketNumber || '')}</span>
+                            <span style="max-width: 140px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;">${escapeHtml(item.title || '')}</span>
+                        </a>
+                        <button type="button" style="border: none; background: none; color: var(--text-muted); cursor: pointer; padding: 0 2px; font-size: 12px; line-height: 1;" title="Kaldır" onclick="window.removeRecentTicket(${item.id})">&times;</button>
+                    `;
+                    list.appendChild(chip);
+                });
+
+                container.style.display = 'flex';
+            } catch (e) {
+                console.warn('Failed to render recent tickets', e);
+                container.style.display = 'none';
+            }
+        }
+
+        window.removeRecentTicket = function(ticketId) {
+            try {
+                let tickets = JSON.parse(localStorage.getItem('itsm_recent_tickets') || '[]');
+                if (Array.isArray(tickets)) {
+                    tickets = tickets.filter(t => t.id !== ticketId);
+                    localStorage.setItem('itsm_recent_tickets', JSON.stringify(tickets));
+                    renderRecentTickets();
+                }
+            } catch (e) { console.error(e); }
+        };
+
+        window.clearRecentTickets = function() {
+            localStorage.removeItem('itsm_recent_tickets');
+            renderRecentTickets();
+            showToast('Son görüntülenen biletler temizlendi', 'info');
+        };
+
+        window.clearTicketFilters = function() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('savedFilters').value = '';
+            activeFilterState = 'all';
+            document.querySelectorAll('#statusFilterGroup button').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
+            const filterAllBtn = document.getElementById('filterAll');
+            if (filterAllBtn) {
+                filterAllBtn.classList.add('active');
+                filterAllBtn.setAttribute('aria-pressed', 'true');
+            }
+            search();
+        };
+
+        document.getElementById('btnSearch').addEventListener('click', search);
+        document.getElementById('btnSaveFilter').addEventListener('click', saveFilter);
+        document.getElementById('btnExportCsv').addEventListener('click', exportCsv);
+        document.getElementById('savedFilters').addEventListener('change', loadFilter);
+        await loadFiltersDropdown();
+        renderRecentTickets();
+        await search();
+    </script>
+</body>
+</html>

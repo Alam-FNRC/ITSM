@@ -1,0 +1,34 @@
+# Visual Studio / .NET
+[Oo]bj/
+[Bb]in/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Environment Files
+.env
+appsettings.Development.json
+appsettings.Local.json
+
+# Logs
+*.log
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# SonarQube & Testing
+.sonarqube/
+TestResults/
+coverage/
+*.opencover.xml
+coverage.opencover.xml
+node_modules/
+extracted_media/
+
+# Uploaded ticket attachments (runtime data, never commit)
+src/ItsTool.API/uploads/
+*.pptx
+scripts/generate_presentation.py
