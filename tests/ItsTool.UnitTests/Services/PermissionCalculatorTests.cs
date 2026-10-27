@@ -65,6 +65,35 @@ public class PermissionCalculatorTests : TestBase
     }
 
     [Fact]
+    public async Task CalculateEffectivePermissionsAsync_DenyOverride_RemovesPermissionFromRolesAndGroups()
+    {
+        var user = new User { Username = "denied", Email = "denied@test.com", PasswordHash = "hash" };
+        var viaRole = new Permission { Name = "ViaRole", Key = "via.role" };
+        var viaGroup = new Permission { Name = "ViaGroup", Key = "via.group" };
+        var kept = new Permission { Name = "Kept", Key = "kept" };
+        var role = new Role { Name = "Role" };
+        var group = new Group { Name = "Group" };
+        _context.AddRange(user, viaRole, viaGroup, kept, role, group);
+        await _context.SaveChangesAsync();
+
+        _context.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = role.Id });
+        _context.RolePermissions.AddRange(
+            new RolePermission { RoleId = role.Id, PermissionId = viaRole.Id },
+            new RolePermission { RoleId = role.Id, PermissionId = viaGroup.Id },
+            new RolePermission { RoleId = role.Id, PermissionId = kept.Id });
+        _context.GroupMembers.Add(new GroupMember { UserId = user.Id, GroupId = group.Id });
+        _context.GroupRoles.Add(new GroupRole { GroupId = group.Id, RoleId = role.Id });
+        _context.UserPermissionOverrides.AddRange(
+            new UserPermissionOverride { UserId = user.Id, PermissionId = viaRole.Id, IsGranted = false },
+            new UserPermissionOverride { UserId = user.Id, PermissionId = viaGroup.Id, IsGranted = false });
+        await _context.SaveChangesAsync();
+
+        var result = await _calculator.CalculateEffectivePermissionsAsync(user.Id);
+
+        Assert.Equal(new[] { "kept" }, result);
+    }
+
+    [Fact]
     public async Task CalculateEffectivePermissionsAsync_UsersInSameGroup_CanHaveDifferentOverrides()
     {
         // Arrange

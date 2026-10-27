@@ -68,16 +68,17 @@ public class PermissionCalculator : IPermissionCalculator
             permissions.Add(p);
         }
 
-        // 3. UserPermissionOverride tablosundaki spesifik yetkiler
+        // 3. Per-user overrides win over roles: a grant adds the permission, a deny removes it even when a role
+        // or group grants it. SuperAdmin returned above and is not affected.
         var overrides = await _context.UserPermissionOverrides
-            .Include(o => o.Permission)
-            .Where(o => o.UserId == userId && o.IsGranted && !o.IsDeleted && o.Permission != null && o.Permission.IsActive && !o.Permission.IsDeleted)
-            .Select(o => o.Permission!.Key)
+            .Where(o => o.UserId == userId && !o.IsDeleted && o.Permission != null && o.Permission.IsActive && !o.Permission.IsDeleted)
+            .Select(o => new { o.Permission!.Key, o.IsGranted })
             .ToListAsync();
 
-        foreach (var p in overrides)
+        foreach (var o in overrides)
         {
-            permissions.Add(p);
+            if (o.IsGranted) permissions.Add(o.Key);
+            else permissions.Remove(o.Key);
         }
 
         return permissions;
