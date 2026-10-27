@@ -47,6 +47,7 @@ public class ItsToolDbContext : DbContext
     public DbSet<TicketAssignment> TicketAssignments => Set<TicketAssignment>();
     public DbSet<TicketHistory> TicketHistories => Set<TicketHistory>();
     public DbSet<SystemAuditLog> SystemAuditLogs => Set<SystemAuditLog>();
+    public DbSet<AuthEvent> AuthEvents => Set<AuthEvent>();
     public DbSet<Workflow> Workflows => Set<Workflow>();
     public DbSet<WorkflowTransition> WorkflowTransitions => Set<WorkflowTransition>();
     public DbSet<TicketComment> TicketComments => Set<TicketComment>();

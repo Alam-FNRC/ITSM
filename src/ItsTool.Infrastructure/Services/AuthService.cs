@@ -1,6 +1,9 @@
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
+using ItsTool.Domain.Entities.Auth;
+using ItsTool.Domain.Entities.Organization;
 using ItsTool.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -12,17 +15,23 @@ public class AuthService : IAuthService
     private readonly ITokenService _tokenService;
     private readonly IPermissionCalculator _permissionCalculator;
     private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor? _httpContextAccessor;
+
+    // Checked when the name matches no account, so an unknown name takes as long to reject as a wrong password
+    private static readonly string UnknownUserHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString());
 
     public AuthService(
-        ItsToolDbContext context, 
-        ITokenService tokenService, 
+        ItsToolDbContext context,
+        ITokenService tokenService,
         IPermissionCalculator permissionCalculator,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IHttpContextAccessor? httpContextAccessor = null)
     {
         _context = context;
         _tokenService = tokenService;
         _permissionCalculator = permissionCalculator;
         _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
@@ -35,13 +44,26 @@ public class AuthService : IAuthService
         // Exact match: LIKE treated % and _ in the username as wildcards (review A9)
         var user = await _context.Users
             .FirstOrDefaultAsync(u =>
-                (u.Username == request.Username || u.Email == request.Username) &&
-                u.IsActive && !u.IsDeleted);
+                (u.Username == request.Username || u.Email == request.Username) && !u.IsDeleted);
 
-        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        if (user == null)
         {
-            throw new UnauthorizedAccessException("Invalid credentials.");
+            BCrypt.Net.BCrypt.Verify(request.Password, UnknownUserHash);
+            throw await LoginFailedAsync(request.Username, null, AuthFailureReasons.UnknownUser);
         }
+
+        if (!user.IsActive)
+        {
+            throw await LoginFailedAsync(request.Username, user, AuthFailureReasons.InactiveAccount);
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        {
+            throw await LoginFailedAsync(request.Username, user, AuthFailureReasons.WrongPassword);
+        }
+
+        RecordAuthEvent(AuthEventTypes.LoginSucceeded, request.Username, user.Id);
+        await _context.SaveChangesAsync();
 
         var roles = await _context.UserRoles
             .Where(ur => ur.UserId == user.Id && ur.Role != null && ur.Role.IsActive)
@@ -65,6 +87,31 @@ public class AuthService : IAuthService
             MustChangePassword: user.MustChangePassword
         );
     }
+
+    /// <summary>Records the failed attempt. Callers get the same message whatever the reason.</summary>
+    private async Task<UnauthorizedAccessException> LoginFailedAsync(string username, User? user, string reason)
+    {
+        RecordAuthEvent(AuthEventTypes.LoginFailed, username, user?.Id, reason);
+        await _context.SaveChangesAsync();
+        return new UnauthorizedAccessException("Invalid credentials.");
+    }
+
+    private void RecordAuthEvent(string eventType, string username, int? userId, string? failureReason = null)
+    {
+        var request = _httpContextAccessor?.HttpContext?.Request;
+        _context.AuthEvents.Add(new AuthEvent
+        {
+            EventType = eventType,
+            Username = Truncate(username, 256),
+            UserId = userId,
+            FailureReason = failureReason,
+            IpAddress = request?.HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = request == null ? null : Truncate(request.Headers.UserAgent.ToString(), 512)
+        });
+    }
+
+    private static string Truncate(string value, int maxLength) =>
+        value.Length <= maxLength ? value : value[..maxLength];
 
     public async Task<MeResponseDto> GetMeAsync(int userId)
     {
