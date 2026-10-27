@@ -1,29 +1,31 @@
+# Requires a .env file next to this file (never committed) with:
+#   DB_PASSWORD=<strong password: 8+ chars, upper, lower, digit, symbol; no ';'>
+
 services:
   # --------------------------------------------------------------------------
-  # 1. PostgreSQL Veritabanı Servisi
+  # 1. SQL Server database
   # --------------------------------------------------------------------------
-  postgres:
-    image: postgres:16-alpine
-    container_name: itstool-postgres
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: itstool-sqlserver
     restart: unless-stopped
     environment:
-      POSTGRES_DB: itsm_tool
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-Postgres123!}
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
     ports:
-      - "5433:5432"
+      - "1433:1433"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - sqlserver_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d itsm_tool"]
-      interval: 5s
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     networks:
       - itstool-network
 
   # --------------------------------------------------------------------------
-  # 2. ITSM Tool Uygulaması (API + Web Frontend)
+  # 2. ITSM application (API + web front end)
   # --------------------------------------------------------------------------
   itstool-app:
     build:
@@ -32,14 +34,14 @@ services:
     container_name: itstool-app
     restart: unless-stopped
     depends_on:
-      postgres:
+      sqlserver:
         condition: service_healthy
     ports:
       - "5246:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - AutoSeed=true
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=itsm_tool;Username=postgres;Password=${DB_PASSWORD:-Postgres123!}
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=FnrcItsm;User Id=sa;Password=${DB_PASSWORD:?Set DB_PASSWORD in .env};TrustServerCertificate=True
       - Jwt__Secret=${JWT_SECRET:-enterprise_super_secret_jwt_key_turkcell_itsm_2026!}
       - Jwt__Issuer=ItsToolAPI
       - Jwt__Audience=ItsToolClient
@@ -51,7 +53,7 @@ services:
       - itstool-network
 
 volumes:
-  postgres_data:
+  sqlserver_data:
     driver: local
 
 networks:
