@@ -198,6 +198,9 @@ public class UserService : IUserService
         
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
         user.MustChangePassword = true;
+        // A reset by an administrator also unlocks the account
+        user.FailedLoginCount = 0;
+        user.LockoutEndsAt = null;
         await _context.SaveChangesAsync();
     }
     

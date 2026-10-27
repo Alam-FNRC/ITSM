@@ -1080,6 +1080,9 @@ namespace ItsTool.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int>("FailedLoginCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1093,6 +1096,9 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LockoutEndsAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("MustChangePassword")
                         .HasColumnType("bit");

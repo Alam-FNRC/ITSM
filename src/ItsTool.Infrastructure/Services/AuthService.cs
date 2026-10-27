@@ -57,11 +57,26 @@ public class AuthService : IAuthService
             throw await LoginFailedAsync(request.Username, user, AuthFailureReasons.InactiveAccount);
         }
 
+        // While locked, even the right password is refused, so guessing cannot continue (review A9)
+        if (user.LockoutEndsAt > DateTime.UtcNow)
+        {
+            throw await LoginFailedAsync(request.Username, user, AuthFailureReasons.LockedOut);
+        }
+
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
         {
+            user.FailedLoginCount++;
+            if (user.FailedLoginCount >= _configuration.GetValue("Auth:MaxFailedLogins", 5))
+            {
+                user.LockoutEndsAt = DateTime.UtcNow.AddMinutes(_configuration.GetValue("Auth:LockoutMinutes", 15));
+                user.FailedLoginCount = 0;
+                RecordAuthEvent(AuthEventTypes.AccountLocked, request.Username, user.Id);
+            }
             throw await LoginFailedAsync(request.Username, user, AuthFailureReasons.WrongPassword);
         }
 
+        user.FailedLoginCount = 0;
+        user.LockoutEndsAt = null;
         RecordAuthEvent(AuthEventTypes.LoginSucceeded, request.Username, user.Id);
         await _context.SaveChangesAsync();
 

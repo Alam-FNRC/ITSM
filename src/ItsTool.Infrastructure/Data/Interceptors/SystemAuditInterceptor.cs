@@ -161,6 +161,8 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
             string propName = prop.Metadata.Name;
             if (propName == "UpdatedAt" || propName == "CreatedAt" || propName == "DeletedAt") continue;
             if (propName == "PasswordHash" || propName == "SecurityStamp" || propName == "ConcurrencyStamp" || propName == "ViewCount") continue;
+            // Login counters change on every attempt; AuthEvents records those attempts
+            if (propName == "FailedLoginCount" || propName == "LockoutEndsAt") continue;
 
             var original = prop.OriginalValue?.ToString();
             var current = prop.CurrentValue?.ToString();

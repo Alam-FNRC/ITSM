@@ -22,6 +22,7 @@ public static class AuthEventTypes
 {
     public const string LoginSucceeded = "LoginSucceeded";
     public const string LoginFailed = "LoginFailed";
+    public const string AccountLocked = "AccountLocked";
 }
 
 public static class AuthFailureReasons
@@ -29,4 +30,5 @@ public static class AuthFailureReasons
     public const string UnknownUser = "UnknownUser";
     public const string WrongPassword = "WrongPassword";
     public const string InactiveAccount = "InactiveAccount";
+    public const string LockedOut = "LockedOut";
 }
