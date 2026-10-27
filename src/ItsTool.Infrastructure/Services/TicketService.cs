@@ -787,7 +787,7 @@ public class TicketService : ITicketService
         });
 
         await _context.SaveChangesAsync();
-        return new TicketAttachmentDto(a.Id, a.TicketId, a.FileName, a.FilePath, a.FileSize, a.ContentType, a.UploadedByUserId, a.CreatedAt);
+        return ToAttachmentDto(a);
     }
 
     public async Task<IEnumerable<TicketAttachmentDto>> GetAttachmentsAsync(int ticketId)
@@ -796,8 +796,12 @@ public class TicketService : ITicketService
             .Where(a => a.TicketId == ticketId && !a.IsDeleted)
             .ToListAsync();
             
-        return attachments.Select(a => new TicketAttachmentDto(a.Id, a.TicketId, a.FileName, a.FilePath, a.FileSize, a.ContentType, a.UploadedByUserId, a.CreatedAt));
+        return attachments.Select(ToAttachmentDto);
     }
+
+    // Clients download through the API, so the server's file path is never sent to them
+    private static TicketAttachmentDto ToAttachmentDto(TicketAttachment a) =>
+        new(a.Id, a.TicketId, a.FileName, string.Empty, a.FileSize, a.ContentType, a.UploadedByUserId, a.CreatedAt);
 
     public async Task<(string FilePath, string ContentType, string FileName)> GetAttachmentFileInfoAsync(int ticketId, int attachmentId)
     {
@@ -884,7 +888,7 @@ public class TicketService : ITicketService
         events.AddRange(comments.Select(c => new TimelineEventDto("Comment", c.CreatedAt, c)));
 
         var attachments = await _context.TicketAttachments.Where(a => a.TicketId == ticketId && !a.IsDeleted).ToListAsync();
-        events.AddRange(attachments.Select(a => new TimelineEventDto("Attachment", a.CreatedAt, a)));
+        events.AddRange(attachments.Select(a => new TimelineEventDto("Attachment", a.CreatedAt, ToAttachmentDto(a))));
 
         return events.OrderBy(e => e.Timestamp);
     }
