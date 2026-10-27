@@ -17,6 +17,11 @@ namespace ItsTool.Infrastructure.Services;
 public class TicketService : ITicketService
 {
     private const string TicketNotFoundMessage = "Ticket not found.";
+    // History actions whose FieldName holds a comment ID (see AddCommentAsync, UpdateCommentAsync, DeleteCommentAsync)
+    private static readonly HashSet<string> CommentHistoryActions = new()
+    {
+        "CommentAdded", "CommentReplied", "InternalNoteAdded", "CommentEdited", "CommentDeleted", "UserMentioned"
+    };
     private readonly ItsToolDbContext _context;
     private readonly IFileStorageService _fileStorage;
     private readonly IPermissionCalculator _permissionCalculator;
@@ -858,6 +863,18 @@ public class TicketService : ITicketService
         var events = new List<TimelineEventDto>();
 
         var histories = await _context.TicketHistories.Where(h => h.TicketId == ticketId && !h.IsDeleted).ToListAsync();
+        if (!includeInternal)
+        {
+            // Comment history rows copy the comment text, so hide the ones that belong to internal notes
+            var internalCommentIds = await _context.TicketComments
+                .Where(c => c.TicketId == ticketId && c.IsInternal)
+                .Select(c => c.Id.ToString())
+                .ToListAsync();
+            histories = histories
+                .Where(h => h.Action != "InternalNoteAdded" &&
+                            !(CommentHistoryActions.Contains(h.Action) && internalCommentIds.Contains(h.FieldName)))
+                .ToList();
+        }
         events.AddRange(histories.Select(h => new TimelineEventDto("History", h.CreatedAt, h)));
 
         var comments = await _context.TicketComments.Where(c => c.TicketId == ticketId && !c.IsDeleted).ToListAsync();
