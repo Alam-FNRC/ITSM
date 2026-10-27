@@ -1,5 +1,6 @@
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
+using ItsTool.API.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace ItsTool.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[TypeFilter(typeof(TicketAccessFilter))]
 public class TicketController : ControllerBase
 {
     private const string PermissionClaim = "permission";
@@ -278,7 +280,6 @@ public class TicketController : ControllerBase
         return Ok(await _service.GetAttachmentsAsync(id));
     }
 
-    [AllowAnonymous]
     [HttpGet("{id}/attachments/{attachmentId}/download")]
     public async Task<IActionResult> DownloadAttachment(int id, int attachmentId)
     {

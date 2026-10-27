@@ -221,7 +221,16 @@ public class TicketService : ITicketService
         return new TicketDto(t.Id, t.TicketNumber, t.Title, t.Description, t.ProjectId, t.CategoryId, t.TypeId, t.StatusId, t.PriorityId, t.RequesterUserId, assignees, customFields, t.EstimatedStartDate, t.EstimatedEndDate, t.ColorHex, slaInfo);
     }
 
-    
+    public async Task<bool> CanAccessTicketAsync(int ticketId, int userId)
+    {
+        // Same rule as search, so a ticket the user cannot find cannot be opened by ID either.
+        // Deleted tickets are included so they can still be restored; each action handles deletion itself.
+        var perms = await _permissionCalculator.CalculateEffectivePermissionsAsync(userId);
+        var query = await TicketQueryHelpers.ApplySecurityScopeAsync(
+            _context.Tickets.IgnoreQueryFilters().Where(t => t.Id == ticketId), perms, userId, _context);
+        return await query.AnyAsync();
+    }
+
     public async Task DeleteTicketAsync(int id, int currentUserId)
     {
         var t = await _context.Tickets.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
