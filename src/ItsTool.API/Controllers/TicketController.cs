@@ -1,3 +1,4 @@
+using ItsTool.Application.Constants;
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
 using ItsTool.API.Security;
@@ -29,6 +30,9 @@ public class TicketController : ControllerBase
         var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return int.TryParse(idClaim, out var id) ? id : 0;
     }
+
+    private bool HasPermission(string permission) =>
+        User.IsInRole(RoleSuperAdmin) || User.HasClaim(PermissionClaim, permission);
 
     [HttpPost]
     [Authorize(Policy = "RequirePermission:ticket.create")]
@@ -113,8 +117,12 @@ public class TicketController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTicketDto dto)
     {
+        // Same rule as the edit buttons on the ticket page
+        if (!HasPermission(PermissionConstants.TicketEdit) && !HasPermission(PermissionConstants.TicketAssign)) return Forbid();
+
         try
         {
             await _service.UpdateTicketAsync(id, dto, GetCurrentUserId());
@@ -202,8 +210,12 @@ public class TicketController : ControllerBase
 
     [HttpPost("{id}/comments")]
     [ProducesResponseType(typeof(TicketCommentDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddComment(int id, [FromBody] CreateCommentDto dto)
     {
+        // Only those who can read internal notes may write them
+        if (dto.IsInternal && !HasPermission(PermissionConstants.TicketCommentInternal)) return Forbid();
+
         var createDto = new CreateCommentDto(dto.Content, dto.IsInternal, GetCurrentUserId(), dto.ParentCommentId, dto.MentionedUserIds);
         var result = await _service.AddCommentAsync(id, createDto);
         return Ok(result);
