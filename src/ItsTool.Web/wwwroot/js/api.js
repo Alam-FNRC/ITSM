@@ -141,6 +141,15 @@ class ApiClient {
         return await response.json();
     }
 
+    // Fetches a file with the login token, for attachments that <img src> and <a href> cannot authorize
+    async fetchFile(endpoint) {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            headers: this.token ? { 'Authorization': `Bearer ${this.token}` } : {}
+        });
+        if (!response.ok) throw new Error(`Download failed (${response.status})`);
+        return await response.blob();
+    }
+
     // Auth
     async login(username, password) {
         const res = await this.request('/auth/login', {
