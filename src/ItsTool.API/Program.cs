@@ -262,3 +262,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 await app.RunAsync();
+
+// Lets the integration tests start the API with WebApplicationFactory<Program>
+public partial class Program { }

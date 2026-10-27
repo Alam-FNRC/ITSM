@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.33" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.4.2" />
@@ -21,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ItsTool.API\ItsTool.API.csproj" />
     <ProjectReference Include="..\..\src\ItsTool.Application\ItsTool.Application.csproj" />
     <ProjectReference Include="..\..\src\ItsTool.Infrastructure\ItsTool.Infrastructure.csproj" />
   </ItemGroup>
