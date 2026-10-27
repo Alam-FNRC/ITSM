@@ -24,6 +24,8 @@ Each fix has integration tests in `tests/ItsTool.IntegrationTests/Api/` that run
 | — | Fixed | Found during the fixes: the ticket timeline returned internal note text to requesters (`500aad4`) |
 | — | Fixed | Found during the fixes: attachment responses included the server's file path (`314bdee`) |
 | Audit | Fixed | Restoring a comment no longer deletes the history of its deletion (`bdeb3d5`) |
+| Audit | Partly fixed | Logins and password changes are in AuthEvents (`f061746`). Role assignments, role permissions and permission overrides are audited with names and the acting administrator (`4682777`). The application refuses to change or delete audit rows (`14e94d0`). Still open (Phase 3): protection at the database level, tamper evidence (hash chain), IP address and request ID on audit rows |
+| — | Fixed | Found during the fixes: deny permission overrides were ignored, so a role's permission could not be taken away from one user (`5380920`) |
 
 # Part 1: Security and data layer
 
