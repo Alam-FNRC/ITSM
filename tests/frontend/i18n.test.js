@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const stored = new Map();
 global.localStorage = {
@@ -30,13 +33,52 @@ function translatableElement(key) {
     return textNode;
 }
 
-test('every offered language has a dictionary with every English key', () => {
+test('every offered language has a dictionary with exactly the English keys', () => {
     const english = Object.keys(translations.en);
     for (const { id } of LANGUAGES) {
         assert.ok(translations[id], `no dictionary for ${id}`);
         const missing = english.filter(key => !(key in translations[id]));
+        const unknown = Object.keys(translations[id]).filter(key => !(key in translations.en));
         assert.deepEqual(missing, [], `${id} is missing keys`);
+        assert.deepEqual(unknown, [], `${id} has keys English does not`);
     }
+});
+
+test('translations keep the placeholders and HTML tags of the English text', () => {
+    const marks = (text) => (String(text).match(/\{\d\}|<\/?[a-z]+>/g) ?? []).sort().join(' ');
+    for (const { id } of LANGUAGES) {
+        for (const [key, english] of Object.entries(translations.en)) {
+            assert.equal(marks(translations[id][key]), marks(english), `${id}.${key}`);
+        }
+    }
+});
+
+test('every key the pages use is defined', () => {
+    const root = fileURLToPath(new URL('../../src/ItsTool.Web/wwwroot/', import.meta.url));
+    const files = [
+        ...fs.readdirSync(root).filter(f => f.endsWith('.html')),
+        ...fs.readdirSync(path.join(root, 'js')).filter(f => f.endsWith('.js') && !f.includes('.min.')).map(f => path.join('js', f))
+    ];
+    const undefinedKeys = [];
+    for (const file of files) {
+        const text = fs.readFileSync(path.join(root, file), 'utf8');
+        for (const m of text.matchAll(/data-i18n="([^"$]+)"|\bt\('([a-z0-9_]+)'/g)) {
+            const key = m[1] ?? m[2];
+            // Keys ending in _ are prefixes completed at run time, such as db_ + a status name
+            if (!key.endsWith('_') && !(key in translations.en)) undefinedKeys.push(`${file}: ${key}`);
+        }
+    }
+    assert.deepEqual(undefinedKeys, []);
+});
+
+test('Arabic is offered, written right to left, with Latin digits', () => {
+    assert.equal(getTextDirection('ar'), 'rtl');
+    assert.equal(getLocale('ar'), 'ar-AE-u-nu-latn');
+    useLanguage('ar');
+    applyTranslations();
+    assert.equal(document.documentElement.lang, 'ar');
+    assert.equal(document.documentElement.dir, 'rtl');
+    assert.equal(t('nav_tickets'), 'التذاكر');
 });
 
 test('the language defaults to English, also when the saved one is not offered', () => {
@@ -92,4 +134,18 @@ test('dates and numbers use the locale of the current language', () => {
     assert.equal(getLocale(), 'tr-TR');
     useLanguage(null);
     assert.equal(getLocale(), 'en-US');
+});
+
+test('data-i18n-target="title" translates the tooltip and leaves the content alone', () => {
+    useLanguage('tr');
+    const icon = { nodeType: 1 };
+    const button = { dataset: { i18n: 'login_toggle_password', i18nTarget: 'title' }, childNodes: [icon], title: 'Show/Hide Password' };
+    translatable.push(button);
+    try {
+        applyTranslations();
+        assert.equal(button.title, translations.tr.login_toggle_password);
+        assert.deepEqual(button.childNodes, [icon]);
+    } finally {
+        translatable.length = 0;
+    }
 });
