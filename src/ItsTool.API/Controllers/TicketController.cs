@@ -300,7 +300,9 @@ public class TicketController : ControllerBase
             var (filePath, contentType, fileName) = await _service.GetAttachmentFileInfoAsync(id, attachmentId);
             if (!System.IO.File.Exists(filePath))
                 return NotFound();
-                
+
+            // Browsers must use the content type the server chose, not guess one from the bytes
+            Response.Headers["X-Content-Type-Options"] = "nosniff";
             return PhysicalFile(System.IO.Path.GetFullPath(filePath), contentType, fileName);
         }
         catch (KeyNotFoundException)

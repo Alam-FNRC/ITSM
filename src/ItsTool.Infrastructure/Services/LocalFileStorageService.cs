@@ -26,23 +26,33 @@ public class LocalFileStorageService : IFileStorageService
 
     public async Task<string> SaveFileAsync(IFormFile file, int ticketId)
     {
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".pdf", ".docx", ".xlsx", ".doc", ".xls", ".txt", ".md", ".csv", ".json", ".xml", ".zip", ".log", ".tex", ".svg", ".rar", ".7z", ".tar.gz", ".tar", ".sql", ".py" };
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-        
-        if (!allowedExtensions.Contains(ext))
+        if (UploadPolicy.ContentTypeFor(ext) == null)
             throw new InvalidOperationException($"File type '{ext}' not allowed.");
 
-        if (file.Length > 10 * 1024 * 1024) // 10 MB
+        if (file.Length > UploadPolicy.MaxBytes)
             throw new InvalidOperationException("File size exceeds 10MB limit.");
+
+        if (UploadPolicy.HasSignature(ext))
+        {
+            var header = new byte[UploadPolicy.HeaderLength];
+            int read;
+            await using (var input = file.OpenReadStream())
+            {
+                read = await input.ReadAtLeastAsync(header, header.Length, throwOnEndOfStream: false);
+            }
+            if (!UploadPolicy.HasExpectedSignature(ext, header.AsSpan(0, read)))
+                throw new InvalidOperationException($"The file content is not a valid '{ext}' file.");
+        }
 
         var ticketFolder = Path.Combine(_basePath, ticketId.ToString());
         if (!Directory.Exists(ticketFolder))
             Directory.CreateDirectory(ticketFolder);
 
-        var fileName = $"{Guid.NewGuid()}_{file.FileName}";
-        var filePath = Path.Combine(ticketFolder, fileName);
+        // The client's file name never reaches the file system: a name like x\..\..\a.txt would escape the folder
+        var filePath = Path.Combine(ticketFolder, $"{Guid.NewGuid():N}{ext}");
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        using (var stream = new FileStream(filePath, FileMode.CreateNew))
         {
             await file.CopyToAsync(stream);
         }

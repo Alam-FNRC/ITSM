@@ -167,7 +167,7 @@ public class ExternalServicesCoverageTests
 
         var service = new LocalFileStorageService(config);
 
-        var contentBytes = Encoding.UTF8.GetBytes("Sample content");
+        var contentBytes = Encoding.UTF8.GetBytes("%PDF-1.4 sample content");
         var formFile = new FormFile(new MemoryStream(contentBytes), 0, contentBytes.Length, "file", "document.pdf");
 
         var savedPath = await service.SaveFileAsync(formFile, 101);

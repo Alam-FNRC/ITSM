@@ -25,12 +25,15 @@ public sealed class ApiFixture : IAsyncLifetime
     public const string Password = "Integration-Test-Password-1";
 
     private readonly SqlServerFixture _database = new();
-    private WebApplicationFactory<Program>? _factory;
+    private ItsmApiFactory? _factory;
 
     public WebApplicationFactory<Program> Factory =>
         _factory ?? throw new InvalidOperationException("The fixture has not been initialized.");
 
     public ItsToolDbContext CreateContext() => _database.CreateContext();
+
+    /// <summary>Where this API instance stores uploaded attachments.</summary>
+    public string UploadsPath => _factory?.UploadsPath ?? throw new InvalidOperationException("The fixture has not been initialized.");
 
     public HttpClient CreateAnonymousClient() => Factory.CreateClient();
 
@@ -103,6 +106,14 @@ internal sealed class ItsmApiFactory : WebApplicationFactory<Program>
 
     public ItsmApiFactory(string connectionString) => _connectionString = connectionString;
 
+    public string UploadsPath { get; } = Path.Combine(Path.GetTempPath(), $"itsm-test-uploads-{Guid.NewGuid():N}");
+
+    public override async ValueTask DisposeAsync()
+    {
+        await base.DisposeAsync();
+        if (Directory.Exists(UploadsPath)) Directory.Delete(UploadsPath, recursive: true);
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Not Development, so no Swagger and no developer exception page, as in production. AutoSeed is off unless a test sets it.
@@ -110,6 +121,7 @@ internal sealed class ItsmApiFactory : WebApplicationFactory<Program>
         // UseSetting rather than ConfigureAppConfiguration: Program.cs reads these before the app is built.
         builder.UseSetting("ConnectionStrings:DefaultConnection", _connectionString);
         builder.UseSetting("Jwt:Secret", Convert.ToHexString(RandomNumberGenerator.GetBytes(32)));
+        builder.UseSetting("FileStorage:BasePath", UploadsPath);
 
         builder.ConfigureTestServices(services =>
         {

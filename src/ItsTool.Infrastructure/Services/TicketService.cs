@@ -768,10 +768,11 @@ public class TicketService : ITicketService
         var a = new TicketAttachment
         {
             TicketId = ticketId,
-            FileName = file.FileName,
+            FileName = UploadPolicy.DisplayName(file.FileName),
             FilePath = path,
             FileSize = file.Length,
-            ContentType = file.ContentType,
+            // Decided by the server: the client's content type could be text/html
+            ContentType = UploadPolicy.ContentTypeFor(file.FileName)!,
             UploadedByUserId = userId
         };
         _context.TicketAttachments.Add(a);
@@ -806,7 +807,8 @@ public class TicketService : ITicketService
         if (attachment == null)
             throw new KeyNotFoundException("Attachment not found.");
 
-        return (attachment.FilePath, attachment.ContentType, attachment.FileName);
+        // Older rows stored the client's content type, so derive it again from the name
+        return (attachment.FilePath, UploadPolicy.ContentTypeFor(attachment.FileName) ?? "application/octet-stream", attachment.FileName);
     }
 
     public async Task DeleteAttachmentAsync(int ticketId, int attachmentId, int userId, bool hasManagePerm)

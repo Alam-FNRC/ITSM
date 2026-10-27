@@ -486,7 +486,10 @@ public class HighCoverageBoostTests : TestBase
     public async Task TicketController_DownloadAttachment_ShouldCoverBranches()
     {
         var ticketServiceMock = new Mock<ITicketService>();
-        var controller = new TicketController(ticketServiceMock.Object);
+        var controller = new TicketController(ticketServiceMock.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
+        };
 
         // 1. KeyNotFoundException -> NotFound
         ticketServiceMock.Setup(s => s.GetAttachmentFileInfoAsync(1, 99))
