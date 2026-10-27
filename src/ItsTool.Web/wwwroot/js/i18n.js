@@ -390,6 +390,7 @@ export const translations = {
         // Activity & Comment Logs
         "log_edited_comment": "edited a comment",
         "log_deleted_comment": "deleted a comment",
+        "log_restored_comment": "restored a deleted comment",
         "log_mentioned_user": "mentioned <strong>{0}</strong> in a comment",
         "log_replied_attachment": "replied with an attachment",
         "log_note_attachment": "added an internal note with an attachment",
@@ -1030,6 +1031,7 @@ export const translations = {
         // Activity & Comment Logs
         "log_edited_comment": "bir yorumu düzenledi",
         "log_deleted_comment": "bir yorumu sildi",
+        "log_restored_comment": "silinen bir yorumu geri aldı",
         "log_mentioned_user": "bir yorumda <strong>{0}</strong> adlı kullanıcıdan bahsetti",
         "log_replied_attachment": "ek içeren bir yanıt verdi",
         "log_note_attachment": "ek içeren bir iç not ekledi",

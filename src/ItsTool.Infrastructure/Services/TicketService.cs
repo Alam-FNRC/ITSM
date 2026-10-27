@@ -17,10 +17,10 @@ namespace ItsTool.Infrastructure.Services;
 public class TicketService : ITicketService
 {
     private const string TicketNotFoundMessage = "Ticket not found.";
-    // History actions whose FieldName holds a comment ID (see AddCommentAsync, UpdateCommentAsync, DeleteCommentAsync)
+    // History actions whose FieldName holds a comment ID (see AddCommentAsync, UpdateCommentAsync, Delete/RestoreCommentAsync)
     private static readonly HashSet<string> CommentHistoryActions = new()
     {
-        "CommentAdded", "CommentReplied", "InternalNoteAdded", "CommentEdited", "CommentDeleted", "UserMentioned"
+        "CommentAdded", "CommentReplied", "InternalNoteAdded", "CommentEdited", "CommentDeleted", "CommentRestored", "UserMentioned"
     };
     private readonly ItsToolDbContext _context;
     private readonly IFileStorageService _fileStorage;
@@ -738,16 +738,16 @@ public class TicketService : ITicketService
 
         c.IsDeleted = false;
 
-        // Remove the accidental CommentDeleted history entry so it disappears from logs
-        var deletedHistory = await _context.TicketHistories
-            .Where(h => h.TicketId == ticketId && h.Action == "CommentDeleted" && h.FieldName == c.Id.ToString())
-            .OrderByDescending(h => h.CreatedAt)
-            .FirstOrDefaultAsync();
-            
-        if (deletedHistory != null)
+        // History is append-only: the deletion stays on record and the restore is recorded after it
+        _context.TicketHistories.Add(new TicketHistory
         {
-            _context.TicketHistories.Remove(deletedHistory);
-        }
+            TicketId = ticketId,
+            Action = "CommentRestored",
+            FieldName = c.Id.ToString(),
+            OldValue = null,
+            NewValue = null,
+            CreatedBy = userId.ToString()
+        });
 
         await _context.SaveChangesAsync();
     }
