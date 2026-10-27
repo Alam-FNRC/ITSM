@@ -259,6 +259,42 @@ public class SystemAuditInterceptorTests : IDisposable
         Assert.Equal("system", log.CreatedBy);
     }
 
+    [Fact]
+    public async Task AuditRecords_CanBeAddedButNeverChanged()
+    {
+        var log = new SystemAuditLog { EntityType = "User", EntityId = "1", EntityName = "a", Action = "RoleAssigned", NewValue = "Agent" };
+        var history = new TicketHistory { TicketId = 1, FieldName = "StatusId", Action = "Updated", NewValue = "2" };
+        var authEvent = new AuthEvent { EventType = AuthEventTypes.LoginFailed, Username = "a" };
+        _context.AddRange(log, history, authEvent);
+        await _context.SaveChangesAsync();
+
+        log.NewValue = "SuperAdmin";
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
+        _context.Entry(log).State = EntityState.Unchanged;
+
+        history.NewValue = "3";
+        Assert.Throws<InvalidOperationException>(() => _context.SaveChanges());
+        _context.Entry(history).State = EntityState.Unchanged;
+
+        authEvent.FailureReason = null;
+        authEvent.EventType = AuthEventTypes.LoginSucceeded;
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
+    }
+
+    [Fact]
+    public async Task AuditRecords_CannotBeDeleted_AndTheWholeSaveIsRefused()
+    {
+        var log = new SystemAuditLog { EntityType = "User", EntityId = "1", EntityName = "a", Action = "RoleAssigned" };
+        _context.SystemAuditLogs.Add(log);
+        await _context.SaveChangesAsync();
+
+        _context.SystemAuditLogs.Remove(log);
+        _context.Departments.Add(new Department { Name = "Saved alongside the delete" });
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
+        Assert.False(await _context.Departments.AnyAsync());
+    }
+
     public void Dispose()
     {
         _context.Database.EnsureDeleted();
