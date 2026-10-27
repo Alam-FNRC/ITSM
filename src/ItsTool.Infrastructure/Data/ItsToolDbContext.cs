@@ -9,6 +9,7 @@ using ItsTool.Domain.Entities.SLA;
 using ItsTool.Domain.Entities.Notification;
 using ItsTool.Domain.Entities.KnowledgeBase;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Reflection;
 
 namespace ItsTool.Infrastructure.Data;
@@ -90,5 +91,22 @@ public class ItsToolDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        // All timestamps are stored as UTC. SQL Server's datetime2 does not keep DateTimeKind,
+        // so values read back would be Unspecified and serialize without "Z" (shown 4 hours off in the UAE).
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
+    }
+
+    private sealed class UtcDateTimeConverter : ValueConverter<DateTime, DateTime>
+    {
+        public UtcDateTimeConverter()
+            : base(
+                v => v.Kind == DateTimeKind.Local ? v.ToUniversalTime() : v,
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+        {
+        }
     }
 }
