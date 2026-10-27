@@ -7,7 +7,7 @@ Claude proposes; William decides anything that changes scope, data, or security.
 ## Target platform (decided)
 - .NET 10 (upgrade from .NET 8, which goes out of support on 10 Nov 2026).
   Deferred: development stays on .NET 8; the upgrade is a separate step before staging.
-- SQL Server (replace PostgreSQL / Npgsql; regenerate migrations).
+- SQL Server. Done Oct 2026: Npgsql removed, migrations regenerated as one SQL Server `InitialCreate`.
   Local dev instance: `(localdb)\MSSQLLocalDB` (Windows authentication, no password)
 - Login: on-premises Active Directory
 - Email: Microsoft 365 (Graph API for sending and for email-to-ticket mailbox polling)
@@ -24,9 +24,19 @@ Claude proposes; William decides anything that changes scope, data, or security.
 - Every feature gets tests; access-control rules get integration tests (WebApplicationFactory) against the real pipeline.
 - Small, reviewable commits; one concern per commit.
 
+## Local development
+- Needs: .NET 9 SDK (pinned in `global.json`; it builds the net8.0 projects), .NET 8 runtime, SQL Server LocalDB, Node 22 for front-end tests.
+- `dotnet tool restore` installs `dotnet-ef` (pinned in `.config/dotnet-tools.json`).
+- `dotnet run --project src/ItsTool.API --launch-profile http` starts the API on http://localhost:5246. In Development it applies migrations and seeds demo data into `FnrcItsm_Dev`.
+- `dotnet test ItsTool.sln` runs unit tests (EF in-memory) and integration tests (real SQL Server; each run creates and drops a `FnrcItsm_Test_*` database; set `ITSM_TEST_SQL` to use another server).
+- `node --test tests/frontend/*.test.js` runs the front-end tests.
+- Schema change: `dotnet ef migrations add <Name> --project src/ItsTool.Infrastructure --startup-project src/ItsTool.API`. A test fails if the model and the migrations drift apart.
+- The in-memory provider hides SQL translation errors and ignores constraints: anything that changes a query needs an integration test.
+
 ## Roadmap
-1. Security hardening (critical findings from the Oct 2026 review)
-2. .NET 10 + SQL Server + AD login + Arabic/RTL
+1. Security hardening (critical findings from the Oct 2026 review).
+   The SQL Server switch from phase 2 was done first (approved Oct 2026) so security tests run against a real database.
+2. .NET 10 + SQL Server (done) + AD login + Arabic/RTL
 3. Audit trail and ISO 27001 KPI reports (monthly, PDF export)
 4. ITIL modules: Problem → Change/CAB → CMDB/assets (from the iTop/GLPI feature spec)
 5. Pilot alongside the old tool, then data migration and go-live
