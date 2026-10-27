@@ -199,7 +199,7 @@ public class AuthServiceTests : TestBase
         _tokenServiceMock.Setup(x => x.GenerateToken(user.Id, user.Username, It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), false))
             .Returns("fresh_token");
 
-        var request = new ChangePasswordRequestDto("BrandNewPassword123!", "BrandNewPassword123!");
+        var request = new ChangePasswordRequestDto("BrandNewPassword123!", "BrandNewPassword123!", "OldPass123!");
 
         // Act
         var result = await _authService.ChangePasswordAsync(user.Id, request);
@@ -224,8 +224,55 @@ public class AuthServiceTests : TestBase
     [Fact]
     public async Task ChangePasswordAsync_ShortPassword_ThrowsArgumentException()
     {
-        var request = new ChangePasswordRequestDto("123", "123");
-        await Assert.ThrowsAsync<ArgumentException>(() => _authService.ChangePasswordAsync(1, request));
+        var user = await AddUserWithPasswordAsync("shortpw", "OldPass123!");
+        var request = new ChangePasswordRequestDto("123", "123", "OldPass123!");
+        await Assert.ThrowsAsync<ArgumentException>(() => _authService.ChangePasswordAsync(user.Id, request));
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WrongCurrentPassword_IsRefusedAndRecorded()
+    {
+        var user = await AddUserWithPasswordAsync("wrongcurrent", "OldPass123!");
+        var request = new ChangePasswordRequestDto("BrandNewPassword123!", "BrandNewPassword123!", "not-my-password");
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _authService.ChangePasswordAsync(user.Id, request));
+
+        Assert.True(BCrypt.Net.BCrypt.Verify("OldPass123!", user.PasswordHash));
+        Assert.Equal(1, user.FailedLoginCount);
+        var recorded = Assert.Single(_context.AuthEvents.Where(e => e.UserId == user.Id));
+        Assert.Equal(ItsTool.Domain.Entities.Auth.AuthEventTypes.PasswordChangeFailed, recorded.EventType);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_MissingCurrentPassword_IsRefused()
+    {
+        var user = await AddUserWithPasswordAsync("nocurrent", "OldPass123!");
+        var request = new ChangePasswordRequestDto("BrandNewPassword123!", "BrandNewPassword123!");
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _authService.ChangePasswordAsync(user.Id, request));
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_SamePasswordAgain_IsRefused()
+    {
+        var user = await AddUserWithPasswordAsync("samepw", "Same-Password-2026");
+        var request = new ChangePasswordRequestDto("Same-Password-2026", "Same-Password-2026", "Same-Password-2026");
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _authService.ChangePasswordAsync(user.Id, request));
+    }
+
+    private async Task<User> AddUserWithPasswordAsync(string username, string password)
+    {
+        var user = new User
+        {
+            Username = username,
+            Email = username + "@test.com",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password, 4),
+            IsActive = true
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return user;
     }
 }
 

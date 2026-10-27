@@ -723,30 +723,31 @@ public class MegaBranchCoverageBoostTests : TestBase
             _configurationMock.Object
         );
 
-        // 1. null request throws
-        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(1, null!));
-
-        // 2. empty passwords throw
-        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(1, new ChangePasswordRequestDto("", "123")));
-
-        // 3. mismatched passwords throw
-        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(1, new ChangePasswordRequestDto("password123", "different")));
-
-        // 4. short password throws
-        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(1, new ChangePasswordRequestDto("123", "123")));
-
-        // 5. non-existent or inactive user throws
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => authService.ChangePasswordAsync(99999, new ChangePasswordRequestDto("newpassword123", "newpassword123")));
-
-        // 6. valid change password succeeds
-        var u = new User { Username = "pw_change_u", Email = "pw@test.com", PasswordHash = "old_hash", IsActive = true, MustChangePassword = true };
+        var u = new User { Username = "pw_change_u", Email = "pw@test.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Old-Password-2026", 4), IsActive = true, MustChangePassword = true };
         _context.Users.Add(u);
         await _context.SaveChangesAsync();
+
+        // 1. null request throws
+        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(u.Id, null!));
+
+        // 2. empty passwords throw
+        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(u.Id, new ChangePasswordRequestDto("", "", "Old-Password-2026")));
+
+        // 3. mismatched passwords throw
+        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(u.Id, new ChangePasswordRequestDto("password123", "different", "Old-Password-2026")));
+
+        // 4. short password throws
+        await Assert.ThrowsAsync<ArgumentException>(() => authService.ChangePasswordAsync(u.Id, new ChangePasswordRequestDto("123", "123", "Old-Password-2026")));
+
+        // 5. non-existent or inactive user throws
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => authService.ChangePasswordAsync(99999, new ChangePasswordRequestDto("newpassword123", "newpassword123", "Old-Password-2026")));
+
+        // 6. valid change password succeeds
 
         _tokenServiceMock.Setup(t => t.GenerateToken(u.Id, u.Username, It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), false))
             .Returns("valid_new_jwt_token");
 
-        var res = await authService.ChangePasswordAsync(u.Id, new ChangePasswordRequestDto("brandNewPassword123!", "brandNewPassword123!"));
+        var res = await authService.ChangePasswordAsync(u.Id, new ChangePasswordRequestDto("brandNewPassword123!", "brandNewPassword123!", "Old-Password-2026"));
         Assert.NotNull(res);
         Assert.False(u.MustChangePassword);
     }

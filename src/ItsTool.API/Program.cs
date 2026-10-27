@@ -238,6 +238,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UsePasswordChangeGate();
 app.UseRateLimiter();
 
 app.MapGet("/api/health", () =>

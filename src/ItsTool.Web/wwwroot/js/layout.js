@@ -234,9 +234,13 @@ function showMandatoryPasswordModal() {
                 </div>
                 <form id="modalForcePasswordForm">
                     <div class="form-group" style="margin-bottom: 14px; text-align: left;">
+                        <label class="form-label" for="mForceCurrentPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Mevcut (Geçici) Şifre</label>
+                        <input type="password" id="mForceCurrentPass" class="form-control" autocomplete="current-password" required style="font-size: 13.5px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 14px; text-align: left;">
                         <label class="form-label" for="mForceNewPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Yeni Şifre</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="6" placeholder="En az 6 karakter" style="padding-right: 40px; font-size: 13.5px;">
+                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="En az 12 karakter" style="padding-right: 40px; font-size: 13.5px;">
                             <button type="button" id="mToggleNewPass" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
@@ -245,7 +249,7 @@ function showMandatoryPasswordModal() {
                     <div class="form-group" style="margin-bottom: 16px; text-align: left;">
                         <label class="form-label" for="mForceConfirmPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Yeni Şifre (Tekrar)</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="6" placeholder="Şifrenizi tekrar girin" style="padding-right: 40px; font-size: 13.5px;">
+                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Şifrenizi tekrar girin" style="padding-right: 40px; font-size: 13.5px;">
                             <button type="button" id="mToggleConfirmPass" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
@@ -286,6 +290,7 @@ function showMandatoryPasswordModal() {
 
     document.getElementById('modalForcePasswordForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const current = document.getElementById('mForceCurrentPass').value;
         const p1 = document.getElementById('mForceNewPass').value;
         const p2 = document.getElementById('mForceConfirmPass').value;
         const err = document.getElementById('mForceError');
@@ -295,13 +300,13 @@ function showMandatoryPasswordModal() {
         err.style.display = 'none';
         scs.style.display = 'none';
 
-        if (!p1 || !p2) {
-            err.textContent = 'Lütfen her iki şifre alanını da doldurunuz.';
+        if (!current || !p1 || !p2) {
+            err.textContent = 'Lütfen tüm şifre alanlarını doldurunuz.';
             err.style.display = 'block';
             return;
         }
-        if (p1.length < 6) {
-            err.textContent = 'Yeni şifre en az 6 karakter olmalıdır.';
+        if (p1.length < 12) {
+            err.textContent = 'Yeni şifre en az 12 karakter olmalıdır.';
             err.style.display = 'block';
             return;
         }
@@ -315,14 +320,14 @@ function showMandatoryPasswordModal() {
         btn.textContent = 'Kaydediliyor...';
 
         try {
-            await window.api.changePassword(p1, p2);
+            await window.api.changePassword(p1, p2, current);
             scs.textContent = 'Şifreniz başarıyla kaydedildi!';
             scs.style.display = 'block';
             setTimeout(() => {
                 overlay.remove();
             }, 800);
         } catch (error) {
-            err.textContent = error.message || 'Şifre güncellenemedi.';
+            err.textContent = window.api.errorMessage(error, 'Şifre güncellenemedi.');
             err.style.display = 'block';
             btn.disabled = false;
             btn.textContent = 'Şifreyi Kaydet ve Devam Et';

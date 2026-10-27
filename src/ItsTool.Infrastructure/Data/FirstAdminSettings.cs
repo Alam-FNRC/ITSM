@@ -1,3 +1,4 @@
+using ItsTool.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 
 namespace ItsTool.Infrastructure.Data;
@@ -8,8 +9,6 @@ namespace ItsTool.Infrastructure.Data;
 /// </summary>
 public sealed record FirstAdminSettings(string Username, string Email, string Password)
 {
-    public const int MinimumPasswordLength = 12;
-
     /// <summary>Returns null when no bootstrap administrator is configured; throws when it is configured badly.</summary>
     public static FirstAdminSettings? FromConfiguration(IConfiguration configuration)
     {
@@ -28,9 +27,10 @@ public sealed record FirstAdminSettings(string Username, string Email, string Pa
             throw new InvalidOperationException("Set all of Bootstrap:AdminUsername, Bootstrap:AdminEmail and Bootstrap:AdminPassword, or none.");
         }
 
-        if (password.Length < MinimumPasswordLength)
+        var problem = PasswordPolicy.Check(password, username);
+        if (problem != null)
         {
-            throw new InvalidOperationException($"Bootstrap:AdminPassword must be at least {MinimumPasswordLength} characters.");
+            throw new InvalidOperationException($"Bootstrap:AdminPassword: {problem}");
         }
 
         return new FirstAdminSettings(username.Trim(), email.Trim(), password);

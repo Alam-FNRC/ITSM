@@ -120,20 +120,20 @@
                 <div class="form-group" style="margin-bottom: 14px;">
                     <label class="form-label" for="forceNewPassword" id="lbl_force_new_pwd" style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">Yeni Şifre</label>
                     <div style="position: relative;">
-                        <input type="password" id="forceNewPassword" class="form-control" autocomplete="new-password" required minlength="6" placeholder="Yeni şifrenizi girin" style="padding-right: 40px;">
+                        <input type="password" id="forceNewPassword" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Yeni şifrenizi girin" style="padding-right: 40px;">
                         <button type="button" id="toggleForceNewPassword" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Şifreyi Göster/Gizle">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                             </svg>
                         </button>
                     </div>
-                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="lbl_force_min_chars">En az 6 karakter olmalıdır.</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="lbl_force_min_chars">En az 12 karakter olmalıdır.</div>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 16px;">
                     <label class="form-label" for="forceConfirmPassword" id="lbl_force_confirm_pwd" style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">Yeni Şifre (Tekrar)</label>
                     <div style="position: relative;">
-                        <input type="password" id="forceConfirmPassword" class="form-control" autocomplete="new-password" required minlength="6" placeholder="Yeni şifrenizi tekrar girin" style="padding-right: 40px;">
+                        <input type="password" id="forceConfirmPassword" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Yeni şifrenizi tekrar girin" style="padding-right: 40px;">
                         <button type="button" id="toggleForceConfirmPassword" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Şifreyi Göster/Gizle">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
@@ -166,11 +166,11 @@
                 forceAlertDesc: 'You logged in with a temporary password. For security, please set your new permanent password.',
                 forceNewPwd: 'New Password',
                 forceConfirmPwd: 'Confirm New Password',
-                forceMinChars: 'Must be at least 6 characters.',
+                forceMinChars: 'Must be at least 12 characters.',
                 forceBtn: 'Save Password & Sign In',
                 forceMismatch: 'Passwords do not match.',
                 forceEmpty: 'Please fill in both password fields.',
-                forceShort: 'Password must be at least 6 characters.',
+                forceShort: 'Password must be at least 12 characters.',
                 forceSuccess: 'Password set successfully! Redirecting...'
             },
             tr: { 
@@ -184,11 +184,11 @@
                 forceAlertDesc: 'Geçici şifrenizle giriş yaptınız. Güvenliğiniz için lütfen yeni ve kalıcı bir şifre belirleyiniz.',
                 forceNewPwd: 'Yeni Şifre',
                 forceConfirmPwd: 'Yeni Şifre (Tekrar)',
-                forceMinChars: 'En az 6 karakter olmalıdır.',
+                forceMinChars: 'En az 12 karakter olmalıdır.',
                 forceBtn: 'Şifremi Belirle ve Giriş Yap',
                 forceMismatch: 'Girilen şifreler birbiriyle eşleşmiyor.',
                 forceEmpty: 'Lütfen tüm şifre alanlarını doldurunuz.',
-                forceShort: 'Yeni şifre en az 6 karakter olmalıdır.',
+                forceShort: 'Yeni şifre en az 12 karakter olmalıdır.',
                 forceSuccess: 'Şifreniz başarıyla belirlendi! Yönlendiriliyorsunuz...'
             }
         };
@@ -334,7 +334,7 @@
                 errDiv.style.display = 'block';
                 return;
             }
-            if (newPass.length < 6) {
+            if (newPass.length < 12) {
                 errDiv.textContent = t.forceShort;
                 errDiv.style.display = 'block';
                 return;
@@ -349,7 +349,9 @@
             btn.textContent = lang === 'tr' ? 'Kaydediliyor...' : 'Saving...';
 
             try {
-                await window.api.changePassword(newPass, confirmPass);
+                // The temporary password the user just logged in with is the current one
+                const currentPass = document.getElementById('password').value;
+                await window.api.changePassword(newPass, confirmPass, currentPass);
                 successDiv.textContent = t.forceSuccess;
                 successDiv.style.display = 'block';
                 setTimeout(() => {
@@ -357,7 +359,7 @@
                 }, 1000);
             } catch (err) {
                 console.error('Password change error:', err);
-                errDiv.textContent = err.message || (lang === 'tr' ? 'Şifre güncellenirken bir hata oluştu.' : 'Error updating password.');
+                errDiv.textContent = window.api.errorMessage(err, lang === 'tr' ? 'Şifre güncellenirken bir hata oluştu.' : 'Error updating password.');
                 errDiv.style.display = 'block';
                 btn.disabled = false;
                 btn.textContent = t.forceBtn;

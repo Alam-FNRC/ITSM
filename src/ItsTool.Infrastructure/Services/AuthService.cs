@@ -3,6 +3,7 @@ using ItsTool.Application.Interfaces;
 using ItsTool.Domain.Entities.Auth;
 using ItsTool.Domain.Entities.Organization;
 using ItsTool.Infrastructure.Data;
+using ItsTool.Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -65,13 +66,7 @@ public class AuthService : IAuthService
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
         {
-            user.FailedLoginCount++;
-            if (user.FailedLoginCount >= _configuration.GetValue("Auth:MaxFailedLogins", 5))
-            {
-                user.LockoutEndsAt = DateTime.UtcNow.AddMinutes(_configuration.GetValue("Auth:LockoutMinutes", 15));
-                user.FailedLoginCount = 0;
-                RecordAuthEvent(AuthEventTypes.AccountLocked, request.Username, user.Id);
-            }
+            CountWrongPassword(user, request.Username);
             throw await LoginFailedAsync(request.Username, user, AuthFailureReasons.WrongPassword);
         }
 
@@ -109,6 +104,18 @@ public class AuthService : IAuthService
         RecordAuthEvent(AuthEventTypes.LoginFailed, username, user?.Id, reason);
         await _context.SaveChangesAsync();
         return new UnauthorizedAccessException("Invalid credentials.");
+    }
+
+    /// <summary>Counts a wrong password and locks the account once there are too many in a row.</summary>
+    private void CountWrongPassword(User user, string username)
+    {
+        user.FailedLoginCount++;
+        if (user.FailedLoginCount >= _configuration.GetValue("Auth:MaxFailedLogins", 5))
+        {
+            user.LockoutEndsAt = DateTime.UtcNow.AddMinutes(_configuration.GetValue("Auth:LockoutMinutes", 15));
+            user.FailedLoginCount = 0;
+            RecordAuthEvent(AuthEventTypes.AccountLocked, username, user.Id);
+        }
     }
 
     private void RecordAuthEvent(string eventType, string username, int? userId, string? failureReason = null)
@@ -205,26 +212,39 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> ChangePasswordAsync(int userId, ChangePasswordRequestDto request)
     {
         if (request == null)
-            throw new ArgumentException("İstek verisi boş olamaz.");
-
-        if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
-            throw new ArgumentException("Yeni şifre ve şifre tekrarı boş olamaz.");
+            throw new ArgumentException("No password change was sent.");
 
         if (request.NewPassword != request.ConfirmPassword)
-            throw new ArgumentException("Girilen şifreler birbiriyle eşleşmiyor.");
-
-        if (request.NewPassword.Length < 6)
-            throw new ArgumentException("Yeni şifre en az 6 karakter uzunluğunda olmalıdır.");
+            throw new ArgumentException("The new passwords do not match.");
 
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Id == userId && u.IsActive && !u.IsDeleted);
 
         if (user == null)
-            throw new UnauthorizedAccessException("Kullanıcı bulunamadı veya hesabı aktif değil.");
+            throw new UnauthorizedAccessException("User not found or inactive.");
+
+        if (user.LockoutEndsAt > DateTime.UtcNow)
+            throw new ArgumentException("The account is locked after too many wrong passwords. Try again later.");
+
+        // A stolen session must not be enough to take over the account (review A6), so the current
+        // password is required, and wrong guesses count towards the lockout like failed logins
+        if (string.IsNullOrEmpty(request.CurrentPassword) || !BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+        {
+            CountWrongPassword(user, user.Username);
+            RecordAuthEvent(AuthEventTypes.PasswordChangeFailed, user.Username, user.Id, AuthFailureReasons.WrongPassword);
+            await _context.SaveChangesAsync();
+            throw new ArgumentException("The current password is incorrect.");
+        }
+
+        PasswordPolicy.Validate(request.NewPassword, user.Username);
+        if (request.NewPassword == request.CurrentPassword)
+            throw new ArgumentException("The new password must be different from the current one.");
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
         user.MustChangePassword = false;
+        user.FailedLoginCount = 0;
         user.UpdatedAt = DateTime.UtcNow;
+        RecordAuthEvent(AuthEventTypes.PasswordChanged, user.Username, user.Id);
 
         await _context.SaveChangesAsync();
 

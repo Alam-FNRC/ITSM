@@ -3,6 +3,7 @@ using ItsTool.Application.Interfaces;
 using ItsTool.Domain.Entities.Auth;
 using ItsTool.Domain.Entities.Organization;
 using ItsTool.Infrastructure.Data;
+using ItsTool.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItsTool.Infrastructure.Services;
@@ -49,6 +50,7 @@ public class UserService : IUserService
 
     public async Task<UserDto> CreateAsync(CreateUserDto dto)
     {
+        PasswordPolicy.Validate(dto.Password, dto.Username);
         if (await _context.Users.AnyAsync(u => !u.IsDeleted && (u.Username == dto.Username || u.Email == dto.Email)))
             throw new InvalidOperationException("A user with this username or e-mail already exists.");
 
@@ -59,6 +61,8 @@ public class UserService : IUserService
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            // The administrator knows this password, so the user replaces it at first login
+            MustChangePassword = true,
             DepartmentId = dto.DepartmentId,
             ProfilePhoto = dto.ProfilePhoto
         };
@@ -121,7 +125,7 @@ public class UserService : IUserService
         
         if (!string.IsNullOrWhiteSpace(dto.Password))
         {
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            SetPasswordByAdmin(user, dto.Password);
         }
         
         UpdateProfilePhoto(user, dto.ProfilePhoto);
@@ -196,12 +200,33 @@ public class UserService : IUserService
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null) throw new KeyNotFoundException("User not found");
         
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        SetPasswordByAdmin(user, newPassword);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Sets a password chosen by an administrator. The user must replace it at next login, the account is unlocked,
+    /// and the action is audited explicitly because password hashes are kept out of the automatic audit.
+    /// </summary>
+    private void SetPasswordByAdmin(User user, string password)
+    {
+        PasswordPolicy.Validate(password, user.Username);
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
         user.MustChangePassword = true;
-        // A reset by an administrator also unlocks the account
         user.FailedLoginCount = 0;
         user.LockoutEndsAt = null;
-        await _context.SaveChangesAsync();
+
+        _context.SystemAuditLogs.Add(new ItsTool.Domain.Entities.SystemAuditLog
+        {
+            EntityType = "User",
+            EntityId = user.Id.ToString(),
+            EntityName = user.Username,
+            Action = "PasswordReset",
+            FieldName = "Password",
+            OldValue = "-",
+            NewValue = "Set by administrator; must change at next login",
+            CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"
+        });
     }
     
     private void UpdateProfilePhoto(User user, string? newPhoto)

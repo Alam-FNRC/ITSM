@@ -606,14 +606,15 @@
         function generateRandomPassword() {
             const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
             const numbers = '23456789';
+            // 16 characters: the API requires at least 12
             let pass = '';
-            const randomValues = new Uint32Array(8);
+            const randomValues = new Uint32Array(15);
             window.crypto.getRandomValues(randomValues);
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 12; i++) {
                 pass += letters.charAt(randomValues[i] % letters.length);
             }
-            for (let i = 0; i < 2; i++) {
-                pass += numbers.charAt(randomValues[6 + i] % numbers.length);
+            for (let i = 0; i < 3; i++) {
+                pass += numbers.charAt(randomValues[12 + i] % numbers.length);
             }
             return pass + '!';
         }
@@ -659,7 +660,7 @@
                 closeModal('resetPasswordModal');
             } catch (err) {
                 console.error(err);
-                showToast(err.message || t('users_reset_toast_fail') || 'Şifre sıfırlanamadı', 'error');
+                showToast(window.api.errorMessage(err, t('users_reset_toast_fail') || 'Şifre sıfırlanamadı'), 'error');
             } finally {
                 if (btn) btn.disabled = false;
             }
@@ -792,7 +793,7 @@
                 showToast('User saved');
         loadData(); // removed await for resilience
             } catch (err) { console.error(err); 
-                showToast('Failed to save user', 'error');
+                showToast(window.api.errorMessage(err, 'Failed to save user'), 'error');
              }
         });
 
