@@ -1286,11 +1286,30 @@ export const translations = {
     }
 };
 
+/** The languages the interface offers, in the order the language menus list them. */
+export const LANGUAGES = [
+    { id: 'en', name: 'English', dir: 'ltr', locale: 'en-US' },
+    { id: 'tr', name: 'Türkçe', dir: 'ltr', locale: 'tr-TR' }
+];
+
+const DEFAULT_LANGUAGE = 'en';
+
 /**
- * Gets the currently selected language from localStorage, defaults to 'tr'.
+ * Gets the selected language from localStorage: English when none is saved or the saved one is not offered.
  */
 export function getCurrentLanguage() {
-    return localStorage.getItem('itsm_lang') || 'en';
+    const saved = localStorage.getItem('itsm_lang');
+    return saved && Object.hasOwn(translations, saved) ? saved : DEFAULT_LANGUAGE;
+}
+
+/** The locale for formatting dates and numbers in the current language. */
+export function getLocale(lang = getCurrentLanguage()) {
+    return LANGUAGES.find(l => l.id === lang)?.locale ?? 'en-US';
+}
+
+/** 'rtl' for a language written right to left, such as Arabic, otherwise 'ltr'. */
+export function getTextDirection(lang = getCurrentLanguage()) {
+    return LANGUAGES.find(l => l.id === lang)?.dir ?? 'ltr';
 }
 
 /**
@@ -1304,11 +1323,11 @@ export function setLanguage(langCode) {
 }
 
 /**
- * Helper function for dynamic JS translations with fallback support
+ * Translates a key into the current language. A key the language does not have yet falls back to English,
+ * then to the given fallback, then to the key itself.
  */
 export function t(key, fallback = null) {
-    const lang = getCurrentLanguage();
-    const val = translations[lang]?.[key];
+    const val = translations[getCurrentLanguage()][key] ?? translations[DEFAULT_LANGUAGE][key];
     if (val !== undefined && val !== null) return val;
     return fallback !== null ? fallback : key;
 }
@@ -1346,13 +1365,14 @@ function applyTranslationToElement(el, dict) {
 
 export function applyTranslations() {
     const lang = getCurrentLanguage();
-    const dict = translations[lang];
-    if (!dict) return;
+    // Keys this language does not have yet show in English
+    const dict = { ...translations[DEFAULT_LANGUAGE], ...translations[lang] };
 
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => applyTranslationToElement(el, dict));
 
     document.documentElement.lang = lang;
+    document.documentElement.dir = getTextDirection(lang);
 }
 
 // Auto-run translation logic immediately when module loads

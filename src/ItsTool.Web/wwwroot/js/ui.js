@@ -1,4 +1,4 @@
-import { setLanguage, t, getCurrentLanguage } from './i18n.js';
+import { setLanguage, t, getCurrentLanguage, getLocale, LANGUAGES } from './i18n.js';
 (function() {
     try {
         const savedTheme = localStorage.getItem('itsm_theme') || 'light';
@@ -506,10 +506,7 @@ export function bindShellActions() {
         langDropdown.style.top = '40px';
         langDropdown.style.width = '120px';
         
-        const langs = [
-            { id: 'tr', name: 'Türkçe' },
-            { id: 'en', name: 'English' }
-        ];
+        const langs = LANGUAGES;
         
         const currentLang = getCurrentLanguage();
         langDropdown.innerHTML = `<div class="dropdown-header">${t('topbar_language') || 'Language'}</div><hr class="dropdown-divider">` + 
@@ -909,8 +906,7 @@ export async function openTicketPreview(ticketData, lookupData) {
     const formatDate = (d) => {
         if(!d) return '-';
         const date = new Date(d);
-        const lang = getCurrentLanguage();
-        return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString(lang === 'en' ? 'en-US' : 'tr-TR', { dateStyle: 'short', timeStyle: 'short' });
+        return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString(getLocale(), { dateStyle: 'short', timeStyle: 'short' });
     };
 
     const escapeHtml = (unsafe) => (unsafe || '').toString().replaceAll('&', "&amp;").replaceAll('<', "&lt;").replaceAll('>', "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");

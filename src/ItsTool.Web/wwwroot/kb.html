@@ -186,7 +186,7 @@
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
         import { bindShellActions, showToast, openModal, closeModal } from './js/ui.js?v=999';
-        import { t, getCurrentLanguage } from './js/i18n.js';
+        import { t, getCurrentLanguage, getLocale } from './js/i18n.js';
         injectShell();
         
         if (!window.api.token) window.location.href = '/login.html';
@@ -328,10 +328,10 @@
             viewCountSpan.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" style="fill: currentColor;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg> ${a.viewCount}`;
             meta.appendChild(viewCountSpan);
 
-            const isEn = getCurrentLanguage() === 'en';
+            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             const dateSpan = document.createElement('span');
             dateSpan.className = 'meta-item';
-            dateSpan.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" style="fill: currentColor;"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> ${new Date(a.createdAt).toLocaleString(isEn ? 'en-US' : 'tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}`;
+            dateSpan.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" style="fill: currentColor;"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> ${new Date(a.createdAt).toLocaleString(getLocale(), { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}`;
             meta.appendChild(dateSpan);
 
             if (a.authorName) {

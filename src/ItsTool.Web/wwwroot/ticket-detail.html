@@ -841,7 +841,7 @@
         import { injectShell } from './js/layout.js?v=1008';
         import { bindShellActions, showToast, openModal, closeModal, showConfirmModal, showUndoToast } from './js/ui.js?v=1008';
         import { initMentions } from './js/mentions.js?v=1008';
-        import { t, getCurrentLanguage } from './js/i18n.js?v=1008';
+        import { t, getCurrentLanguage, getLocale } from './js/i18n.js?v=1008';
         import { initAuthorizedAttachments } from './js/attachments.js?v=1008';
         injectShell();
 
@@ -1544,7 +1544,7 @@
             const slaGroup = document.getElementById('tSlaGroup');
             if (!slaGroup) return;
 
-            const isEn = getCurrentLanguage() === 'en';
+            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
 
             if (!sla) {
                 document.getElementById('tSlaOverallBadge').innerHTML = `<span class="badge" style="background:var(--bg-hover); color:var(--text-muted); font-size:10px;">${isEn ? 'Undefined' : 'Tanımsız'}</span>`;
@@ -1590,7 +1590,7 @@
             let firstRespBadge = '';
             let firstRespDateText = '—';
             if (firstRespDate) {
-                firstRespDateText = firstRespDate.toLocaleDateString(isEn ? 'en-US' : 'tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                firstRespDateText = firstRespDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 if (isFirstRespMet) {
                     firstRespBadge = `<span class="badge badge-success" style="font-size:10px;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
                 } else if (isFirstRespBreached) {
@@ -1607,7 +1607,7 @@
             let resBadge = '';
             let resDateText = '—';
             if (resDate) {
-                resDateText = resDate.toLocaleDateString(isEn ? 'en-US' : 'tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                resDateText = resDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 if (isResMet) {
                     resBadge = `<span class="badge badge-success" style="font-size:10px;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
                 } else if (isResBreached) {
@@ -1622,7 +1622,7 @@
         }
 
         function formatRemainingTime(diffMs) {
-            const isEn = getCurrentLanguage() === 'en';
+            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             if (diffMs <= 0) return isEn ? 'Expired' : 'Süre doldu';
             const mins = Math.floor(diffMs / 60000);
             if (mins <= 60) return isEn ? `${Math.max(1, mins)} min left` : `${Math.max(1, mins)} dk kaldı`;
