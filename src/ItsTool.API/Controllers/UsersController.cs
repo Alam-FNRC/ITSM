@@ -124,10 +124,18 @@ public class UsersController : ControllerBase
     [HttpPost("{id}/roles/{roleId}")]
     [Authorize(Policy = "RequirePermission:admin.manage")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AssignRole(int id, int roleId)
     {
-        await _service.AssignRoleAsync(id, roleId);
-        return NoContent();
+        try
+        {
+            await _service.AssignRoleAsync(id, roleId);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 
     [HttpDelete("{id}/roles/{roleId}")]
@@ -142,10 +150,18 @@ public class UsersController : ControllerBase
     [HttpPost("{id}/permissions/{permissionId}")]
     [Authorize(Policy = "RequirePermission:admin.manage")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> SetPermissionOverride(int id, int permissionId, [FromQuery] bool isGranted)
     {
-        await _service.AddPermissionOverrideAsync(id, permissionId, isGranted);
-        return NoContent();
+        try
+        {
+            await _service.AddPermissionOverrideAsync(id, permissionId, isGranted);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 
     [HttpDelete("{id}/permissions/{permissionId}")]

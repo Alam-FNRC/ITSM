@@ -211,6 +211,7 @@ public class DataSeeder
                 if (perm != null && !role.RolePermissions.Any(rp => rp.PermissionId == perm.Id))
                 {
                     _context.RolePermissions.Add(new RolePermission { RoleId = role.Id, PermissionId = perm.Id });
+                    _context.SystemAuditLogs.Add(SystemAudit("Role", role.Id, role.Name, "PermissionAdded", "Permissions", permKey));
                 }
             }
         }
@@ -239,7 +240,22 @@ public class DataSeeder
         _context.Users.Add(admin);
         _context.UserRoles.Add(new ItsTool.Domain.Entities.Auth.UserRole { User = admin, RoleId = superAdminRole.Id });
         await _context.SaveChangesAsync();
+        _context.SystemAuditLogs.Add(SystemAudit("User", admin.Id, admin.Username, "RoleAssigned", "Roles", RoleSuperAdmin));
+        await _context.SaveChangesAsync();
     }
+
+    // Role assignments and role permissions are kept out of the automatic audit, so the grants made here are recorded explicitly
+    private static ItsTool.Domain.Entities.SystemAuditLog SystemAudit(string entityType, int entityId, string entityName, string action, string fieldName, string newValue) => new()
+    {
+        EntityType = entityType,
+        EntityId = entityId.ToString(),
+        EntityName = entityName,
+        Action = action,
+        FieldName = fieldName,
+        OldValue = "-",
+        NewValue = newValue,
+        CreatedBy = "system"
+    };
 
     private async Task SeedProjectsAndCategoriesAsync()
     {

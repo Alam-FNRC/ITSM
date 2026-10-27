@@ -82,6 +82,11 @@ public class UserService : IUserService
         }
         
         await _repository.AddAsync(user);
+        if (defaultRole != null)
+        {
+            AuditUserChange(user, "RoleAssigned", "Roles", "-", defaultRole.Name);
+            await _context.SaveChangesAsync();
+        }
         var roleIds = user.UserRoles.Select(ur => ur.RoleId).ToArray();
         return new UserDto(user.Id, user.Username, user.Email, user.FirstName, user.LastName, user.IsActive, user.DepartmentId, roleIds, new Dictionary<int, bool>(), user.ProfilePhoto, user.GroupMemberships.Select(g => g.GroupId).ToArray(), user.CreatedAt);
     }
@@ -145,29 +150,45 @@ public class UserService : IUserService
 
     public async Task AssignRoleAsync(int userId, int roleId)
     {
+        var user = await FindUserAsync(userId);
+        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId && !r.IsDeleted)
+            ?? throw new KeyNotFoundException("Role not found");
+
         var exists = await _context.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
         if (!exists)
         {
             _context.UserRoles.Add(new UserRole { UserId = userId, RoleId = roleId });
+            AuditUserChange(user, "RoleAssigned", "Roles", "-", role.Name);
             await _context.SaveChangesAsync();
         }
     }
 
     public async Task RevokeRoleAsync(int userId, int roleId)
     {
-        var ur = await _context.UserRoles.FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
+        var ur = await _context.UserRoles
+            .Include(x => x.User)
+            .Include(x => x.Role)
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
         if (ur != null)
         {
             _context.UserRoles.Remove(ur);
+            AuditUserChange(ur.User!, "RoleRevoked", "Roles", ur.Role!.Name, "-");
             await _context.SaveChangesAsync();
         }
     }
 
     public async Task AddPermissionOverrideAsync(int userId, int permissionId, bool isGranted)
     {
+        var user = await FindUserAsync(userId);
+        var permission = await _context.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId && !p.IsDeleted)
+            ?? throw new KeyNotFoundException("Permission not found");
+
         var over = await _context.UserPermissionOverrides
             .FirstOrDefaultAsync(o => o.UserId == userId && o.PermissionId == permissionId);
-            
+        if (over != null && over.IsGranted == isGranted) return;
+
+        AuditUserChange(user, "PermissionOverrideSet", permission.Key,
+            over == null ? "-" : OverrideLabel(over.IsGranted), OverrideLabel(isGranted));
         if (over != null)
         {
             over.IsGranted = isGranted;
@@ -187,13 +208,22 @@ public class UserService : IUserService
     public async Task RemovePermissionOverrideAsync(int userId, int permissionId)
     {
         var over = await _context.UserPermissionOverrides
+            .Include(o => o.User)
+            .Include(o => o.Permission)
             .FirstOrDefaultAsync(o => o.UserId == userId && o.PermissionId == permissionId);
         if (over != null)
         {
             _context.UserPermissionOverrides.Remove(over);
+            AuditUserChange(over.User!, "PermissionOverrideRemoved", over.Permission!.Key, OverrideLabel(over.IsGranted), "-");
             await _context.SaveChangesAsync();
         }
     }
+
+    private static string OverrideLabel(bool isGranted) => isGranted ? "Granted" : "Denied";
+
+    private async Task<User> FindUserAsync(int id) =>
+        await _context.Users.FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
+            ?? throw new KeyNotFoundException("User not found");
 
     public async Task ResetPasswordAsync(int userId, string newPassword)
     {
@@ -218,38 +248,35 @@ public class UserService : IUserService
         // Whoever was using the old password is logged out
         user.SessionsRevokedAt = DateTime.UtcNow;
 
+        AuditUserChange(user, "PasswordReset", "Password", "-", "Set by administrator; must change at next login");
+    }
+
+    /// <summary>
+    /// Records a change to a user that the automatic audit leaves out: roles, permission overrides, passwords,
+    /// photos and group memberships. CreatedBy is the administrator making the change.
+    /// </summary>
+    private void AuditUserChange(User user, string action, string fieldName, string oldValue, string newValue)
+    {
         _context.SystemAuditLogs.Add(new ItsTool.Domain.Entities.SystemAuditLog
         {
             EntityType = "User",
             EntityId = user.Id.ToString(),
             EntityName = user.Username,
-            Action = "PasswordReset",
-            FieldName = "Password",
-            OldValue = "-",
-            NewValue = "Set by administrator; must change at next login",
+            Action = action,
+            FieldName = fieldName,
+            OldValue = oldValue,
+            NewValue = newValue,
             CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"
         });
     }
-    
+
     private void UpdateProfilePhoto(User user, string? newPhoto)
     {
         if (user.ProfilePhoto != newPhoto)
         {
             var oldPhotoStr = string.IsNullOrEmpty(user.ProfilePhoto) ? "None" : "Photo Present";
             var newPhotoStr = string.IsNullOrEmpty(newPhoto) ? "None" : "Photo Present";
-            var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
-            
-            _context.SystemAuditLogs.Add(new ItsTool.Domain.Entities.SystemAuditLog
-            {
-                EntityType = "User",
-                EntityId = user.Id.ToString(),
-                EntityName = user.Username,
-                Action = "ProfilePhotoUpdated",
-                FieldName = "ProfilePhoto",
-                OldValue = oldPhotoStr,
-                NewValue = newPhotoStr,
-                CreatedBy = currentUserId
-            });
+            AuditUserChange(user, "ProfilePhotoUpdated", "ProfilePhoto", oldPhotoStr, newPhotoStr);
             user.ProfilePhoto = newPhoto;
         }
     }
@@ -268,19 +295,9 @@ public class UserService : IUserService
             var oldGroupNames = string.Join(", ", existingGroupIds.Select(id => groups.TryGetValue(id, out var name) ? name : id.ToString()));
             var newGroupNames = string.Join(", ", newGroupIds.Select(id => groups.TryGetValue(id, out var name) ? name : id.ToString()));
 
-            var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
-
-            _context.SystemAuditLogs.Add(new ItsTool.Domain.Entities.SystemAuditLog
-            {
-                EntityType = "User",
-                EntityId = user.Id.ToString(),
-                EntityName = user.Username,
-                Action = "Updated",
-                FieldName = "GroupMemberships",
-                OldValue = string.IsNullOrEmpty(oldGroupNames) ? "-" : oldGroupNames,
-                NewValue = string.IsNullOrEmpty(newGroupNames) ? "-" : newGroupNames,
-                CreatedBy = currentUserId
-            });
+            AuditUserChange(user, "Updated", "GroupMemberships",
+                string.IsNullOrEmpty(oldGroupNames) ? "-" : oldGroupNames,
+                string.IsNullOrEmpty(newGroupNames) ? "-" : newGroupNames);
         }
 
         var toRemove = user.GroupMemberships.Where(g => !newGroupIds.Contains(g.GroupId)).ToList();

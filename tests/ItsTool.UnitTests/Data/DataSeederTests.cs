@@ -76,6 +76,23 @@ public class DataSeederTests : TestBase
     }
 
     [Fact]
+    public async Task SeedAsync_AuditsTheRolesAndPermissionsItGrants()
+    {
+        await new DataSeeder(_context, FirstAdmin).SeedAsync();
+
+        var admin = await _context.Users.SingleAsync();
+        var logs = await _context.SystemAuditLogs.ToListAsync();
+        Assert.Contains(logs, l => l.EntityType == "User" && l.EntityId == admin.Id.ToString() &&
+                                   l.Action == "RoleAssigned" && l.NewValue == "SuperAdmin" && l.CreatedBy == "system");
+        Assert.Equal(await _context.RolePermissions.CountAsync(),
+            logs.Count(l => l.EntityType == "Role" && l.Action == "PermissionAdded"));
+
+        // A second start grants nothing new, so it records nothing new
+        await new DataSeeder(_context, FirstAdmin).SeedAsync();
+        Assert.Equal(logs.Count, await _context.SystemAuditLogs.CountAsync());
+    }
+
+    [Fact]
     public async Task SeedAsync_NeverResetsPasswordsOrAddsAnAdministratorOnceUsersExist()
     {
         await new DataSeeder(_context, FirstAdmin).SeedAsync();

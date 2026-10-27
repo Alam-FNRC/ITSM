@@ -97,8 +97,10 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
         if (name == "Ticket" ||
             name == "TicketSla" ||
             name == "ProjectSequence" ||
+            // Access changes are audited by UserService and RoleService, with readable names instead of ids
             name == "RolePermission" ||
             name == "UserRole" ||
+            name == "UserPermissionOverride" ||
             name == "GroupRole" ||
             name == "WorkflowTransition" ||
             name == "BusinessHour" ||

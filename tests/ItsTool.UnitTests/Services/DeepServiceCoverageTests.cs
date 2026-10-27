@@ -231,6 +231,7 @@ public class DeepServiceCoverageTests
         // Roles & Permissions overrides
         var role = new Role { Id = 3, Name = "Manager" };
         db.Roles.Add(role);
+        db.Permissions.Add(new Permission { Id = 5, Key = "ticket.view", Name = "View tickets" });
         await db.SaveChangesAsync();
 
         await service.AssignRoleAsync(10, 3);
