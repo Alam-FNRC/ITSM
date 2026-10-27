@@ -1,5 +1,7 @@
 // i18n.js - Internationalization Module
 
+import { ar } from './i18n-ar.js';
+
 export const translations = {
     "en": {
         // Sidebar Navigation
@@ -639,7 +641,49 @@ export const translations = {
         "sla_on_hold": "On Hold",
         "ticket_btn_delete": "Delete",
         "ticket_color": "Ticket Color",
-        "ticket_save_color": "Save Color"
+        "ticket_save_color": "Save Color",
+        "dash_title": "Dashboard",
+        "btn_close": "Close",
+        "common_err_load": "An error occurred while loading the page.",
+        "attachment_download_failed": "The attachment could not be downloaded.",
+        "kb_btn_review_selection": "Leave Feedback / Request Revision",
+        "kb_confirm_del_title": "Delete Article",
+        "kb_edit_article": "Edit Article",
+        "kb_lbl_action": "Action",
+        "kb_lbl_manager_feedback": "Manager Feedback / Revision Request",
+        "kbd_or": "or",
+        "td_assign_me": "Assign to Me",
+        "ticket_lbl_start_date": "Estimated Start Date",
+        "ticket_lbl_end_date": "Estimated End Date",
+        "users_btn_close": "Close",
+        "workload_search": "Search employee or department...",
+        "login_welcome": "Welcome Back",
+        "login_username": "Username or Email",
+        "login_password": "Password",
+        "login_signin": "Sign In",
+        "login_forgot": "Forgot your password?",
+        "login_failed": "Login failed. Please check your credentials.",
+        "login_force_title": "Set Your New Password",
+        "login_force_alert_title": "Temporary Password — Set Your Password",
+        "login_force_alert_desc": "You logged in with a temporary password. For security, please set your new permanent password.",
+        "login_force_new_pwd": "New Password",
+        "login_force_new_pwd_ph": "Enter your new password",
+        "login_force_confirm_pwd": "Confirm New Password",
+        "login_force_confirm_pwd_ph": "Enter your new password again",
+        "login_force_min_chars": "Must be at least 12 characters.",
+        "login_force_btn": "Save Password & Sign In",
+        "login_force_mismatch": "Passwords do not match.",
+        "login_force_empty": "Please fill in both password fields.",
+        "login_force_short": "Password must be at least 12 characters.",
+        "login_force_success": "Password set successfully! Redirecting...",
+        "login_force_saving": "Saving...",
+        "login_force_error": "Error updating password.",
+        "login_forgot_title": "Forgotten Password",
+        "login_forgot_policy_title": "Security policy:",
+        "login_forgot_policy_desc": "If you have forgotten your password or your account is locked, contact the IT Service Desk.",
+        "login_forgot_admin_desc": "The service desk will verify your identity, set a temporary password for you and share it through a secure channel. You will choose your own password when you next log in.",
+        "login_forgot_ok": "OK",
+        "login_toggle_password": "Show/Hide Password"
     },
     "tr": {
         // Sidebar Navigation
@@ -1282,15 +1326,79 @@ export const translations = {
         "sla_on_hold": "Beklemede",
         "ticket_btn_delete": "Sil",
         "ticket_color": "Bilet Rengi",
-        "ticket_save_color": "Rengi Kaydet"
-    }
+        "ticket_save_color": "Rengi Kaydet",
+        "dash_title": "Gösterge Paneli",
+        "btn_close": "Kapat",
+        "common_err_load": "Sayfa yüklenirken hata oluştu.",
+        "attachment_download_failed": "Ek dosya indirilemedi.",
+        "kb_btn_review_selection": "Yorum Bırak / Revize İste",
+        "kb_confirm_del_title": "Makaleyi Sil",
+        "kb_edit_article": "Makaleyi Düzenle",
+        "kb_lbl_action": "İşlem",
+        "kb_lbl_manager_feedback": "Yönetici Geri Bildirimi / Revize Talebi",
+        "kbd_or": "veya",
+        "td_assign_me": "Bana Ata",
+        "ticket_lbl_start_date": "Tahmini Başlangıç Tarihi",
+        "ticket_lbl_end_date": "Tahmini Bitiş Tarihi",
+        "users_btn_close": "Kapat",
+        "workload_search": "Çalışan veya departman ara...",
+        "login_welcome": "Tekrar Hoşgeldiniz",
+        "login_username": "Kullanıcı Adı veya E-posta",
+        "login_password": "Şifre",
+        "login_signin": "Giriş Yap",
+        "login_forgot": "Şifremi Unuttum?",
+        "login_failed": "Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz.",
+        "login_force_title": "Yeni Şifrenizi Belirleyin",
+        "login_force_alert_title": "Geçici Şifre — Yeni Şifrenizi Belirleyin",
+        "login_force_alert_desc": "Geçici şifrenizle giriş yaptınız. Güvenliğiniz için lütfen yeni ve kalıcı bir şifre belirleyiniz.",
+        "login_force_new_pwd": "Yeni Şifre",
+        "login_force_new_pwd_ph": "Yeni şifrenizi girin",
+        "login_force_confirm_pwd": "Yeni Şifre (Tekrar)",
+        "login_force_confirm_pwd_ph": "Yeni şifrenizi tekrar girin",
+        "login_force_min_chars": "En az 12 karakter olmalıdır.",
+        "login_force_btn": "Şifremi Belirle ve Giriş Yap",
+        "login_force_mismatch": "Girilen şifreler birbiriyle eşleşmiyor.",
+        "login_force_empty": "Lütfen tüm şifre alanlarını doldurunuz.",
+        "login_force_short": "Yeni şifre en az 12 karakter olmalıdır.",
+        "login_force_success": "Şifreniz başarıyla belirlendi! Yönlendiriliyorsunuz...",
+        "login_force_saving": "Kaydediliyor...",
+        "login_force_error": "Şifre güncellenirken bir hata oluştu.",
+        "login_forgot_title": "Parola Sıfırlama & Kurtarma",
+        "login_forgot_policy_title": "Kurumsal Güvenlik Politikası:",
+        "login_forgot_policy_desc": "Hesabınızın parolasını unuttuysanız veya erişiminiz kilitlendiyse BT Hizmet Masası ile iletişime geçiniz.",
+        "login_forgot_admin_desc": "Hizmet masası kimliğinizi doğrulayarak size geçici bir şifre tanımlayacak ve güvenli bir kanal ile sizinle paylaşacaktır. Bir sonraki girişinizde kendi şifrenizi belirleyeceksiniz.",
+        "login_forgot_ok": "Tamam",
+        "login_toggle_password": "Şifreyi Göster/Gizle"
+    },
+    "ar": ar
 };
 
+/** The languages the interface offers, in the order the language menus list them. */
+export const LANGUAGES = [
+    { id: 'en', name: 'English', dir: 'ltr', locale: 'en-US' },
+    // Latin digits, as UAE government services use
+    { id: 'ar', name: 'العربية', dir: 'rtl', locale: 'ar-AE-u-nu-latn' },
+    { id: 'tr', name: 'Türkçe', dir: 'ltr', locale: 'tr-TR' }
+];
+
+const DEFAULT_LANGUAGE = 'en';
+
 /**
- * Gets the currently selected language from localStorage, defaults to 'tr'.
+ * Gets the selected language from localStorage: English when none is saved or the saved one is not offered.
  */
 export function getCurrentLanguage() {
-    return localStorage.getItem('itsm_lang') || 'en';
+    const saved = localStorage.getItem('itsm_lang');
+    return saved && Object.hasOwn(translations, saved) ? saved : DEFAULT_LANGUAGE;
+}
+
+/** The locale for formatting dates and numbers in the current language. */
+export function getLocale(lang = getCurrentLanguage()) {
+    return LANGUAGES.find(l => l.id === lang)?.locale ?? 'en-US';
+}
+
+/** 'rtl' for a language written right to left, such as Arabic, otherwise 'ltr'. */
+export function getTextDirection(lang = getCurrentLanguage()) {
+    return LANGUAGES.find(l => l.id === lang)?.dir ?? 'ltr';
 }
 
 /**
@@ -1304,11 +1412,11 @@ export function setLanguage(langCode) {
 }
 
 /**
- * Helper function for dynamic JS translations with fallback support
+ * Translates a key into the current language. A key the language does not have yet falls back to English,
+ * then to the given fallback, then to the key itself.
  */
 export function t(key, fallback = null) {
-    const lang = getCurrentLanguage();
-    const val = translations[lang]?.[key];
+    const val = translations[getCurrentLanguage()][key] ?? translations[DEFAULT_LANGUAGE][key];
     if (val !== undefined && val !== null) return val;
     return fallback !== null ? fallback : key;
 }
@@ -1323,6 +1431,10 @@ function applyTranslationToElement(el, dict) {
     const target = el.dataset.i18nTarget;
     if (target === 'placeholder') {
         el.placeholder = dict[key];
+        return;
+    }
+    if (target === 'title') {
+        el.title = dict[key];
         return;
     }
 
@@ -1346,13 +1458,14 @@ function applyTranslationToElement(el, dict) {
 
 export function applyTranslations() {
     const lang = getCurrentLanguage();
-    const dict = translations[lang];
-    if (!dict) return;
+    // Keys this language does not have yet show in English
+    const dict = { ...translations[DEFAULT_LANGUAGE], ...translations[lang] };
 
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => applyTranslationToElement(el, dict));
 
     document.documentElement.lang = lang;
+    document.documentElement.dir = getTextDirection(lang);
 }
 
 // Auto-run translation logic immediately when module loads

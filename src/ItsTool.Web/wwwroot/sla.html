@@ -521,7 +521,7 @@
 
         function formatDuration(minutes) {
             if (!minutes && minutes !== 0) return '—';
-            const isEn = getCurrentLanguage() === 'en';
+            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             if (minutes < 60) {
                 return `${minutes} ${isEn ? 'min' : 'dk'}`;
             }

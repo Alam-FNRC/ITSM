@@ -148,7 +148,7 @@
         import './js/api.js?v=1006';
         import { injectShell } from './js/layout.js?v=1006';
         import { bindShellActions, showToast, showConfirmModal, showUndoToast } from './js/ui.js?v=1006';
-        import { t } from './js/i18n.js?v=1006';
+        import { t, getLocale } from './js/i18n.js?v=1006';
         injectShell();
         
         if (!window.api.token) window.location.href = '/login.html';
@@ -380,7 +380,7 @@
             // Active ticket:
             // 1. Resolution breached:
             if (isResBreached) {
-                const resDateStr = resDate ? resDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                const resDateStr = resDate ? resDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
                 return `<div>
                     <span class="sla-badge" style="background:#FEE2E2; color:#B91C1C; border:1px solid #FCA5A5;">${t('sla_res_breached', 'Çözüm Aşıldı')}</span>
                     <div class="sla-subtext" style="color:var(--danger); font-weight:500;">${t('sla_target_prefix', 'Hedef:')} ${resDateStr}</div>
@@ -391,7 +391,7 @@
             if (isFirstRespBreached) {
                 const resDiffMs = resDate ? resDate - now : 0;
                 const resRemainStr = formatRemaining(resDiffMs);
-                const resDateStr = resDate ? resDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                const resDateStr = resDate ? resDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
                 return `<div>
                     <span class="sla-badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D;">${t('sla_first_resp_breached', 'İlk Yanıt Aşıldı')}</span>
                     <div class="sla-subtext" title="${t('sla_target_prefix', 'Hedef:')} ${resDateStr}">${t('sla_resolution_prefix', 'Çözüm:')} ${resRemainStr}</div>
@@ -402,7 +402,7 @@
             if (resDate) {
                 const diffMs = resDate - now;
                 const diffMins = Math.floor(diffMs / 60000);
-                const resDateStr = resDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                const resDateStr = resDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
                 let badgeStyle = '';
                 let badgeText = '';

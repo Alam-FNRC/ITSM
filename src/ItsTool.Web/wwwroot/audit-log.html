@@ -248,7 +248,7 @@
 
         function formatAuditFieldName(name) {
             if (!name || name === '-') return '-';
-            const isEn = getCurrentLanguage() === 'en';
+            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             if (isEn) {
                 const enDict = {
                     'Ticket': 'New Ticket',
@@ -337,7 +337,7 @@
             let mappedOld = a.oldValue;
             let mappedNew = a.newValue;
             
-            const isEn = getCurrentLanguage() === 'en';
+            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             if (a.fieldName === 'StatusId') {
                 const sName = lookup.statuses?.find(s => String(s.id) === a.oldValue)?.name;
                 mappedOld = sName ? (t('db_' + sName.toLowerCase().replaceAll(' ', '_')) || sName) : a.oldValue;
@@ -436,7 +436,7 @@
 
         function buildAuditDetailSentence(a, creatorName, entityNameText, entityType, mappedOld, mappedNew) {
             const act = (a.action || '').toUpperCase();
-            const isEn = getCurrentLanguage() === 'en';
+            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
 
             if (act === 'DELETED') {
                 if (isEn) {
