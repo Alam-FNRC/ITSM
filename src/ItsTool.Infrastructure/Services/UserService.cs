@@ -49,6 +49,9 @@ public class UserService : IUserService
 
     public async Task<UserDto> CreateAsync(CreateUserDto dto)
     {
+        if (await _context.Users.AnyAsync(u => !u.IsDeleted && (u.Username == dto.Username || u.Email == dto.Email)))
+            throw new InvalidOperationException("A user with this username or e-mail already exists.");
+
         var user = new User
         {
             Username = dto.Username,
@@ -83,7 +86,10 @@ public class UserService : IUserService
     {
         var user = await _context.Users.Include(u => u.GroupMemberships).FirstOrDefaultAsync(u => u.Id == id);
         if (user == null) throw new KeyNotFoundException("User not found");
-        
+
+        if (await _context.Users.AnyAsync(u => u.Id != id && !u.IsDeleted && u.Email == dto.Email))
+            throw new InvalidOperationException("Another user already has this e-mail address.");
+
         user.Email = dto.Email;
         user.FirstName = dto.FirstName;
         user.LastName = dto.LastName;

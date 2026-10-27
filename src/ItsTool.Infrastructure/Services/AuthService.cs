@@ -27,11 +27,15 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
+        if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrEmpty(request.Password))
+        {
+            throw new UnauthorizedAccessException("Invalid credentials.");
+        }
 
+        // Exact match: LIKE treated % and _ in the username as wildcards (review A9)
         var user = await _context.Users
-            .FirstOrDefaultAsync(u => 
-                (EF.Functions.Like(u.Username, request.Username) || 
-                 EF.Functions.Like(u.Email, request.Username)) && 
+            .FirstOrDefaultAsync(u =>
+                (u.Username == request.Username || u.Email == request.Username) &&
                 u.IsActive && !u.IsDeleted);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
