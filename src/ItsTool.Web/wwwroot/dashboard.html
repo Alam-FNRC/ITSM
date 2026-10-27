@@ -131,7 +131,7 @@
         const createKpiCard = (title, val, color, iconPath) => `
                     <div class="card" 
                          role="button" tabindex="0" 
-                         style="display: flex; align-items: center; gap: 12px; height: 96px; padding: 16px; border-left: 4px solid var(--${color}); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                         style="display: flex; align-items: center; gap: 12px; height: 96px; padding: 16px; border-inline-start: 4px solid var(--${color}); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
                          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)'"
                          onmouseout="this.style.transform='none'; this.style.boxShadow='var(--shadow-sm)'"
                          onclick="window.openDrillDown('${title}')"
