@@ -244,6 +244,8 @@ public class AuthService : IAuthService
         user.MustChangePassword = false;
         user.FailedLoginCount = 0;
         user.UpdatedAt = DateTime.UtcNow;
+        // Ends every other session; the token returned below is issued after this moment
+        user.SessionsRevokedAt = DateTime.UtcNow;
         RecordAuthEvent(AuthEventTypes.PasswordChanged, user.Username, user.Id);
 
         await _context.SaveChangesAsync();

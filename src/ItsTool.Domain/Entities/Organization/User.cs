@@ -13,6 +13,8 @@ public class User : BaseEntity {
     public int FailedLoginCount { get; set; }
     /// <summary>Logins are refused until this time (UTC) after too many wrong passwords.</summary>
     public System.DateTime? LockoutEndsAt { get; set; }
+    /// <summary>Login tokens issued before this time (UTC) are refused, e.g. after a password change.</summary>
+    public System.DateTime? SessionsRevokedAt { get; set; }
     public int? DepartmentId { get; set; }
     public virtual Department? Department { get; set; }
     public virtual ICollection<GroupMember> GroupMemberships { get; set; } = new List<GroupMember>();

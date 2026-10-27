@@ -215,6 +215,8 @@ public class UserService : IUserService
         user.MustChangePassword = true;
         user.FailedLoginCount = 0;
         user.LockoutEndsAt = null;
+        // Whoever was using the old password is logged out
+        user.SessionsRevokedAt = DateTime.UtcNow;
 
         _context.SystemAuditLogs.Add(new ItsTool.Domain.Entities.SystemAuditLog
         {
