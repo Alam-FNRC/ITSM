@@ -27,6 +27,7 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
 
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
+        RejectAuditRecordChanges(eventData.Context);
         if (!_isSavingAuditLogs)
         {
             GenerateAuditLogs(eventData.Context);
@@ -36,11 +37,27 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
+        RejectAuditRecordChanges(eventData.Context);
         if (!_isSavingAuditLogs)
         {
             GenerateAuditLogs(eventData.Context);
         }
         return base.SavingChangesAsync(eventData, result, cancellationToken);
+    }
+
+    /// <summary>
+    /// Audit records are append-only: the system audit log, ticket history and login events can be added but
+    /// never changed or deleted, so a save that tries is refused as a whole.
+    /// </summary>
+    internal static void RejectAuditRecordChanges(DbContext? context)
+    {
+        var changed = context?.ChangeTracker.Entries()
+            .FirstOrDefault(e => e.Entity is SystemAuditLog or TicketHistory or AuthEvent &&
+                                 e.State is EntityState.Modified or EntityState.Deleted);
+        if (changed != null)
+        {
+            throw new InvalidOperationException($"{changed.Entity.GetType().Name} records are append-only and cannot be changed or deleted.");
+        }
     }
 
     public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
@@ -97,8 +114,10 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
         if (name == "Ticket" ||
             name == "TicketSla" ||
             name == "ProjectSequence" ||
+            // Access changes are audited by UserService and RoleService, with readable names instead of ids
             name == "RolePermission" ||
             name == "UserRole" ||
+            name == "UserPermissionOverride" ||
             name == "GroupRole" ||
             name == "WorkflowTransition" ||
             name == "BusinessHour" ||

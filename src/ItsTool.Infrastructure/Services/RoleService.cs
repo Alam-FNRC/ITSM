@@ -1,7 +1,9 @@
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
+using ItsTool.Domain.Entities;
 using ItsTool.Domain.Entities.Auth;
 using ItsTool.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItsTool.Infrastructure.Services;
@@ -10,11 +12,13 @@ public class RoleService : IRoleService
 {
     private readonly IRepository<Role> _repository;
     private readonly ItsToolDbContext _context;
+    private readonly IHttpContextAccessor? _httpContextAccessor;
 
-    public RoleService(IRepository<Role> repository, ItsToolDbContext context)
+    public RoleService(IRepository<Role> repository, ItsToolDbContext context, IHttpContextAccessor? httpContextAccessor = null)
     {
         _repository = repository;
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<IEnumerable<RoleDto>> GetAllAsync()
@@ -57,14 +61,14 @@ public class RoleService : IRoleService
         
         if (dto.Permissions != null && dto.Permissions.Length > 0)
         {
-            var pIds = await _context.Permissions
+            var perms = await _context.Permissions
                 .Where(p => dto.Permissions.Contains(p.Key))
-                .Select(p => p.Id)
                 .ToListAsync();
-                
-            foreach (var pId in pIds)
+
+            foreach (var p in perms)
             {
-                _context.RolePermissions.Add(new RolePermission { RoleId = r.Id, PermissionId = pId });
+                _context.RolePermissions.Add(new RolePermission { RoleId = r.Id, PermissionId = p.Id });
+                AuditPermissionChange(r, "PermissionAdded", "-", p.Key);
             }
             await _context.SaveChangesAsync();
         }
@@ -95,16 +99,18 @@ public class RoleService : IRoleService
             foreach (var rm in toRemove)
             {
                 _context.RolePermissions.Remove(rm);
+                AuditPermissionChange(r, "PermissionRemoved", rm.Permission!.Key, "-");
             }
-            
+
             // Add new permissions
             var currentKeys = r.RolePermissions.Select(rp => rp.Permission!.Key).ToList();
             var newKeys = targetKeys.Except(currentKeys).ToList();
-            var newIds = dbPerms.Where(p => newKeys.Contains(p.Key)).Select(p => p.Id).ToList();
-            
-            foreach (var nId in newIds)
+            var newPerms = dbPerms.Where(p => newKeys.Contains(p.Key)).ToList();
+
+            foreach (var p in newPerms)
             {
-                _context.RolePermissions.Add(new RolePermission { RoleId = r.Id, PermissionId = nId });
+                _context.RolePermissions.Add(new RolePermission { RoleId = r.Id, PermissionId = p.Id });
+                AuditPermissionChange(r, "PermissionAdded", "-", p.Key);
             }
         }
         
@@ -122,18 +128,41 @@ public class RoleService : IRoleService
         var exists = await _context.RolePermissions.AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId);
         if (!exists)
         {
+            var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == roleId) ?? throw new KeyNotFoundException("Role not found");
+            var permission = await _context.Permissions.FirstOrDefaultAsync(x => x.Id == permissionId) ?? throw new KeyNotFoundException("Permission not found");
             _context.RolePermissions.Add(new RolePermission { RoleId = roleId, PermissionId = permissionId });
+            AuditPermissionChange(role, "PermissionAdded", "-", permission.Key);
             await _context.SaveChangesAsync();
         }
     }
 
     public async Task RevokePermissionAsync(int roleId, int permissionId)
     {
-        var rp = await _context.RolePermissions.FirstOrDefaultAsync(x => x.RoleId == roleId && x.PermissionId == permissionId);
+        var rp = await _context.RolePermissions
+            .Include(x => x.Role)
+            .Include(x => x.Permission)
+            .FirstOrDefaultAsync(x => x.RoleId == roleId && x.PermissionId == permissionId);
         if (rp != null)
         {
             _context.RolePermissions.Remove(rp);
+            AuditPermissionChange(rp.Role!, "PermissionRemoved", rp.Permission!.Key, "-");
             await _context.SaveChangesAsync();
         }
+    }
+
+    /// <summary>Role permissions are left out of the automatic audit, so each grant and removal is recorded here.</summary>
+    private void AuditPermissionChange(Role role, string action, string oldValue, string newValue)
+    {
+        _context.SystemAuditLogs.Add(new SystemAuditLog
+        {
+            EntityType = "Role",
+            EntityId = role.Id.ToString(),
+            EntityName = role.Name,
+            Action = action,
+            FieldName = "Permissions",
+            OldValue = oldValue,
+            NewValue = newValue,
+            CreatedBy = _httpContextAccessor?.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"
+        });
     }
 }
