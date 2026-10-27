@@ -107,14 +107,6 @@
             <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: var(--spacing-md); padding: 10px;" id="lbl_signin">Sign In</button>
             <div id="errorMessage" class="error"></div>
             
-            <div id="demoHint" style="margin-top: 24px; padding: 12px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 8px; text-align: left; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
-                <strong style="color: var(--text-main); display: block; margin-bottom: 8px;">Demo Accounts (Pwd: *123!)</strong>
-                <button type="button" class="btn-link" onclick="fillLogin('admin')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">admin</button> : SuperAdmin<br>
-                <button type="button" class="btn-link" onclick="fillLogin('manager')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">manager</button> : Manager<br>
-                <button type="button" class="btn-link" onclick="fillLogin('agent1')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">agent1</button> : Agent<br>
-                <button type="button" class="btn-link" onclick="fillLogin('agent2')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">agent2</button> : Agent (+ticket.close)<br>
-                <button type="button" class="btn-link" onclick="fillLogin('user1')" style="background:none; border:none; padding:0; font:inherit; cursor:pointer; color:var(--primary); text-decoration:none; font-weight:500;">user1</button> : EndUser
-            </div>
         </form>
 
         <!-- Force Password Change Container -->
@@ -157,13 +149,6 @@
             </form>
         </div>
 
-    <script>
-        function fillLogin(username) {
-            document.getElementById("username").value = username;
-            document.getElementById("password").value = "*123!";
-            document.getElementById("loginForm").dispatchEvent(new Event("submit"));
-        }
-    </script>
     </div>
 
     <script type="module">
@@ -314,8 +299,6 @@
                     const lang = localStorage.getItem('itsm_lang') || 'tr';
                     const t = translations[lang] || translations['tr'];
                     document.getElementById('loginForm').style.display = 'none';
-                    const demoHint = document.getElementById('demoHint');
-                    if (demoHint) demoHint.style.display = 'none';
                     document.getElementById('lbl_welcome').textContent = t.forceTitle;
                     document.getElementById('forcePasswordContainer').style.display = 'block';
                     document.getElementById('forceNewPassword').focus();
