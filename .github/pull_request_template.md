@@ -1,19 +1,13 @@
-## Description
-Please include a summary of the change, relevant motivation, and context. List any dependencies that are required for this change.
+## What and why
+What this change does and why it is needed.
 
 Fixes #(issue)
 
-## Type of Change
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Performance improvement / Code refactoring
-
-## Architecture & Quality Checklist
-- [ ] My code adheres to the Clean Architecture boundaries (Domain -> Application -> Infrastructure -> Web/API)
-- [ ] I have added unit tests covering the new functionality
-- [ ] All 500+ unit tests pass locally (`dotnet test`)
-- [ ] Code coverage remains >= 95%
-- [ ] No hardcoded secrets or environment credentials are committed
-- [ ] I have updated the documentation accordingly if necessary
+## Checklist
+- [ ] Every new or changed endpoint needs a login and a permission or ownership check
+- [ ] Access-control changes have integration tests (`tests/ItsTool.IntegrationTests/Api/`)
+- [ ] Changes to roles, permissions, group membership, logins or ticket data are audit-logged
+- [ ] Model changes come with a migration that works on a database that already holds data
+- [ ] No secrets, passwords or default accounts are committed
+- [ ] `dotnet test ItsTool.sln` and `node --test tests/frontend/*.test.js` pass
+- [ ] Changes to scope, data or security have William's approval

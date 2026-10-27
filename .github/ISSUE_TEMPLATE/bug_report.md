@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve dotnet-enterprise-itsm
+about: Report something that does not work as expected
 title: '[BUG] <concise description>'
 labels: 'bug'
 assignees: ''
@@ -19,11 +19,9 @@ A clear and concise description of what the bug is.
 A clear and concise description of what you expected to happen.
 
 ## Environment Information
-- **OS:** (e.g. Ubuntu 22.04 / Windows 11 / macOS)
-- **.NET SDK Version:** (e.g. 8.0.x)
-- **Database:** PostgreSQL (Version, e.g. 16)
-- **Deployment:** (Docker Compose / Local CLI)
-- **Browser:** (e.g. Chrome, Firefox)
+- **Where:** (local development / staging / production)
+- **Commit or version:** (e.g. `git rev-parse --short HEAD`)
+- **Browser:** (e.g. Edge, Chrome)
 
 ## Additional Context & Logs
 Add any relevant application logs, screenshots, or stack traces here.

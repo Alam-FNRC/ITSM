@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea or feature for dotnet-enterprise-itsm
+about: Suggest a feature or an improvement
 title: '[FEATURE] <concise description>'
 labels: 'enhancement'
 assignees: ''
@@ -9,8 +9,8 @@ assignees: ''
 ## Feature Summary
 A clear and concise description of the feature or enhancement you would like to see.
 
-## Business & ITIL Value Proposition
-How does this feature align with ITIL 4 service management practices, or what problem does it solve for teams?
+## Problem and who has it
+What problem this solves, and for whom (end users, agents, managers, auditors).
 
 ## Proposed Solution / Design
 A description of how you envision this working from an architectural, API, or UI perspective.

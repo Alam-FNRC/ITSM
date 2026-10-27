@@ -1,43 +1,44 @@
-# Contributing to dotnet-enterprise-itsm
+# Contributing
 
-Thank you for your interest in contributing to **dotnet-enterprise-itsm**! We welcome contributions from developers, DevOps engineers, and ITIL practitioners.
+This is FNRC's internal IT service management platform. This page covers how changes are made and checked. To set up a machine, see [README.md](README.md). For the architecture and the full rules, see [CLAUDE.md](CLAUDE.md).
 
----
+## Rules every change follows
 
-## Code of Conduct & Principles
+- **Security first.** Every endpoint needs a login and a permission or ownership check. An endpoint without one needs a written reason.
+- **No secrets in the repo.** Keep passwords, keys and connection strings out of `appsettings*.json` and `docker-compose.yml`. Use user-secrets locally and environment variables elsewhere. Never seed accounts or default passwords.
+- **Audit access and data changes.** Changes to roles, permissions, group membership, logins and ticket data must be audit-logged. Audit rows are append-only; the application refuses to change or delete them.
+- **Tests come with the change.** Every feature has tests. Access-control rules need integration tests that run the real API (see below).
+- **One concern per commit.** Write the subject line in the imperative ("Apply deny permission overrides"). Use the body to explain why the change is needed.
+- **No copied code from iTop (AGPL) or GLPI (GPL).** Use them only for ideas and data models. Never copy, translate or paraphrase their source code.
+- **Changes to scope, data or security need William's decision.**
 
-1. **Be Respectful:** Treat fellow contributors with kindness, empathy, and professionalism.
-2. **Enterprise Standards:** Maintain architectural purity (Clean / Onion Architecture), strict typing, and separation of concerns.
-3. **Quality Gate:** All contributions must pass CI with >= 95% test coverage.
+## Branches
 
----
+- Small, self-contained fixes can go straight to `main`.
+- Anything larger goes on a branch (`feature/...` or `fix/...`): security changes, schema changes, or work that touches several areas. Merge it with `git merge --no-ff` once all tests pass, then delete the branch.
+- Commit with your FNRC name and e-mail address, not a personal Git identity.
 
-## How to Contribute
+## Running the tests
 
-### 1. Reporting Bugs
-- Check the [existing issues](https://github.com/Berkaybbayramoglu/dotnet-enterprise-itsm/issues) to ensure the bug hasn't already been reported.
-- If not, create a new issue using our **Bug Report** template. Include your operating system, .NET SDK version, and steps to reproduce.
+```bash
+dotnet test ItsTool.sln                  # unit tests and integration tests
+node --test tests/frontend/*.test.js     # front-end tests
+```
 
-### 2. Suggesting Enhancements
-- Open an issue using the **Feature Request** template.
-- Articulate the business problem and how the feature aligns with ITIL 4 service management practices.
+- **Unit tests** (`tests/ItsTool.UnitTests`) use the EF Core in-memory provider. That provider ignores constraints and hides SQL translation errors, so any change to a query also needs an integration test.
+- **Integration tests** (`tests/ItsTool.IntegrationTests`) run against SQL Server. Each run creates and drops its own `FnrcItsm_Test_*` database on LocalDB. To use another server, set `ITSM_TEST_SQL`. For access-control tests, use `ApiFixture` in `Api/`: `CreateUserAsync(permissions)` and `LoginAsync(user)` return a client that holds a real token.
+- **CI** (`.github/workflows/ci.yml`) runs all three suites on every push and pull request to `main`. It starts its own SQL Server for the integration tests.
 
-### 3. Submitting Pull Requests
-1. **Fork & Branch:** Create a branch for your fix or feature (`git checkout -b feat/my-feature` or `fix/my-fix`).
-2. **Coding Guidelines:**
-   - Follow Clean Architecture: `Domain` has zero external dependencies; business logic resides in `Application`; EF Core and external adapters live in `Infrastructure`.
-   - Adhere to the project's `.editorconfig` rules.
-3. **Testing:**
-   - Add unit tests under `tests/ItsTool.UnitTests/` for any new service, validator, or handler.
-   - Run tests locally:
-     ```bash
-     dotnet test ItsTool.sln --configuration Release
-     ```
-   - Ensure all tests pass and coverage remains above 95%.
-4. **Commit Format:** Use [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `feat: ...`, `fix: ...`, `docs: ...`, `test: ...`).
-5. **Open a PR:** Submit your pull request targeting `main`. Fill in the PR template details.
+## Database changes
 
----
+Add a migration for every model change:
 
-## Need Help?
-Feel free to open an issue or start a discussion for questions regarding architecture, local setup, or design choices.
+```bash
+dotnet ef migrations add <Name> --project src/ItsTool.Infrastructure --startup-project src/ItsTool.API
+```
+
+A test fails if the model and the migrations drift apart. Migrations run when the API starts. They must work on a database that already holds data, so check the data that is there first (for example, duplicates before adding a unique index).
+
+## Reporting problems
+
+Open an issue in [Alam-FNRC/ITSM](https://github.com/Alam-FNRC/ITSM/issues). For a bug, include the steps to reproduce it and what you expected to happen. Report security problems directly to the IT team, not in an issue.
