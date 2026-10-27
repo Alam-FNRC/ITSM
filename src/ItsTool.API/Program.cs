@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.SignalR;
 using ItsTool.API.Hubs;
 using System.Text;
+using System.Threading.RateLimiting;
+using ItsTool.API.Controllers;
 using Microsoft.OpenApi.Models;
 
 var currentDir = Directory.GetCurrentDirectory();
@@ -184,6 +186,17 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireKbManage", policy => policy.RequireClaim("permission", "kb.manage"));
 });
 
+// Login attempts per client IP address per minute (review A9). Behind a reverse proxy, set up forwarded
+// headers first, or every user shares the proxy's address and so one limit.
+var loginAttemptsPerMinute = builder.Configuration.GetValue("Auth:LoginAttemptsPerMinute", 20);
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(AuthController.LoginRateLimitPolicy, context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = loginAttemptsPerMinute, Window = TimeSpan.FromMinutes(1) }));
+});
+
 // Minimal CORS
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
 ?? Array.Empty<string>();
@@ -225,6 +238,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapGet("/api/health", () =>
 {

@@ -122,6 +122,8 @@ internal sealed class ItsmApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("ConnectionStrings:DefaultConnection", _connectionString);
         builder.UseSetting("Jwt:Secret", Convert.ToHexString(RandomNumberGenerator.GetBytes(32)));
         builder.UseSetting("FileStorage:BasePath", UploadsPath);
+        // Every test request comes from the same address, so the per-IP login limit would trip across tests
+        builder.UseSetting("Auth:LoginAttemptsPerMinute", "100000");
 
         builder.ConfigureTestServices(services =>
         {
