@@ -2,6 +2,27 @@
 
 Static review of dotnet-enterprise-itsm as received (not built or run). Paths are relative to `src/`. Use this as the checklist for Phase 1 (security) and Phase 3 (audit trail).
 
+## Fix status
+
+Each fix has integration tests in `tests/ItsTool.IntegrationTests/Api/` that run against the real API and SQL Server.
+
+| # | Status | Fixed by |
+|---|---|---|
+| A1 | Fixed | Attachment downloads need a login and access to the ticket (`b6ed559`); the ticket page fetches attachments with the token (`2f2bdeb`) |
+| A2 | Mitigated | AI copilot off by default (`AI:Enabled`, `4d3009a`): every AI endpoint returns 404. Must be fixed before turning AI on: admin-only AI config, endpoint allow-list, key handling |
+| A3 | Fixed | Every ticket endpoint is limited to tickets the caller can see (`b6ed559`); editing needs ticket.edit or ticket.assign; internal notes need ticket.comment.internal (`9c5f13e`) |
+| A4 | Mitigated | Same as A2. Must be fixed before turning AI on: ticket access check on AI routes, keep internal notes out of prompts |
+| A5 | Fixed | Debug and seed endpoints removed, e-mail ingest needs admin.manage, the AI status needs a login, and a login is required by default (`657f3c2`, `4d3009a`) |
+| A6 | Open | |
+| A7 | Fixed | The API will not start with a missing, short or published JWT key; no defaults in appsettings or docker-compose (`a9e1124`) |
+| A8 | Fixed | No seeded accounts or startup role grants; the first admin comes from Bootstrap settings and must change the password (`011e7d6`) |
+| A9 | Open | Also: Users.Username and Users.Email have no unique index |
+| A10 | Open | |
+| A11 | Fixed | Server-made file names, server-chosen content types, no .svg, file signature checks (`f4d264f`) |
+| A12 | Open | |
+| A13 | Fixed | The repo was started with fresh history, without the uploaded files; `uploads/` is git-ignored |
+| — | Fixed | Found during the fixes: the ticket timeline returned internal note text to requesters (`500aad4`) |
+
 # Part 1: Security and data layer
 
 I rate this repo **not production-ready for an ISO 27001 environment** in its current state. It is a workable prototype, but before go-live you would need to close several Critical access-control holes, fill the audit trail gaps and move to SQL Server. Everything below comes from reading the code. Nothing was built or run, so the runtime-behaviour findings are inferred from how EF Core and ASP.NET Core work, not tested. Paths are relative to ``.
