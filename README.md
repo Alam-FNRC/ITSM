@@ -57,6 +57,19 @@ node --test tests/frontend/*.test.js # front-end tests
 - Access changes (roles, permissions, deactivation, password changes) apply to the next request.
 - The AI copilot is switched off (`AI:Enabled` is false) until an AI provider is approved.
 
+## Keyboard shortcuts
+
+These work on every page. Apart from <kbd>Esc</kbd>, they are ignored while you type in a field. The keyboard icon in the top bar, or <kbd>?</kbd>, shows the list.
+
+| Key | Action |
+|---|---|
+| <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd> | Quick search: jump to the page's search box |
+| <kbd>Esc</kbd> | Close dialogs, menus and the profile panel |
+| <kbd>?</kbd> | Show the shortcuts |
+| <kbd>N</kbd> | New ticket |
+| <kbd>T</kbd> | Ticket list |
+| <kbd>D</kbd> | Dashboard |
+
 ## Documents
 
 - [docs/feature-spec.md](docs/feature-spec.md): features planned for FNRC
