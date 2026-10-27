@@ -28,6 +28,7 @@ Claude proposes; William decides anything that changes scope, data, or security.
 - Needs: .NET 9 SDK (pinned in `global.json`; it builds the net8.0 projects), .NET 8 runtime, SQL Server LocalDB, Node 22 for front-end tests.
 - `dotnet tool restore` installs `dotnet-ef` (pinned in `.config/dotnet-tools.json`).
 - `dotnet run --project src/ItsTool.API --launch-profile http` starts the API on http://localhost:5246. In Development it applies migrations and seeds demo data into `FnrcItsm_Dev`.
+- Login tokens are signed with `Jwt:Secret`. Without one, Development uses a random key per run, so you log in again after each restart; to keep logins, run `dotnet user-secrets set Jwt:Secret "<32+ random characters>" --project src/ItsTool.API`. Every other environment refuses to start without a secret.
 - `dotnet test ItsTool.sln` runs unit tests (EF in-memory) and integration tests (real SQL Server; each run creates and drops a `FnrcItsm_Test_*` database; set `ITSM_TEST_SQL` to use another server).
 - `node --test tests/frontend/*.test.js` runs the front-end tests.
 - Schema change: `dotnet ef migrations add <Name> --project src/ItsTool.Infrastructure --startup-project src/ItsTool.API`. A test fails if the model and the migrations drift apart.

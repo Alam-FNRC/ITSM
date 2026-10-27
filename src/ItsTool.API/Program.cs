@@ -152,6 +152,10 @@ builder.Services.AddScoped<ISignalRPusher, ItsTool.API.Services.SignalRPusher>()
     builder.Services.AddScoped<ISystemAuditService, SystemAuditService>();
 
 // Auth Setup
+var jwtSecret = JwtSecret.Resolve(builder.Configuration["Jwt:Secret"], builder.Environment.IsDevelopment());
+// TokenService signs with the same value, including the random one generated for Development
+builder.Configuration["Jwt:Secret"] = jwtSecret;
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -163,7 +167,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? "fallback_secret_for_development_purposes_only"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
         };
     });
 

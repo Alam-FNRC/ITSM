@@ -1,5 +1,6 @@
 # Requires a .env file next to this file (never committed) with:
 #   DB_PASSWORD=<strong password: 8+ chars, upper, lower, digit, symbol; no ';'>
+#   JWT_SECRET=<random, 32+ characters, for example from: openssl rand -base64 48>
 
 services:
   # --------------------------------------------------------------------------
@@ -42,7 +43,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - AutoSeed=true
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=FnrcItsm;User Id=sa;Password=${DB_PASSWORD:?Set DB_PASSWORD in .env};TrustServerCertificate=True
-      - Jwt__Secret=${JWT_SECRET:-enterprise_super_secret_jwt_key_turkcell_itsm_2026!}
+      - Jwt__Secret=${JWT_SECRET:?Set JWT_SECRET in .env}
       - Jwt__Issuer=ItsToolAPI
       - Jwt__Audience=ItsToolClient
     extra_hosts:
