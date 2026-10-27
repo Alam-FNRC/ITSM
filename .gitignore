@@ -8,8 +8,9 @@
 *.sln.docstates
 
 # Environment Files
+# appsettings.Development.json is committed: it holds only the LocalDB connection (Windows auth, no secret).
+# Secrets go in dotnet user-secrets or environment variables, never in appsettings files.
 .env
-appsettings.Development.json
 appsettings.Local.json
 
 # Logs
