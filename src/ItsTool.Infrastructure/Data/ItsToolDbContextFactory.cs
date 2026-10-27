@@ -36,7 +36,7 @@ public class ItsToolDbContextFactory : IDesignTimeDbContextFactory<ItsToolDbCont
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseSqlServer(connectionString);
 
         return new ItsToolDbContext(optionsBuilder.Options);
     }

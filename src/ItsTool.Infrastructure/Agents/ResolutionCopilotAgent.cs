@@ -190,7 +190,7 @@ KURALLAR:
     {
         var titleLower = ticket.Title?.ToLower() ?? string.Empty;
         var rawArticles = await _context.KnowledgeArticles
-            .Where(k => !k.IsDeleted && (k.CategoryId == ticket.CategoryId || (!string.IsNullOrEmpty(titleLower) && EF.Functions.ILike(k.Title, $"%{titleLower}%"))))
+            .Where(k => !k.IsDeleted && (k.CategoryId == ticket.CategoryId || (!string.IsNullOrEmpty(titleLower) && k.Title.ToLower().Contains(titleLower))))
             .Take(3)
             .Select(k => new { k.Id, k.Title, k.Content })
             .ToListAsync();

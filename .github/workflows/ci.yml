@@ -20,7 +20,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build & Test (.NET 8)
+    name: Build & Test (.NET 8, SQL Server)
     runs-on: ubuntu-latest
 
     steps:
@@ -43,6 +43,21 @@ jobs:
 
       - name: Run Unit Tests with Coverage
         run: dotnet test tests/ItsTool.UnitTests/ItsTool.UnitTests.csproj --configuration Release --no-build --nologo /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage.opencover.xml
+
+      # Throwaway SQL Server for the integration tests; the password is random per run
+      - name: Start SQL Server
+        run: |
+          SA_PASSWORD="Ci$(openssl rand -hex 16)!"
+          echo "::add-mask::$SA_PASSWORD"
+          docker run -d --name mssql -e ACCEPT_EULA=Y -e "MSSQL_SA_PASSWORD=$SA_PASSWORD" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+          for i in $(seq 1 60); do
+            docker exec mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" > /dev/null 2>&1 && break
+            sleep 2
+          done
+          echo "ITSM_TEST_SQL=Server=localhost,1433;User Id=sa;Password=$SA_PASSWORD;TrustServerCertificate=True" >> "$GITHUB_ENV"
+
+      - name: Run Integration Tests (SQL Server)
+        run: dotnet test tests/ItsTool.IntegrationTests/ItsTool.IntegrationTests.csproj --configuration Release --no-build --nologo
 
       - name: Upload Coverage Artifact
         if: always()

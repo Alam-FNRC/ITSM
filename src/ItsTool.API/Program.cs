@@ -82,9 +82,15 @@ builder.Services.AddSignalR();
 
 builder.Services.AddScoped<SystemAuditInterceptor>();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
+}
+
 builder.Services.AddDbContext<ItsToolDbContext>((sp, options) =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure());
     var interceptor = sp.GetRequiredService<SystemAuditInterceptor>();
     options.AddInterceptors(interceptor);
 });

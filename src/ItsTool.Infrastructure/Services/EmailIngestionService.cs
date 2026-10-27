@@ -30,7 +30,8 @@ public class EmailIngestionService : IEmailIngestionService
         if (existingTicket != null) return; // Already processed
 
         // 2. Identify or Create User
-        var user = await _context.Users.FirstOrDefaultAsync(u => string.Equals(u.Email, dto.From, StringComparison.OrdinalIgnoreCase));
+        var fromLower = dto.From.ToLower();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == fromLower);
         if (user == null)
         {
             user = new User
