@@ -170,6 +170,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddAuthorization(options =>
 {
+    // Endpoints without [Authorize] or [AllowAnonymous] still require a login
+    options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
     foreach (var perm in PermissionConstants.AllPermissions)
     {
         options.AddPolicy($"RequirePermission:{perm}", policy => 
@@ -228,7 +231,7 @@ app.MapGet("/api/health", () =>
         service = "ItsTool.API",
         timestamp = DateTime.UtcNow
     });
-});
+}).AllowAnonymous();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notification");

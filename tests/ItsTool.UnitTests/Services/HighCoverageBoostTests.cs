@@ -652,10 +652,6 @@ public class HighCoverageBoostTests : TestBase
         Assert.Equal(1, paged.Page);
         Assert.Equal(10, paged.PageSize);
 
-        var errResp = new SystemController.SystemErrorResponse("Err", "Detail");
-        Assert.Equal("Err", errResp.Message);
-        Assert.Equal("Detail", errResp.Error);
-
         // Domain Entities
         var parentKc = new KnowledgeCategory { Id = 2, Name = "Parent" };
         var kc = new KnowledgeCategory { Id = 1, Name = "Cat", ParentId = 2, Parent = parentKc };
