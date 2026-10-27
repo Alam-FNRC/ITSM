@@ -94,31 +94,32 @@ public sealed class ApiFixture : IAsyncLifetime
         await LoginAsync(await CreateUserAsync(permissions));
 
     private sealed record LoginResponse(string Token);
+}
 
-    private sealed class ItsmApiFactory : WebApplicationFactory<Program>
+/// <summary>The API on a given database, as in production apart from a random JWT key and no background pollers.</summary>
+internal sealed class ItsmApiFactory : WebApplicationFactory<Program>
+{
+    private readonly string _connectionString;
+
+    public ItsmApiFactory(string connectionString) => _connectionString = connectionString;
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        private readonly string _connectionString;
+        // Not Development, so no Swagger and no developer exception page, as in production. AutoSeed is off unless a test sets it.
+        builder.UseEnvironment("Testing");
+        // UseSetting rather than ConfigureAppConfiguration: Program.cs reads these before the app is built.
+        builder.UseSetting("ConnectionStrings:DefaultConnection", _connectionString);
+        builder.UseSetting("Jwt:Secret", Convert.ToHexString(RandomNumberGenerator.GetBytes(32)));
 
-        public ItsmApiFactory(string connectionString) => _connectionString = connectionString;
-
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        builder.ConfigureTestServices(services =>
         {
-            // Not Development: no demo seed, no Swagger, no developer exception page, as in production.
-            builder.UseEnvironment("Testing");
-            // UseSetting rather than ConfigureAppConfiguration: Program.cs reads these before the app is built.
-            builder.UseSetting("ConnectionStrings:DefaultConnection", _connectionString);
-            builder.UseSetting("Jwt:Secret", Convert.ToHexString(RandomNumberGenerator.GetBytes(32)));
-
-            builder.ConfigureTestServices(services =>
-            {
-                // The SLA checker and e-mail sender poll the database in the background; tests drive the API directly.
-                var pollers = services
-                    .Where(d => d.ServiceType == typeof(IHostedService) &&
-                                (d.ImplementationType == typeof(SlaCheckerService) || d.ImplementationType == typeof(EmailBackgroundService)))
-                    .ToList();
-                foreach (var poller in pollers) services.Remove(poller);
-            });
-        }
+            // The SLA checker and e-mail sender poll the database in the background; tests drive the API directly.
+            var pollers = services
+                .Where(d => d.ServiceType == typeof(IHostedService) &&
+                            (d.ImplementationType == typeof(SlaCheckerService) || d.ImplementationType == typeof(EmailBackgroundService)))
+                .ToList();
+            foreach (var poller in pollers) services.Remove(poller);
+        });
     }
 }
 
