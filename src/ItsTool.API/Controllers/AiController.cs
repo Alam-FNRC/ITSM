@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using ItsTool.Application.DTOs;
+using ItsTool.API.Security;
 using ItsTool.Application.Interfaces;
 using ItsTool.Infrastructure.Agents;
+using ItsTool.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,16 +28,23 @@ public static class AiControllerHelper
 public class AiController : ControllerBase
 {
     private readonly ILlmService _llmService;
+    private readonly IConfiguration _configuration;
 
-    public AiController(ILlmService llmService)
+    public AiController(ILlmService llmService, IConfiguration configuration)
     {
         _llmService = llmService;
+        _configuration = configuration;
     }
 
-    [AllowAnonymous]
     [HttpGet("status")]
     public async Task<IActionResult> GetStatus()
     {
+        // The ticket page shows the AI panel only when this says enabled
+        if (!AiSettings.IsEnabled(_configuration))
+        {
+            return Ok(new { enabled = false });
+        }
+
         bool isAvailable = await _llmService.IsAvailableAsync();
         var config = _llmService.GetCurrentConfig() ?? new LlmConfigDto();
         var endpoint = config.Endpoint ?? _llmService.GetEndpoint();
@@ -57,6 +66,7 @@ public class AiController : ControllerBase
 
         return Ok(new
         {
+            enabled = true,
             configured = !string.IsNullOrEmpty(endpoint),
             isConfigured = !string.IsNullOrEmpty(endpoint),
             endpoint = endpoint,
@@ -69,6 +79,7 @@ public class AiController : ControllerBase
         });
     }
 
+    [RequireAiEnabled]
     [HttpGet("config")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public IActionResult GetConfig()
@@ -76,6 +87,7 @@ public class AiController : ControllerBase
         return Ok(new { success = true, config = _llmService.GetCurrentConfig() });
     }
 
+    [RequireAiEnabled]
     [HttpPost("config")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -86,6 +98,7 @@ public class AiController : ControllerBase
         return Ok(new { success = true, message = "LLM ayarları başarıyla güncellendi.", config = _llmService.GetCurrentConfig() });
     }
 
+    [RequireAiEnabled]
     [HttpGet("models")]
     public async Task<IActionResult> GetModels([FromQuery] string? endpoint = null, [FromQuery] string? apiKey = null)
     {
@@ -93,6 +106,7 @@ public class AiController : ControllerBase
         return Ok(new { success = true, models });
     }
 
+    [RequireAiEnabled]
     [HttpPost("test")]
     public async Task<IActionResult> TestConnection([FromBody] LlmConfigDto? customConfig = null)
     {
@@ -129,6 +143,7 @@ public class AiController : ControllerBase
 [ApiController]
 [Route("api/ai/tickets")]
 [Authorize]
+[RequireAiEnabled]
 public class AiTicketCopilotController : ControllerBase
 {
     private readonly ResolutionCopilotAgent _copilotAgent;
@@ -239,6 +254,7 @@ public class AiTicketCopilotController : ControllerBase
 [ApiController]
 [Route("api/ai/tickets")]
 [Authorize]
+[RequireAiEnabled]
 public class AiTicketHandoffController : ControllerBase
 {
     private readonly TicketHandoffSwarm _handoffSwarm;

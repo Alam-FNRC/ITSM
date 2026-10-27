@@ -30,7 +30,7 @@ public class AiControllerTests : TestBase
         _copilotAgent = new ResolutionCopilotAgent(_mockLlm.Object, _context, NullLogger<ResolutionCopilotAgent>.Instance);
         _handoffSwarm = new TicketHandoffSwarm(_mockLlm.Object, _context, NullLogger<TicketHandoffSwarm>.Instance);
 
-        _aiController = new AiController(_mockLlm.Object);
+        _aiController = new AiController(_mockLlm.Object, TestConfiguration.AiEnabled());
         _copilotController = new AiTicketCopilotController(_copilotAgent);
         _handoffController = new AiTicketHandoffController(_handoffSwarm);
 

@@ -392,7 +392,8 @@
 
                     <div class="side-column">
                         <!-- AI Copilot Panel -->
-                        <div class="sidebar-panel mb-md" id="aiCopilotPanel">
+                        <!-- Hidden until /ai/status reports the copilot as enabled -->
+                        <div class="sidebar-panel mb-md" id="aiCopilotPanel" style="display: none;">
                             <!-- Row 1: Title & Settings Button -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
                                 <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
@@ -3460,8 +3461,15 @@
             const curLang = document.getElementById('aiResponseLang')?.value || localStorage.getItem('itsm_ai_lang') || 'en';
             const isEn = curLang === 'en';
 
+            const panel = document.getElementById('aiCopilotPanel');
             try {
                 const res = await window.api.request('/ai/status', { silent: true });
+                // The copilot is off until an AI provider is approved; then the panel stays hidden
+                if (!res || res.enabled !== true) {
+                    if (panel) panel.style.display = 'none';
+                    return;
+                }
+                if (panel) panel.style.display = '';
                 if (res) {
                     badge.style.background = '';
                     badge.style.color = '';
@@ -3482,6 +3490,7 @@
                 }
             } catch (err) {
                 console.warn('AI status check failed:', err);
+                if (panel) panel.style.display = 'none';
                 badge.className = 'badge ai-status-disconnected';
                 badge.style.background = '';
                 badge.style.color = '';

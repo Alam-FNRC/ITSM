@@ -721,7 +721,7 @@ public class TargetedBranchBoosterTests
         var llmMock = new Mock<ILlmService>();
         llmMock.Setup(l => l.IsAvailableAsync()).ReturnsAsync(false);
         llmMock.Setup(l => l.GetCurrentConfig()).Returns(new LlmConfigDto { FallbackToHeuristic = false, Endpoint = "http://test", Model = "mod" });
-        var aiCtrl = new AiController(llmMock.Object);
+        var aiCtrl = new AiController(llmMock.Object, TestConfiguration.AiEnabled());
         var statRes = await aiCtrl.GetStatus() as OkObjectResult;
         Assert.NotNull(statRes);
 
