@@ -13,15 +13,17 @@ Each fix has integration tests in `tests/ItsTool.IntegrationTests/Api/` that run
 | A3 | Fixed | Every ticket endpoint is limited to tickets the caller can see (`b6ed559`); editing needs ticket.edit or ticket.assign; internal notes need ticket.comment.internal (`9c5f13e`) |
 | A4 | Mitigated | Same as A2. Must be fixed before turning AI on: ticket access check on AI routes, keep internal notes out of prompts |
 | A5 | Fixed | Debug and seed endpoints removed, e-mail ingest needs admin.manage, the AI status needs a login, and a login is required by default (`657f3c2`, `4d3009a`) |
-| A6 | Open | |
+| A6 | Fixed | Password change needs the current password; one policy (12-64 characters) for every password; admin-set passwords must be changed; the API enforces the change (`4e377d6`) |
 | A7 | Fixed | The API will not start with a missing, short or published JWT key; no defaults in appsettings or docker-compose (`a9e1124`) |
 | A8 | Fixed | No seeded accounts or startup role grants; the first admin comes from Bootstrap settings and must change the password (`011e7d6`) |
-| A9 | Open | Also: Users.Username and Users.Email have no unique index |
-| A10 | Open | |
+| A9 | Fixed | Exact login match and unique usernames and e-mails (`7ef2a29`), login audit in AuthEvents (`f061746`), account lockout (`aa0a596`), per-IP login rate limit (`6ab77d7`) |
+| A10 | Mostly fixed | Every request is checked against the current account: roles and permissions are reloaded, deactivated users and sessions before a password change are refused (`242ce3c`). Still open: the token is kept in browser localStorage |
 | A11 | Fixed | Server-made file names, server-chosen content types, no .svg, file signature checks (`f4d264f`) |
-| A12 | Open | |
+| A12 | Fixed | The hub reads the token from the query string (`f38c7ea`) |
 | A13 | Fixed | The repo was started with fresh history, without the uploaded files; `uploads/` is git-ignored |
 | — | Fixed | Found during the fixes: the ticket timeline returned internal note text to requesters (`500aad4`) |
+| — | Fixed | Found during the fixes: attachment responses included the server's file path (`314bdee`) |
+| Audit | Fixed | Restoring a comment no longer deletes the history of its deletion (`bdeb3d5`) |
 
 # Part 1: Security and data layer
 
