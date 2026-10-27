@@ -1,5 +1,7 @@
+using ItsTool.Application.Constants;
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
+using ItsTool.API.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ namespace ItsTool.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[TypeFilter(typeof(TicketAccessFilter))]
 public class TicketController : ControllerBase
 {
     private const string PermissionClaim = "permission";
@@ -27,6 +30,9 @@ public class TicketController : ControllerBase
         var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return int.TryParse(idClaim, out var id) ? id : 0;
     }
+
+    private bool HasPermission(string permission) =>
+        User.IsInRole(RoleSuperAdmin) || User.HasClaim(PermissionClaim, permission);
 
     [HttpPost]
     [Authorize(Policy = "RequirePermission:ticket.create")]
@@ -111,8 +117,12 @@ public class TicketController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTicketDto dto)
     {
+        // Same rule as the edit buttons on the ticket page
+        if (!HasPermission(PermissionConstants.TicketEdit) && !HasPermission(PermissionConstants.TicketAssign)) return Forbid();
+
         try
         {
             await _service.UpdateTicketAsync(id, dto, GetCurrentUserId());
@@ -200,8 +210,12 @@ public class TicketController : ControllerBase
 
     [HttpPost("{id}/comments")]
     [ProducesResponseType(typeof(TicketCommentDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddComment(int id, [FromBody] CreateCommentDto dto)
     {
+        // Only those who can read internal notes may write them
+        if (dto.IsInternal && !HasPermission(PermissionConstants.TicketCommentInternal)) return Forbid();
+
         var createDto = new CreateCommentDto(dto.Content, dto.IsInternal, GetCurrentUserId(), dto.ParentCommentId, dto.MentionedUserIds);
         var result = await _service.AddCommentAsync(id, createDto);
         return Ok(result);
@@ -278,7 +292,6 @@ public class TicketController : ControllerBase
         return Ok(await _service.GetAttachmentsAsync(id));
     }
 
-    [AllowAnonymous]
     [HttpGet("{id}/attachments/{attachmentId}/download")]
     public async Task<IActionResult> DownloadAttachment(int id, int attachmentId)
     {
@@ -287,7 +300,9 @@ public class TicketController : ControllerBase
             var (filePath, contentType, fileName) = await _service.GetAttachmentFileInfoAsync(id, attachmentId);
             if (!System.IO.File.Exists(filePath))
                 return NotFound();
-                
+
+            // Browsers must use the content type the server chose, not guess one from the bytes
+            Response.Headers["X-Content-Type-Options"] = "nosniff";
             return PhysicalFile(System.IO.Path.GetFullPath(filePath), contentType, fileName);
         }
         catch (KeyNotFoundException)

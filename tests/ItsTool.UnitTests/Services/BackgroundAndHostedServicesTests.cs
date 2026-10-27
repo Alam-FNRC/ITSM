@@ -11,6 +11,7 @@ using ItsTool.Infrastructure.BackgroundServices;
 using ItsTool.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -139,55 +140,56 @@ public class BackgroundAndHostedServicesTests
     [Fact]
     public async Task AiAgentDispatcher_ShouldDispatchAssignedEvent()
     {
+        var ran = new TaskCompletionSource();
         var copilotMock = new Mock<ResolutionCopilotAgent>(null!, null!, null!);
-        copilotMock.Setup(c => c.RunAsync(It.IsAny<Ticket>())).Returns(Task.CompletedTask);
+        copilotMock.Setup(c => c.RunAsync(It.IsAny<Ticket>())).Callback(() => ran.TrySetResult()).Returns(Task.CompletedTask);
+        var (serviceProvider, _) = MockScopedServices(typeof(ResolutionCopilotAgent), copilotMock.Object);
 
-        var serviceProviderMock = new Mock<IServiceProvider>();
-        var scopeMock = new Mock<IServiceScope>();
-        var scopeFactoryMock = new Mock<IServiceScopeFactory>();
+        var dispatcher = new AiAgentDispatcher(serviceProvider, Mock.Of<ILogger<AiAgentDispatcher>>(), TestConfiguration.AiEnabled());
 
-        scopeMock.Setup(s => s.ServiceProvider).Returns(serviceProviderMock.Object);
-        scopeFactoryMock.Setup(f => f.CreateScope()).Returns(scopeMock.Object);
-        serviceProviderMock.Setup(sp => sp.GetService(typeof(IServiceScopeFactory)))
-            .Returns(scopeFactoryMock.Object);
-        serviceProviderMock.Setup(sp => sp.GetService(typeof(ResolutionCopilotAgent)))
-            .Returns(copilotMock.Object);
-
-        var loggerMock = new Mock<ILogger<AiAgentDispatcher>>();
-        var dispatcher = new AiAgentDispatcher(serviceProviderMock.Object, loggerMock.Object);
-
-        var ticket = new Ticket { Id = 10, Title = "Test Ticket" };
-        await dispatcher.DispatchAsync("ticket.assigned", ticket);
-        await Task.Delay(50); // wait for Task.Run
-        Assert.NotNull(dispatcher);
-        Assert.Equal(10, ticket.Id);
+        await dispatcher.DispatchAsync("ticket.assigned", new Ticket { Id = 10, Title = "Test Ticket" });
+        await ran.Task.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
     [Fact]
     public async Task AiAgentDispatcher_ShouldDispatchTransferredEvent()
     {
+        var ran = new TaskCompletionSource();
         var swarmMock = new Mock<TicketHandoffSwarm>(null!, null!, null!);
-        swarmMock.Setup(s => s.RunAsync(It.IsAny<Ticket>())).Returns(Task.CompletedTask);
+        swarmMock.Setup(s => s.RunAsync(It.IsAny<Ticket>())).Callback(() => ran.TrySetResult()).Returns(Task.CompletedTask);
+        var (serviceProvider, _) = MockScopedServices(typeof(TicketHandoffSwarm), swarmMock.Object);
 
+        var dispatcher = new AiAgentDispatcher(serviceProvider, Mock.Of<ILogger<AiAgentDispatcher>>(), TestConfiguration.AiEnabled());
+
+        await dispatcher.DispatchAsync("ticket.transferred", new Ticket { Id = 11, Title = "Handoff Ticket" });
+        await ran.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task AiAgentDispatcher_DoesNothingWhileAiIsTurnedOff()
+    {
+        var (serviceProvider, scopeFactory) = MockScopedServices(typeof(ResolutionCopilotAgent), new Mock<ResolutionCopilotAgent>(null!, null!, null!).Object);
+        var aiOff = new ConfigurationBuilder().Build();
+
+        var dispatcher = new AiAgentDispatcher(serviceProvider, Mock.Of<ILogger<AiAgentDispatcher>>(), aiOff);
+        await dispatcher.DispatchAsync("ticket.assigned", new Ticket { Id = 12, Title = "Private ticket" });
+
+        // The disabled path returns before starting any background work
+        scopeFactory.Verify(f => f.CreateScope(), Times.Never);
+    }
+
+    private static (IServiceProvider Provider, Mock<IServiceScopeFactory> ScopeFactory) MockScopedServices(Type serviceType, object service)
+    {
         var serviceProviderMock = new Mock<IServiceProvider>();
         var scopeMock = new Mock<IServiceScope>();
         var scopeFactoryMock = new Mock<IServiceScopeFactory>();
 
         scopeMock.Setup(s => s.ServiceProvider).Returns(serviceProviderMock.Object);
         scopeFactoryMock.Setup(f => f.CreateScope()).Returns(scopeMock.Object);
-        serviceProviderMock.Setup(sp => sp.GetService(typeof(IServiceScopeFactory)))
-            .Returns(scopeFactoryMock.Object);
-        serviceProviderMock.Setup(sp => sp.GetService(typeof(TicketHandoffSwarm)))
-            .Returns(swarmMock.Object);
+        serviceProviderMock.Setup(sp => sp.GetService(typeof(IServiceScopeFactory))).Returns(scopeFactoryMock.Object);
+        serviceProviderMock.Setup(sp => sp.GetService(serviceType)).Returns(service);
 
-        var loggerMock = new Mock<ILogger<AiAgentDispatcher>>();
-        var dispatcher = new AiAgentDispatcher(serviceProviderMock.Object, loggerMock.Object);
-
-        var ticket = new Ticket { Id = 11, Title = "Handoff Ticket" };
-        await dispatcher.DispatchAsync("ticket.transferred", ticket);
-        await Task.Delay(50);
-        Assert.NotNull(dispatcher);
-        Assert.Equal(11, ticket.Id);
+        return (serviceProviderMock.Object, scopeFactoryMock);
     }
 
     [Fact]

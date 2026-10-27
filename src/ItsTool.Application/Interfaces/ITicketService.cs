@@ -7,6 +7,7 @@ public interface ITicketService
 {
     Task<TicketDto> CreateTicketAsync(CreateTicketDto dto);
     Task<TicketDto?> GetTicketByIdAsync(int id);
+    Task<bool> CanAccessTicketAsync(int ticketId, int userId);
     Task UpdateTicketAsync(int id, UpdateTicketDto dto, int currentUserId);
     Task DeleteTicketAsync(int id, int currentUserId);
     Task RestoreTicketAsync(int id, int currentUserId);

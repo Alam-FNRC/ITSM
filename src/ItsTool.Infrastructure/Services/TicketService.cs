@@ -17,6 +17,11 @@ namespace ItsTool.Infrastructure.Services;
 public class TicketService : ITicketService
 {
     private const string TicketNotFoundMessage = "Ticket not found.";
+    // History actions whose FieldName holds a comment ID (see AddCommentAsync, UpdateCommentAsync, DeleteCommentAsync)
+    private static readonly HashSet<string> CommentHistoryActions = new()
+    {
+        "CommentAdded", "CommentReplied", "InternalNoteAdded", "CommentEdited", "CommentDeleted", "UserMentioned"
+    };
     private readonly ItsToolDbContext _context;
     private readonly IFileStorageService _fileStorage;
     private readonly IPermissionCalculator _permissionCalculator;
@@ -221,7 +226,16 @@ public class TicketService : ITicketService
         return new TicketDto(t.Id, t.TicketNumber, t.Title, t.Description, t.ProjectId, t.CategoryId, t.TypeId, t.StatusId, t.PriorityId, t.RequesterUserId, assignees, customFields, t.EstimatedStartDate, t.EstimatedEndDate, t.ColorHex, slaInfo);
     }
 
-    
+    public async Task<bool> CanAccessTicketAsync(int ticketId, int userId)
+    {
+        // Same rule as search, so a ticket the user cannot find cannot be opened by ID either.
+        // Deleted tickets are included so they can still be restored; each action handles deletion itself.
+        var perms = await _permissionCalculator.CalculateEffectivePermissionsAsync(userId);
+        var query = await TicketQueryHelpers.ApplySecurityScopeAsync(
+            _context.Tickets.IgnoreQueryFilters().Where(t => t.Id == ticketId), perms, userId, _context);
+        return await query.AnyAsync();
+    }
+
     public async Task DeleteTicketAsync(int id, int currentUserId)
     {
         var t = await _context.Tickets.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
@@ -754,10 +768,11 @@ public class TicketService : ITicketService
         var a = new TicketAttachment
         {
             TicketId = ticketId,
-            FileName = file.FileName,
+            FileName = UploadPolicy.DisplayName(file.FileName),
             FilePath = path,
             FileSize = file.Length,
-            ContentType = file.ContentType,
+            // Decided by the server: the client's content type could be text/html
+            ContentType = UploadPolicy.ContentTypeFor(file.FileName)!,
             UploadedByUserId = userId
         };
         _context.TicketAttachments.Add(a);
@@ -792,7 +807,8 @@ public class TicketService : ITicketService
         if (attachment == null)
             throw new KeyNotFoundException("Attachment not found.");
 
-        return (attachment.FilePath, attachment.ContentType, attachment.FileName);
+        // Older rows stored the client's content type, so derive it again from the name
+        return (attachment.FilePath, UploadPolicy.ContentTypeFor(attachment.FileName) ?? "application/octet-stream", attachment.FileName);
     }
 
     public async Task DeleteAttachmentAsync(int ticketId, int attachmentId, int userId, bool hasManagePerm)
@@ -849,6 +865,18 @@ public class TicketService : ITicketService
         var events = new List<TimelineEventDto>();
 
         var histories = await _context.TicketHistories.Where(h => h.TicketId == ticketId && !h.IsDeleted).ToListAsync();
+        if (!includeInternal)
+        {
+            // Comment history rows copy the comment text, so hide the ones that belong to internal notes
+            var internalCommentIds = await _context.TicketComments
+                .Where(c => c.TicketId == ticketId && c.IsInternal)
+                .Select(c => c.Id.ToString())
+                .ToListAsync();
+            histories = histories
+                .Where(h => h.Action != "InternalNoteAdded" &&
+                            !(CommentHistoryActions.Contains(h.Action) && internalCommentIds.Contains(h.FieldName)))
+                .ToList();
+        }
         events.AddRange(histories.Select(h => new TimelineEventDto("History", h.CreatedAt, h)));
 
         var comments = await _context.TicketComments.Where(c => c.TicketId == ticketId && !c.IsDeleted).ToListAsync();

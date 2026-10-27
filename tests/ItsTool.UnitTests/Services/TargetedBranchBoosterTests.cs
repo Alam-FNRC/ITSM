@@ -686,17 +686,6 @@ public class TargetedBranchBoosterTests
         await hub.OnConnectedAsync();
         await hub.OnDisconnectedAsync(null);
 
-        // 3. TestController branches
-        var roleServiceMock = new Mock<IRoleService>();
-        roleServiceMock.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<RoleDto>
-        {
-            new RoleDto(1, "Admin", "Desc", true, new string[] { "all" }),
-            new RoleDto(2, "EmptyRole", "Desc", true, null!)
-        });
-        var testController = new TestController(roleServiceMock.Object);
-        var rolesRes = await testController.GetRoles() as OkObjectResult;
-        Assert.NotNull(rolesRes);
-
         // 4. TicketController delete permission branches
         var ticketServiceMock = new Mock<ITicketService>();
         var ticketCtrl = new TicketController(ticketServiceMock.Object);
@@ -721,7 +710,7 @@ public class TargetedBranchBoosterTests
         var llmMock = new Mock<ILlmService>();
         llmMock.Setup(l => l.IsAvailableAsync()).ReturnsAsync(false);
         llmMock.Setup(l => l.GetCurrentConfig()).Returns(new LlmConfigDto { FallbackToHeuristic = false, Endpoint = "http://test", Model = "mod" });
-        var aiCtrl = new AiController(llmMock.Object);
+        var aiCtrl = new AiController(llmMock.Object, TestConfiguration.AiEnabled());
         var statRes = await aiCtrl.GetStatus() as OkObjectResult;
         Assert.NotNull(statRes);
 

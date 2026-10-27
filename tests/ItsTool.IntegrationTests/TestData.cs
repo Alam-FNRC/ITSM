@@ -45,7 +45,8 @@ internal static class TestData
         return new TicketLookups(project, category, type, status, priority, requester);
     }
 
-    public static async Task<Ticket> CreateTicketAsync(ItsToolDbContext context, string title, string description)
+    public static async Task<Ticket> CreateTicketAsync(
+        ItsToolDbContext context, string title, string description, int? requesterUserId = null)
     {
         var lookups = await CreateTicketLookupsAsync(context);
         var ticket = new Ticket
@@ -58,7 +59,7 @@ internal static class TestData
             TypeId = lookups.Type.Id,
             StatusId = lookups.Status.Id,
             PriorityId = lookups.Priority.Id,
-            RequesterUserId = lookups.Requester.Id
+            RequesterUserId = requesterUserId ?? lookups.Requester.Id
         };
         context.Tickets.Add(ticket);
         await context.SaveChangesAsync();

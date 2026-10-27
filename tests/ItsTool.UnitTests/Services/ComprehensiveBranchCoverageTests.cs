@@ -955,10 +955,5 @@ public class ComprehensiveBranchCoverageTests : TestBase
         await dashController.GetOverview();
         dashServiceMock.Verify(s => s.GetOverviewAsync(0), Times.Once);
 
-        // 7. SystemController TestDatabaseConnection
-        var seeder = new DataSeeder(_context);
-        var sysController = new SystemController(seeder, _context);
-        var dbRes = sysController.TestDatabaseConnection();
-        Assert.NotNull(dbRes);
     }
 }

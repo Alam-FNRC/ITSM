@@ -909,7 +909,7 @@ public class FinalPushBranchCoverageTests : IDisposable
         llmServiceMock.Setup(l => l.GetEndpoint()).Returns("http://localhost:11434");
         llmServiceMock.Setup(l => l.GetModelName()).Returns("llama3");
 
-        var aiCtrl = new AiController(llmServiceMock.Object);
+        var aiCtrl = new AiController(llmServiceMock.Object, TestConfiguration.AiEnabled());
         var statusRes = await aiCtrl.GetStatus();
         Assert.IsType<OkObjectResult>(statusRes);
 

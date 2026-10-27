@@ -27,11 +27,13 @@ Claude proposes; William decides anything that changes scope, data, or security.
 ## Local development
 - Needs: .NET 9 SDK (pinned in `global.json`; it builds the net8.0 projects), .NET 8 runtime, SQL Server LocalDB, Node 22 for front-end tests.
 - `dotnet tool restore` installs `dotnet-ef` (pinned in `.config/dotnet-tools.json`).
-- `dotnet run --project src/ItsTool.API --launch-profile http` starts the API on http://localhost:5246. In Development it applies migrations and seeds demo data into `FnrcItsm_Dev`.
+- `dotnet run --project src/ItsTool.API --launch-profile http` starts the API on http://localhost:5246. In Development it applies migrations and seeds reference and sample data into `FnrcItsm_Dev`. No accounts are seeded: on an empty database the first administrator is created from `Bootstrap:AdminUsername`, `Bootstrap:AdminEmail` and `Bootstrap:AdminPassword` (12+ characters; set them with `dotnet user-secrets set ... --project src/ItsTool.API`), and must change the password at first login.
+- Login tokens are signed with `Jwt:Secret`. Without one, Development uses a random key per run, so you log in again after each restart; to keep logins, run `dotnet user-secrets set Jwt:Secret "<32+ random characters>" --project src/ItsTool.API`. Every other environment refuses to start without a secret.
 - `dotnet test ItsTool.sln` runs unit tests (EF in-memory) and integration tests (real SQL Server; each run creates and drops a `FnrcItsm_Test_*` database; set `ITSM_TEST_SQL` to use another server).
 - `node --test tests/frontend/*.test.js` runs the front-end tests.
 - Schema change: `dotnet ef migrations add <Name> --project src/ItsTool.Infrastructure --startup-project src/ItsTool.API`. A test fails if the model and the migrations drift apart.
 - The in-memory provider hides SQL translation errors and ignores constraints: anything that changes a query needs an integration test.
+- Access-control tests go in `tests/ItsTool.IntegrationTests/Api/`: `ApiFixture` starts the real API on its own test database; `CreateUserAsync(permissions)` + `LoginAsync(user)` give a client with a real token.
 
 ## Roadmap
 1. Security hardening (critical findings from the Oct 2026 review).

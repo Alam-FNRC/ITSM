@@ -392,7 +392,8 @@
 
                     <div class="side-column">
                         <!-- AI Copilot Panel -->
-                        <div class="sidebar-panel mb-md" id="aiCopilotPanel">
+                        <!-- Hidden until /ai/status reports the copilot as enabled -->
+                        <div class="sidebar-panel mb-md" id="aiCopilotPanel" style="display: none;">
                             <!-- Row 1: Title & Settings Button -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
                                 <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
@@ -841,16 +842,24 @@
         import { bindShellActions, showToast, openModal, closeModal, showConfirmModal, showUndoToast } from './js/ui.js?v=1008';
         import { initMentions } from './js/mentions.js?v=1008';
         import { t, getCurrentLanguage } from './js/i18n.js?v=1008';
+        import { initAuthorizedAttachments } from './js/attachments.js?v=1008';
         injectShell();
 
         if (!window.api.token) window.location.href = '/login.html';
         bindShellActions();
+        initAuthorizedAttachments(window.api, () => showToast(t('attachment_download_failed', 'The attachment could not be downloaded.'), 'error'));
         
         const initialAiLang = localStorage.getItem('itsm_ai_lang') || getCurrentLanguage() || 'en';
         const aiLangSelect = document.getElementById('aiResponseLang');
         if (aiLangSelect) aiLangSelect.value = initialAiLang;
 
         const canEditTicket = window.api.decodedToken?.roles?.includes('SuperAdmin') || window.api.decodedToken?.permissions?.includes('ticket.edit') || window.api.decodedToken?.permissions?.includes('ticket.manage') || window.api.decodedToken?.permissions?.includes('ticket.assign');
+        // The API refuses internal notes from users who cannot read them, so do not offer the option
+        const canWriteInternalNotes = window.api.decodedToken?.roles?.includes('SuperAdmin') || window.api.decodedToken?.permissions?.includes('ticket.comment.internal');
+        if (!canWriteInternalNotes) {
+            const internalLabel = document.getElementById('isInternalComment')?.closest('label');
+            if (internalLabel) internalLabel.style.display = 'none';
+        }
         if (!canEditTicket) {
             const btnEditInline = document.getElementById('btnEditInline');
             if (btnEditInline) btnEditInline.style.display = 'none';
@@ -1104,8 +1113,8 @@
                         html += `
                             <div class="comment-attachment-img-container" style="position:relative;">
                                 ${delBtn}
-                                <img src="http://localhost:5246/api/Ticket/${ticketId}/attachments/${att.id}/download" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="${escapeHtml(att.fileName)}" onclick="window.openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
-                                <a href="http://localhost:5246/api/Ticket/${ticketId}/attachments/${att.id}/download" download class="download-btn" title="Download">
+                                <img data-auth-src="/Ticket/${ticketId}/attachments/${att.id}/download" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="${escapeHtml(att.fileName)}" onclick="window.openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
+                                <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${att.id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="Download">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                 </a>
                             </div>
@@ -1114,7 +1123,7 @@
                         html += `
                             <div style="position:relative;">
                                 ${delBtn}
-                                <a href="http://localhost:5246/api/Ticket/${ticketId}/attachments/${att.id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:12px; font-weight:500; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                                <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${att.id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:12px; font-weight:500; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
                                     <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--text-muted)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                                     ${escapeHtml(att.fileName)}
                                 </a>
@@ -2145,14 +2154,14 @@
                         const isImage = att && att.contentType && att.contentType.startsWith('image/');
                         if (isImage) {
                             return `<div class="comment-attachment-img-container">
-                                        <img src="/api/Ticket/${ticketId}/attachments/${id}/download" class="comment-attachment-img" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="Attachment" onclick="openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
-                                        <a href="/api/Ticket/${ticketId}/attachments/${id}/download" download class="download-btn" title="Download">
+                                        <img data-auth-src="/Ticket/${ticketId}/attachments/${id}/download" class="comment-attachment-img" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="Attachment" onclick="openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
+                                        <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="Download">
                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                         </a>
                                     </div>`;
                         } else {
                             const fileName = att ? att.fileName : ('File ' + id);
-                            return `<a href="/api/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:12px; font-weight:500; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'"><svg viewBox="0 0 24 24" width="20" height="20" fill="var(--text-muted)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> ${escapeHtml(fileName)}</a>`;
+                            return `<a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:12px; font-weight:500; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'"><svg viewBox="0 0 24 24" width="20" height="20" fill="var(--text-muted)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> ${escapeHtml(fileName)}</a>`;
                         }
                     }).join('') + `</div>`;
                 
@@ -2535,11 +2544,11 @@
             box.innerHTML = `
                 <div class="comment-reply-connector"></div>
                 <textarea class="form-control mb-sm" rows="3" id="inline-reply-text" placeholder="${(t('log_replying_to') || 'Replying to comment #{0}...').replaceAll('{0}', id)}"></textarea>
-                <div style="margin-bottom: 8px;">
+                ${canWriteInternalNotes ? `<div style="margin-bottom: 8px;">
                     <label style="font-size: 13px; color: var(--text-muted); cursor: ${forceInternal ? 'not-allowed' : 'pointer'};">
                         <input type="checkbox" id="inline-reply-internal" ${forceInternal ? 'checked disabled' : ''}> ${t('log_internal_note_cb') || 'Internal Note'}
                     </label>
-                </div>
+                </div>` : ''}
                 <div class="d-flex gap-sm">
                     <button class="btn btn-primary btn-sm" onclick="submitInlineReply(${id}, ${forceInternal})">${t('ticket_btn_reply') || 'Reply'}</button>
                     <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inline-reply-box').remove()">${t('btn_cancel') || 'Cancel'}</button>
@@ -2568,7 +2577,7 @@
             if(!content.trim()) return;
             
             // Read checkbox, but if it's forced internal, we ignore the checkbox (which might be disabled)
-            const isInternal = forceInternal || document.getElementById('inline-reply-internal').checked;
+            const isInternal = forceInternal || !!document.getElementById('inline-reply-internal')?.checked;
             
             let mentionedUserIds = [];
             try {
@@ -2632,13 +2641,13 @@
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
-                    imgPreview.src = `http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download`;
+                    imgPreview.dataset.authSrc = `/Ticket/${ticketId}/attachments/${id}/download`;
                     imgPreview.style.cssText = 'width: 48px; height: 48px; object-fit: cover; border-radius: 4px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); cursor: pointer; display: block;';
                     imgPreview.onclick = () => window.openLightbox(imgPreview.src);
                     wrapper.innerHTML = imgPreview.outerHTML + delBtn;
                 } else {
                     const fileName = att ? att.fileName : ('File ' + id);
-                    const fileCard = `<a href="http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:10px; font-weight:500; height: 28px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="var(--text-muted)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> ${escapeHtml(fileName)}</a>`;
+                    const fileCard = `<a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:10px; font-weight:500; height: 28px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="var(--text-muted)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> ${escapeHtml(fileName)}</a>`;
                     wrapper.innerHTML = fileCard + delBtn;
                 }
                 previewContainer.appendChild(wrapper);
@@ -2979,10 +2988,10 @@
                         const att = window.ticketAttachments?.find(x => x.id == id);
                         const isImage = att && att.contentType && att.contentType.startsWith('image/');
                         if (isImage) {
-                            return `<img src="http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download" style="max-width: 60px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 60px; object-fit: cover; cursor: pointer;" alt="Attachment" onclick="window.openLightbox(this.src)"/>`;
+                            return `<img data-auth-src="/Ticket/${ticketId}/attachments/${id}/download" style="max-width: 60px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 60px; object-fit: cover; cursor: pointer;" alt="Attachment" onclick="window.openLightbox(this.src)"/>`;
                         } else {
                             const fileName = att ? att.fileName : ('File ' + id);
-                            return `<a href="http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:4px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-surface); color:var(--text-main); text-decoration:none; font-size:10px; font-weight:500;">📎 ${escapeHtml(fileName)}</a>`;
+                            return `<a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:4px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-surface); color:var(--text-main); text-decoration:none; font-size:10px; font-weight:500;">📎 ${escapeHtml(fileName)}</a>`;
                         }
                     }).join('') +
                     `</div>`;
@@ -3049,10 +3058,10 @@
                         const att = window.ticketAttachments?.find(x => x.id == id);
                         const isImage = att && att.contentType && att.contentType.startsWith('image/');
                         if (isImage) {
-                            return `<img src="http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download" style="max-width: 60px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 60px; object-fit: cover; cursor: pointer;" alt="Attachment" onclick="window.openLightbox(this.src)"/>`;
+                            return `<img data-auth-src="/Ticket/${ticketId}/attachments/${id}/download" style="max-width: 60px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 60px; object-fit: cover; cursor: pointer;" alt="Attachment" onclick="window.openLightbox(this.src)"/>`;
                         } else {
                             const fileName = att ? att.fileName : ('File ' + id);
-                            return `<a href="http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:4px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-surface); color:var(--text-main); text-decoration:none; font-size:10px; font-weight:500;">📎 ${escapeHtml(fileName)}</a>`;
+                            return `<a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:4px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-surface); color:var(--text-main); text-decoration:none; font-size:10px; font-weight:500;">📎 ${escapeHtml(fileName)}</a>`;
                         }
                     }).join('') + `</div>`;
             };
@@ -3276,13 +3285,13 @@
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
-                    imgPreview.src = `http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download`;
+                    imgPreview.dataset.authSrc = `/Ticket/${ticketId}/attachments/${id}/download`;
                     imgPreview.style.cssText = 'width: 60px; height: 60px; object-fit: cover; border-radius: 4px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); cursor: pointer; display: block;';
                     imgPreview.onclick = () => window.openLightbox(imgPreview.src);
                     wrapper.innerHTML = imgPreview.outerHTML + delBtn;
                 } else {
                     const fileName = att ? att.fileName : ('File ' + id);
-                    const fileCard = `<a href="http://localhost:5246/api/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:11px; font-weight:500; height: 32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--text-muted)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> ${escapeHtml(fileName)}</a>`;
+                    const fileCard = `<a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" target="_blank" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg-hover); color:var(--text-main); text-decoration:none; font-size:11px; font-weight:500; height: 32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="var(--text-muted)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> ${escapeHtml(fileName)}</a>`;
                     wrapper.innerHTML = fileCard + delBtn;
                 }
                 previewContainer.appendChild(wrapper);
@@ -3452,8 +3461,15 @@
             const curLang = document.getElementById('aiResponseLang')?.value || localStorage.getItem('itsm_ai_lang') || 'en';
             const isEn = curLang === 'en';
 
+            const panel = document.getElementById('aiCopilotPanel');
             try {
                 const res = await window.api.request('/ai/status', { silent: true });
+                // The copilot is off until an AI provider is approved; then the panel stays hidden
+                if (!res || res.enabled !== true) {
+                    if (panel) panel.style.display = 'none';
+                    return;
+                }
+                if (panel) panel.style.display = '';
                 if (res) {
                     badge.style.background = '';
                     badge.style.color = '';
@@ -3474,6 +3490,7 @@
                 }
             } catch (err) {
                 console.warn('AI status check failed:', err);
+                if (panel) panel.style.display = 'none';
                 badge.className = 'badge ai-status-disconnected';
                 badge.style.background = '';
                 badge.style.color = '';

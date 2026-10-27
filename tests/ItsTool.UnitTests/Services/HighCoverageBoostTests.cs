@@ -486,7 +486,10 @@ public class HighCoverageBoostTests : TestBase
     public async Task TicketController_DownloadAttachment_ShouldCoverBranches()
     {
         var ticketServiceMock = new Mock<ITicketService>();
-        var controller = new TicketController(ticketServiceMock.Object);
+        var controller = new TicketController(ticketServiceMock.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
+        };
 
         // 1. KeyNotFoundException -> NotFound
         ticketServiceMock.Setup(s => s.GetAttachmentFileInfoAsync(1, 99))
@@ -651,10 +654,6 @@ public class HighCoverageBoostTests : TestBase
         Assert.Equal(1, paged.TotalCount);
         Assert.Equal(1, paged.Page);
         Assert.Equal(10, paged.PageSize);
-
-        var errResp = new SystemController.SystemErrorResponse("Err", "Detail");
-        Assert.Equal("Err", errResp.Message);
-        Assert.Equal("Detail", errResp.Error);
 
         // Domain Entities
         var parentKc = new KnowledgeCategory { Id = 2, Name = "Parent" };

@@ -544,7 +544,7 @@ public class UltraBranchCoverageFinalTests : TestBase
     public async Task AiController_And_PermissionsController_Branches()
     {
         // 1. AiController branches
-        var aiController = new AiController(_llmMock.Object);
+        var aiController = new AiController(_llmMock.Object, TestConfiguration.AiEnabled());
 
         _llmMock.Setup(l => l.GetCurrentConfig()).Returns(new LlmConfigDto { Endpoint = "endpoint", Model = "model", FallbackToHeuristic = true, TimeoutSeconds = 30 });
         var statusRes = await aiController.GetStatus() as OkObjectResult;

@@ -1,5 +1,10 @@
 # Requires a .env file next to this file (never committed) with:
 #   DB_PASSWORD=<strong password: 8+ chars, upper, lower, digit, symbol; no ';'>
+#   JWT_SECRET=<random, 32+ characters, for example from: openssl rand -base64 48>
+# and, for the first start only (the account must change its password at first login):
+#   BOOTSTRAP_ADMIN_USERNAME=<first administrator's username>
+#   BOOTSTRAP_ADMIN_EMAIL=<first administrator's e-mail>
+#   BOOTSTRAP_ADMIN_PASSWORD=<12+ characters>
 
 services:
   # --------------------------------------------------------------------------
@@ -39,10 +44,13 @@ services:
     ports:
       - "5246:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - AutoSeed=true
+      - Bootstrap__AdminUsername=${BOOTSTRAP_ADMIN_USERNAME:-}
+      - Bootstrap__AdminEmail=${BOOTSTRAP_ADMIN_EMAIL:-}
+      - Bootstrap__AdminPassword=${BOOTSTRAP_ADMIN_PASSWORD:-}
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=FnrcItsm;User Id=sa;Password=${DB_PASSWORD:?Set DB_PASSWORD in .env};TrustServerCertificate=True
-      - Jwt__Secret=${JWT_SECRET:-enterprise_super_secret_jwt_key_turkcell_itsm_2026!}
+      - Jwt__Secret=${JWT_SECRET:?Set JWT_SECRET in .env}
       - Jwt__Issuer=ItsToolAPI
       - Jwt__Audience=ItsToolClient
     extra_hosts:

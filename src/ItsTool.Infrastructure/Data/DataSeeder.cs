@@ -43,10 +43,12 @@ public class DataSeeder
     private static readonly string[] EndUserPermissions = new[] { "ticket.create", TicketView, "survey.submit", "kb.view" };
 
     private readonly ItsToolDbContext _context;
+    private readonly FirstAdminSettings? _firstAdmin;
 
-    public DataSeeder(ItsToolDbContext context)
+    public DataSeeder(ItsToolDbContext context, FirstAdminSettings? firstAdmin = null)
     {
         _context = context;
+        _firstAdmin = firstAdmin;
     }
 
     public async Task SeedAsync()
@@ -55,7 +57,7 @@ public class DataSeeder
         await SeedPrioritiesAsync();
         await SeedDepartmentsAndGroupsAsync();
         await SeedRolesAndPermissionsAsync();
-        await SeedUsersAsync();
+        await SeedFirstAdminAsync();
         await SeedProjectsAndCategoriesAsync();
         await SeedDynamicFieldsAsync();
         await SeedSlaPoliciesAsync();
@@ -215,66 +217,27 @@ public class DataSeeder
         await _context.SaveChangesAsync();
     }
 
-    private async Task SeedUsersAsync()
+    // No account is ever seeded with a known password, and seeding never grants roles to existing users or groups.
+    // The first administrator comes from the Bootstrap:Admin* settings and is created only while there are no users.
+    private async Task SeedFirstAdminAsync()
     {
+        if (_firstAdmin == null || await _context.Users.AnyAsync()) return;
+
+        var superAdminRole = await _context.Roles.FirstAsync(r => r.Name == RoleSuperAdmin);
         var itDept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == "Bilgi Teknolojileri");
-        var existingRoles = await _context.Roles.ToListAsync();
-        var existingPermissions = await _context.Permissions.ToListAsync();
-        // Users
-        var usersToSeed = new List<(string Username, string Password, string Role, string FirstName, string LastName)>
+        var admin = new ItsTool.Domain.Entities.Organization.User
         {
-            ("admin", "Admin123!", RoleSuperAdmin, "System", "Admin"),
-            ("manager", "Manager123!", RoleManager, "IT", "Manager"),
-            ("agent1", "Agent123!", RoleAgent, "Helpdesk", "Agent 1"),
-            ("agent2", "Agent123!", RoleAgent, "Helpdesk", "Agent 2"),
-            ("user1", "User123!", RoleEndUser, "End", "User")
+            Username = _firstAdmin.Username,
+            Email = _firstAdmin.Email,
+            FirstName = "System",
+            LastName = "Administrator",
+            DepartmentId = itDept?.Id,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(_firstAdmin.Password),
+            // The bootstrap password sits in configuration, so it is replaced at first login
+            MustChangePassword = true
         };
-
-        var existingUsers = await _context.Users.Include(u => u.UserRoles).Include(u => u.PermissionOverrides).ToListAsync();
-
-        foreach (var u in usersToSeed)
-        {
-            await CreateOrUpdateUserAsync(u, existingUsers, itDept, existingRoles, existingPermissions);
-        }
-
-        // Auto-assign roles for any users in the DB that currently have no role
-        var endUserRole = existingRoles.FirstOrDefault(r => r.Name == RoleEndUser);
-        var superAdminRole = existingRoles.FirstOrDefault(r => r.Name == RoleSuperAdmin);
-        var agentRole = existingRoles.FirstOrDefault(r => r.Name == RoleAgent);
-
-        var allUsersInDb = await _context.Users.Include(u => u.UserRoles).Where(u => !u.IsDeleted).ToListAsync();
-        var unassignedUsers = allUsersInDb.Where(u => !u.UserRoles.Any(ur => !ur.IsDeleted && ur.IsActive)).ToList();
-        foreach (var user in unassignedUsers)
-        {
-            var roleToAssign = (user.Username.Contains("admin", StringComparison.OrdinalIgnoreCase) || 
-                                user.Username.Contains("engineer", StringComparison.OrdinalIgnoreCase) || 
-                                user.Email.Contains("berkay", StringComparison.OrdinalIgnoreCase)) 
-                                ? superAdminRole : endUserRole;
-            if (roleToAssign != null)
-            {
-                _context.UserRoles.Add(new ItsTool.Domain.Entities.Auth.UserRole { UserId = user.Id, RoleId = roleToAssign.Id });
-            }
-        }
-
-        // Auto-assign Agent role for groups that currently have no group roles
-        if (agentRole != null)
-        {
-            var assignedGroupIds = await _context.GroupRoles
-                .Where(gr => !gr.IsDeleted && gr.IsActive)
-                .Select(gr => gr.GroupId)
-                .Distinct()
-                .ToListAsync();
-
-            var groupsWithoutRoles = await _context.Groups
-                .Where(g => !g.IsDeleted && !assignedGroupIds.Contains(g.Id))
-                .ToListAsync();
-
-            foreach (var g in groupsWithoutRoles)
-            {
-                _context.GroupRoles.Add(new ItsTool.Domain.Entities.Auth.GroupRole { GroupId = g.Id, RoleId = agentRole.Id });
-            }
-        }
-
+        _context.Users.Add(admin);
+        _context.UserRoles.Add(new ItsTool.Domain.Entities.Auth.UserRole { User = admin, RoleId = superAdminRole.Id });
         await _context.SaveChangesAsync();
     }
 
@@ -439,7 +402,10 @@ public class DataSeeder
             var prosedurlerCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Prosedürler");
             var sistemCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Sistem & Altyapı");
 
-            var adminAuthor = await _context.Users.FirstOrDefaultAsync(u => u.Username == "admin");
+            var adminAuthor = await _context.UserRoles
+                .Where(ur => ur.Role != null && ur.Role.Name == RoleSuperAdmin && !ur.IsDeleted)
+                .Select(ur => ur.User)
+                .FirstOrDefaultAsync();
             
             if (adminAuthor != null && rehberlerCat != null && prosedurlerCat != null && sistemCat != null)
             {
@@ -489,63 +455,6 @@ public class DataSeeder
             }
         }
     }
-
-
-    private async Task CreateOrUpdateUserAsync(
-        (string Username, string Password, string Role, string FirstName, string LastName) u,
-        List<ItsTool.Domain.Entities.Organization.User> existingUsers, 
-        ItsTool.Domain.Entities.Organization.Department? itDept,
-        List<ItsTool.Domain.Entities.Auth.Role> existingRoles, 
-        List<ItsTool.Domain.Entities.Auth.Permission> existingPermissions)
-    {
-        var user = existingUsers.FirstOrDefault(x => x.Username == u.Username);
-        if (user == null && itDept != null)
-        {
-            user = new ItsTool.Domain.Entities.Organization.User
-            {
-                Username = u.Username,
-                Email = $"{u.Username}@itsm.local",
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                DepartmentId = itDept.Id,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(u.Password)
-            };
-            _context.Users.Add(user);
-            existingUsers.Add(user);
-            await _context.SaveChangesAsync(); // get Id
-        }
-        else if (user != null)
-        {
-            // Force reset password hash for demo accounts to ensure they match *123!
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(u.Password);
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-        }
-
-        if (user != null)
-        {
-            var role = existingRoles.First(r => r.Name == u.Role);
-            if (!user.UserRoles.Any(ur => ur.RoleId == role.Id))
-            {
-                _context.UserRoles.Add(new ItsTool.Domain.Entities.Auth.UserRole { UserId = user.Id, RoleId = role.Id });
-            }
-
-            if (u.Username == "agent2")
-            {
-                var closePerm = existingPermissions.First(p => p.Key == PermissionConstants.TicketClose);
-                if (!user.PermissionOverrides.Any(po => po.PermissionId == closePerm.Id))
-                {
-                    _context.UserPermissionOverrides.Add(new ItsTool.Domain.Entities.Auth.UserPermissionOverride
-                    {
-                        UserId = user.Id,
-                        PermissionId = closePerm.Id,
-                        IsGranted = true
-                    });
-                }
-            }
-        }
-    }
-
 
 
     private static List<ItsTool.Domain.Entities.Workflow.WorkflowTransition> BuildDesiredTransitions(int workflowId, int openId, int inProgressId, int onHoldId, int resolvedId, int closedId)

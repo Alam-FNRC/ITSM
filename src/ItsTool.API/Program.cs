@@ -95,7 +95,6 @@ builder.Services.AddDbContext<ItsToolDbContext>((sp, options) =>
     options.AddInterceptors(interceptor);
 });
 
-builder.Services.AddScoped<DataSeeder>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPermissionCalculator, PermissionCalculator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -152,6 +151,10 @@ builder.Services.AddScoped<ISignalRPusher, ItsTool.API.Services.SignalRPusher>()
     builder.Services.AddScoped<ISystemAuditService, SystemAuditService>();
 
 // Auth Setup
+var jwtSecret = JwtSecret.Resolve(builder.Configuration["Jwt:Secret"], builder.Environment.IsDevelopment());
+// TokenService signs with the same value, including the random one generated for Development
+builder.Configuration["Jwt:Secret"] = jwtSecret;
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -163,13 +166,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? "fallback_secret_for_development_purposes_only"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
         };
     });
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddAuthorization(options =>
 {
+    // Endpoints without [Authorize] or [AllowAnonymous] still require a login
+    options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
     foreach (var perm in PermissionConstants.AllPermissions)
     {
         options.AddPolicy($"RequirePermission:{perm}", policy => 
@@ -228,18 +234,27 @@ app.MapGet("/api/health", () =>
         service = "ItsTool.API",
         timestamp = DateTime.UtcNow
     });
-});
+}).AllowAnonymous();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notification");
 
-if (app.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("AutoSeed"))
+// Seeding creates reference and sample data and, on an empty database, the configured first administrator.
+// It never creates accounts with known passwords or grants roles, so it may also run outside Development.
+var firstAdmin = FirstAdminSettings.FromConfiguration(builder.Configuration);
+if (builder.Configuration.GetValue<bool>("AutoSeed"))
 {
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ItsTool.Infrastructure.Data.ItsToolDbContext>();
     await context.Database.MigrateAsync();
-    var seeder = new ItsTool.Infrastructure.Data.DataSeeder(context);
+    var seeder = new ItsTool.Infrastructure.Data.DataSeeder(context, firstAdmin);
     await seeder.SeedAsync();
+
+    if (!await context.Users.AnyAsync())
+    {
+        app.Logger.LogWarning("No user accounts exist. Set Bootstrap:AdminUsername, Bootstrap:AdminEmail and " +
+                              "Bootstrap:AdminPassword to create the first administrator.");
+    }
 }
 
 // One-off cleanup for orphaned group assignments
@@ -262,3 +277,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 await app.RunAsync();
+
+// Lets the integration tests start the API with WebApplicationFactory<Program>
+public partial class Program { }

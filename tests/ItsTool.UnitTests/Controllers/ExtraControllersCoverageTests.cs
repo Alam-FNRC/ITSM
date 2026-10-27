@@ -40,48 +40,9 @@ public class ExtraControllersCoverageTests
     }
 
     [Fact]
-    public async Task SystemController_SeedDatabase_ShouldHandleAlreadySeededAndNewSeed()
-    {
-        var db = CreateDbContext("SystemControllerDb1");
-        db.Users.Add(new User { Id = 1, Username = "admin", Email = "a@a.com", PasswordHash = "hash" });
-        await db.SaveChangesAsync();
-
-        var controller = new SystemController(new DataSeeder(db), db);
-
-        var result = await controller.SeedDatabase();
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var response = Assert.IsType<SystemController.SystemResponse>(okResult.Value);
-        Assert.Contains("already seeded", response.Message);
-
-        var dbEmpty = CreateDbContext("SystemControllerDbEmpty");
-        var controllerEmpty = new SystemController(new DataSeeder(dbEmpty), dbEmpty);
-
-        var freshResult = await controllerEmpty.SeedDatabase();
-        var freshOk = Assert.IsType<OkObjectResult>(freshResult);
-        var freshResp = Assert.IsType<SystemController.SystemResponse>(freshOk.Value);
-        Assert.Contains("applied successfully", freshResp.Message);
-    }
-
-    [Fact]
-    public void SystemController_TestDatabaseConnection_ShouldReturnOk()
-    {
-        var db = CreateDbContext("SystemControllerDbConn");
-        db.Users.Add(new User { Id = 1, Username = "u1", Email = "u1@t.com", PasswordHash = "p" });
-        db.SaveChanges();
-
-        var controller = new SystemController(new DataSeeder(db), db);
-
-        var result = controller.TestDatabaseConnection();
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var response = Assert.IsType<SystemController.SystemResponse>(okResult.Value);
-        Assert.Contains("Connection OK", response.Message);
-    }
-
-    [Fact]
     public async Task SystemController_IngestEmail_ShouldCallService()
     {
-        var db = CreateDbContext("SystemControllerDbIngest");
-        var controller = new SystemController(new DataSeeder(db), db);
+        var controller = new SystemController();
 
         var emailServiceMock = new Mock<IEmailIngestionService>();
         emailServiceMock.Setup(e => e.ProcessIncomingEmailAsync(It.IsAny<EmailIngestionDto>()))
@@ -92,23 +53,6 @@ public class ExtraControllersCoverageTests
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         emailServiceMock.Verify(e => e.ProcessIncomingEmailAsync(dto), Times.Once);
-    }
-
-    [Fact]
-    public async Task TestController_GetRoles_ShouldFormatRoleList()
-    {
-        var roleServiceMock = new Mock<IRoleService>();
-        roleServiceMock.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<RoleDto>
-        {
-            new(1, "Admin", "Admin desc", true, new[] { "all.manage", "ticket.view" })
-        });
-
-        var controller = new TestController(roleServiceMock.Object);
-        var result = await controller.GetRoles();
-
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var content = Assert.IsType<string>(okResult.Value);
-        Assert.Contains("Admin: all.manage,ticket.view", content);
     }
 
     [Fact]
