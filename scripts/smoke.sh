@@ -1,100 +1,45 @@
 #!/bin/bash
+# Quick check that a running FNRC ITSM API answers and enforces its security rules.
+# Usage: ITSM_USERNAME=<admin> ITSM_PASSWORD=<password> ./scripts/smoke.sh [base URL]
+# The account must not have a pending password change.
 
-# Configuration
-API_URL="http://localhost:5033/api"
-EMAIL="superadmin@itstool.local"
-PASSWORD="SecretPassword123!"
+BASE_URL="${1:-http://localhost:5246}"
+API="$BASE_URL/api"
+: "${ITSM_USERNAME:?Set ITSM_USERNAME}"
+: "${ITSM_PASSWORD:?Set ITSM_PASSWORD}"
 
-echo "======================================"
-echo " ITSM-TOOL SMOKE TEST SCRIPT"
-echo "======================================"
+failures=0
+check() { # name, expected status, actual status
+    if [ "$2" == "$3" ]; then echo "  ok    $1 ($3)"; else echo "  FAIL  $1: expected $2, got $3"; failures=$((failures + 1)); fi
+}
+status() { curl -s -o /dev/null -w "%{http_code}" "$@"; }
 
-# 1. Login
-echo -n "POST /api/auth/login → "
-LOGIN_RESPONSE=$(curl -s -w "%{http_code}" -X POST "$API_URL/auth/login" \
-  -H "Content-Type: application/json" \
-  -d "{\"email\": \"$EMAIL\", \"password\": \"$PASSWORD\"}")
+echo "Smoke test against $BASE_URL"
 
-LOGIN_STATUS=${LOGIN_RESPONSE: -3}
-LOGIN_BODY=${LOGIN_RESPONSE:0:${#LOGIN_RESPONSE}-3}
+check "health check works without a login" 200 "$(status "$API/health")"
+check "API needs a login" 401 "$(status "$API/ticket/search")"
+check "AI status needs a login" 401 "$(status "$API/ai/status")"
 
-if [ "$LOGIN_STATUS" != "200" ]; then
-    echo "FAILED ($LOGIN_STATUS)"
-    echo "Body: $LOGIN_BODY"
+LOGIN=$(curl -s -X POST "$API/auth/login" -H "Content-Type: application/json" \
+    -d "{\"username\": \"$ITSM_USERNAME\", \"password\": \"$ITSM_PASSWORD\"}")
+TOKEN=$(echo "$LOGIN" | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+if [ -z "$TOKEN" ]; then
+    echo "  FAIL  login: $LOGIN"
     exit 1
 fi
-echo "$LOGIN_STATUS"
+echo "  ok    login"
+AUTH="Authorization: Bearer $TOKEN"
 
-# Extract Token
-TOKEN=$(echo "$LOGIN_BODY" | grep -o '"token":"[^"]*' | grep -o '[^"]*$')
+check "profile" 200 "$(status "$API/auth/me" -H "$AUTH")"
+check "lookup data" 200 "$(status "$API/lookup" -H "$AUTH")"
+check "ticket search" 200 "$(status "$API/ticket/search" -H "$AUTH")"
+check "dashboard" 200 "$(status "$API/dashboard/overview" -H "$AUTH")"
+check "AI endpoints are off" 404 "$(status -X POST "$API/ai/tickets/1/suggest-resolution" -H "$AUTH")"
+check "removed debug endpoint" 404 "$(status "$API/test/roles" -H "$AUTH")"
+check "front end is served" 200 "$(status "$BASE_URL/login.html")"
 
-# Function to test endpoint
-test_endpoint() {
-    local method=$1
-    local endpoint=$2
-    local body=$3
-    
-    echo -n "$method $endpoint → "
-    
-    local cmd="curl -s -w \"%{http_code}\" -X $method \"$API_URL$endpoint\" -H \"Authorization: Bearer $TOKEN\""
-    
-    if [ ! -z "$body" ]; then
-        cmd="$cmd -H \"Content-Type: application/json\" -d '$body'"
-    fi
-    
-    local response=$(eval $cmd)
-    local status=${response: -3}
-    echo "$status"
-    return 0
-}
-
-# 2. Endpoints
-test_endpoint "GET" "/lookup"
-test_endpoint "GET" "/tickets?pageSize=10"
-test_endpoint "GET" "/audit-log"
-
-# Rules Lifecycle
-echo -n "POST /rules/assignment → "
-RULE_RESPONSE=$(curl -s -w "%{http_code}" -X POST "$API_URL/rules/assignment" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Smoke Test Rule", "sortOrder": 99, "isActive": true}')
-RULE_STATUS=${RULE_RESPONSE: -3}
-RULE_BODY=${RULE_RESPONSE:0:${#RULE_RESPONSE}-3}
-echo "$RULE_STATUS"
-
-RULE_ID=$(echo "$RULE_BODY" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
-
-if [ ! -z "$RULE_ID" ]; then
-    test_endpoint "PUT" "/rules/assignment/$RULE_ID" '{"name": "Updated Smoke Rule", "sortOrder": 99, "isActive": false}'
-    test_endpoint "PUT" "/rules/assignment/$RULE_ID/toggle"
-    test_endpoint "DELETE" "/rules/assignment/$RULE_ID"
-else
-    echo "Could not extract RULE_ID for PUT/DELETE tests."
+if [ "$failures" -gt 0 ]; then
+    echo "$failures check(s) failed"
+    exit 1
 fi
-
-# Webhooks
-test_endpoint "GET" "/webhook"
-echo -n "POST /webhook → "
-WEBHOOK_RESPONSE=$(curl -s -w "%{http_code}" -X POST "$API_URL/webhook" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://smoke.test/hook", "eventsCsv": "ticket.created", "isActive": true}')
-WEBHOOK_STATUS=${WEBHOOK_RESPONSE: -3}
-WEBHOOK_BODY=${WEBHOOK_RESPONSE:0:${#WEBHOOK_RESPONSE}-3}
-echo "$WEBHOOK_STATUS"
-
-WEBHOOK_ID=$(echo "$WEBHOOK_BODY" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
-if [ ! -z "$WEBHOOK_ID" ]; then
-    test_endpoint "DELETE" "/webhook/$WEBHOOK_ID"
-fi
-
-# Overview
-test_endpoint "GET" "/dashboard/overview"
-
-# Ticket transitions (assuming ticket ID 1 exists and is closed, or just checking endpoint)
-test_endpoint "GET" "/tickets/1/allowed-transitions"
-
-echo "======================================"
-echo " SMOKE TEST COMPLETE"
-echo "======================================"
+echo "All checks passed"

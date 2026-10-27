@@ -71,9 +71,9 @@ public class KeyboardShortcutsStaticTests
 
         var content = File.ReadAllText(readmePath);
 
-        Assert.Contains("Klavye Kısayolları", content);
+        Assert.Contains("Keyboard shortcuts", content);
         Assert.Contains("Esc", content);
-        Assert.Contains("Hızlı Arama", content);
+        Assert.Contains("Quick search", content);
     }
 
     [Theory]

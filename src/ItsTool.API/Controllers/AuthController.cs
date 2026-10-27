@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using ItsTool.Application.DTOs;
+using ItsTool.API.Security;
 using ItsTool.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ItsTool.API.Controllers;
 
@@ -10,6 +12,8 @@ namespace ItsTool.API.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    public const string LoginRateLimitPolicy = "login";
+
     private readonly IAuthService _authService;
 
     public AuthController(IAuthService authService)
@@ -18,9 +22,11 @@ public class AuthController : ControllerBase
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting(LoginRateLimitPolicy)]
     [HttpPost("login")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
         try
@@ -35,6 +41,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [AllowedBeforePasswordChange]
     [HttpGet("me")]
     [ProducesResponseType(typeof(MeResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -58,6 +65,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [AllowedBeforePasswordChange]
     [HttpPost("refresh")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -81,6 +89,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [AllowedBeforePasswordChange]
     [HttpPost("change-password")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

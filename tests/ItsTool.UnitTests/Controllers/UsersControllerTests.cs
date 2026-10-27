@@ -206,6 +206,8 @@ public class UsersControllerTests
     [Fact]
     public async Task ResetPassword_ShouldReturnBadRequest_WhenPasswordEmpty()
     {
+        _serviceMock.Setup(s => s.ResetPasswordAsync(1, "   ")).ThrowsAsync(new ArgumentException("The password cannot be empty."));
+
         var result = await _controller.ResetPassword(1, new ResetPasswordDto("   "));
         Assert.IsType<BadRequestObjectResult>(result);
     }

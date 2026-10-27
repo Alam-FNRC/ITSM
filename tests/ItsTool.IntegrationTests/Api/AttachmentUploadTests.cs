@@ -64,6 +64,22 @@ public class AttachmentUploadTests
     }
 
     [Fact]
+    public async Task Responses_never_contain_the_servers_file_path()
+    {
+        var (ticket, client) = await CreateTicketAsRequesterAsync();
+
+        var upload = await UploadAsync(client, ticket, "notes.txt", "text/plain", "hello");
+        var list = await client.GetStringAsync($"/api/ticket/{ticket.Id}/attachments");
+        var timeline = await client.GetStringAsync($"/api/ticket/{ticket.Id}/timeline");
+
+        var uploadsFolder = Path.GetFileName(_api.UploadsPath);
+        Assert.DoesNotContain(uploadsFolder, await upload.Content.ReadAsStringAsync());
+        Assert.DoesNotContain(uploadsFolder, list);
+        Assert.DoesNotContain(uploadsFolder, timeline);
+        Assert.Contains("notes.txt", list);
+    }
+
+    [Fact]
     public async Task A_real_image_is_accepted_and_served_as_an_image()
     {
         var (ticket, client) = await CreateTicketAsRequesterAsync();

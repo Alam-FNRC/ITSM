@@ -2311,6 +2311,8 @@
                 text = t('log_edited_comment') || `edited a comment`;
             } else if (h.action === 'CommentDeleted') {
                 text = t('log_deleted_comment') || `deleted a comment`;
+            } else if (h.action === 'CommentRestored') {
+                text = t('log_restored_comment') || `restored a deleted comment`;
             } else if (h.action === 'UserMentioned') {
                 text = (t('log_mentioned_user') || `mentioned <strong>{0}</strong> in a comment`).replaceAll('{0}', window.resolveTimelineUser(h.newValue));
             }
@@ -2376,7 +2378,7 @@
                 }
             }
             
-            if (h.action === 'CommentEdited' || h.action === 'CommentDeleted' || h.action === 'UserMentioned' || isCommentLogOnly) {
+            if (h.action === 'CommentEdited' || h.action === 'CommentDeleted' || h.action === 'CommentRestored' || h.action === 'UserMentioned' || isCommentLogOnly) {
                 let detailsHtml = window.buildHistoryDetails(h, e, events);
                 const logDiv = document.createElement('div');
                 logDiv.className = 'history-event comment-log-item';

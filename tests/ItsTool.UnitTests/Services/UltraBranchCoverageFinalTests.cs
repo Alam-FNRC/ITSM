@@ -522,9 +522,9 @@ public class UltraBranchCoverageFinalTests : TestBase
         await Assert.ThrowsAsync<KeyNotFoundException>(() => userService.UpdateAsync(99999, new UpdateUserDto("e@t.com", "F", "L", true, null, null, null)));
         await Assert.ThrowsAsync<KeyNotFoundException>(() => userService.ResetPasswordAsync(99999, "newpass"));
 
-        var u = await userService.CreateAsync(new CreateUserDto("new_u", "e@u.com", "Pass123!", "F", "L", null, null, null));
+        var u = await userService.CreateAsync(new CreateUserDto("new_u", "e@u.com", "F", "L", "Initial-Pass-2026", null, null, null));
         // Deactivate user branch
-        await userService.UpdateAsync(u.Id, new UpdateUserDto("e@u.com", "F", "L", false, null, null, null, "NewPass123!"));
+        await userService.UpdateAsync(u.Id, new UpdateUserDto("e@u.com", "F", "L", false, null, null, null, "New-Password-2026"));
         var updatedU = await userService.GetByIdAsync(u.Id);
         Assert.False(updatedU!.IsActive);
 

@@ -59,16 +59,30 @@ public class UsersController : ControllerBase
     [HttpPost]
     [Authorize(Policy = "RequirePermission:admin.manage")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
     {
-        var created = await _service.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        try
+        {
+            var created = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
     [Authorize(Policy = "RequirePermission:admin.manage")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
     {
         try
@@ -79,6 +93,14 @@ public class UsersController : ControllerBase
         catch (KeyNotFoundException)
         {
             return NotFound();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = ex.Message });
         }
     }
 
@@ -141,9 +163,6 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ResetPassword(int id, [FromBody] ResetPasswordDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.NewPassword))
-            return BadRequest(new { message = "Yeni şifre boş olamaz." });
-
         try
         {
             await _service.ResetPasswordAsync(id, dto.NewPassword);
@@ -152,6 +171,10 @@ public class UsersController : ControllerBase
         catch (KeyNotFoundException)
         {
             return NotFound();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 }

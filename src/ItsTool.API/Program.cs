@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.SignalR;
 using ItsTool.API.Hubs;
 using System.Text;
+using System.Threading.RateLimiting;
+using ItsTool.API.Controllers;
 using Microsoft.OpenApi.Models;
 
 var currentDir = Directory.GetCurrentDirectory();
@@ -168,6 +170,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
         };
+        options.Events = new JwtBearerEvents
+        {
+            // Browsers cannot set headers on WebSocket or server-sent-event connections, so SignalR sends the token
+            // as ?access_token= (review A12). Accept that for the hub only; the API itself never reads tokens from URLs.
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(token) && context.HttpContext.Request.Path.StartsWithSegments(NotificationHubPath))
+                {
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = SessionValidation.ValidateAsync
+        };
     });
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
@@ -182,6 +199,17 @@ builder.Services.AddAuthorization(options =>
             policy.Requirements.Add(new PermissionRequirement(perm)));
     }
     options.AddPolicy("RequireKbManage", policy => policy.RequireClaim("permission", "kb.manage"));
+});
+
+// Login attempts per client IP address per minute (review A9). Behind a reverse proxy, set up forwarded
+// headers first, or every user shares the proxy's address and so one limit.
+var loginAttemptsPerMinute = builder.Configuration.GetValue("Auth:LoginAttemptsPerMinute", 20);
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(AuthController.LoginRateLimitPolicy, context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = loginAttemptsPerMinute, Window = TimeSpan.FromMinutes(1) }));
 });
 
 // Minimal CORS
@@ -225,6 +253,8 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UsePasswordChangeGate();
+app.UseRateLimiter();
 
 app.MapGet("/api/health", () =>
 {
@@ -237,7 +267,7 @@ app.MapGet("/api/health", () =>
 }).AllowAnonymous();
 
 app.MapControllers();
-app.MapHub<NotificationHub>("/hubs/notification");
+app.MapHub<NotificationHub>(NotificationHubPath);
 
 // Seeding creates reference and sample data and, on an empty database, the configured first administrator.
 // It never creates accounts with known passwords or grants roles, so it may also run outside Development.
@@ -279,4 +309,7 @@ using (var scope = app.Services.CreateScope())
 await app.RunAsync();
 
 // Lets the integration tests start the API with WebApplicationFactory<Program>
-public partial class Program { }
+public partial class Program
+{
+    private const string NotificationHubPath = "/hubs/notification";
+}

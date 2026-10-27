@@ -17,10 +17,10 @@ namespace ItsTool.Infrastructure.Services;
 public class TicketService : ITicketService
 {
     private const string TicketNotFoundMessage = "Ticket not found.";
-    // History actions whose FieldName holds a comment ID (see AddCommentAsync, UpdateCommentAsync, DeleteCommentAsync)
+    // History actions whose FieldName holds a comment ID (see AddCommentAsync, UpdateCommentAsync, Delete/RestoreCommentAsync)
     private static readonly HashSet<string> CommentHistoryActions = new()
     {
-        "CommentAdded", "CommentReplied", "InternalNoteAdded", "CommentEdited", "CommentDeleted", "UserMentioned"
+        "CommentAdded", "CommentReplied", "InternalNoteAdded", "CommentEdited", "CommentDeleted", "CommentRestored", "UserMentioned"
     };
     private readonly ItsToolDbContext _context;
     private readonly IFileStorageService _fileStorage;
@@ -738,16 +738,16 @@ public class TicketService : ITicketService
 
         c.IsDeleted = false;
 
-        // Remove the accidental CommentDeleted history entry so it disappears from logs
-        var deletedHistory = await _context.TicketHistories
-            .Where(h => h.TicketId == ticketId && h.Action == "CommentDeleted" && h.FieldName == c.Id.ToString())
-            .OrderByDescending(h => h.CreatedAt)
-            .FirstOrDefaultAsync();
-            
-        if (deletedHistory != null)
+        // History is append-only: the deletion stays on record and the restore is recorded after it
+        _context.TicketHistories.Add(new TicketHistory
         {
-            _context.TicketHistories.Remove(deletedHistory);
-        }
+            TicketId = ticketId,
+            Action = "CommentRestored",
+            FieldName = c.Id.ToString(),
+            OldValue = null,
+            NewValue = null,
+            CreatedBy = userId.ToString()
+        });
 
         await _context.SaveChangesAsync();
     }
@@ -787,7 +787,7 @@ public class TicketService : ITicketService
         });
 
         await _context.SaveChangesAsync();
-        return new TicketAttachmentDto(a.Id, a.TicketId, a.FileName, a.FilePath, a.FileSize, a.ContentType, a.UploadedByUserId, a.CreatedAt);
+        return ToAttachmentDto(a);
     }
 
     public async Task<IEnumerable<TicketAttachmentDto>> GetAttachmentsAsync(int ticketId)
@@ -796,8 +796,12 @@ public class TicketService : ITicketService
             .Where(a => a.TicketId == ticketId && !a.IsDeleted)
             .ToListAsync();
             
-        return attachments.Select(a => new TicketAttachmentDto(a.Id, a.TicketId, a.FileName, a.FilePath, a.FileSize, a.ContentType, a.UploadedByUserId, a.CreatedAt));
+        return attachments.Select(ToAttachmentDto);
     }
+
+    // Clients download through the API, so the server's file path is never sent to them
+    private static TicketAttachmentDto ToAttachmentDto(TicketAttachment a) =>
+        new(a.Id, a.TicketId, a.FileName, string.Empty, a.FileSize, a.ContentType, a.UploadedByUserId, a.CreatedAt);
 
     public async Task<(string FilePath, string ContentType, string FileName)> GetAttachmentFileInfoAsync(int ticketId, int attachmentId)
     {
@@ -884,7 +888,7 @@ public class TicketService : ITicketService
         events.AddRange(comments.Select(c => new TimelineEventDto("Comment", c.CreatedAt, c)));
 
         var attachments = await _context.TicketAttachments.Where(a => a.TicketId == ticketId && !a.IsDeleted).ToListAsync();
-        events.AddRange(attachments.Select(a => new TimelineEventDto("Attachment", a.CreatedAt, a)));
+        events.AddRange(attachments.Select(a => new TimelineEventDto("Attachment", a.CreatedAt, ToAttachmentDto(a))));
 
         return events.OrderBy(e => e.Timestamp);
     }

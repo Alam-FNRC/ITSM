@@ -115,7 +115,8 @@ class ApiClient {
             }
             const errorText = await response.text();
             console.error(`API Error 403 on ${endpoint}:`, errorText);
-            if (!options.silent) {
+            // While a temporary password must be replaced, the API refuses everything else; the change dialog explains it
+            if (!options.silent && !this.decodedToken?.mustChangePassword) {
                 showToast('Bu işlemi yapmaya veya bu sayfayı görüntülemeye yetkiniz bulunmuyor (403).', 'error');
             }
             throw new Error(`Forbidden: ${endpoint}`);
@@ -141,6 +142,16 @@ class ApiClient {
         return await response.json();
     }
 
+    // The reason the API gave for a refused request ({ message } or { error } body), or the fallback
+    errorMessage(error, fallback) {
+        try {
+            const body = JSON.parse(error.message);
+            return body.message || body.error || fallback;
+        } catch {
+            return fallback;
+        }
+    }
+
     // Fetches a file with the login token, for attachments that <img src> and <a href> cannot authorize
     async fetchFile(endpoint) {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -160,10 +171,11 @@ class ApiClient {
         return res;
     }
 
-    async changePassword(newPassword, confirmPassword) {
+    async changePassword(newPassword, confirmPassword, currentPassword) {
         const res = await this.request('/auth/change-password', {
             method: 'POST',
-            body: JSON.stringify({ newPassword, confirmPassword })
+            body: JSON.stringify({ newPassword, confirmPassword, currentPassword }),
+            silent: true
         });
         if (res && res.token) {
             this.setToken(res.token);

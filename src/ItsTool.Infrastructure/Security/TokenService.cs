@@ -26,6 +26,8 @@ public class TokenService : ITokenService
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            // Issue time, so tokens from before a password change can be refused
+            new Claim(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64),
             new Claim(ClaimTypes.Name, username),
             new Claim("mustChangePassword", mustChangePassword ? "true" : "false")
         };

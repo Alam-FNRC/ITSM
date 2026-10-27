@@ -33,6 +33,7 @@ Claude proposes; William decides anything that changes scope, data, or security.
 - `node --test tests/frontend/*.test.js` runs the front-end tests.
 - Schema change: `dotnet ef migrations add <Name> --project src/ItsTool.Infrastructure --startup-project src/ItsTool.API`. A test fails if the model and the migrations drift apart.
 - The in-memory provider hides SQL translation errors and ignores constraints: anything that changes a query needs an integration test.
+- Login security settings (defaults): `Auth:MaxFailedLogins` (5) and `Auth:LockoutMinutes` (15) for account lockout, `Auth:LoginAttemptsPerMinute` (20, per IP address; behind a reverse proxy, configure forwarded headers first). Every login attempt and password change is written to the append-only `AuthEvents` table. Password rules live in `PasswordPolicy`.
 - Access-control tests go in `tests/ItsTool.IntegrationTests/Api/`: `ApiFixture` starts the real API on its own test database; `CreateUserAsync(permissions)` + `LoginAsync(user)` give a client with a real token.
 
 ## Roadmap

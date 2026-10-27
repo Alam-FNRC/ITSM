@@ -22,4 +22,4 @@ public record MeResponseDto(
     string? ProfilePhoto,
     bool MustChangePassword = false);
 
-public record ChangePasswordRequestDto(string NewPassword, string ConfirmPassword);
+public record ChangePasswordRequestDto(string NewPassword, string ConfirmPassword, string? CurrentPassword = null);
