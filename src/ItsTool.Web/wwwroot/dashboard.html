@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Dashboard</title>
+    <title data-i18n="nav_dashboard" data-i18n-target="document-title">ITSM Tool - Dashboard</title>
     <link rel="stylesheet" href="css/design-system.css">
     <script src="js/lib/chart.js"></script>
 </head>
@@ -19,10 +19,10 @@
                     <h2 data-i18n="dash_title">Dashboard</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -93,14 +93,14 @@
     <div id="drillDownModal" class="modal-overlay">
         <div class="modal" style="max-width: 800px; width: 90%;">
             <div class="modal-header">
-                <h2 id="drillDownTitle">Details</h2>
-                <button type="button" class="close-btn" onclick="closeModal('drillDownModal')" aria-label="Close">
+                <h2 id="drillDownTitle" data-i18n="dash_details">Details</h2>
+                <button type="button" class="close-btn" onclick="closeModal('drillDownModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
             <div class="modal-body">
                 <div id="drillDownCount" style="margin-bottom: 12px; font-weight: 500; color: var(--text-muted);"></div>
-                <div id="drillDownList" style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 8px;">
+                <div id="drillDownList" style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-inline-end: 8px;">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -111,7 +111,7 @@
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
         import { bindShellActions, showToast, openTicketPreview, openModal, closeModal, escapeHtml } from './js/ui.js?v=999';
-        import { t } from './js/i18n.js';
+        import { t, getLocale } from './js/i18n.js';
         injectShell();
         
         window.openModal = openModal;
@@ -140,7 +140,7 @@
                             <svg viewBox="0 0 24 24" width="24" height="24" style="fill: currentColor;">${iconPath}</svg>
                         </div>
                         <div>
-                            <div class="text-muted" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">${t('dash_kpi_' + title.replaceAll(' ', '_').toLowerCase()) || title}</div>
+                            <div class="text-muted" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">${t('dash_kpi_' + title.replaceAll(' ', '_').toLowerCase(), title)}</div>
                             <div style="font-size: 28px; font-weight: 700; color: var(--${title === 'Avg CSAT' || title === 'Open Tickets' || title === 'Unassigned' ? 'text' : color}); line-height: 1.2;">${val}</div>
                         </div>
                     </div>
@@ -174,7 +174,7 @@
                         type: 'bar',
                         data: {
                             labels: dist.byPriority.map(d => t('db_' + d.key.toLowerCase().replaceAll(' ', '_'))),
-                            datasets: [{ label: 'Count', data: dist.byPriority.map(d => d.count), backgroundColor: '#0052CC' }]
+                            datasets: [{ label: t('dash_count'), data: dist.byPriority.map(d => d.count), backgroundColor: '#0052CC' }]
                         },
                         options: { 
                             maintainAspectRatio: false, 
@@ -221,13 +221,13 @@
                     const statusName = (lookup.statuses && lookup.statuses.find(x => x.id === tData.statusId)?.name) || t('dash_unknown');
                     const priorityName = (lookup.priorities && lookup.priorities.find(x => x.id === tData.priorityId)?.name) || t('dash_unknown');
                     
-                    const localizedStatus = t('db_' + statusName.toLowerCase().replaceAll(' ', '_')) || statusName;
-                    const localizedPriority = t('db_' + priorityName.toLowerCase().replaceAll(' ', '_')) || priorityName;
+                    const localizedStatus = t('db_' + statusName.toLowerCase().replaceAll(' ', '_'), statusName);
+                    const localizedPriority = t('db_' + priorityName.toLowerCase().replaceAll(' ', '_'), priorityName);
 
                     return `
                     <tr style="cursor: pointer;" onclick="openTicketPreview(${tData.id})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTicketPreview(${tData.id});}">
                         <td class="text-muted" style="font-family: monospace;">#${tData.id}</td>
-                        <td style="font-weight: 500;">${window.ui?.escapeHtml(tData.title) || tData.title}</td>
+                        <td dir="auto" style="font-weight: 500;">${window.ui?.escapeHtml(tData.title) || tData.title}</td>
                         <td><span class="badge badge-default">${window.ui?.escapeHtml(localizedStatus) || localizedStatus}</span></td>
                         <td><span class="badge badge-warning">${window.ui?.escapeHtml(localizedPriority) || localizedPriority}</span></td>
                     </tr>
@@ -249,7 +249,7 @@
                         <div style="font-weight: 600;">${w.openTicketCount}</div>
                     </div>
                     ${w.members && w.members.length > 0 ? `
-                        <div style="padding-left: 44px; display: flex; flex-direction: column; gap: 4px;">
+                        <div style="padding-inline-start: 44px; display: flex; flex-direction: column; gap: 4px;">
                             ${w.members.map(m => `
                                 <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);">
                                     <span>${escapeHtml(m.userName)}</span>
@@ -306,9 +306,9 @@
             
             if (recentTickets.length === 0) return `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_data')}</div>`;
             return recentTickets.map(tData => `
-                <button type="button" style="width: 100%; border: none; text-align: left; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-hover); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg-hover)'">
+                <button type="button" style="width: 100%; border: none; text-align: start; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-hover); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg-hover)'">
                     <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${escapeHtml(tData.ticketNumber)}</div>
-                    <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
+                    <div dir="auto" style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
                     ${getStatusBadge(getStatusName(tData.statusId))}
                 </button>
             `).join('');
@@ -383,22 +383,22 @@
                 let errEl = document.querySelector('tbody') || document.querySelector('#overviewCards') || document.querySelector('#board') || document.querySelector('#articleList') || document.querySelector('.content-area');
                 if (errEl) {
                     if (errEl.tagName === 'TBODY') {
-                        errEl.innerHTML = '<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</td></tr>';
+                        errEl.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${t('common_err_load_data')}</td></tr>`;
                      } else {
-                        errEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</div>';
+                        errEl.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger);">${t('common_err_load_data')}</div>`;
                     }
                 }
 
                 if(err.message === 'Unauthorized') return;
-                showToast('Error loading dashboard', 'error');
+                showToast(t('dash_load_failed'), 'error');
             }
         }
         
         function renderDrillDownTickets(items) {
             window.__drillDownCache = items;
-            document.getElementById('drillDownCount').textContent = `${items.length} ${t('dash_records_found') || 'records found'}`;
+            document.getElementById('drillDownCount').textContent = `${items.length} ${t('dash_records_found')}`;
             if (items.length === 0) {
-                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat') || 'No tickets in this category'}</div>`;
+                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat')}</div>`;
                 return;
             }
             
@@ -406,20 +406,20 @@
             const getPriorityName = (id) => window.__lookupCache?.priorities?.find(s => s.id === id)?.name || 'Normal';
             const getStatusBadge = (status) => {
                 const map = { 'Open': 'info', 'Açık': 'info', 'In Progress': 'warning', 'Devam Ediyor': 'warning', 'Pending': 'warning', 'Beklemede': 'warning', 'Resolved': 'success', 'Çözüldü': 'success', 'Closed': 'default', 'Kapatıldı': 'default' };
-                const label = t('db_' + status.toLowerCase().replaceAll(' ', '_')) || status;
+                const label = t('db_' + status.toLowerCase().replaceAll(' ', '_'), status);
                 return `<span class="badge badge-${map[status] || 'default'}" style="font-size: 11px;">${window.ui?.escapeHtml(label) || label}</span>`;
             };
 
             const getPriorityBadge = (priority) => {
                 const pMap = { 'Critical': 'danger', 'Kritik': 'danger', 'High': 'warning', 'Yüksek': 'warning', 'Medium': 'info', 'Orta': 'info', 'Low': 'default', 'Düşük': 'default' };
-                const label = t('db_' + priority.toLowerCase().replaceAll(' ', '_')) || priority;
+                const label = t('db_' + priority.toLowerCase().replaceAll(' ', '_'), priority);
                 return `<span class="badge badge-${pMap[priority] || 'default'}" style="font-size: 11px;">${window.ui?.escapeHtml(label) || label}</span>`;
             };
 
             document.getElementById('drillDownList').innerHTML = items.map(tData => `
-                <button type="button" style="width: 100%; border: 1px solid var(--border); text-align: left; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-surface); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-surface)'">
+                <button type="button" style="width: 100%; border: 1px solid var(--border); text-align: start; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-surface); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-surface)'">
                     <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${escapeHtml(tData.ticketNumber)}</div>
-                    <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
+                    <div dir="auto" style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
                     ${getStatusBadge(getStatusName(tData.statusId))}
                     ${getPriorityBadge(getPriorityName(tData.priorityId))}
                 </button>
@@ -428,17 +428,17 @@
 
         async function loadAndRenderSurveys() {
             const surveys = await window.api.getDashboardSurveys();
-            document.getElementById('drillDownCount').textContent = `${surveys.length} ${t('dash_surveys_found') || 'survey(s) found'}`;
+            document.getElementById('drillDownCount').textContent = `${surveys.length} ${t('dash_surveys_found')}`;
             if (surveys.length === 0) {
-                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat') || 'No tickets in this category'}</div>`;
+                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat')}</div>`;
             } else {
                 document.getElementById('drillDownList').innerHTML = surveys.map(s => `
                     <div style="padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <strong style="color:var(--primary);">Rating: ${s.rating}/5</strong>
-                            <span style="font-size: 12px; color: var(--text-muted);">${new Date(s.createdAt).toLocaleString()}</span>
+                            <strong style="color:var(--primary);">${t('dash_rating').replaceAll('{0}', s.rating)}</strong>
+                            <span style="font-size: 12px; color: var(--text-muted);">${new Date(s.createdAt).toLocaleString(getLocale())}</span>
                         </div>
-                        <div style="font-size: 14px; color: var(--text-main); font-style: italic;">"${escapeHtml(s.comment || 'No comment')}"</div>
+                        <div dir="auto" style="font-size: 14px; color: var(--text-main); font-style: italic;">"${escapeHtml(s.comment || t('dash_no_comment'))}"</div>
                     </div>
                 `).join('');
             }
@@ -478,17 +478,17 @@
             let translatedType;
             if (type.startsWith('Status: ')) {
                 const val = type.replaceAll('Status: ', '');
-                translatedType = `${t('dash_lbl_status') || 'Status'}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
+                translatedType = `${t('dash_lbl_status')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_'), val)}`;
             } else if (type.startsWith('Priority: ')) {
                 const val = type.replaceAll('Priority: ', '');
-                translatedType = `${t('dash_lbl_priority') || 'Priority'}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
+                translatedType = `${t('dash_lbl_priority')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_'), val)}`;
             } else {
-                translatedType = t('dash_kpi_' + type.replaceAll(' ', '_').toLowerCase()) || type;
+                translatedType = t('dash_kpi_' + type.replaceAll(' ', '_').toLowerCase(), type);
             }
             
-            document.getElementById('drillDownTitle').textContent = `${translatedType} ${t('dash_details') || 'Details'}`;
-            document.getElementById('drillDownCount').textContent = t('admin_role_loading') || 'Loading...';
-            document.getElementById('drillDownList').innerHTML = `<div style="padding:20px;text-align:center;">${t('admin_role_loading') || 'Loading data...'}</div>`;
+            document.getElementById('drillDownTitle').textContent = `${translatedType} ${t('dash_details')}`;
+            document.getElementById('drillDownCount').textContent = t('common_loading');
+            document.getElementById('drillDownList').innerHTML = `<div style="padding:20px;text-align:center;">${t('common_loading')}</div>`;
             
             if (window.openModal) window.openModal('drillDownModal');
 
@@ -503,7 +503,7 @@
                 renderDrillDownTickets(res.items || []);
             } catch (err) {
                 console.error("Drill-down error", err);
-                document.getElementById('drillDownList').innerHTML = '<div style="color:var(--danger); padding:20px; text-align:center;">Failed to load data.</div>';
+                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--danger); padding:20px; text-align:center;">${t('common_err_load_data')}</div>`;
             }
         };
         await loadDashboard();

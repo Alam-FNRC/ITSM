@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Knowledge Base</title>
+    <title data-i18n="nav_kb" data-i18n-target="document-title">ITSM Tool - Knowledge Base</title>
     <link rel="stylesheet" href="css/design-system.css?v=1008">
     <link href="css/quill.snow.css" rel="stylesheet">
     <style>
@@ -28,7 +28,7 @@
 
         .articles { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-lg); }
         
-        .article-card { background: var(--bg-surface); padding: var(--spacing-lg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; text-align: left; width: 100%; height: 100%; }
+        .article-card { background: var(--bg-surface); padding: var(--spacing-lg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; text-align: start; width: 100%; height: 100%; }
         .article-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary); }
         
         .article-card-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: var(--spacing-sm); }
@@ -52,10 +52,10 @@
                     <h2 data-i18n="kb_title">Knowledge Base</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -101,7 +101,7 @@
         <div class="modal" style="max-width: 600px;">
             <div class="modal-header">
                 <h2 id="modalTitle" data-i18n="kb_modal_new">New Article</h2>
-                <button type="button" class="close-btn" onclick="closeModal('articleModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('articleModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -109,7 +109,7 @@
                 <form id="articleForm">
                     <input type="hidden" id="articleId" value="">
                     <div id="authorFeedbackAlert" style="display: none; padding: 12px; margin-bottom: 16px; background: rgba(var(--warning-rgb, 245,158,11), 0.1); border: 1px solid var(--warning); border-radius: 8px; color: var(--text);">
-                        <strong style="color: var(--warning);"><svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor; margin-right:4px; vertical-align:text-bottom;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> <span data-i18n="kb_alert_feedback">Manager Feedback</span>:</strong>
+                        <strong style="color: var(--warning);"><svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor; margin-inline-end:4px; vertical-align:text-bottom;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> <span data-i18n="kb_alert_feedback">Manager Feedback</span>:</strong>
                         <p id="authorFeedbackText" style="margin: 4px 0 0 0; font-size: 13px;"></p>
                     </div>
                     <div class="form-group">
@@ -153,7 +153,7 @@
         <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
                 <h2 data-i18n="kb_modal_review">Review Article</h2>
-                <button type="button" class="close-btn" onclick="closeModal('reviewModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('reviewModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -187,7 +187,7 @@
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
         import { bindShellActions, showToast, openModal, closeModal } from './js/ui.js?v=999';
-        import { t, getCurrentLanguage, getLocale } from './js/i18n.js';
+        import { t, getLocale } from './js/i18n.js';
         injectShell();
         
         if (!window.api.token) window.location.href = '/login.html';
@@ -208,7 +208,7 @@
         document.getElementById('btnNewArticle').style.display = 'inline-flex';
         if (!hasManageKb) {
             document.getElementById('btnNewArticle').dataset.i18n = 'kb_btn_suggest';
-            document.getElementById('btnNewArticle').textContent = t('kb_btn_suggest') || '+ Suggest Article';
+            document.getElementById('btnNewArticle').textContent = t('kb_btn_suggest');
         }
         
         let currentTab = 'published';
@@ -237,10 +237,10 @@
             let badges = '';
             if (a.visibility == 0 || a.visibility === 'Internal') badges += `<span class="badge badge-warning">${t('kb_badge_internal')}</span> `;
             if (a.status == 0 || a.status === 'Draft') badges += `<span class="badge badge-default">${t('kb_badge_draft')}</span> `;
-            if (a.status == 1 || a.status === 'Published') badges += `<span class="badge badge-success">${t('kb_badge_published') || 'Yayında'}</span> `;
-            if (a.status == 2 || a.status === 'PendingReview') badges += `<span class="badge badge-info">${t('kb_badge_pending') || 'Pending Review'}</span> `;
-            if (a.status == 3 || a.status === 'NeedsRevision') badges += `<span class="badge badge-warning" style="background: rgba(var(--warning-rgb, 245,158,11), 0.2); color: var(--warning);">${t('kb_badge_needs_rev') || 'Needs Revision'}</span> `;
-            if (a.status == 4 || a.status === 'Rejected') badges += `<span class="badge badge-danger">${t('kb_badge_rejected') || 'Rejected'}</span> `;
+            if (a.status == 1 || a.status === 'Published') badges += `<span class="badge badge-success">${t('kb_badge_published')}</span> `;
+            if (a.status == 2 || a.status === 'PendingReview') badges += `<span class="badge badge-info">${t('kb_badge_pending')}</span> `;
+            if (a.status == 3 || a.status === 'NeedsRevision') badges += `<span class="badge badge-warning" style="background: rgba(var(--warning-rgb, 245,158,11), 0.2); color: var(--warning);">${t('kb_badge_needs_rev')}</span> `;
+            if (a.status == 4 || a.status === 'Rejected') badges += `<span class="badge badge-danger">${t('kb_badge_rejected')}</span> `;
             return badges;
         }
 
@@ -253,33 +253,33 @@
             const isNeedsRevision = a.status == 3 || a.status === 'NeedsRevision';
             
             if (hasManageKb || isAuthor) {
-                actionsHtml = `<div class="article-actions" style="display:flex; align-items:center; gap: 8px; margin-top: 12px; margin-left: auto;" onclick="event.stopPropagation()">`;
+                actionsHtml = `<div class="article-actions" style="display:flex; align-items:center; gap: 8px; margin-top: 12px; margin-inline-start: auto;" onclick="event.stopPropagation()">`;
                 
                 if (isAuthor) {
                     // DÖRT GÖZ İLKESİ: Yazar ASLA kendi makalesini onaylayamaz veya doğrudan yayınlayamaz.
-                    actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="Edit" onclick="editArticle(event, ${a.id})">${t('kb_btn_edit') || 'Düzenle'}</button>`;
+                    actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="${t('common_edit')}" onclick="editArticle(event, ${a.id})">${t('kb_btn_edit')}</button>`;
                     
                     if (isDraft || isNeedsRevision) {
-                        actionsHtml += `<button type="button" class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" title="Onaya Gönder" onclick="submitForApproval(event, ${a.id})">${t('kb_btn_submit_approval') || 'Onaya Gönder'}</button>`;
+                        actionsHtml += `<button type="button" class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" title="${t('kb_btn_submit_approval')}" onclick="submitForApproval(event, ${a.id})">${t('kb_btn_submit_approval')}</button>`;
                     } else if (isPending) {
-                        actionsHtml += `<span class="badge" style="background: rgba(59,130,246,0.12); color: var(--primary); font-size: 11px; padding: 4px 8px; border-radius: 4px;">${t('kb_waiting_other_manager') || 'Farklı bir yönetici onayı bekleniyor'}</span>`;
+                        actionsHtml += `<span class="badge" style="background: rgba(59,130,246,0.12); color: var(--primary); font-size: 11px; padding: 4px 8px; border-radius: 4px;">${t('kb_waiting_other_manager')}</span>`;
                     } else if (isPublished && hasManageKb) {
-                        actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="Yayından Kaldır" onclick="togglePublish(event, ${a.id}, '${a.status}')">${t('kb_btn_unpub') || 'Yayından Kaldır'}</button>`;
+                        actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="${t('kb_btn_unpub')}" onclick="togglePublish(event, ${a.id}, '${a.status}')">${t('kb_btn_unpub')}</button>`;
                     }
                     
-                    actionsHtml += `<button type="button" class="btn btn-ghost text-danger" style="padding: 4px;" title="Delete" onclick="deleteArticle(event, ${a.id})">${t('kb_btn_del') || 'Sil'}</button>`;
+                    actionsHtml += `<button type="button" class="btn btn-ghost text-danger" style="padding: 4px;" title="${t('btn_delete')}" onclick="deleteArticle(event, ${a.id})">${t('kb_btn_del')}</button>`;
                 } else if (hasManageKb) {
                     // FARKLI BİR YÖNETİCİ: Başkasının önerdiği makaleyi inceleyebilir, onaylayabilir veya yayından kaldırabilir.
-                    actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="Edit" onclick="editArticle(event, ${a.id})">${t('kb_btn_edit') || 'Düzenle'}</button>`;
+                    actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="${t('common_edit')}" onclick="editArticle(event, ${a.id})">${t('kb_btn_edit')}</button>`;
                     
                     if (isPending) {
-                        actionsHtml += `<button type="button" class="btn btn-primary" style="padding: 4px 12px; font-size: 13px;" title="Approve" onclick="quickApproveArticle(event, ${a.id})">${t('kb_btn_approve_pub') || 'Onayla'}</button>`;
-                        actionsHtml += `<button type="button" class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;" title="Review" onclick="openReviewModal(event, ${a.id})">${t('kb_btn_review') || 'İncele'}</button>`;
+                        actionsHtml += `<button type="button" class="btn btn-primary" style="padding: 4px 12px; font-size: 13px;" title="${t('kb_btn_approve_pub')}" onclick="quickApproveArticle(event, ${a.id})">${t('kb_btn_approve_pub')}</button>`;
+                        actionsHtml += `<button type="button" class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;" title="${t('kb_btn_review')}" onclick="openReviewModal(event, ${a.id})">${t('kb_btn_review')}</button>`;
                     } else {
-                        actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="Toggle Publish" onclick="togglePublish(event, ${a.id}, '${a.status}')">${isPublished ? (t('kb_btn_unpub') || 'Yayından Kaldır') : (t('kb_btn_pub') || 'Yayınla')}</button>`;
+                        actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="${t('kb_toggle_publish')}" onclick="togglePublish(event, ${a.id}, '${a.status}')">${isPublished ? (t('kb_btn_unpub')) : (t('kb_btn_pub'))}</button>`;
                     }
                     
-                    actionsHtml += `<button type="button" class="btn btn-ghost text-danger" style="padding: 4px;" title="Delete" onclick="deleteArticle(event, ${a.id})">${t('kb_btn_del') || 'Sil'}</button>`;
+                    actionsHtml += `<button type="button" class="btn btn-ghost text-danger" style="padding: 4px;" title="${t('btn_delete')}" onclick="deleteArticle(event, ${a.id})">${t('kb_btn_del')}</button>`;
                 }
                 
                 actionsHtml += `</div>`;
@@ -301,6 +301,7 @@
             header.className = 'article-card-header';
             const h3 = document.createElement('h3');
             h3.textContent = a.title;
+            h3.dir = 'auto';
             const badgesDiv = document.createElement('div');
             badgesDiv.style.display = 'flex';
             badgesDiv.style.gap = '4px';
@@ -312,7 +313,7 @@
             desc.style.color = 'var(--text-muted)';
             desc.style.fontSize = '13px';
             desc.style.lineHeight = '1.5';
-            desc.style.textAlign = 'left';
+            desc.style.textAlign = 'start';
             desc.style.marginBottom = '16px';
             desc.style.display = '-webkit-box';
             desc.style.webkitLineClamp = '2';
@@ -329,7 +330,6 @@
             viewCountSpan.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" style="fill: currentColor;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg> ${a.viewCount}`;
             meta.appendChild(viewCountSpan);
 
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             const dateSpan = document.createElement('span');
             dateSpan.className = 'meta-item';
             dateSpan.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" style="fill: currentColor;"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> ${new Date(a.createdAt).toLocaleString(getLocale(), { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}`;
@@ -340,13 +340,13 @@
                 authorSpan.className = 'meta-item';
                 const localizedDept = a.authorDepartment ? t('db_' + a.authorDepartment.toLowerCase().replaceAll(' ', '_'), a.authorDepartment) : '';
                 const authorDeptStr = localizedDept ? ` (${escapeHtml(localizedDept)})` : '';
-                authorSpan.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" style="fill: currentColor;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> ${t('kb_by') || (isEn ? 'By' : 'Yazan')}: ${escapeHtml(a.authorName)}${authorDeptStr}`;
+                authorSpan.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" style="fill: currentColor;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> ${t('kb_by')}: ${escapeHtml(a.authorName)}${authorDeptStr}`;
                 meta.appendChild(authorSpan);
             }
 
             if (actionsHtml) {
                 const actionsDiv = document.createElement('div');
-                actionsDiv.style.marginLeft = 'auto';
+                actionsDiv.style.marginInlineStart = 'auto';
                 actionsDiv.style.marginTop = '12px';
                 actionsDiv.innerHTML = actionsHtml;
                 meta.appendChild(actionsDiv);
@@ -394,9 +394,9 @@
                 let errEl = document.querySelector('tbody') || document.querySelector('#overviewCards') || document.querySelector('#board') || document.querySelector('#articleList') || document.querySelector('.content-area');
                 if (errEl) {
                     if (errEl.tagName === 'TBODY') {
-                        errEl.innerHTML = '<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</td></tr>';
+                        errEl.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${t('common_err_load_data')}</td></tr>`;
                      } else {
-                        errEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</div>';
+                        errEl.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger);">${t('common_err_load_data')}</div>`;
                     }
                 }
  console.error(e); showToast('Search failed', 'error'); }
@@ -459,13 +459,13 @@
             
             const statusSelect = document.getElementById('articleStatus');
             statusSelect.innerHTML = `
-                <option value="0">${t('kb_opt_draft') || 'Taslak'}</option>
-                <option value="2">${t('kb_opt_submit_review') || 'Onaya Gönder (Yönetici İncelemesi)'}</option>
+                <option value="0">${t('kb_opt_draft')}</option>
+                <option value="2">${t('kb_opt_submit_review')}</option>
             `;
             statusSelect.value = '2';
             
             document.getElementById('authorFeedbackAlert').style.display = 'none';
-            document.getElementById('btnSaveArticle').textContent = t('kb_btn_save') || 'Save Article';
+            document.getElementById('btnSaveArticle').textContent = t('kb_btn_save');
 
             if (!hasManageKb) {
                 document.getElementById('articleVisibility').parentElement.style.display = 'none';
@@ -476,14 +476,14 @@
             }
 
             document.getElementById('modalTitle').dataset.i18n = hasManageKb ? 'kb_modal_new' : 'kb_btn_suggest';
-            document.getElementById('modalTitle').textContent = hasManageKb ? t('kb_modal_new') : t('kb_btn_suggest') || 'Suggest Article';
+            document.getElementById('modalTitle').textContent = hasManageKb ? t('kb_modal_new') : t('kb_btn_suggest');
             
             if (allCategories.length === 0) {
                 try {
                     allCategories = await window.api.getKbCategories();
                     const catSelect = document.getElementById('articleCategory');
                     catSelect.innerHTML = allCategories.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-                } catch (e) { console.error(e);  showToast('Kategoriler yüklenemedi', 'error');  }
+                } catch (e) { console.error(e);  showToast(t('kb_categories_load_failed'), 'error');  }
             }
             openModal('articleModal');
         });
@@ -505,10 +505,10 @@
             try {
                 if (id) {
                     await window.api.updateKbArticle(id, payload);
-                    showToast(payload.status === 2 ? (t('kb_toast_submitted_approval') || 'Makale onay için yöneticilere iletildi.') : t('kb_toast_updated'));
+                    showToast(payload.status === 2 ? (t('kb_toast_submitted_approval')) : t('kb_toast_updated'));
                 } else {
                     await window.api.createKbArticle(payload);
-                    showToast(payload.status === 2 ? (t('kb_toast_submitted_approval') || 'Makale oluşturuldu ve onay için yöneticilere iletildi.') : t('kb_toast_created'));
+                    showToast(payload.status === 2 ? (t('kb_toast_submitted_approval')) : t('kb_toast_created'));
                 }
                 closeModal('articleModal');
                 loadKb();
@@ -531,14 +531,14 @@
                 const statusSelect = document.getElementById('articleStatus');
                 if (article.status == 1 || article.status === 'Published') {
                     statusSelect.innerHTML = `
-                        <option value="1">${t('kb_opt_published') || 'Yayında'}</option>
-                        <option value="0">${t('kb_btn_unpub') || 'Taslak (Yayından Kaldır)'}</option>
+                        <option value="1">${t('kb_opt_published')}</option>
+                        <option value="0">${t('kb_btn_unpub')}</option>
                     `;
                     statusSelect.value = '1';
                 } else {
                     statusSelect.innerHTML = `
-                        <option value="0">${t('kb_opt_draft') || 'Taslak'}</option>
-                        <option value="2">${t('kb_opt_submit_review') || 'Onaya Gönder (Yönetici İncelemesi)'}</option>
+                        <option value="0">${t('kb_opt_draft')}</option>
+                        <option value="2">${t('kb_opt_submit_review')}</option>
                     `;
                     statusSelect.value = (article.status == 2 || article.status === 'PendingReview' || article.status == 3 || article.status === 'NeedsRevision') ? '2' : '0';
                 }
@@ -555,10 +555,10 @@
                 if (article.status === 3 && article.managerFeedback) {
                     document.getElementById('authorFeedbackAlert').style.display = 'block';
                     document.getElementById('authorFeedbackText').textContent = article.managerFeedback;
-                    document.getElementById('btnSaveArticle').textContent = t('kb_btn_fix') || 'Fix & Resubmit';
+                    document.getElementById('btnSaveArticle').textContent = t('kb_btn_fix');
                 } else {
                     document.getElementById('authorFeedbackAlert').style.display = 'none';
-                    document.getElementById('btnSaveArticle').textContent = t('kb_btn_save') || 'Save Article';
+                    document.getElementById('btnSaveArticle').textContent = t('kb_btn_save');
                 }
                 
                 openModal('articleModal');
@@ -569,11 +569,11 @@
             event.stopPropagation();
             try {
                 await window.api.reviewKbArticle(id, { status: 1, feedback: '' });
-                showToast(t('kb_toast_updated') || 'Article approved and published.');
+                showToast(t('kb_toast_updated'));
                 loadKb();
             } catch (e) {
                 console.error(e);
-                showToast(e.message || t('kb_toast_save_err') || 'Error approving article.', 'error');
+                showToast(e.message || t('kb_toast_save_err'), 'error');
             }
         };
 
@@ -623,7 +623,7 @@
                 
                 // Dört Göz İlkesi: Yazar kendi makalesini doğrudan yayınlayamaz
                 if (!isCurrentlyPublished && article.authorUserId === currentUserId) {
-                    showToast(t('kb_self_publish_err') || 'Kendi önerdiğiniz makaleyi onaylayamaz veya yayınlayamazsınız. Farklı bir yönetici incelemelidir.', 'error');
+                    showToast(t('kb_self_publish_err'), 'error');
                     return;
                 }
 
@@ -636,7 +636,7 @@
                     status: newStatus
                 };
                 await window.api.updateKbArticle(id, payload);
-                showToast(newStatus === 1 ? (t('kb_toast_pub') || 'Makale yayınlandı.') : (t('kb_toast_unpub') || 'Makale yayından kaldırıldı.'));
+                showToast(newStatus === 1 ? (t('kb_toast_pub')) : (t('kb_toast_unpub')));
                 loadKb();
             } catch (e) { console.error(e);  showToast(e.message || t('kb_toast_pub_err'), 'error');  }
         };
@@ -653,11 +653,11 @@
                     status: 2 // PendingReview
                 };
                 await window.api.updateKbArticle(id, payload);
-                showToast(t('kb_toast_submitted_approval') || 'Makale inceleme ve onay için yöneticilere iletildi.');
+                showToast(t('kb_toast_submitted_approval'));
                 loadKb();
             } catch (e) {
                 console.error(e);
-                showToast(e.message || t('kb_toast_save_err') || 'Onaya gönderilirken hata oluştu.', 'error');
+                showToast(e.message || t('kb_toast_save_err'), 'error');
             }
         };
         
@@ -667,9 +667,9 @@
             }
             let confirmed = false;
             if (window.ui && window.ui.showConfirmModal) {
-                confirmed = await window.ui.showConfirmModal(t('kb_confirm_del_title') || 'Delete Article', t('kb_confirm_del') || 'Are you sure you want to delete this article?');
+                confirmed = await window.ui.showConfirmModal(t('kb_confirm_del_title'), t('kb_confirm_del'));
             } else {
-                confirmed = confirm(t('kb_confirm_del') || 'Are you sure you want to delete this article?');
+                confirmed = confirm(t('kb_confirm_del'));
             }
             if (!confirmed) return;
             
@@ -682,7 +682,7 @@
                 }
                 
                 window.ui.showUndoToast(
-                    t('kb_toast_del') || 'Article deleted.',
+                    t('kb_toast_del'),
                     async () => {
                         // Undo action
                         if (articleElement) {
@@ -697,7 +697,7 @@
                             loadKb();
                         } catch (e) {
                             console.error(e);
-                            showToast(t('kb_toast_del_err') || 'Error deleting article', 'error');
+                            showToast(t('kb_toast_del_err'), 'error');
                             if (articleElement) {
                                 articleElement.style.opacity = '1';
                                 articleElement.style.pointerEvents = 'auto';
@@ -708,7 +708,7 @@
             } else {
                 try {
                     await window.api.deleteKbArticle(id);
-                    showToast(t('kb_toast_del') || 'Article deleted.');
+                    showToast(t('kb_toast_del'));
                     loadKb();
                 } catch (e) { console.error(e); }
             }

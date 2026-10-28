@@ -96,46 +96,46 @@ public class TargetedBranchBoosterTests
 
         var slaSummary1 = SystemAuditInterceptor.GetSlaSummary(slaWithTargets, context);
         Assert.Contains("AuditProj", slaSummary1);
-        Assert.Contains("Eskalasyon: Açık", slaSummary1);
-        Assert.Contains("Hedefler:", slaSummary1);
+        Assert.Contains("Escalation: on", slaSummary1);
+        Assert.Contains("Targets:", slaSummary1);
 
         var slaNoProj = new SlaPolicy { Name = "SLA Global", ProjectId = null, Description = null, EscalateOnBreach = false };
         var slaSummary2 = SystemAuditInterceptor.GetSlaSummary(slaNoProj, null);
-        Assert.Contains("Genel Sistem", slaSummary2);
-        Assert.Contains("Eskalasyon: Kapalı", slaSummary2);
+        Assert.Contains("Global", slaSummary2);
+        Assert.Contains("Escalation: off", slaSummary2);
 
         var u1 = new User { Username = "fullUser", FirstName = "First", LastName = "Last", Email = "f@l.com", DepartmentId = 5 };
         var uSummary1 = SystemAuditInterceptor.GetUserSummary(u1);
         Assert.Contains("First Last", uSummary1);
-        Assert.Contains("Departman ID: 5", uSummary1);
+        Assert.Contains("Department ID: 5", uSummary1);
 
         var u2 = new User { Username = "emptyUser", FirstName = null, LastName = null, Email = "e@l.com", DepartmentId = null };
         var uSummary2 = SystemAuditInterceptor.GetUserSummary(u2);
         Assert.Contains("emptyUser", uSummary2);
-        Assert.Contains("Departman ID: Yok", uSummary2);
+        Assert.Contains("Department ID: None", uSummary2);
 
-        Assert.Contains("Açıklama: ProjDesc", SystemAuditInterceptor.GetProjectSummary(proj));
-        Assert.DoesNotContain("Açıklama:", SystemAuditInterceptor.GetProjectSummary(projNoDesc));
+        Assert.Contains("Description: ProjDesc", SystemAuditInterceptor.GetProjectSummary(proj));
+        Assert.DoesNotContain("Description:", SystemAuditInterceptor.GetProjectSummary(projNoDesc));
 
         var catWithDesc = new Category { Name = "Cat1", Description = "CatDesc" };
         var catNoDesc = new Category { Name = "Cat2", Description = null };
-        Assert.Contains("Açıklama: CatDesc", SystemAuditInterceptor.GetSpecificEntitySummary(catWithDesc, context)!);
-        Assert.DoesNotContain("Açıklama:", SystemAuditInterceptor.GetSpecificEntitySummary(catNoDesc, context)!);
+        Assert.Contains("Description: CatDesc", SystemAuditInterceptor.GetSpecificEntitySummary(catWithDesc, context)!);
+        Assert.DoesNotContain("Description:", SystemAuditInterceptor.GetSpecificEntitySummary(catNoDesc, context)!);
 
         var deptWithMgr = new Department { Name = "Dept1", Description = "DeptDesc", ManagerUserId = 99 };
         var deptNoMgr = new Department { Name = "Dept2", Description = null, ManagerUserId = null };
-        Assert.Contains("Yönetici ID: 99", SystemAuditInterceptor.GetSpecificEntitySummary(deptWithMgr, context)!);
-        Assert.DoesNotContain("Yönetici ID:", SystemAuditInterceptor.GetSpecificEntitySummary(deptNoMgr, context)!);
+        Assert.Contains("Manager ID: 99", SystemAuditInterceptor.GetSpecificEntitySummary(deptWithMgr, context)!);
+        Assert.DoesNotContain("Manager ID:", SystemAuditInterceptor.GetSpecificEntitySummary(deptNoMgr, context)!);
 
         var grpWithDept = new Group { Name = "Grp1", DepartmentId = 10 };
         var grpNoDept = new Group { Name = "Grp2", DepartmentId = null };
-        Assert.Contains("Departman ID: 10", SystemAuditInterceptor.GetSpecificEntitySummary(grpWithDept, context)!);
-        Assert.DoesNotContain("Departman ID:", SystemAuditInterceptor.GetSpecificEntitySummary(grpNoDept, context)!);
+        Assert.Contains("Department ID: 10", SystemAuditInterceptor.GetSpecificEntitySummary(grpWithDept, context)!);
+        Assert.DoesNotContain("Department ID:", SystemAuditInterceptor.GetSpecificEntitySummary(grpNoDept, context)!);
 
         var roleWithDesc = new Role { Name = "Role1", Description = "RoleDesc" };
         var roleNoDesc = new Role { Name = "Role2", Description = null };
-        Assert.Contains("Açıklama: RoleDesc", SystemAuditInterceptor.GetSpecificEntitySummary(roleWithDesc, context)!);
-        Assert.DoesNotContain("Açıklama:", SystemAuditInterceptor.GetSpecificEntitySummary(roleNoDesc, context)!);
+        Assert.Contains("Description: RoleDesc", SystemAuditInterceptor.GetSpecificEntitySummary(roleWithDesc, context)!);
+        Assert.DoesNotContain("Description:", SystemAuditInterceptor.GetSpecificEntitySummary(roleNoDesc, context)!);
 
         var ka = new KnowledgeArticle { Title = "Art1", CategoryId = 1, Status = ArticleStatus.Published };
         Assert.Contains("Art1", SystemAuditInterceptor.GetSpecificEntitySummary(ka, context)!);

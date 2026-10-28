@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Ticket Detail</title>
+    <title data-i18n="ticket_detail_title" data-i18n-target="document-title">ITSM Tool - Ticket Detail</title>
     <link rel="stylesheet" href="css/design-system.css?v=1010">
     <script>
         try {
@@ -44,9 +44,9 @@
             color: var(--text-main) !important;
         }
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); font-size: 12px; color: var(--text-muted); }
-        .comment-reply-connector { position: absolute; left: -24px; top: 16px; width: 16px; border-top: 2px solid var(--border); z-index: 1; }
-        .reply-container { position: relative; margin-left: 40px; margin-top: 16px; }
-        .reply-container::before { content: ''; position: absolute; left: -24px; top: -16px; bottom: 0; border-left: 2px solid var(--border); z-index: 1; }
+        .comment-reply-connector { position: absolute; inset-inline-start: -24px; top: 16px; width: 16px; border-top: 2px solid var(--border); z-index: 1; }
+        .reply-container { position: relative; margin-inline-start: 40px; margin-top: 16px; }
+        .reply-container::before { content: ''; position: absolute; inset-inline-start: -24px; top: -16px; bottom: 0; border-inline-start: 2px solid var(--border); z-index: 1; }
         .reply-container:last-child::before { bottom: auto; height: 32px; }
         .replies-list { position: relative; padding-top: 8px; margin-top: 8px; border-top: 1px dashed var(--border); }
         .replies-list:empty { display: none; }
@@ -61,7 +61,7 @@
         .history-event { padding: 8px 12px; background: var(--bg-hover); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-muted); }
         .history-event strong { color: var(--text-main); }
         .comment-attachment-img-container { position: relative; display: inline-block; }
-        .comment-attachment-img-container .download-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+        .comment-attachment-img-container .download-btn { position: absolute; top: 4px; inset-inline-end: 4px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: background 0.2s; }
         .comment-attachment-img-container .download-btn:hover { background: rgba(0,0,0,0.8); }
         .comment-attachment-img-container:hover .download-btn { display: flex; }
 
@@ -279,16 +279,16 @@
                     </button>
 
                     <div style="display:flex; align-items:center; gap: 8px;">
-                        <a href="/tickets.html" class="btn btn-ghost" style="padding: 4px;"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></a>
+                        <a href="/tickets.html" class="btn btn-ghost" style="padding: 4px;"><svg class="flip-rtl" viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></a>
                         <h2 data-i18n="ticket_detail_title">Ticket Detail</h2>
-                        <button class="btn btn-secondary" id="btnEditInline" onclick="toggleEditMode()" style="margin-left: 8px;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-right: 4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="ticket_btn_edit">Düzenle</span>
+                        <button class="btn btn-secondary" id="btnEditInline" onclick="toggleEditMode()" style="margin-inline-start: 8px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="ticket_btn_edit">Edit</span>
                         </button>
-                        <button class="btn btn-secondary" id="btnTransfer" onclick="window.openTransferModal()" style="margin-left: 8px;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-right: 4px;"><path d="M16 1l-3 3h2v2c0 2.21-1.79 4-4 4s-4-1.79-4-4V4H5v2c0 3.31 2.69 6 6 6s6-2.69 6-6V4h2l-3-3zM9 23l3-3h-2v-2c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2v-2c0-3.31-2.69-6-6-6s-6 2.69-6 6v2H7l-3 3z"/></svg><span data-i18n="ticket_btn_transfer">Transfer</span>
+                        <button class="btn btn-secondary" id="btnTransfer" onclick="window.openTransferModal()" style="margin-inline-start: 8px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M16 1l-3 3h2v2c0 2.21-1.79 4-4 4s-4-1.79-4-4V4H5v2c0 3.31 2.69 6 6 6s6-2.69 6-6V4h2l-3-3zM9 23l3-3h-2v-2c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2v-2c0-3.31-2.69-6-6-6s-6 2.69-6 6v2H7l-3 3z"/></svg><span data-i18n="ticket_btn_transfer">Transfer</span>
                         </button>
-                        <div id="editActions" style="display:none; margin-left: 8px;">
-                            <button class="btn btn-ghost" onclick="cancelEditMode()" data-i18n="users_btn_cancel">İptal</button>
+                        <div id="editActions" style="display:none; margin-inline-start: 8px;">
+                            <button class="btn btn-ghost" onclick="cancelEditMode()" data-i18n="users_btn_cancel">Cancel</button>
                             <button class="btn btn-primary" onclick="saveEditMode()" data-i18n="users_btn_save">Kaydet</button>
                         </div>
                     </div>
@@ -298,10 +298,10 @@
                 // Global store for attachments to distinguish images from files
                 window.ticketAttachments = [];
             </script>      <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -309,7 +309,7 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><button type="button" class="dropdown-item text-center" onclick="markAllAsRead(event)" style="border: none; background: none; width: 100%; padding: 12px 0; color: var(--primary); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; border-top: 1px solid var(--border);">
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M0.41,13.41L6,19L7.41,17.58L1.83,12M22.24,5.58L11.66,16.17L7.5,12L6.07,13.41L11.66,19L23.66,7M18,7L16.59,5.58L10.24,11.93L11.66,13.34L18,7Z"/></svg>
-                                <span data-i18n="topbar_mark_all_read">Tümünü Okundu Olarak İşaretle</span>
+                                <span data-i18n="topbar_mark_all_read">Mark all as read</span>
                             </button></li>
                         </ul>
                     </div>
@@ -324,16 +324,16 @@
                         <div class="ticket-header">
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                                 <div class="ticket-number" id="tNumber"></div>
-                                <button type="button" class="btn btn-ghost btn-sm" id="btnCopyTicket" onclick="window.copyTicketDetails()" title="Bilet numarasını ve bağlantısını panoya kopyala" style="padding: 2px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); border-radius: 4px; border: 1px solid var(--border); background: var(--bg-surface);">
+                                <button type="button" class="btn btn-ghost btn-sm" id="btnCopyTicket" onclick="window.copyTicketDetails()" style="padding: 2px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); border-radius: 4px; border: 1px solid var(--border); background: var(--bg-surface);">
                                     <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                                     <span data-i18n="td_btn_copy_ticket">Kopyala</span>
                                 </button>
                             </div>
-                            <h1 class="ticket-title" id="tTitle">Loading Title...</h1>
+                            <h1 class="ticket-title" id="tTitle" dir="auto">...</h1>
                         </div>
                         
                         <div class="property-label" data-i18n="ticket_tab_desc">Description</div>
-                        <div class="description-box" id="tDesc"></div>
+                        <div class="description-box" id="tDesc" dir="auto"></div>
 
                         <div id="dynamicFieldsDisplay" style="margin-bottom: var(--spacing-xl);"></div>
 
@@ -341,7 +341,7 @@
                         <div id="mainTicketAttachments" class="d-flex gap-sm flex-wrap" style="margin-bottom: var(--spacing-xl); display:none;"></div>
 
                         <div class="collapsible-section" style="margin-bottom: var(--spacing-xl);">
-                            <button type="button" class="property-label mb-md" style="cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: left; font-size: inherit; font-family: inherit; color: inherit; width: 100%;" onclick="toggleSection('activitySection', this)">
+                            <button type="button" class="property-label mb-md" style="cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: start; font-size: inherit; font-family: inherit; color: inherit; width: 100%;" onclick="toggleSection('activitySection', this)">
                                 <svg viewBox="0 0 24 24" width="16" height="16" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
                                 <span data-i18n="ticket_tab_history">Activity</span>
                             </button>
@@ -353,7 +353,7 @@
                         <hr class="panel-divider" style="margin: var(--spacing-xl) 0;">
 
                         <div class="collapsible-section">
-                            <button type="button" class="property-label mb-md" style="font-size: 16px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: left; font-family: inherit; width: 100%;" onclick="toggleSection('commentsSection', this)">
+                            <button type="button" class="property-label mb-md" style="font-size: 16px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: start; font-family: inherit; width: 100%;" onclick="toggleSection('commentsSection', this)">
                                 <svg viewBox="0 0 24 24" width="20" height="20" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
                                 <span data-i18n="ticket_tab_comments">Comments & History</span>
                             </button>
@@ -363,13 +363,13 @@
                                 <div style="margin-top: var(--spacing-xl);">
                                     <form id="commentForm">
                                         <div class="comment-input-wrapper" style="border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface); padding: 8px; box-shadow: var(--shadow-sm); position: relative; transition: border-color 0.2s;">
-                                            <textarea id="commentText" class="form-control" rows="3" required data-i18n="ticket_add_comment" data-i18n-target="placeholder" placeholder="Add a comment... (Drag & Drop files here)" aria-label="Comment" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
+                                            <textarea id="commentText" dir="auto" class="form-control" rows="3" required data-i18n="ticket_add_comment" data-i18n-target="placeholder" placeholder="Add a comment... (Drag & Drop files here)" aria-label="Comment" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
                                             
                                             <div id="attachmentPreviews" class="d-flex gap-sm flex-wrap mb-sm" style="padding: 0 8px;"></div>
                                             
                                             <div class="d-flex justify-content-between align-items-center" style="padding: 4px 8px; border-top: 1px solid var(--border-light); margin-top: 4px; padding-top: 12px;">
                                                 <div class="d-flex align-items-center gap-md">
-                                                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('commentAttachmentInput').click()" title="Attach File" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
+                                                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('commentAttachmentInput').click()" title="Attach File" data-i18n="td_attach_file" data-i18n-target="title" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
                                                         📎
                                                     </button>
                                                     <input type="file" id="commentAttachmentInput" multiple style="display: none;" onchange="uploadCommentAttachment(this)" aria-label="Attach File">
@@ -379,7 +379,7 @@
                                                     </label>
                                                 </div>
                                                 
-                                                <button type="submit" class="btn btn-primary" id="btnSubmitComment" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Send Comment">
+                                                <button type="submit" class="btn btn-primary" id="btnSubmitComment" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Send Comment" data-i18n="td_send_comment" data-i18n-target="title">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                                 </button>
                                             </div>
@@ -419,7 +419,7 @@
                             <div class="ai-panel-status-row" style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 8px; padding: 4px 6px; background: var(--bg-hover, rgba(255,255,255,0.75)); border: 1px solid var(--border, #E2E8F0); border-radius: 6px;">
                                 <button type="button" id="aiStatusBadge" class="badge ai-status-fallback" onclick="window.openLlmSettingsModal()" style="font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 12px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; cursor: pointer; max-width: 175px; overflow: hidden; text-overflow: ellipsis; outline: none;" title="LLM Durumu (Ayarlar için tıklayın)">
                                     <span id="aiStatusDot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#F59E0B; flex-shrink: 0;"></span>
-                                    <span id="aiStatusText" data-i18n="ai_status_offline" style="overflow: hidden; text-overflow: ellipsis;">LLM Bağlı Değil (Kural Motoru)</span>
+                                    <span id="aiStatusText" data-i18n="ai_status_offline" style="overflow: hidden; text-overflow: ellipsis;">No LLM (Rule Engine)</span>
                                 </button>
                                 <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
                                     <label for="aiResponseLang" style="font-size: 10px; font-weight: 600; color: var(--text-muted, #64748B); margin: 0;" data-i18n="ai_lang_label">Dil:</label>
@@ -431,22 +431,22 @@
                             </div>
                             
                             <p class="ai-panel-desc" style="font-size: 11px; color: var(--text-muted, #475569); margin: 4px 0 10px 0; line-height: 1.35;" data-i18n="ai_copilot_desc">
-                                Bilet çözüm önerisi, özet ve yanıt taslağı alın.
+                                Get AI resolution suggestions, handoff summaries and draft replies.
                             </p>
 
                             <!-- Quick Action Buttons -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
                                 <button type="button" id="btnAiSuggest" class="ai-action-btn ai-btn-suggest" onclick="window.triggerAiAction('suggest')">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
-                                    <span data-i18n="ai_btn_suggest">Çözüm Önerisi</span>
+                                    <span data-i18n="ai_btn_suggest">Resolution Suggestion</span>
                                 </button>
                                 <button type="button" id="btnAiSummarize" class="ai-action-btn ai-btn-summarize" onclick="window.triggerAiAction('summarize')">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                    <span data-i18n="ai_btn_summarize">Bileti Özetle</span>
+                                    <span data-i18n="ai_btn_summarize">Summarize Ticket</span>
                                 </button>
                                 <button type="button" id="btnAiDraft" class="ai-action-btn ai-btn-draft" onclick="window.triggerAiAction('draft')">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                    <span data-i18n="ai_btn_draft">Yanıt Taslağı</span>
+                                    <span data-i18n="ai_btn_draft">Draft Reply</span>
                                 </button>
                                 <button type="button" id="btnAiAsk" class="ai-action-btn ai-btn-ask" onclick="window.toggleAiAskInput()">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -466,12 +466,12 @@
 
                             <!-- Loading indicator -->
                             <div id="aiLoadingIndicator" style="display: none; text-align: center; padding: 14px 0;">
-                                <output class="spinner-border spinner-border-sm text-primary" style="width: 18px; height: 18px; margin-right: 6px;"></output>
+                                <output class="spinner-border spinner-border-sm text-primary" style="width: 18px; height: 18px; margin-inline-end: 6px;"></output>
                                 <span style="font-size: 12px; font-weight: 500; color: var(--primary, #0052CC);" data-i18n="ai_thinking">Yapay zeka analiz ediyor...</span>
                             </div>
 
                             <!-- Result / Output Area -->
-                            <div id="aiResultArea" style="display: none; background: var(--bg-surface, #FFFFFF); border: 1px solid var(--border, #CBD5E1); border-left: 4px solid var(--primary, #0052CC); border-radius: 6px; padding: 10px; margin-top: 8px; box-shadow: var(--shadow-md);">
+                            <div id="aiResultArea" style="display: none; background: var(--bg-surface, #FFFFFF); border: 1px solid var(--border, #CBD5E1); border-inline-start: 4px solid var(--primary, #0052CC); border-radius: 6px; padding: 10px; margin-top: 8px; box-shadow: var(--shadow-md);">
                                 <div class="d-flex justify-content-between align-items-center mb-xs" style="border-bottom: 1px solid var(--border, #E2E8F0); padding-bottom: 6px;">
                                     <strong id="aiResultTitle" style="font-size: 12px; color: var(--primary, #0052CC); font-weight: 700;">AI Çıktısı</strong>
                                     <span id="aiResultSource" style="font-size: 9.5px; font-weight: 600; padding: 2px 6px; border-radius: 4px;"></span>
@@ -533,7 +533,7 @@
                                 </div>
                                 <div class="property-value" id="tAssigned" style="margin-bottom: var(--spacing-sm); display:flex; flex-direction:column; gap:4px;"></div>
                                 <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 8px;" onclick="window.openAssignmentTree()">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-right: 4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                                    <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
                                     <span data-i18n="td_modal_assign_history">View Assignment Tree</span>
                                 </button>
                             </div>
@@ -554,7 +554,7 @@
                                 <div class="property-value" id="tCategory"></div>
                             </div>
                             <div class="property-group">
-                                <div class="property-label">Color</div>
+                                <div class="property-label" data-i18n="td_color">Color</div>
                                 <div class="property-value" id="tColorHex"></div>
                             </div>
 
@@ -569,7 +569,7 @@
 
                             <div class="property-group" id="tSlaGroup" style="margin-top: 10px;">
                                 <div class="property-label" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span data-i18n="ticket_prop_sla">SLA Süreleri ve Durumu</span>
+                                    <span data-i18n="ticket_prop_sla">SLA Targets &amp; Timers</span>
                                     <span id="tSlaOverallBadge"></span>
                                 </div>
                                 <div class="property-value" id="tSlaContainer" style="background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; display: flex; flex-direction: column; gap: 8px;">
@@ -618,7 +618,7 @@
         <div class="modal" style="width: min(500px, 90%);">
             <div class="modal-header">
                 <h2 data-i18n="td_modal_transfer">Transfer Ticket</h2>
-                <button type="button" class="close-btn" onclick="closeModal('transferModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('transferModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -645,14 +645,14 @@
         </div>
     </div>
 
-    <div id="toastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 8px;"></div>
+    <div id="toastContainer" style="position: fixed; bottom: 24px; inset-inline-end: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 8px;"></div>
     
     <!-- Manage Assignees Modal -->
     <div id="manageAssigneesModal" class="modal-overlay">
         <div class="modal" style="width: min(500px, 90%);">
             <div class="modal-header">
                 <h2 data-i18n="td_manage_assignees">Manage Assignees</h2>
-                <button type="button" class="close-btn" onclick="closeModal('manageAssigneesModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('manageAssigneesModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -675,7 +675,7 @@
         <div class="modal" style="width: min(600px, 90%); max-height: 90vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <h2 data-i18n="td_modal_assign_history">Assignment History Tree</h2>
-                <button type="button" class="close-btn" onclick="closeModal('assignmentTreeModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('assignmentTreeModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -693,7 +693,7 @@
                 <h2 data-i18n="td_modal_comment_logs">Comment Logs</h2>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <input type="text" id="commentLogSearch" class="form-control" style="width:200px; padding: 4px 8px; font-size: 12px;" placeholder="Search logs..." data-i18n="td_search_logs" data-i18n-target="placeholder" aria-label="Search Comment Logs">
-                    <button class="btn btn-ghost" onclick="downloadCommentLogs()" title="Download CSV">
+                    <button class="btn btn-ghost" onclick="downloadCommentLogs()" title="Download CSV" data-i18n="td_download_csv" data-i18n-target="title">
                         <svg viewBox="0 0 24 24" width="18" height="18" style="fill:currentColor;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                     </button>
                     <button type="button" class="close-btn" onclick="document.getElementById('commentLogsModal').classList.remove('active')">
@@ -769,8 +769,8 @@
                 <div class="form-group mb-sm">
                     <label class="form-label" for="llmApiKey" style="font-weight: 600; font-size: 12px;">API Anahtarı (API Key):</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="llmApiKey" class="form-control" placeholder="Yerel LLM için boş bırakabilirsiniz veya sk-..." style="font-size: 12px; padding-right: 36px; font-family: monospace;">
-                        <button type="button" id="btnToggleApiKey" onclick="window.toggleApiKeyVisibility()" style="position: absolute; right: 6px; background: none; border: none; cursor: pointer; color: var(--text-muted, #64748B); padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: color 0.15s;" title="API Anahtarını Göster/Gizle" aria-label="API Anahtarını Göster veya Gizle">
+                        <input type="password" id="llmApiKey" class="form-control" placeholder="Yerel LLM için boş bırakabilirsiniz veya sk-..." style="font-size: 12px; padding-inline-end: 36px; font-family: monospace;">
+                        <button type="button" id="btnToggleApiKey" onclick="window.toggleApiKeyVisibility()" style="position: absolute; inset-inline-end: 6px; background: none; border: none; cursor: pointer; color: var(--text-muted, #64748B); padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: color 0.15s;" title="API Anahtarını Göster/Gizle" aria-label="API Anahtarını Göster veya Gizle">
                             <svg id="iconEyeShow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -816,7 +816,7 @@
                         <input type="checkbox" id="llmFallback" checked style="width:16px; height:16px; accent-color: var(--primary, #0052CC);">
                         <span>LLM ulaşılamazsa Akıllı Kural Motoru yedek olarak çalışsın</span>
                     </label>
-                    <small style="color: var(--text-muted, #64748B); font-size: 11px; margin-left: 24px; display: block; margin-top: 3px;">İşaret kaldırılırsa, LLM bağlantısı koptuğunda arayüzde doğrudan net hata uyarısı verilir.</small>
+                    <small style="color: var(--text-muted, #64748B); font-size: 11px; margin-inline-start: 24px; display: block; margin-top: 3px;">İşaret kaldırılırsa, LLM bağlantısı koptuğunda arayüzde doğrudan net hata uyarısı verilir.</small>
                 </div>
 
                 <!-- Test Connection Status Box -->
@@ -847,7 +847,7 @@
 
         if (!window.api.token) window.location.href = '/login.html';
         bindShellActions();
-        initAuthorizedAttachments(window.api, () => showToast(t('attachment_download_failed', 'The attachment could not be downloaded.'), 'error'));
+        initAuthorizedAttachments(window.api, () => showToast(t('attachment_download_failed'), 'error'));
         
         const initialAiLang = localStorage.getItem('itsm_ai_lang') || getCurrentLanguage() || 'en';
         const aiLangSelect = document.getElementById('aiResponseLang');
@@ -942,7 +942,7 @@
 
 
             } catch (e) { console.error(e); 
-                showToast('Failed to load transfer data', 'error');
+                showToast(t('td_transfer_load_failed'), 'error');
              }
         };
 
@@ -958,10 +958,10 @@
             try {
                 await window.api.request(`/Ticket/${ticketId}/transfer`, { method: 'POST', body: JSON.stringify(dto) });
                 closeModal('transferModal');
-                showToast('Ticket transferred successfully');
+                showToast(t('td_transferred'));
                 window.location.reload();
             } catch (err) { console.error(err); 
-                showToast(err.message || 'Transfer failed', 'error');
+                showToast(err.message || t('td_transfer_failed'), 'error');
              }
         });
 
@@ -995,10 +995,10 @@
                     document.execCommand('copy');
                     document.body.removeChild(temp);
                 }
-                showToast(`${currentTicket.ticketNumber} ve bağlantısı panoya kopyalandı!`, 'success');
+                showToast(t('td_copied').replaceAll('{0}', currentTicket.ticketNumber), 'success');
             } catch (e) {
-                console.error('Kopyalama hatası', e);
-                showToast('Kopyalama başarısız oldu.', 'error');
+                console.error('Copy failed', e);
+                showToast(t('td_copy_failed'), 'error');
             }
         };
 
@@ -1025,17 +1025,17 @@
         function renderTicketData() {
             document.getElementById('tNumber').textContent = currentTicket.ticketNumber;
             document.getElementById('tTitle').textContent = currentTicket.title;
-            document.getElementById('tDesc').textContent = currentTicket.description || 'No description provided.';
+            document.getElementById('tDesc').textContent = currentTicket.description || t('td_no_description');
             
             const prioName = window.globalLookup.priorities?.find(x => x.id === currentTicket.priorityId)?.name || 'Normal';
             
-            document.getElementById('tPriority').innerHTML = `<span class="badge badge-info">${escapeHtml(t('db_' + prioName.toLowerCase().replaceAll(' ', '_')) || prioName)}</span>`;
+            document.getElementById('tPriority').innerHTML = `<span class="badge badge-info">${escapeHtml(t('db_' + prioName.toLowerCase().replaceAll(' ', '_'), prioName))}</span>`;
             const defaultTicketColor = getTicketDefaultColor(currentTicket.id);
             const activeColor = (currentTicket.colorHex && currentTicket.colorHex.trim() !== '') ? currentTicket.colorHex : defaultTicketColor;
-            const autoColorLabel = t('ticket_color_auto') || '(Automatic)';
+            const autoColorLabel = t('ticket_color_auto');
             document.getElementById('tColorHex').innerHTML = `
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <input type="color" id="instantColorPicker" value="${escapeHtml(activeColor)}" title="${t('ticket_color_edit_title') || 'Click to edit color'}" style="width:24px; height:24px; padding:0; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:transparent;">
+                    <input type="color" id="instantColorPicker" value="${escapeHtml(activeColor)}" title="${t('ticket_color_edit_title')}" style="width:24px; height:24px; padding:0; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:transparent;">
                     <span id="tColorLabel" style="font-size:13px; font-weight:500;">${escapeHtml(currentTicket.colorHex ? currentTicket.colorHex : (activeColor + ' ' + autoColorLabel))}</span>
                 </div>
             `;
@@ -1060,10 +1060,10 @@
                         currentTicket.colorHex = newColor;
                         const lbl = document.getElementById('tColorLabel');
                         if (lbl) lbl.textContent = newColor;
-                        showToast(t('ticket_save_color_success') || 'Ticket color saved successfully!', 'success');
+                        showToast(t('ticket_save_color_success'), 'success');
                     } catch (err) {
                         console.error('Failed to update color', err);
-                        showToast(t('ticket_save_color_error') || 'Error updating color', 'error');
+                        showToast(t('ticket_save_color_error'), 'error');
                     }
                 });
             }
@@ -1108,14 +1108,14 @@
                 
                 visibleAttachments.forEach(att => {
                     const isImage = att.contentType.startsWith('image/');
-                    let delBtn = isEdit ? `<button type="button" class="btn-icon" style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); z-index:10; border:2px solid white;" onclick="deleteMainAttachment(${att.id})"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>` : '';
+                    let delBtn = isEdit ? `<button type="button" class="btn-icon" style="position:absolute; top:-8px; inset-inline-end:-8px; background:var(--danger); color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); z-index:10; border:2px solid white;" onclick="deleteMainAttachment(${att.id})"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>` : '';
 
                     if (isImage) {
                         html += `
                             <div class="comment-attachment-img-container" style="position:relative;">
                                 ${delBtn}
                                 <img data-auth-src="/Ticket/${ticketId}/attachments/${att.id}/download" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="${escapeHtml(att.fileName)}" onclick="window.openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
-                                <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${att.id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="Download">
+                                <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${att.id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="${t('common_download')}">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                 </a>
                             </div>
@@ -1145,7 +1145,7 @@
                 html += `
                     <label id="btnAddNewAttachmentLabel" for="editNewAttachments" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 150px; height: 150px; border: 2px dashed var(--primary); border-radius: 6px; background: rgba(var(--primary-rgb), 0.05); cursor: pointer; transition: all 0.2s; margin:0;" onmouseover="this.style.background='rgba(var(--primary-rgb), 0.1)'" onmouseout="this.style.background='rgba(var(--primary-rgb), 0.05)'">
                         <svg viewBox="0 0 24 24" width="32" height="32" fill="var(--primary)"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        <span style="font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 8px;">Add Attachments</span>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 8px;">${t('td_add_attachments')}</span>
                         <input type="file" id="editNewAttachments" multiple style="display: none;" onchange="window.updateNewAttachmentsPreview(this)">
                     </label>
                 `;
@@ -1199,7 +1199,7 @@
                 if (p.url) {
                     item.innerHTML = `
                         <img src="${escapeHtml(p.url)}" style="width:100%; height:100%; object-fit: cover;" alt="${escapeHtml(p.file.name)}">
-                        <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; font-size:11px; padding:4px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${escapeHtml(p.file.name)}">${escapeHtml(p.file.name)}</div>
+                        <div style="position:absolute; bottom:0; inset-inline-start:0; inset-inline-end:0; background:rgba(0,0,0,0.6); color:white; font-size:11px; padding:4px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${escapeHtml(p.file.name)}">${escapeHtml(p.file.name)}</div>
                     `;
                 } else {
                     item.innerHTML = `
@@ -1211,7 +1211,7 @@
                 }
 
                 item.innerHTML += `
-                    <button type="button" class="btn btn-ghost" style="position:absolute; top:4px; right:4px; width:24px; height:24px; padding:0; border-radius:50%; background:var(--danger); color:white;" onclick="window.removePendingUpload(${p.id})" title="Remove">
+                    <button type="button" class="btn btn-ghost" style="position:absolute; top:4px; inset-inline-end:4px; width:24px; height:24px; padding:0; border-radius:50%; background:var(--danger); color:white;" onclick="window.removePendingUpload(${p.id})" title="${t('common_remove')}">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 `;
@@ -1222,14 +1222,14 @@
         };
 
         window.deleteMainAttachment = async function(attId) {
-            const proceed = await showConfirmModal('Görseli Sil', 'Bu görseli silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');
+            const proceed = await showConfirmModal(t('td_image_delete_title'), t('td_image_delete_confirm'));
             if (!proceed) return;
             
             // Optimiztically hide the attachment from the UI
             window.pendingDeletions.add(attId);
             renderMainAttachments(isEditMode);
 
-            const finalProceed = await showUndoToast('Görsel siliniyor. İptal etmek için tıklayın.', null, 4000);
+            const finalProceed = await showUndoToast(t('td_image_deleting'), null, 4000);
             if (!finalProceed) {
                 // User clicked Undo, restore the attachment to the UI
                 window.pendingDeletions.delete(attId);
@@ -1240,7 +1240,7 @@
             try {
                 await window.api.request(`/Ticket/${ticketId}/attachments/${attId}`, { method: 'DELETE' });
                 // api.js doesn't show toast on 204 No Content, so we show our own success toast
-                showToast('Görsel başarıyla silindi', 'success');
+                showToast(t('td_image_deleted'), 'success');
                 
                 window.pendingDeletions.delete(attId);
                 // Refresh attachments
@@ -1254,7 +1254,7 @@
                 renderMainAttachments(isEditMode);
                 // api.js automatically shows a toast for errors, but we can add a fallback
                 if (!e.message.includes('404') && !e.message.includes('403')) {
-                    showToast('Failed to delete attachment', 'error');
+                    showToast(t('td_attachment_delete_failed'), 'error');
                 }
             }
         }
@@ -1275,7 +1275,7 @@
             const activeAssignments = Array.from(uniqueAssignmentsMap.values());
             
             if (activeAssignments.length === 0) {
-                return '<span class="text-muted">No active assignments</span>';
+                return `<span class="text-muted">${t('td_no_active_assignments')}</span>`;
             }
             
             const grouped = {};
@@ -1316,19 +1316,19 @@
 
             let deptBlocks = [];
             for (const [deptId, deptData] of Object.entries(grouped)) {
-                let deptName = 'No Department';
+                let deptName = t('admin_no_dept');
                 if (deptId !== 'none') {
                     const d = deptsLookup.find(x => x.id == deptId);
                     if (d) deptName = d.name;
                 }
 
                 let blockHtml = '';
-                blockHtml += `<div class="assignee-dept-block" style="margin-bottom: 8px; margin-left: 0 !important; padding-left: 0 !important; border: none;">`;
+                blockHtml += `<div class="assignee-dept-block" style="margin-bottom: 8px; margin-inline-start: 0 !important; padding-inline-start: 0 !important; border: none;">`;
                 blockHtml += `  <div class="d-flex align-items-center gap-sm" style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">`;
                 blockHtml += `      <svg viewBox="0 0 24 24" width="14" height="14" style="fill:currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`;
                 blockHtml += `      ${escapeHtml(deptName)}`;
                 blockHtml += `  </div>`;
-                blockHtml += `  <div style="padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">`;
+                blockHtml += `  <div style="padding-inline-start: 16px; display: flex; flex-direction: column; gap: 4px;">`;
 
                 for (const [, gData] of Object.entries(deptData.groups)) {
                     if (!gData.groupData) {
@@ -1339,20 +1339,20 @@
                     blockHtml += `      <div class="d-flex align-items-center gap-sm" style="font-size: 13px;"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:var(--text-muted)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> <span style="font-weight:500; color:var(--text-main);">${escapeHtml(gName)}</span></button>`;
                     
                     if (gData.users.length > 0) {
-                        blockHtml += `<div style="padding-left: 20px; display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">`;
+                        blockHtml += `<div style="padding-inline-start: 20px; display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">`;
                         gData.users.forEach(u => {
-                            const uName = u ? (u.firstName + ' ' + u.lastName) : 'Unknown User';
+                            const uName = u ? (u.firstName + ' ' + u.lastName) : t('td_unknown_user');
                             const uId = u ? u.id : 0;
-                            blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:left;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
+                            blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:start;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
                         });
                         blockHtml += `</div>`;
                     }
                 }
 
                 deptData.usersWithoutGroup.forEach(u => {
-                    const uName = u ? (u.firstName + ' ' + u.lastName) : 'Unknown User';
+                    const uName = u ? (u.firstName + ' ' + u.lastName) : t('td_unknown_user');
                     const uId = u ? u.id : 0;
-                    blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:left;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
+                    blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:start;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
                 });
 
                 blockHtml += `  </div>`;
@@ -1370,7 +1370,7 @@
                 allowedStatuses.forEach(s => {
                     const opt = document.createElement("option");
                     opt.value = s.id;
-                    opt.textContent = t('db_' + s.name.toLowerCase().replaceAll(' ', '_')) || s.name;
+                    opt.textContent = t('db_' + s.name.toLowerCase().replaceAll(' ', '_'), s.name);
                     select.appendChild(opt);
                 });
                 select.value = currentStatusId;
@@ -1381,7 +1381,7 @@
         
         async function loadTicket() {
             if (!ticketId) {
-                document.querySelector('.content-area').innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3>Bilet ID bulunamadı</h3><p>Lütfen geçerli bir bilet seçerek tekrar deneyin.</p></div>';
+                document.querySelector('.content-area').innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3>${t('td_no_id_title')}</h3><p>${t('td_no_id_desc')}</p></div>`;
                 return;
             }
             try {
@@ -1436,7 +1436,7 @@
                 const getReqName = reqUser ? (reqUser.firstName ? `${reqUser.firstName} ${reqUser.lastName}` : reqUser.username) : (ticketData.requesterName || `User ${ticketData.requesterUserId}`);
                 const reqEl = document.getElementById('tReq');
                 if (reqEl) {
-                    reqEl.innerHTML = `<button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${ticketData.requesterUserId}" style="border:none; text-align:left;" onclick="openUserDetails(${ticketData.requesterUserId})">${getAvatar(ticketData.requesterUserId, getReqName, reqUser?.profilePhoto)} ${escapeHtml(getReqName)}</button>`;
+                    reqEl.innerHTML = `<button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${ticketData.requesterUserId}" style="border:none; text-align:start;" onclick="openUserDetails(${ticketData.requesterUserId})">${getAvatar(ticketData.requesterUserId, getReqName, reqUser?.profilePhoto)} ${escapeHtml(getReqName)}</button>`;
                 }
 
                 let assignHTML = '';
@@ -1444,7 +1444,7 @@
                     const deptsLookup = window.globalLookup && window.globalLookup.departments ? window.globalLookup.departments : [];
                     assignHTML = buildAssignmentsHtml(ticketData.assignments, window.globalGroups, window.globalUsers, deptsLookup);
                 } else {
-                    assignHTML = '<span class="text-muted">Unassigned</span>';
+                    assignHTML = `<span class="text-muted">${t('kanban_unassigned')}</span>`;
                 }
                 const assignedEl = document.getElementById('tAssigned');
                 if (assignedEl) assignedEl.innerHTML = assignHTML;
@@ -1513,25 +1513,25 @@
                 if (errEl) {
                     const is403 = e.message && (e.message.includes('403') || e.message.includes('Forbidden'));
                     const is404 = e.message && (e.message.includes('404') || e.message.includes('Not Found'));
-                    let message = 'Veri yüklenemedi — API veya bağlantınızı kontrol edin.';
+                    let message = t('common_err_load_data');
                     if (is403) {
-                        message = 'Bu bileti görüntüleme yetkiniz bulunmuyor (403).';
+                        message = t('td_err_403');
                     } else if (is404) {
-                        message = 'Bilet bulunamadı veya silinmiş olabilir (404).';
+                        message = t('td_err_404');
                     }
                     errEl.innerHTML = `
                         <div style="padding: 60px 20px; text-align: center;">
                             <div style="font-size: 40px; margin-bottom: 12px;">${is403 ? '🔒' : '⚠️'}</div>
                             <h3 style="color: var(--text-main); margin-bottom: 8px;">${escapeHtml(message)}</h3>
-                            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Hata detayı: ${escapeHtml(e.message || 'Bilinmeyen hata')}</p>
+                            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">${escapeHtml(t('td_err_detail').replaceAll('{0}', e.message || t('td_err_unknown')))}</p>
                             <a href="/tickets.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                Bilet Listesine Dön
+                                <svg class="flip-rtl" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                ${t('td_back_to_list')}
                             </a>
                         </div>
                     `;
                 }
-                showToast(e.message && e.message.includes('403') ? 'Yetkisiz erişim (403)' : 'Bilet yüklenemedi', 'error'); 
+                showToast(t(e.message && e.message.includes('403') ? 'td_err_forbidden_short' : 'td_load_failed'), 'error'); 
             }
             
             setTimeout(() => {
@@ -1545,11 +1545,9 @@
             const slaGroup = document.getElementById('tSlaGroup');
             if (!slaGroup) return;
 
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
-
             if (!sla) {
-                document.getElementById('tSlaOverallBadge').innerHTML = `<span class="badge" style="background:var(--bg-hover); color:var(--text-muted); font-size:10px;">${isEn ? 'Undefined' : 'Tanımsız'}</span>`;
-                document.getElementById('tSlaContainer').innerHTML = `<div style="color:var(--text-muted); font-size:12px;">${isEn ? 'No active SLA policy assigned to this ticket.' : 'Bu bilet için aktif bir SLA politikası atanmamış.'}</div>`;
+                document.getElementById('tSlaOverallBadge').innerHTML = `<span class="badge" style="background:var(--bg-hover); color:var(--text-muted); font-size:10px;">${t('td_sla_undefined')}</span>`;
+                document.getElementById('tSlaContainer').innerHTML = `<div style="color:var(--text-muted); font-size:12px;">${t('td_sla_none')}</div>`;
                 return;
             }
 
@@ -1572,18 +1570,18 @@
             let overallBadge = '';
             if (isClosed) {
                 if (isResBreached || isFirstRespBreached) {
-                    overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:600;">${isEn ? 'Breached' : 'İhlal Edildi'}</span>`;
+                    overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:600;">${t('td_sla_breached')}</span>`;
                 } else {
-                    overallBadge = `<span class="badge badge-success" style="font-size:10px; font-weight:600;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
+                    overallBadge = `<span class="badge badge-success" style="font-size:10px; font-weight:600;">${t('sla_met')}</span>`;
                 }
             } else if (sla.pausedAt) {
-                overallBadge = `<span class="badge badge-default" style="font-size:10px; font-weight:600;">${isEn ? 'Paused' : 'Duraklatıldı'}</span>`;
+                overallBadge = `<span class="badge badge-default" style="font-size:10px; font-weight:600;">${t('sla_paused')}</span>`;
             } else if (isResBreached) {
-                overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${isEn ? 'Resolution Breached' : 'Çözüm Aşıldı'}</span>`;
+                overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${t('sla_res_breached')}</span>`;
             } else if (isFirstRespBreached) {
-                overallBadge = `<span class="badge badge-warning" style="font-size:10px; font-weight:700;">${isEn ? 'First Response Breached' : 'İlk Yanıt Aşıldı'}</span>`;
+                overallBadge = `<span class="badge badge-warning" style="font-size:10px; font-weight:700;">${t('sla_first_resp_breached')}</span>`;
             } else {
-                overallBadge = `<span class="badge badge-info" style="font-size:10px; font-weight:600;">${isEn ? 'On Track' : 'Süresinde'}</span>`;
+                overallBadge = `<span class="badge badge-info" style="font-size:10px; font-weight:600;">${t('sla_on_track')}</span>`;
             }
             document.getElementById('tSlaOverallBadge').innerHTML = overallBadge;
 
@@ -1593,9 +1591,9 @@
             if (firstRespDate) {
                 firstRespDateText = firstRespDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 if (isFirstRespMet) {
-                    firstRespBadge = `<span class="badge badge-success" style="font-size:10px;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
+                    firstRespBadge = `<span class="badge badge-success" style="font-size:10px;">${t('sla_met')}</span>`;
                 } else if (isFirstRespBreached) {
-                    firstRespBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${isEn ? 'Breached' : 'Aşıldı'}</span>`;
+                    firstRespBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${t('td_sla_breached')}</span>`;
                 } else {
                     const diffMs = firstRespDate - now;
                     firstRespBadge = `<span class="badge badge-info" style="font-size:10px;">${formatRemainingTime(diffMs)}</span>`;
@@ -1610,9 +1608,9 @@
             if (resDate) {
                 resDateText = resDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 if (isResMet) {
-                    resBadge = `<span class="badge badge-success" style="font-size:10px;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
+                    resBadge = `<span class="badge badge-success" style="font-size:10px;">${t('sla_met')}</span>`;
                 } else if (isResBreached) {
-                    resBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${isEn ? 'Breached' : 'Aşıldı'}</span>`;
+                    resBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${t('td_sla_breached')}</span>`;
                 } else {
                     const diffMs = resDate - now;
                     resBadge = `<span class="badge badge-info" style="font-size:10px;">${formatRemainingTime(diffMs)}</span>`;
@@ -1622,25 +1620,24 @@
             document.getElementById('tSlaResolutionDate').textContent = resDateText;
         }
 
+        // Intl gives each language its own units and plural forms
+        const formatUnit = (value, unit, unitDisplay) => new Intl.NumberFormat(getLocale(), { style: 'unit', unit, unitDisplay }).format(value);
+
         function formatRemainingTime(diffMs) {
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
-            if (diffMs <= 0) return isEn ? 'Expired' : 'Süre doldu';
+            if (diffMs <= 0) return t('sla_expired');
             const mins = Math.floor(diffMs / 60000);
-            if (mins <= 60) return isEn ? `${Math.max(1, mins)} min left` : `${Math.max(1, mins)} dk kaldı`;
+            if (mins <= 60) return t('td_sla_left').replaceAll('{0}', formatUnit(Math.max(1, mins), 'minute', 'short'));
             if (mins <= 1440) {
-                const hrs = Math.floor(mins / 60);
-                const rm = mins % 60;
-                return isEn ? `${hrs}h ${rm}m` : `${hrs} sa ${rm} dk`;
+                return `${formatUnit(Math.floor(mins / 60), 'hour', 'narrow')} ${formatUnit(mins % 60, 'minute', 'narrow')}`;
             }
-            const days = Math.ceil(mins / 1440);
-            return isEn ? `${days} days left` : `${days} gün kaldı`;
+            return t('td_sla_left').replaceAll('{0}', formatUnit(Math.ceil(mins / 1440), 'day', 'long'));
         }
 
 
 // Setup Manage Assignees Modal
         window.openAssignModal = async () => {
             const container = document.getElementById('assignTreeContainer');
-            container.innerHTML = '<div style="text-align:center; padding: 20px;">Yükleniyor...</div>';
+            container.innerHTML = `<div style="text-align:center; padding: 20px;">${t('common_loading')}</div>`;
             openModal('manageAssigneesModal');
             
             try {
@@ -1674,16 +1671,16 @@
 
                     html += `
                         <li style="margin-bottom: 8px;">
-                            <button type="button" style="display:flex; align-items:center; gap:8px; font-weight:600; padding:6px; background:var(--bg-hover); border-radius:4px; cursor:pointer; width:100%; border:none; text-align:left;" onclick="const ul = this.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.dept-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.dept-chevron').style.transform = ''; }">
+                            <button type="button" style="display:flex; align-items:center; gap:8px; font-weight:600; padding:6px; background:var(--bg-hover); border-radius:4px; cursor:pointer; width:100%; border:none; text-align:start;" onclick="const ul = this.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.dept-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.dept-chevron').style.transform = ''; }">
                                 <svg class="dept-chevron" viewBox="0 0 24 24" width="16" height="16" style="transition: transform 0.2s; transform: ${deptExpanded ? 'rotate(90deg)' : 'none'};"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
                                 <svg viewBox="0 0 24 24" width="16" height="16" style="fill:${escapeHtml(d.color || 'currentColor')};"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
                                 ${escapeHtml(d.name)}
                             </button>
-                            <ul style="list-style:none; padding-left:24px; margin-top:8px; display:${deptExpanded ? 'block' : 'none'};">
+                            <ul style="list-style:none; padding-inline-start:24px; margin-top:8px; display:${deptExpanded ? 'block' : 'none'};">
                     `;
                     
                     if (dGroups.length === 0) {
-                        html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">Grup yok</li>`;
+                        html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">${t('admin_no_groups')}</li>`;
                     } else {
                         dGroups.forEach(g => {
                             const isGrpSelected = assignedGroupIds.has(g.id);
@@ -1695,17 +1692,17 @@
                                 <li style="margin-bottom: 4px;">
                                     <div style="display:flex; align-items:center; gap:8px; padding:4px;">
                                         <input type="checkbox" class="group-checkbox" value="${g.id}" ${isGrpSelected ? 'checked' : ''}>
-                                        <button type="button" style="font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; background:none; border:none; padding:0; text-align:left;" onclick="const ul = this.parentElement.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.grp-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.grp-chevron').style.transform = ''; }">
+                                        <button type="button" style="font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; background:none; border:none; padding:0; text-align:start;" onclick="const ul = this.parentElement.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.grp-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.grp-chevron').style.transform = ''; }">
                                             <svg class="grp-chevron" viewBox="0 0 24 24" width="16" height="16" style="transition: transform 0.2s; transform: ${grpExpanded ? 'rotate(90deg)' : 'none'};"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
                                             <svg viewBox="0 0 24 24" width="14" height="14" style="fill:var(--text-muted)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                                             ${escapeHtml(g.name)}
                                         </button>
                                     </div>
-                                    <ul style="list-style:none; padding-left:24px; margin-top:4px; display:${grpExpanded ? 'block' : 'none'};">
+                                    <ul style="list-style:none; padding-inline-start:24px; margin-top:4px; display:${grpExpanded ? 'block' : 'none'};">
                             `;
                             
                             if (gUsers.length === 0) {
-                                html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">Kullanıcı yok</li>`;
+                                html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">${t('td_no_users')}</li>`;
                             } else {
                                 gUsers.forEach(u => {
                                     const isUsrSelected = assignedUserIds.has(u.id);
@@ -1731,7 +1728,7 @@
                 
             } catch (err) {
                 console.error("Error loading assign tree", err);
-                container.innerHTML = '<div style="color:var(--danger); padding:20px; text-align:center;">Atama ağacı yüklenemedi.</div>';
+                container.innerHTML = `<div style="color:var(--danger); padding:20px; text-align:center;">${t('td_assign_tree_failed')}</div>`;
             }
         };
 
@@ -1746,15 +1743,15 @@
                 const req = { userIds: uIds, groupIds: gIds };
                 await window.api.request(`/Ticket/${ticketId}/assign`, { method: 'POST', body: JSON.stringify(req) });
                 if (uIds.length === 0 && gIds.length === 0) {
-                    showToast('Tüm atamalar kaldırıldı (Bilet atamasız).');
+                    showToast(t('td_assign_cleared'));
                 } else {
-                    showToast('Atamalar başarıyla güncellendi.');
+                    showToast(t('td_assign_updated'));
                 }
                 closeModal('manageAssigneesModal');
                 window.location.reload();
             } catch (e) {
                 console.error(e);
-                showToast('Atama işlemi başarısız: ' + (e.message || ''), 'error');
+                showToast(t('td_assign_failed').replaceAll('{0}', e.message || ''), 'error');
             }
         };
 
@@ -1762,7 +1759,7 @@
         window.openAssignmentTree = async () => {
                     openModal('assignmentTreeModal');
                     const container = document.getElementById('assignmentTreeContainer');
-                    container.innerHTML = '<div style="text-align:center; padding: 20px;">Loading tree...</div>';
+                    container.innerHTML = `<div style="text-align:center; padding: 20px;">${t('common_loading')}</div>`;
                     try {
                         const tree = await window.api.request(`/Ticket/${ticketId}/assignments/tree`);
                         
@@ -1771,26 +1768,26 @@
                             let icon = '';
                             if (node.userId) {
                                 const u = window.globalUsers.find(x => x.id === node.userId);
-                                assigneeName = u ? (u.firstName + ' ' + u.lastName) : (node.assigneeName || 'Unknown User');
-                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--primary); margin-right:4px; vertical-align:middle;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+                                assigneeName = u ? (u.firstName + ' ' + u.lastName) : (node.assigneeName || t('td_unknown_user'));
+                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--primary); margin-inline-end:4px; vertical-align:middle;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
                             } else if (node.groupId) {
                                 const g = window.globalGroups.find(x => x.id === node.groupId);
-                                assigneeName = g ? g.name : (node.assigneeName || 'Unknown Group');
-                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--text-muted); margin-right:4px; vertical-align:middle;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`;
+                                assigneeName = g ? g.name : (node.assigneeName || t('td_unknown_group'));
+                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--text-muted); margin-inline-end:4px; vertical-align:middle;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`;
                             }
                             
                             const assigner = window.globalUsers.find(x => x.id === node.assignedByUserId);
-                            const assignerName = assigner ? assigner.username : 'System';
+                            const assignerName = assigner ? assigner.username : t('td_system');
                             const date = new Date(node.createdAt).toLocaleString();
                             
                             let status = '';
                             if (node.isAssigneeDeleted) {
-                                status += '<span class="badge badge-danger" style="font-size:10px; margin-right:4px;">Deleted</span>';
+                                status += `<span class="badge badge-danger" style="font-size:10px; margin-inline-end:4px;">${t('td_deleted')}</span>`;
                             }
-                            status += node.isActive ? '<span class="badge badge-success" style="font-size:10px;">Active</span>' : '<span class="badge badge-default" style="font-size:10px;">Inactive</span>';
+                            status += node.isActive ? `<span class="badge badge-success" style="font-size:10px;">${t('users_status_active')}</span>` : `<span class="badge badge-default" style="font-size:10px;">${t('users_status_inactive')}</span>`;
                             
-                            let html = `<div style="border-left: 2px solid var(--border); padding-left: 16px; margin-left: 8px; margin-top: 8px; position:relative;">
-                                <div style="position:absolute; left:0; top: 12px; width:16px; border-top: 2px solid var(--border);"></div>
+                            let html = `<div style="border-inline-start: 2px solid var(--border); padding-inline-start: 16px; margin-inline-start: 8px; margin-top: 8px; position:relative;">
+                                <div style="position:absolute; inset-inline-start:0; top: 12px; width:16px; border-top: 2px solid var(--border);"></div>
                                 <div style="background: var(--bg-surface); border: 1px solid var(--border); padding: 8px; border-radius: var(--radius-sm); margin-bottom: 8px; display:inline-block;">
                                     <div style="font-size: 14px; font-weight: 500;">${icon}${escapeHtml(assigneeName)} ${status}</div>
                                     <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Assigned by: ${escapeHtml(assignerName)} on ${date}</div>
@@ -1798,7 +1795,7 @@
                             `;
                             
                             if (node.children && node.children.length > 0) {
-                                html += `<div style="margin-left: 16px;">`;
+                                html += `<div style="margin-inline-start: 16px;">`;
                                 node.children.forEach(child => {
                                     html += renderNode(child);
                                 });
@@ -1819,7 +1816,7 @@
                         }
                     } catch(e) {
                         console.error(e);
-                        container.innerHTML = `<div style="color:var(--danger)">Failed to load assignment tree.</div>`;
+                        container.innerHTML = `<div style="color:var(--danger)">${t('td_assign_tree_failed')}</div>`;
                     }
                 };
 
@@ -1827,7 +1824,7 @@
 
         function renderDynamicSelect(def, dp, val) {
             let inputStr = `<select class="form-control dyn-input" data-key="${escapeHtml(def.key)}" style="max-width:300px;" ${dp.isRequired ? 'required' : ''} ${def.fieldType === 4 ? 'multiple' : ''}>`;
-            inputStr += `<option value="">Select option...</option>`;
+            inputStr += `<option value="">${t('td_select_option')}</option>`;
             dp.options.forEach(o => {
                 const sel = val === o.value ? 'selected' : '';
                 inputStr += `<option value="${escapeHtml(o.value)}" ${sel}>${escapeHtml(o.label)}</option>`;
@@ -1855,7 +1852,7 @@
 
         window.downloadHistoryCsv = function() {
             if (!window.ticketTimeline || window.ticketTimeline.length === 0) {
-                showToast('No history to download', 'warning');
+                showToast(t('td_no_history_download'), 'warning');
                 return;
             }
             
@@ -1892,10 +1889,10 @@
             document.getElementById('editActions').style.display = 'flex';
 
             const tTitle = document.getElementById('tTitle');
-            tTitle.innerHTML = `<input type="text" id="inlineEditTitle" class="form-control" style="font-size:24px; font-weight:bold; width:100%;" value="${escapeHtml(currentTicket.title)}">`;
+            tTitle.innerHTML = `<input type="text" id="inlineEditTitle" dir="auto" class="form-control" style="font-size:24px; font-weight:bold; width:100%;" value="${escapeHtml(currentTicket.title)}">`;
 
             const tDesc = document.getElementById('tDesc');
-            tDesc.innerHTML = `<textarea id="inlineEditDesc" class="form-control" rows="4" style="width:100%;">${escapeHtml(currentTicket.description || '')}</textarea>`;
+            tDesc.innerHTML = `<textarea id="inlineEditDesc" dir="auto" class="form-control" rows="4" style="width:100%;">${escapeHtml(currentTicket.description || '')}</textarea>`;
 
             const tPriority = document.getElementById('tPriority');
             let prioHtml = '<select id="inlineEditPriority" class="form-control">';
@@ -1952,7 +1949,7 @@
             }
 
             const tProject = document.getElementById('tProject');
-            let projHtml = '<select id="sidebarEditProject" class="form-control form-control-sm"><option value="">No Project</option>';
+            let projHtml = `<select id="sidebarEditProject" class="form-control form-control-sm"><option value="">${t('audit_no_project')}</option>`;
             (window.globalLookup.projects || []).forEach(p => {
                 projHtml += `<option value="${p.id}" ${p.id === currentTicket.projectId ? 'selected' : ''}>${escapeHtml(p.name)}</option>`;
             });
@@ -2012,13 +2009,13 @@
                     });
                 }
 
-                showToast('Properties updated successfully');
+                showToast(t('td_properties_updated'));
                 document.getElementById('btnEditSidebar').style.display = 'inline-block';
                 document.getElementById('sidebarEditActions').style.display = 'none';
                 await loadTicket();
             } catch (e) {
                 console.error(e);
-                showToast('Failed to update properties', 'error');
+                showToast(t('td_properties_update_failed'), 'error');
             }
         };
 
@@ -2036,7 +2033,7 @@
 
             const titleInput = document.getElementById('inlineEditTitle');
             if(titleInput.value.trim() === '') {
-                showToast('Title is required', 'error');
+                showToast(t('td_title_required'), 'error');
                 return;
             }
 
@@ -2057,7 +2054,7 @@
             });
 
             if(validationFailed) {
-                showToast('Lütfen zorunlu alanları doldurun.', 'error');
+                showToast(t('td_required_missing'), 'error');
                 return;
             }
 
@@ -2093,7 +2090,7 @@
                     window.pendingUploads = [];
                 }
 
-                showToast('Talep güncellendi');
+                showToast(t('td_ticket_updated'));
                 isEditMode = false;
                 document.getElementById('btnEditInline').style.display = 'inline-block';
                 document.getElementById('editActions').style.display = 'none';
@@ -2103,7 +2100,7 @@
                 if(err.message) {
                     showToast(err.message, 'error'); // Usually from backend 400 Bad Request
                 } else {
-                    showToast('Update failed. Dinamik alan kurallarına dikkat edin.', 'error');
+                    showToast(t('td_update_failed'), 'error');
                 }
             }
         };
@@ -2111,30 +2108,30 @@
         
         // --- SONARQUBE R15 & R21 REFACTORING HELPERS ---
         window.resolveTimelineUser = function(id) {
-            if (!id || id === 'none' || id === 'null') return 'None';
+            if (!id || id === 'none' || id === 'null') return t('td_none');
             const u = window.globalUsers ? window.globalUsers.find(x => x.id == id) : null;
             return u ? escapeHtml(u.firstName + ' ' + u.lastName) : `User ${escapeHtml(String(id))}`;
         };
 
         window.parseTimelineGrp = function(str) {
-            if(!str) return 'None';
+            if(!str) return t('td_none');
             const m = str.match(/Grp:(\d+)/);
             if(m && m[1]) {
                 const g = window.globalGroups ? window.globalGroups.find(x => x.id == m[1]) : null;
                 return g ? escapeHtml(g.name) : `Group ${m[1]}`;
             }
-            return 'None';
+            return t('td_none');
         };
 
         window.parseHistoryTransfer = function(val) {
-            if (!val || val === 'Proj:,Grp:') return t('log_none') || 'none';
+            if (!val || val === 'Proj:,Grp:') return t('log_none');
             const mProj = val.match(/Proj:(-?\d*)/);
             const mGrp = val.match(/Grp:(-?\d*)/);
             const pId = mProj && mProj[1] ? mProj[1] : null;
             const gId = mGrp && mGrp[1] ? mGrp[1] : null;
             
-            const pName = pId && pId !== '-1' ? (window.globalLookup && window.globalLookup.projects?.find(x => x.id == pId)?.name || `Project ${pId}`) : (t('log_no_project') || 'No Project');
-            const gName = gId && gId !== '-1' ? (window.globalGroups?.find(x => x.id == gId)?.name || `Group ${gId}`) : (t('log_no_group') || 'No Group');
+            const pName = pId && pId !== '-1' ? (window.globalLookup && window.globalLookup.projects?.find(x => x.id == pId)?.name || `Project ${pId}`) : (t('log_no_project'));
+            const gName = gId && gId !== '-1' ? (window.globalGroups?.find(x => x.id == gId)?.name || `Group ${gId}`) : (t('log_no_group'));
             
             return `Proj:${pId || 'none'},Grp:${gId || 'none'} (${pName}, ${gName})`;
         };
@@ -2156,7 +2153,7 @@
                         if (isImage) {
                             return `<div class="comment-attachment-img-container">
                                         <img data-auth-src="/Ticket/${ticketId}/attachments/${id}/download" class="comment-attachment-img" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="Attachment" onclick="openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
-                                        <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="Download">
+                                        <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="${t('common_download')}">
                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                         </a>
                                     </div>`;
@@ -2174,7 +2171,7 @@
         
         function getCommentEditedHtml(c) {
             if (!c.isEdited) return '';
-            const isEditedText = c.updatedAt ? (t('log_edited_at') || '(Edited at {0})').replaceAll('{0}', new Date(c.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})) : (t('log_edited_only') || '(Edited)');
+            const isEditedText = c.updatedAt ? (t('log_edited_at')).replaceAll('{0}', new Date(c.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})) : (t('log_edited_only'));
             let titleText = '';
             if (c.updatedAt) titleText = new Date(c.updatedAt).toLocaleString();
             return `<span style="font-size: 11px; color: var(--text-muted); font-style: italic;" title="${titleText}">${isEditedText}</span>`;
@@ -2196,10 +2193,10 @@
                         ${aiBadge}
                     </div>
                     <div class="d-flex align-items-center gap-sm">
-                        ${c.isInternal ? '<span class="badge badge-warning">Internal Note</span>' : ''}
-                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineReplyToComment(${c.id}, ${c.isInternal})">${t('ticket_btn_reply') || 'Reply'}</button>
-                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineEditComment(${c.id})">${t('ticket_btn_edit') || 'Edit'}</button>
-                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px; color: var(--danger);" onclick="deleteComment(${c.id})">${t('btn_delete') || 'Delete'}</button>
+                        ${c.isInternal ? `<span class="badge badge-warning">${t('td_internal_note')}</span>` : ''}
+                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineReplyToComment(${c.id}, ${c.isInternal})">${t('ticket_btn_reply')}</button>
+                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineEditComment(${c.id})">${t('ticket_btn_edit')}</button>
+                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px; color: var(--danger);" onclick="deleteComment(${c.id})">${t('btn_delete')}</button>
                     </div>
                 </div>`;
         }
@@ -2208,20 +2205,20 @@
             return `
             <div id="comment-edit-${c.id}" style="display:none; margin-top: 8px;">
                 <div style="border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface); padding: 8px;">
-                    <textarea class="form-control" rows="3" id="edit-textarea-${c.id}" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
+                    <textarea class="form-control" rows="3" id="edit-textarea-${c.id}" dir="auto" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
                     <div id="edit-attachment-previews-${c.id}" class="d-flex gap-sm flex-wrap mb-sm" style="padding: 0 8px;"></div>
                     
                     <div class="d-flex justify-content-between align-items-center" style="padding: 4px 8px; border-top: 1px solid var(--border-light); margin-top: 4px; padding-top: 12px;">
                         <div class="d-flex align-items-center gap-md">
-                            <button type="button" class="btn btn-ghost" onclick="document.getElementById('editAttachmentInput-${c.id}').click()" title="Attach File" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
+                            <button type="button" class="btn btn-ghost" onclick="document.getElementById('editAttachmentInput-${c.id}').click()" title="${t('td_attach_file')}" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
                                 📎
                             </button>
                             <input type="file" id="editAttachmentInput-${c.id}" multiple style="display: none;" onchange="window.uploadEditAttachment(this, ${c.id})">
                         </div>
                         
                         <div class="d-flex gap-sm">
-                            <button class="btn btn-ghost btn-sm" onclick="cancelEditComment(${c.id})">${t('btn_cancel') || 'Cancel'}</button>
-                            <button class="btn btn-primary btn-sm" id="btnSaveEdit-${c.id}" onclick="saveEditComment(${c.id})">${t('btn_save') || 'Save'}</button>
+                            <button class="btn btn-ghost btn-sm" onclick="cancelEditComment(${c.id})">${t('btn_cancel')}</button>
+                            <button class="btn btn-primary btn-sm" id="btnSaveEdit-${c.id}" onclick="saveEditComment(${c.id})">${t('btn_save')}</button>
                         </div>
                     </div>
                 </div>
@@ -2252,7 +2249,7 @@
             
             div.innerHTML = headerHtml + `
                 <div id="comment-content-${c.id}" class="comment-body" data-raw-content="${encodeURIComponent(c.content)}">
-                    <div style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>
+                    <div dir="auto" style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>
                     ${attachmentsHtml}
                 </div>` + editorHtml;
                 
@@ -2265,57 +2262,57 @@
 
         window.buildHistoryText = function(h) {
             let text = '';
-            const actionKey = h.action === 'Created' ? (t('log_created') || 'Created') : h.action;
-            const noneText = t('log_none') || 'none';
+            const actionKey = h.action === 'Created' ? (t('log_created')) : h.action;
+            const noneText = t('log_none');
             const oldVal = h.oldValue || noneText;
             const newVal = h.newValue || noneText;
             
-            text = (t('log_changed_general') || `{0} <strong>{1}</strong> from <em>{2}</em> to <em>{3}</em>`)
+            text = (t('log_changed_general'))
                 .replaceAll('{0}', escapeHtml(actionKey))
                 .replaceAll('{1}', escapeHtml(h.fieldName || ''))
                 .replaceAll('{2}', escapeHtml(oldVal))
                 .replaceAll('{3}', escapeHtml(newVal));
             
             if (h.action === 'Assigned' && h.fieldName === 'AssignedUserId') {
-                text = (t('log_assigned') || `assigned this ticket to <strong>{0}</strong> (was {1})`)
+                text = (t('log_assigned'))
                     .replaceAll('{0}', window.resolveTimelineUser(h.newValue))
                     .replaceAll('{1}', window.resolveTimelineUser(h.oldValue));
             } else if (h.action === 'Transferred') {
-                text = (t('log_transferred') || `transferred this ticket to <strong>{0}</strong> (was {1})`)
+                text = (t('log_transferred'))
                     .replaceAll('{0}', escapeHtml(window.parseHistoryTransfer(h.newValue)))
                     .replaceAll('{1}', escapeHtml(window.parseHistoryTransfer(h.oldValue)));
             } else if (h.action === 'StatusChanged' || h.action === 'Reopened') {
                 const sOld = window.globalLookup?.statuses?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const sNew = window.globalLookup?.statuses?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_status') || `changed status from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_status'))
                     .replaceAll('{0}', escapeHtml(sOld)).replaceAll('{1}', escapeHtml(sNew));
             } else if (h.fieldName === 'PriorityId' || h.fieldName === 'Priority') {
                 const pOld = window.globalLookup?.priorities?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const pNew = window.globalLookup?.priorities?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_priority') || `changed priority from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_priority'))
                     .replaceAll('{0}', escapeHtml(pOld)).replaceAll('{1}', escapeHtml(pNew));
             } else if (h.fieldName === 'CategoryId' || h.fieldName === 'Category') {
                 const cOld = window.globalLookup?.categories?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const cNew = window.globalLookup?.categories?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_category') || `changed category from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_category'))
                     .replaceAll('{0}', escapeHtml(cOld)).replaceAll('{1}', escapeHtml(cNew));
             } else if (h.fieldName === 'ProjectId' || h.fieldName === 'Project') {
                 const pOld = window.globalLookup?.projects?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const pNew = window.globalLookup?.projects?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_project') || `changed project from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_project'))
                     .replaceAll('{0}', escapeHtml(pOld)).replaceAll('{1}', escapeHtml(pNew));
             } else if (h.action === 'AttachmentAdded') {
-                text = (t('log_attachment_added') || `added attachment <strong>{0}</strong>`).replaceAll('{0}', escapeHtml(h.newValue));
+                text = (t('log_attachment_added')).replaceAll('{0}', escapeHtml(h.newValue));
             } else if (h.action === 'AttachmentDeleted') {
-                text = (t('log_attachment_deleted') || `deleted attachment <strong>{0}</strong>`).replaceAll('{0}', escapeHtml(h.oldValue));
+                text = (t('log_attachment_deleted')).replaceAll('{0}', escapeHtml(h.oldValue));
             } else if (h.action === 'CommentEdited') {
-                text = t('log_edited_comment') || `edited a comment`;
+                text = t('log_edited_comment');
             } else if (h.action === 'CommentDeleted') {
-                text = t('log_deleted_comment') || `deleted a comment`;
+                text = t('log_deleted_comment');
             } else if (h.action === 'CommentRestored') {
-                text = t('log_restored_comment') || `restored a deleted comment`;
+                text = t('log_restored_comment');
             } else if (h.action === 'UserMentioned') {
-                text = (t('log_mentioned_user') || `mentioned <strong>{0}</strong> in a comment`).replaceAll('{0}', window.resolveTimelineUser(h.newValue));
+                text = (t('log_mentioned_user')).replaceAll('{0}', window.resolveTimelineUser(h.newValue));
             }
             return text;
         };
@@ -2324,19 +2321,19 @@
             let detailsHtml = '';
             if (h.action === 'CommentAdded' || h.action === 'InternalNoteAdded' || h.action === 'CommentReplied' || h.action === 'UserMentioned') {
                 if (h.action === 'UserMentioned' && h.newValue) {
-                    detailsHtml = `<div style="background:var(--bg-hover); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border); font-size:11px;">${t('log_mentioned_user_prefix') || 'Mentioned User:'} <strong>${window.resolveTimelineUser(h.newValue)}</strong></div>`;
+                    detailsHtml = `<div style="background:var(--bg-hover); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border); font-size:11px;">${t('log_mentioned_user_prefix')} <strong>${window.resolveTimelineUser(h.newValue)}</strong></div>`;
                 } else if (h.newValue) {
                     detailsHtml = `<div style="background:var(--bg-hover); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border); font-size:11px;">${window.renderContentWithAttachments(h.newValue)}</div>`;
                 }
                 const commentExists = events.some(ev => ev.eventType === 'Comment' && ev.data.id == h.fieldName);
                 if (commentExists) {
-                    detailsHtml += `<button type="button" onclick="document.getElementById('commentLogsModal').classList.remove('active'); setTimeout(() => { const c = document.getElementById('comment-${h.fieldName}'); if(c) { c.scrollIntoView({behavior:'smooth', block:'center'}); c.style.boxShadow = '0 0 0 4px var(--primary-light)'; setTimeout(()=>c.style.boxShadow='none', 3000); } }, 300);" style="border: none; background: none; padding: 0; cursor: pointer; color: var(--primary); text-decoration: underline; font-size:10px; display:inline-block; margin-top:4px;">${t('log_jump_to_comment') || 'Jump to comment'}</button>`;
+                    detailsHtml += `<button type="button" onclick="document.getElementById('commentLogsModal').classList.remove('active'); setTimeout(() => { const c = document.getElementById('comment-${h.fieldName}'); if(c) { c.scrollIntoView({behavior:'smooth', block:'center'}); c.style.boxShadow = '0 0 0 4px var(--primary-light)'; setTimeout(()=>c.style.boxShadow='none', 3000); } }, 300);" style="border: none; background: none; padding: 0; cursor: pointer; color: var(--primary); text-decoration: underline; font-size:10px; display:inline-block; margin-top:4px;">${t('log_jump_to_comment')}</button>`;
                 }
             } else if (h.action === 'CommentEdited' && h.oldValue && h.newValue) {
                 const oldEnc = btoa(unescape(encodeURIComponent(h.oldValue)));
                 const newEnc = btoa(unescape(encodeURIComponent(h.newValue)));
-                let origAuthor = 'Unknown';
-                let origCreatedAt = 'Unknown';
+                let origAuthor = t('dash_unknown');
+                let origCreatedAt = t('dash_unknown');
                 if (h.fieldName && !Number.isNaN(Number(h.fieldName))) {
                     const origEvent = events.find(ev => ev.eventType === 'Comment' && ev.data.id == h.fieldName);
                     if (origEvent) {
@@ -2346,7 +2343,7 @@
                 }
                 const editorName = window.resolveTimelineUser(h.createdBy);
                 const editedAt = new Date(e.timestamp).toLocaleString();
-                detailsHtml = `<button class="btn btn-ghost" style="font-size:11px; padding:4px 8px; margin-top:4px; color:var(--primary); font-weight:600; background:rgba(10, 107, 234, 0.05); border:1px solid rgba(10, 107, 234, 0.1);" data-old="${oldEnc}" data-new="${newEnc}" data-author="${escapeHtml(origAuthor)}" data-editor="${escapeHtml(editorName)}" data-created="${escapeHtml(origCreatedAt)}" data-edited="${escapeHtml(editedAt)}" onclick="showEditDetails(this.dataset.old, this.dataset.new, this.dataset.author, this.dataset.editor, this.dataset.created, this.dataset.edited)">${t('audit_btn_detail') || 'View Details'}</button>`;
+                detailsHtml = `<button class="btn btn-ghost" style="font-size:11px; padding:4px 8px; margin-top:4px; color:var(--primary); font-weight:600; background:rgba(10, 107, 234, 0.05); border:1px solid rgba(10, 107, 234, 0.1);" data-old="${oldEnc}" data-new="${newEnc}" data-author="${escapeHtml(origAuthor)}" data-editor="${escapeHtml(editorName)}" data-created="${escapeHtml(origCreatedAt)}" data-edited="${escapeHtml(editedAt)}" onclick="showEditDetails(this.dataset.old, this.dataset.new, this.dataset.author, this.dataset.editor, this.dataset.created, this.dataset.edited)">${t('audit_btn_detail')}</button>`;
             } else if (h.action === 'CommentDeleted' && h.oldValue) {
                 detailsHtml = `<div style="background:var(--bg-danger-light); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border-danger-light); font-size:11px; color:var(--text-danger-strong);"><del>${escapeHtml(h.oldValue)}</del></div>`;
             }
@@ -2369,13 +2366,13 @@
             } else if (h.action === 'CommentReplied' || h.action === 'CommentAdded' || h.action === 'InternalNoteAdded') {
                 const hasAttachment = h.newValue && h.newValue.includes('[attachment:');
                 if (hasAttachment) {
-                    if (h.action === 'CommentReplied') text = t('log_replied_attachment') || `replied with an attachment`;
-                    else if (h.action === 'InternalNoteAdded') text = t('log_note_attachment') || `added an internal note with an attachment`;
-                    else text = t('log_comment_attachment') || `added a comment with an attachment`;
+                    if (h.action === 'CommentReplied') text = t('log_replied_attachment');
+                    else if (h.action === 'InternalNoteAdded') text = t('log_note_attachment');
+                    else text = t('log_comment_attachment');
                 } else {
-                    if (h.action === 'CommentReplied') text = t('log_replied') || `replied to a comment`;
-                    else if (h.action === 'InternalNoteAdded') text = t('log_added_note') || `added an internal note`;
-                    else text = t('log_added_comment') || `added a comment`;
+                    if (h.action === 'CommentReplied') text = t('log_replied');
+                    else if (h.action === 'InternalNoteAdded') text = t('log_added_note');
+                    else text = t('log_added_comment');
                 }
             }
             
@@ -2384,7 +2381,7 @@
                 const logDiv = document.createElement('div');
                 logDiv.className = 'history-event comment-log-item';
                 logDiv.id = `history-${h.id}`;
-                logDiv.style.borderLeft = '2px solid var(--primary)';
+                logDiv.style.borderInlineStart = '2px solid var(--primary)';
                 logDiv.style.backgroundColor = 'transparent';
                 logDiv.style.padding = '4px 0 4px 8px';
                 logDiv.dataset.searchText = `${window.resolveTimelineUser(h.createdBy)} ${text} ${h.oldValue||''} ${h.newValue||''}`.toLowerCase();
@@ -2540,21 +2537,21 @@
             const box = document.createElement('div');
             box.id = 'inline-reply-box';
             box.className = 'reply-container';
-            box.style.borderLeft = '3px solid var(--primary)';
-            box.style.paddingLeft = '16px';
+            box.style.borderInlineStart = '3px solid var(--primary)';
+            box.style.paddingInlineStart = '16px';
             box.style.marginBottom = '12px';
             
             box.innerHTML = `
                 <div class="comment-reply-connector"></div>
-                <textarea class="form-control mb-sm" rows="3" id="inline-reply-text" placeholder="${(t('log_replying_to') || 'Replying to comment #{0}...').replaceAll('{0}', id)}"></textarea>
+                <textarea class="form-control mb-sm" rows="3" id="inline-reply-text" dir="auto" placeholder="${(t('log_replying_to')).replaceAll('{0}', id)}"></textarea>
                 ${canWriteInternalNotes ? `<div style="margin-bottom: 8px;">
                     <label style="font-size: 13px; color: var(--text-muted); cursor: ${forceInternal ? 'not-allowed' : 'pointer'};">
-                        <input type="checkbox" id="inline-reply-internal" ${forceInternal ? 'checked disabled' : ''}> ${t('log_internal_note_cb') || 'Internal Note'}
+                        <input type="checkbox" id="inline-reply-internal" ${forceInternal ? 'checked disabled' : ''}> ${t('log_internal_note_cb')}
                     </label>
                 </div>` : ''}
                 <div class="d-flex gap-sm">
-                    <button class="btn btn-primary btn-sm" onclick="submitInlineReply(${id}, ${forceInternal})">${t('ticket_btn_reply') || 'Reply'}</button>
-                    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inline-reply-box').remove()">${t('btn_cancel') || 'Cancel'}</button>
+                    <button class="btn btn-primary btn-sm" onclick="submitInlineReply(${id}, ${forceInternal})">${t('ticket_btn_reply')}</button>
+                    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inline-reply-box').remove()">${t('btn_cancel')}</button>
                 </div>
             `;
             
@@ -2603,11 +2600,11 @@
                     method: 'POST',
                     body: JSON.stringify({ content: content, isInternal: isInternal, parentCommentId: parentId, mentionedUserIds: mentionedUserIds })
                 });
-                showToast('Reply added');
+                showToast(t('td_reply_added'));
                 loadTimeline();
             } catch (e) {
                 console.error(e);
-                showToast('Failed to add reply', 'error');
+                showToast(t('td_reply_failed'), 'error');
             }
         };
 
@@ -2638,9 +2635,9 @@
                 const isImage = att && att.contentType && att.contentType.startsWith('image/');
                 
                 const wrapper = document.createElement('div');
-                wrapper.style.cssText = 'position: relative; display: inline-block; margin-right: 8px; margin-top: 6px;';
+                wrapper.style.cssText = 'position: relative; display: inline-block; margin-inline-end: 8px; margin-top: 6px;';
                 
-                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, '${textareaId}')" title="Remove" style="position: absolute; top: -8px; right: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
+                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, '${textareaId}')" title="${t('common_remove')}" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
@@ -2662,7 +2659,7 @@
             
             const btn = document.getElementById(`btnSaveEdit-${commentId}`);
             const originalText = btn.innerHTML;
-            btn.innerHTML = 'Uploading...';
+            btn.innerHTML = t('td_uploading');
             btn.disabled = true;
 
             try {
@@ -2685,7 +2682,7 @@
                 window.syncEditPreviews(commentId);
             } catch (err) {
                 console.error('Failed to upload attachment:', err);
-                showToast('Failed to upload attachment.', 'error');
+                showToast(t('td_upload_failed'), 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
@@ -2798,7 +2795,7 @@
                     method: 'PUT',
                     body: JSON.stringify({ content: newContent, mentionedUserIds: mentionedUserIds })
                 });
-                showToast('Comment updated');
+                showToast(t('td_comment_updated'));
                 loadTimeline();
             } catch(e) {
                 console.error(e);
@@ -2816,17 +2813,17 @@
             overlay.innerHTML = `
                 <div class="modal" style="width: 400px;">
                     <div class="modal-header">
-                        <h2>Delete Comment</h2>
-                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()" aria-label="Close">
+                        <h2>${t('td_comment_delete_title')}</h2>
+                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()" aria-label="${t('btn_close')}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete this comment? You can undo this action shortly after.</p>
+                        <p>${t('td_comment_delete_confirm')}</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-                        <button type="button" class="btn btn-primary" style="background-color: var(--danger);" onclick="confirmDeleteComment(${id}, this)">Delete</button>
+                        <button type="button" class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">${t('btn_cancel')}</button>
+                        <button type="button" class="btn btn-primary" style="background-color: var(--danger);" onclick="confirmDeleteComment(${id}, this)">${t('btn_delete')}</button>
                     </div>
                 </div>
             `;
@@ -2838,17 +2835,17 @@
             btn.dataset.submitting = 'true';
             try {
                 btn.disabled = true;
-                btn.innerText = 'Deleting...';
+                btn.innerText = t('common_deleting');
                 await window.api.request(`/Ticket/${ticketId}/comments/${id}`, { method: 'DELETE' });
                 
                 const duration = 5000; // 5 seconds
                 const undoHtml = `
                     <div style="position:relative; width:100%; min-width: 250px; overflow: hidden; padding-bottom: 4px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>Comment deleted.</span>
-                            <button class="btn btn-ghost" style="padding: 2px 8px; font-size: 12px; color: white; border: 1px solid white;" onclick="restoreComment(${id}, this)">Undo</button>
+                            <span>${t('td_comment_deleted')}</span>
+                            <button class="btn btn-ghost" style="padding: 2px 8px; font-size: 12px; color: white; border: 1px solid white;" onclick="restoreComment(${id}, this)">${t('common_undo')}</button>
                         </div>
-                        <div style="position:absolute; bottom:0; left:0; height:3px; background:var(--primary); width:100%; transition: width ${duration}ms linear;" id="undoProgress-${id}"></div>
+                        <div style="position:absolute; bottom:0; inset-inline-start:0; height:3px; background:var(--primary); width:100%; transition: width ${duration}ms linear;" id="undoProgress-${id}"></div>
                     </div>
                 `;
                 
@@ -2881,27 +2878,27 @@
                 console.error(e);
                 showToast('Failed to delete comment: ' + e.message, 'error');
                 btn.disabled = false;
-                btn.innerText = 'Delete';
+                btn.innerText = t('btn_delete');
             }
         };
 
         window.restoreComment = async (id, btn) => {
             try {
                 btn.disabled = true;
-                btn.innerText = 'Restoring...';
+                btn.innerText = t('common_restoring');
                 await window.api.request(`/Ticket/${ticketId}/comments/${id}/restore`, { method: 'POST' });
                 const toast = btn.closest('.toast');
                 if(toast) {
                     toast.classList.remove('show');
                     setTimeout(() => toast.remove(), 300);
                 }
-                showToast('Comment restored successfully', 'success');
+                showToast(t('td_comment_restored'), 'success');
                 loadTimeline();
             } catch(e) {
                 console.error(e);
-                showToast('Failed to restore comment', 'error');
+                showToast(t('td_comment_restore_failed'), 'error');
                 btn.disabled = false;
-                btn.innerText = 'Undo';
+                btn.innerText = t('common_undo');
             }
         };
 
@@ -2938,11 +2935,11 @@
                 
                 document.getElementById('isInternalComment').checked = false;
                 
-                showToast('Comment added');
+                showToast(t('td_comment_added'));
                 loadTimeline();
             } catch(e) { 
                 console.error(e);
-                showToast('Error adding comment', 'error'); 
+                showToast(t('td_comment_add_failed'), 'error'); 
             }
         });
 
@@ -2954,11 +2951,11 @@
                     method: 'POST',
                     body: JSON.stringify(newStatus)
                 });
-                showToast('Status updated');
+                showToast(t('td_status_updated'));
                 loadTicket(); // Refresh to update allowed transitions
             } catch(e) { 
                 console.error(e);
-                showToast(`Geçersiz geçiş: ${statusName} durumuna geçilemez.`, 'error');
+                showToast(t('td_invalid_transition').replaceAll('{0}', statusName), 'error');
                 loadTicket(); // Reset dropdown to previous state
             }
         });
@@ -3000,7 +2997,7 @@
                     `</div>`;
                 contentHtml = contentHtml.replace(/\[attachment:\d+\]/g, '').trim();
             }
-            return `<div style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>${attachmentsHtml}`;
+            return `<div dir="auto" style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>${attachmentsHtml}`;
         };
 
         window.generateDiff = function(oldStr, newStr) {
@@ -3079,26 +3076,26 @@
             modal.innerHTML = `
                 <div class="modal" style="width: min(800px, 90%);">
                     <div class="modal-header">
-                        <h2>Comment Edit Details</h2>
-                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()">
+                        <h2>${t('td_edit_details_title')}</h2>
+                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()" aria-label="${t('btn_close')}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
                     <div class="modal-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div>
                             <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted);">
-                                <strong>Original Author:</strong> ${authorName}<br>
-                                <strong>Written At:</strong> ${createdAt}
+                                <strong>${t('td_original_author')}</strong> ${authorName}<br>
+                                <strong>${t('td_written_at')}</strong> ${createdAt}
                             </div>
-                            <strong style="color:var(--error); font-size:12px; text-transform:uppercase;">Before (Eski Hali)</strong>
+                            <strong style="color:var(--error); font-size:12px; text-transform:uppercase;">${t('td_before')}</strong>
                             <div style="background:var(--bg-hover); padding:8px; border-radius:4px; font-size:13px; margin-top:4px; min-height:60px;">${finalOldHtml}</div>
                         </div>
                         <div>
                             <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted);">
-                                <strong>Edited By:</strong> ${editorName}<br>
-                                <strong>Edited At:</strong> ${updatedAt}
+                                <strong>${t('td_edited_by')}</strong> ${editorName}<br>
+                                <strong>${t('td_edited_at')}</strong> ${updatedAt}
                             </div>
-                            <strong style="color:var(--success); font-size:12px; text-transform:uppercase;">After (Yeni Hali)</strong>
+                            <strong style="color:var(--success); font-size:12px; text-transform:uppercase;">${t('td_after')}</strong>
                             <div style="background:var(--bg-hover); padding:8px; border-radius:4px; font-size:13px; margin-top:4px; min-height:60px;">${finalNewHtml}</div>
                         </div>
                     </div>
@@ -3136,7 +3133,7 @@
         window.downloadCommentLogs = () => {
             const items = document.querySelectorAll('.comment-log-item');
             if (items.length === 0) {
-                showToast('No logs to download', 'error');
+                showToast(t('td_no_logs_download'), 'error');
                 return;
             }
             
@@ -3165,11 +3162,11 @@
 
         
         function renderUserTooltipContent(user) {
-            const dept = (window.globalLookup !== undefined && window.globalLookup.departments ? window.globalLookup.departments : []).find(d => d.id == user.departmentId)?.name || 'No Department';
+            const dept = (window.globalLookup !== undefined && window.globalLookup.departments ? window.globalLookup.departments : []).find(d => d.id == user.departmentId)?.name || t('admin_no_dept');
             const userGroups = user.groupIds && user.groupIds.length > 0 
                 ? user.groupIds.map(gid => (window.globalGroups !== undefined ? window.globalGroups : []).find(g => g.id == gid)?.name || `Group ${gid}`).join(', ') 
-                : 'No Groups';
-            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+                : t('admin_no_groups');
+            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString(getLocale()) : t('dash_unknown');
 
             return `
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:8px;">
@@ -3180,9 +3177,9 @@
                     </div>
                 </div>
                 <div style="font-size:12px; display:flex; flex-direction:column; gap:4px;">
-                    <div><strong style="color:var(--text-muted);">Joined:</strong> ${createdAt}</div>
-                    <div><strong style="color:var(--text-muted);">Dept:</strong> ${escapeHtml(dept)}</div>
-                    <div><strong style="color:var(--text-muted);">Groups:</strong> ${escapeHtml(userGroups)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_joined')}</strong> ${createdAt}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_dept')}</strong> ${escapeHtml(dept)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_groups')}</strong> ${escapeHtml(userGroups)}</div>
                 </div>
             `;
         }
@@ -3251,10 +3248,10 @@
                     textArea.dispatchEvent(new Event('input'));
                 }
                 
-                showToast('Files attached successfully!');
+                showToast(t('td_files_attached'));
             } catch (err) {
                 console.error('Failed to upload file for comment:', err);
-                showToast('Failed to upload one or more files.', 'error');
+                showToast(t('td_files_upload_failed'), 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
@@ -3282,9 +3279,9 @@
                 const isImage = att && att.contentType && att.contentType.startsWith('image/');
                 
                 const wrapper = document.createElement('div');
-                wrapper.style.cssText = 'position: relative; display: inline-block; margin-right: 8px; margin-top: 8px;';
+                wrapper.style.cssText = 'position: relative; display: inline-block; margin-inline-end: 8px; margin-top: 8px;';
                 
-                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, 'commentText')" title="Remove" style="position: absolute; top: -8px; right: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
+                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, 'commentText')" title="${t('common_remove')}" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
@@ -3363,7 +3360,7 @@
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.id = 'lightbox-overlay';
-                overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100000; display:flex; align-items:center; justify-content:center; cursor:zoom-out;';
+                overlay.style.cssText = 'position:fixed; top:0; inset-inline-start:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100000; display:flex; align-items:center; justify-content:center; cursor:zoom-out;';
                 overlay.onclick = function() { this.style.display = 'none'; };
                 
                 const img = document.createElement('img');
@@ -3413,7 +3410,7 @@
 
             if (resultContent) {
                 resultContent.innerHTML = `
-                    <div style="background: var(--danger-light, #FEF2F2); border: 1px solid var(--border-danger-light, #FECACA); border-left: 4px solid var(--danger, #EF4444); border-radius: 6px; padding: 12px; margin: 4px 0;">
+                    <div style="background: var(--danger-light, #FEF2F2); border: 1px solid var(--border-danger-light, #FECACA); border-inline-start: 4px solid var(--danger, #EF4444); border-radius: 6px; padding: 12px; margin: 4px 0;">
                         <div style="color: var(--danger, #991B1B); font-weight: 700; font-size: 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                             <span>LLM Bağlantısı Kurulamadı</span>
@@ -3479,15 +3476,15 @@
                     badge.style.border = '';
                     if (res.isAvailable || res.isEndpointReachable) {
                         badge.className = 'badge ai-status-active';
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981; animation: pulse-dot 2s infinite; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">LLM: ${escapeHtml(res.model || 'Aktif')}</span>`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981; animation: pulse-dot 2s infinite; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">LLM: ${escapeHtml(res.model || 'Aktif')}</span>`;
                         badge.title = `Sağlayıcı: ${res.provider || 'LLM'} | Model: ${res.model} | Endpoint: ${res.endpoint}\n(Ayarları değiştirmek için tıklayın)`;
                     } else if (res.fallbackToHeuristic) {
                         badge.className = 'badge ai-status-fallback';
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#F59E0B; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM (Rule Engine)' : 'LLM Bağlı Değil (Kural Motoru)'}</span>`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#F59E0B; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM (Rule Engine)' : 'LLM Bağlı Değil (Kural Motoru)'}</span>`;
                         badge.title = `LLM sunucusuna ulaşılamadı (${res.endpoint}). Akıllı yerel kurallar aktif.\n(Model ayarlarını açmak için tıklayın)`;
                     } else {
                         badge.className = 'badge ai-status-disconnected';
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
                         badge.title = `LLM bağlantısı kapalı (${res.endpoint}).\n(Ayarları düzenlemek için tıklayın)`;
                     }
                 }
@@ -3498,7 +3495,7 @@
                 badge.style.background = '';
                 badge.style.color = '';
                 badge.style.border = '';
-                badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
+                badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
             }
         };
 
@@ -3769,7 +3766,7 @@
                     if (!activeBtn.dataset.origHtml) {
                         activeBtn.dataset.origHtml = activeBtn.innerHTML;
                     }
-                    activeBtn.innerHTML = `<span class="spinner-border spinner-border-sm" style="width:10px;height:10px;margin-right:3px;" role="status"></span> ${activeLabel || 'İşleniyor...'}`;
+                    activeBtn.innerHTML = `<span class="spinner-border spinner-border-sm" style="width:10px;height:10px;margin-inline-end:3px;" role="status"></span> ${activeLabel || 'İşleniyor...'}`;
                     activeBtn.style.opacity = '0.85';
                 }
             } else if (!busy) {
@@ -3862,7 +3859,7 @@
                             resultSource.style.background = '#FEF3C7';
                             resultSource.style.color = '#92400E';
                             resultSource.style.border = '1px solid #FCD34D';
-                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
+                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-inline-end: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
                         }
                     }
 
@@ -3959,7 +3956,7 @@
                             resultSource.style.background = '#FEF3C7';
                             resultSource.style.color = '#92400E';
                             resultSource.style.border = '1px solid #FCD34D';
-                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
+                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-inline-end: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
                         }
                     }
 

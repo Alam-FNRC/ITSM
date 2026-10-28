@@ -1,5 +1,5 @@
 // layout.js - Common UI Layout Injector
-import { applyTranslations } from './i18n.js';
+import { applyTranslations, t } from './i18n.js';
 import { initNotifications } from './notifications.js?v=4';
 
 
@@ -19,7 +19,7 @@ function injectDropdownStyle() {
         const style = document.createElement('style');
         style.id = 'bell-dropdown-style';
         style.innerHTML = `
-            .dropdown-menu { display: none; position: absolute; right: 0; top: 100%; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; list-style: none; padding: 0; margin: 8px 0 0 0; }
+            .dropdown-menu { display: none; position: absolute; inset-inline-end: 0; top: 100%; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; list-style: none; padding: 0; margin: 8px 0 0 0; }
             .dropdown-menu.show { display: block; }
             .dropdown-item { display: block; padding: 8px 16px; color: var(--text-main); text-decoration: none; cursor: pointer; }
             .dropdown-item:hover, .dropdown-item.active { background: var(--bg-hover); }
@@ -104,7 +104,7 @@ const shellHtml = `
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <svg viewBox="0 0 24 24" width="24" height="24" style="fill: var(--primary); margin-right: 8px;"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z"/></svg> ITSM Tool
+                <svg viewBox="0 0 24 24" width="24" height="24" style="fill: var(--primary); margin-inline-end: 8px;"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z"/></svg> ITSM Tool
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard.html?v=2" class="sidebar-nav-item">
@@ -120,7 +120,7 @@ const shellHtml = `
                     <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg> <span data-i18n="nav_calendar">Takvim</span>
                 </a>
                 <a href="/workload.html" class="sidebar-nav-item">
-                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> <span data-i18n="nav_workload">Takım Yükü</span>
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> <span data-i18n="nav_workload">Team Workload</span>
                 </a>
                 <a href="/kb.html" class="sidebar-nav-item">
                     <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> <span data-i18n="nav_kb">Knowledge Base</span>
@@ -158,7 +158,7 @@ const shellHtml = `
                     <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg> <span data-i18n="nav_custom_fields">Custom Fields</span>
                 </a>
                 <a href="/rules.html" class="sidebar-nav-item">
-                    <svg viewBox="0 0 24 24"><path d="M19 15v4H5v-4h14m1-2H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zM7 18.5c-.82 0-1.5-.67-1.5-1.5s.68-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM19 5v4H5V5h14m1-2H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM7 8.5c-.82 0-1.5-.67-1.5-1.5S6.18 5.5 7 5.5s1.5.67 1.5 1.5S7.82 8.5 7 8.5z"/></svg> <span data-i18n="nav_automations">Automations</span>
+                    <svg viewBox="0 0 24 24"><path d="M19 15v4H5v-4h14m1-2H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zM7 18.5c-.82 0-1.5-.67-1.5-1.5s.68-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM19 5v4H5V5h14m1-2H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM7 8.5c-.82 0-1.5-.67-1.5-1.5S6.18 5.5 7 5.5s1.5.67 1.5 1.5S7.82 8.5 7 8.5z"/></svg> <span data-i18n="nav_automations">Assignment Rules</span>
                 </a>
                 <a href="/sla.html" class="sidebar-nav-item">
                     <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> <span data-i18n="nav_sla">SLA Policies</span>
@@ -224,40 +224,40 @@ function showMandatoryPasswordModal() {
             <div style="padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
                 <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(37,99,235,0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">🔑</div>
                 <div>
-                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main);">Yeni Şifrenizi Belirleyin</h3>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">İlk girişiniz veya şifreniz sıfırlandı.</div>
+                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main);">${t('login_force_title')}</h3>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${t('layout_force_subtitle')}</div>
                 </div>
             </div>
             <div style="padding: 20px 24px;">
-                <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-left: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-main, #1E40AF); line-height: 1.45;">
-                    Güvenliğiniz için lütfen yeni ve kalıcı bir şifre belirleyiniz. Bu işlem tamamlanmadan sisteme devam edilemez.
+                <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-inline-start: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-main, #1E40AF); line-height: 1.45;">
+                    ${t('layout_force_desc')}
                 </div>
                 <form id="modalForcePasswordForm">
-                    <div class="form-group" style="margin-bottom: 14px; text-align: left;">
-                        <label class="form-label" for="mForceCurrentPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Mevcut (Geçici) Şifre</label>
+                    <div class="form-group" style="margin-bottom: 14px; text-align: start;">
+                        <label class="form-label" for="mForceCurrentPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">${t('layout_force_current')}</label>
                         <input type="password" id="mForceCurrentPass" class="form-control" autocomplete="current-password" required style="font-size: 13.5px;">
                     </div>
-                    <div class="form-group" style="margin-bottom: 14px; text-align: left;">
-                        <label class="form-label" for="mForceNewPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Yeni Şifre</label>
+                    <div class="form-group" style="margin-bottom: 14px; text-align: start;">
+                        <label class="form-label" for="mForceNewPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">${t('login_force_new_pwd')}</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="En az 12 karakter" style="padding-right: 40px; font-size: 13.5px;">
-                            <button type="button" id="mToggleNewPass" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
+                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="${t('layout_force_min_ph')}" style="padding-inline-end: 40px; font-size: 13.5px;">
+                            <button type="button" id="mToggleNewPass" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="${t('login_toggle_password')}">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 16px; text-align: left;">
-                        <label class="form-label" for="mForceConfirmPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Yeni Şifre (Tekrar)</label>
+                    <div class="form-group" style="margin-bottom: 16px; text-align: start;">
+                        <label class="form-label" for="mForceConfirmPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">${t('login_force_confirm_pwd')}</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Şifrenizi tekrar girin" style="padding-right: 40px; font-size: 13.5px;">
-                            <button type="button" id="mToggleConfirmPass" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
+                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="${t('login_force_confirm_pwd_ph')}" style="padding-inline-end: 40px; font-size: 13.5px;">
+                            <button type="button" id="mToggleConfirmPass" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="${t('login_toggle_password')}">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
                         </div>
                     </div>
                     <div id="mForceError" style="color: var(--danger); font-size: 12px; margin-bottom: 12px; display: none; font-weight: 500;"></div>
                     <div id="mForceSuccess" style="color: var(--success); font-size: 12px; margin-bottom: 12px; display: none; font-weight: 600;"></div>
-                    <button type="submit" class="btn btn-primary" id="mBtnSubmitForcePass" style="width: 100%; justify-content: center; padding: 9px 16px; font-weight: 600; font-size: 13.5px;">Şifreyi Kaydet ve Devam Et</button>
+                    <button type="submit" class="btn btn-primary" id="mBtnSubmitForcePass" style="width: 100%; justify-content: center; padding: 9px 16px; font-weight: 600; font-size: 13.5px;">${t('layout_force_btn')}</button>
                 </form>
             </div>
         </div>
@@ -301,36 +301,36 @@ function showMandatoryPasswordModal() {
         scs.style.display = 'none';
 
         if (!current || !p1 || !p2) {
-            err.textContent = 'Lütfen tüm şifre alanlarını doldurunuz.';
+            err.textContent = t('layout_force_empty');
             err.style.display = 'block';
             return;
         }
         if (p1.length < 12) {
-            err.textContent = 'Yeni şifre en az 12 karakter olmalıdır.';
+            err.textContent = t('login_force_short');
             err.style.display = 'block';
             return;
         }
         if (p1 !== p2) {
-            err.textContent = 'Girilen şifreler birbiriyle eşleşmiyor.';
+            err.textContent = t('login_force_mismatch');
             err.style.display = 'block';
             return;
         }
 
         btn.disabled = true;
-        btn.textContent = 'Kaydediliyor...';
+        btn.textContent = t('login_force_saving');
 
         try {
             await window.api.changePassword(p1, p2, current);
-            scs.textContent = 'Şifreniz başarıyla kaydedildi!';
+            scs.textContent = t('layout_force_saved');
             scs.style.display = 'block';
             setTimeout(() => {
                 overlay.remove();
             }, 800);
         } catch (error) {
-            err.textContent = window.api.errorMessage(error, 'Şifre güncellenemedi.');
+            err.textContent = window.api.errorMessage(error, t('login_force_error'));
             err.style.display = 'block';
             btn.disabled = false;
-            btn.textContent = 'Şifreyi Kaydet ve Devam Et';
+            btn.textContent = t('layout_force_btn');
         }
     });
 }

@@ -70,26 +70,26 @@ public class ComprehensiveBranchCoverageTests : TestBase
     [Fact]
     public void NotificationDispatcher_GetHumanReadableEventName_AllCases()
     {
-        Assert.Equal("Bilet Oluşturuldu", NotificationDispatcher.GetHumanReadableEventName("ticket.created"));
-        Assert.Equal("Bilet Atandı", NotificationDispatcher.GetHumanReadableEventName("ticket.assigned"));
-        Assert.Equal("Bilet Aktarıldı", NotificationDispatcher.GetHumanReadableEventName("ticket.transferred"));
-        Assert.Equal("Yeni Yorum", NotificationDispatcher.GetHumanReadableEventName("comment.added"));
-        Assert.Equal("Yeni Yorum", NotificationDispatcher.GetHumanReadableEventName("ticket.comment.added"));
-        Assert.Equal("Etiketlendiniz", NotificationDispatcher.GetHumanReadableEventName("comment.mention"));
-        Assert.Equal("Bilet Durumu Değişti", NotificationDispatcher.GetHumanReadableEventName("status.changed"));
-        Assert.Equal("Bilet Yeniden Açıldı", NotificationDispatcher.GetHumanReadableEventName("ticket.reopened"));
-        Assert.Equal("Bilet Çözüldü", NotificationDispatcher.GetHumanReadableEventName("ticket.resolved"));
-        Assert.Equal("Bilet Kapatıldı", NotificationDispatcher.GetHumanReadableEventName("ticket.closed"));
-        Assert.Equal("Memnuniyet Anketi", NotificationDispatcher.GetHumanReadableEventName("ticket.closed.survey"));
-        Assert.Equal("SLA Riski", NotificationDispatcher.GetHumanReadableEventName("sla.risk"));
-        Assert.Equal("SLA İhlali", NotificationDispatcher.GetHumanReadableEventName("sla.breached"));
-        Assert.Equal("SLA İhlali", NotificationDispatcher.GetHumanReadableEventName("sla.breach"));
-        Assert.Equal("SLA Uyarısı", NotificationDispatcher.GetHumanReadableEventName("sla.warning"));
-        Assert.Equal("Kritik Bilet Atanmadı", NotificationDispatcher.GetHumanReadableEventName("critical.unassigned"));
-        Assert.Equal("Düşük Anket Puanı", NotificationDispatcher.GetHumanReadableEventName("survey.low"));
-        Assert.Equal("Yeni Makale Önerisi", NotificationDispatcher.GetHumanReadableEventName("kb.suggested"));
-        Assert.Equal("Makale İncelendi", NotificationDispatcher.GetHumanReadableEventName("kb.reviewed"));
-        Assert.Equal("Sistem Bildirimi", NotificationDispatcher.GetHumanReadableEventName("unknown.event"));
+        Assert.Equal("Ticket Created", NotificationDispatcher.GetHumanReadableEventName("ticket.created"));
+        Assert.Equal("Ticket Assigned", NotificationDispatcher.GetHumanReadableEventName("ticket.assigned"));
+        Assert.Equal("Ticket Transferred", NotificationDispatcher.GetHumanReadableEventName("ticket.transferred"));
+        Assert.Equal("New Comment", NotificationDispatcher.GetHumanReadableEventName("comment.added"));
+        Assert.Equal("New Comment", NotificationDispatcher.GetHumanReadableEventName("ticket.comment.added"));
+        Assert.Equal("You Were Mentioned", NotificationDispatcher.GetHumanReadableEventName("comment.mention"));
+        Assert.Equal("Ticket Status Changed", NotificationDispatcher.GetHumanReadableEventName("status.changed"));
+        Assert.Equal("Ticket Reopened", NotificationDispatcher.GetHumanReadableEventName("ticket.reopened"));
+        Assert.Equal("Ticket Resolved", NotificationDispatcher.GetHumanReadableEventName("ticket.resolved"));
+        Assert.Equal("Ticket Closed", NotificationDispatcher.GetHumanReadableEventName("ticket.closed"));
+        Assert.Equal("Satisfaction Survey", NotificationDispatcher.GetHumanReadableEventName("ticket.closed.survey"));
+        Assert.Equal("SLA Risk", NotificationDispatcher.GetHumanReadableEventName("sla.risk"));
+        Assert.Equal("SLA Breached", NotificationDispatcher.GetHumanReadableEventName("sla.breached"));
+        Assert.Equal("SLA Breached", NotificationDispatcher.GetHumanReadableEventName("sla.breach"));
+        Assert.Equal("SLA Warning", NotificationDispatcher.GetHumanReadableEventName("sla.warning"));
+        Assert.Equal("Critical Ticket Unassigned", NotificationDispatcher.GetHumanReadableEventName("critical.unassigned"));
+        Assert.Equal("Low Survey Score", NotificationDispatcher.GetHumanReadableEventName("survey.low"));
+        Assert.Equal("New Article Suggestion", NotificationDispatcher.GetHumanReadableEventName("kb.suggested"));
+        Assert.Equal("Article Reviewed", NotificationDispatcher.GetHumanReadableEventName("kb.reviewed"));
+        Assert.Equal("System Notification", NotificationDispatcher.GetHumanReadableEventName("unknown.event"));
     }
 
     [Fact]
@@ -274,65 +274,65 @@ public class ComprehensiveBranchCoverageTests : TestBase
 
         var slaSum1 = SystemAuditInterceptor.GetSpecificEntitySummary(sla1, _context);
         Assert.Contains("SLA1", slaSum1);
-        Assert.Contains("Eskalasyon: Kapalı", slaSum1);
-        Assert.Contains("Hedefler:", slaSum1);
+        Assert.Contains("Escalation: off", slaSum1);
+        Assert.Contains("Targets:", slaSum1);
 
         // SlaPolicy without ProjectId and without targets
         var sla2 = new SlaPolicy { Id = 2, Name = "SLA2", ProjectId = null, EscalateOnBreach = true, Description = "Desc" };
         var slaSum2 = SystemAuditInterceptor.GetSpecificEntitySummary(sla2, null);
-        Assert.Contains("Genel Sistem", slaSum2);
-        Assert.Contains("Eskalasyon: Açık", slaSum2);
+        Assert.Contains("Global", slaSum2);
+        Assert.Contains("Escalation: on", slaSum2);
 
         // 2. User with names vs without names
         var u1 = new User { Username = "u1", FirstName = "John", LastName = "Doe", Email = "j@d.com", DepartmentId = 3 };
         var uSum1 = SystemAuditInterceptor.GetUserSummary(u1);
         Assert.Contains("John Doe", uSum1);
-        Assert.Contains("Departman ID: 3", uSum1);
+        Assert.Contains("Department ID: 3", uSum1);
 
         var u2 = new User { Username = "u2", FirstName = "", LastName = null, Email = "u2@d.com", DepartmentId = null };
         var uSum2 = SystemAuditInterceptor.GetUserSummary(u2);
         Assert.Contains("@u2", uSum2);
-        Assert.Contains("Departman ID: Yok", uSum2);
+        Assert.Contains("Department ID: None", uSum2);
 
         // 3. Project with and without description
         var proj1 = new Project { Name = "Prj1", ProjectKey = "P1", Description = "Some description" };
-        Assert.Contains("Açıklama: Some description", SystemAuditInterceptor.GetProjectSummary(proj1));
+        Assert.Contains("Description: Some description", SystemAuditInterceptor.GetProjectSummary(proj1));
         var proj2 = new Project { Name = "Prj2", ProjectKey = "P2", Description = null };
-        Assert.DoesNotContain("Açıklama:", SystemAuditInterceptor.GetProjectSummary(proj2));
+        Assert.DoesNotContain("Description:", SystemAuditInterceptor.GetProjectSummary(proj2));
 
         // 4. Category with and without description
         var cat1 = new Category { Name = "Cat1", Description = "CatDesc" };
-        Assert.Contains("Açıklama: CatDesc", SystemAuditInterceptor.GetSpecificEntitySummary(cat1, _context));
+        Assert.Contains("Description: CatDesc", SystemAuditInterceptor.GetSpecificEntitySummary(cat1, _context));
         var cat2 = new Category { Name = "Cat2", Description = "" };
-        Assert.DoesNotContain("Açıklama:", SystemAuditInterceptor.GetSpecificEntitySummary(cat2, _context));
+        Assert.DoesNotContain("Description:", SystemAuditInterceptor.GetSpecificEntitySummary(cat2, _context));
 
         // 5. Department with and without description & manager
         var d1 = new Department { Name = "D1", Description = "Desc", ManagerUserId = 99 };
         var dSum1 = SystemAuditInterceptor.GetSpecificEntitySummary(d1, _context);
-        Assert.Contains("Açıklama: Desc", dSum1);
-        Assert.Contains("Yönetici ID: 99", dSum1);
+        Assert.Contains("Description: Desc", dSum1);
+        Assert.Contains("Manager ID: 99", dSum1);
         var d2 = new Department { Name = "D2", Description = null, ManagerUserId = null };
         var dSum2 = SystemAuditInterceptor.GetSpecificEntitySummary(d2, _context);
-        Assert.DoesNotContain("Yönetici ID", dSum2);
+        Assert.DoesNotContain("Manager ID", dSum2);
 
         // 6. Group with and without DepartmentId
         var g1 = new Group { Name = "G1", DepartmentId = 5 };
-        Assert.Contains("Departman ID: 5", SystemAuditInterceptor.GetSpecificEntitySummary(g1, _context));
+        Assert.Contains("Department ID: 5", SystemAuditInterceptor.GetSpecificEntitySummary(g1, _context));
         var g2 = new Group { Name = "G2", DepartmentId = null };
-        Assert.DoesNotContain("Departman ID", SystemAuditInterceptor.GetSpecificEntitySummary(g2, _context));
+        Assert.DoesNotContain("Department ID", SystemAuditInterceptor.GetSpecificEntitySummary(g2, _context));
 
         // 7. Role with and without description
         var r1 = new Role { Name = "R1", Description = "RoleDesc" };
-        Assert.Contains("Açıklama: RoleDesc", SystemAuditInterceptor.GetSpecificEntitySummary(r1, _context));
+        Assert.Contains("Description: RoleDesc", SystemAuditInterceptor.GetSpecificEntitySummary(r1, _context));
         var r2 = new Role { Name = "R2", Description = null };
-        Assert.DoesNotContain("Açıklama:", SystemAuditInterceptor.GetSpecificEntitySummary(r2, _context));
+        Assert.DoesNotContain("Description:", SystemAuditInterceptor.GetSpecificEntitySummary(r2, _context));
 
         // 8. KnowledgeArticle, AssignmentRule, WebhookSubscription
         var ka = new KnowledgeArticle { Title = "KB Title", CategoryId = 2, Status = ArticleStatus.Published };
         Assert.Contains("KB Title", SystemAuditInterceptor.GetSpecificEntitySummary(ka, _context));
 
         var ar = new AssignmentRule { Name = "Rule 1", SortOrder = 10 };
-        Assert.Contains("Sıra: 10", SystemAuditInterceptor.GetSpecificEntitySummary(ar, _context));
+        Assert.Contains("Order: 10", SystemAuditInterceptor.GetSpecificEntitySummary(ar, _context));
 
         var ws = new WebhookSubscription { Url = "http://hook.test", EventsCsv = "ticket.created" };
         Assert.Contains("http://hook.test", SystemAuditInterceptor.GetSpecificEntitySummary(ws, _context));

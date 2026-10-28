@@ -263,7 +263,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         // Dört Göz İlkesi: Yazar kendi henüz yayınlanmamış makalesini doğrudan Published yapamaz.
         if (isAuthor && dto.Status == ArticleStatus.Published && article.Status != ArticleStatus.Published)
         {
-            throw new InvalidOperationException("Kendi önerdiğiniz makaleyi doğrudan yayınlayamazsınız. Makaleniz inceleme ve onay için farklı bir yöneticinin onay kuyruğuna düşmelidir.");
+            throw new InvalidOperationException("You cannot publish an article you suggested. It goes to another manager for review.");
         }
 
         await ApplyArticleStatusTransitionAsync(article, dto.Status, isAuthor, canManageKb, dto.Title);
@@ -315,16 +315,16 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         // Dört Göz İlkesi: Yöneticiler kendi önerdikleri makaleleri kendileri onaylayamaz veya yayınlayamaz.
         if (article.AuthorUserId == reviewerId)
         {
-            throw new InvalidOperationException("Kendi önerdiğiniz makaleyi kendiniz onaylayamaz veya yayınlayamazsınız. Farklı bir yönetici tarafından incelenip onaylanmalıdır.");
+            throw new InvalidOperationException("You cannot approve or publish an article you suggested. Another manager must review it.");
         }
 
         var reviewer = await _context.Users.FirstOrDefaultAsync(u => u.Id == reviewerId);
-        var reviewerName = reviewer != null ? $"{reviewer.FirstName} {reviewer.LastName}".Trim() : "Yönetici";
+        var reviewerName = reviewer != null ? $"{reviewer.FirstName} {reviewer.LastName}".Trim() : "Manager";
 
         article.Status = dto.Status;
         if (!string.IsNullOrWhiteSpace(dto.Feedback))
         {
-            article.ManagerFeedback = $"[Tarih: {DateTime.Now:dd.MM.yyyy HH:mm} - İnceleyen: {reviewerName}]\n{dto.Feedback}";
+            article.ManagerFeedback = $"[{DateTime.Now:dd.MM.yyyy HH:mm} - Reviewed by {reviewerName}]\n{dto.Feedback}";
         }
         else
         {

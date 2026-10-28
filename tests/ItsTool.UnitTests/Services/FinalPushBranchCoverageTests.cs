@@ -490,9 +490,9 @@ public class FinalPushBranchCoverageTests : IDisposable
         var sNullContext = SystemAuditInterceptor.GetSlaSummary(polBoth, null);
 
         Assert.Contains("P10", s1);
-        Assert.Contains("Proje #9999", s2);
-        Assert.Contains("Genel Sistem", s3);
-        Assert.Contains("Politika: P1", sNullContext);
+        Assert.Contains("Project #9999", s2);
+        Assert.Contains("Global", s3);
+        Assert.Contains("Policy: P1", sNullContext);
 
         // 3. ProcessModifiedEntity with original == null, current == null, original == current
         user.FirstName = "UpdatedAudit";

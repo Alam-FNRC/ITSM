@@ -149,3 +149,32 @@ test('data-i18n-target="title" translates the tooltip and leaves the content alo
         translatable.length = 0;
     }
 });
+
+test('data-i18n-target="aria-label" translates the accessible name of an icon button', () => {
+    useLanguage('ar');
+    const attributes = {};
+    const button = { dataset: { i18n: 'btn_close', i18nTarget: 'aria-label' }, childNodes: [{ nodeType: 1 }], setAttribute: (name, value) => { attributes[name] = value; } };
+    translatable.push(button);
+    try {
+        applyTranslations();
+        assert.equal(attributes['aria-label'], translations.ar.btn_close);
+    } finally {
+        translatable.length = 0;
+    }
+});
+
+test('computed keys pass their fallback to t(), not after ||', () => {
+    // t() returns the key when the dictionaries lack it, so `t('db_' + name) || name` showed "db_..." for
+    // statuses and priorities an administrator added; `t('db_' + name, name)` shows the name.
+    const root = fileURLToPath(new URL('../../src/ItsTool.Web/wwwroot/', import.meta.url));
+    const files = [
+        ...fs.readdirSync(root).filter(f => f.endsWith('.html')),
+        ...fs.readdirSync(path.join(root, 'js')).filter(f => f.endsWith('.js') && !f.includes('.min.')).map(f => path.join('js', f))
+    ];
+    const found = [];
+    for (const file of files) {
+        const text = fs.readFileSync(path.join(root, file), 'utf8');
+        for (const m of text.matchAll(/\bt\((?:'[a-z_]+'\s*\+|[a-zA-Z]+Key\))[^;\n]*?\)\s*\|\|/g)) found.push(`${file}: ${m[0]}`);
+    }
+    assert.deepEqual(found, []);
+});

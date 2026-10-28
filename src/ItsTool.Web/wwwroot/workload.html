@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Takım Yükü</title>
+    <title data-i18n="nav_workload" data-i18n-target="document-title">ITSM Tool - Team Workload</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         .masonry-grid {
@@ -78,7 +78,7 @@
             font-weight: 600;
             font-size: 16px;
             min-width: 24px;
-            text-align: right;
+            text-align: end;
         }
     </style>
 </head>
@@ -90,13 +90,13 @@
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                     </button>
-                    <h2 data-i18n="nav_workload">Takım Yükü</h2>
+                    <h2 data-i18n="nav_workload">Team Workload</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -112,11 +112,11 @@
 
             <div class="content-area" style="max-width: 1440px; margin: 0 auto; padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                    <h1 style="margin:0; font-size: 24px;" data-i18n="dash_team_workload">Takım Yükü Detayları</h1>
-                    <input type="text" id="searchInput" class="form-control" style="width: 300px;" placeholder="Çalışan veya departman ara..." data-i18n="workload_search" data-i18n-target="placeholder" aria-label="Search Workload">
+                    <h1 style="margin:0; font-size: 24px;" data-i18n="dash_team_workload">Team Workload</h1>
+                    <input type="text" id="searchInput" class="form-control" style="width: 300px;" placeholder="Search employee or department..." data-i18n="workload_search" data-i18n-target="placeholder" aria-label="Search Workload">
                 </div>
 
-                <div id="loadingState" style="text-align: center; padding: 40px; color: var(--text-muted);" data-i18n="admin_role_loading">Yükleniyor...</div>
+                <div id="loadingState" style="text-align: center; padding: 40px; color: var(--text-muted);" data-i18n="common_loading">Loading...</div>
                 
                 <div id="workloadContainer" class="masonry-grid" style="display: none;">
                     <!-- Rendered by JS -->
@@ -129,7 +129,7 @@
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
         import { bindShellActions } from './js/ui.js?v=999';
-        import { t } from './js/i18n.js';
+        import { t, getLocale } from './js/i18n.js';
         
         injectShell();
         if (!window.api.token) window.location.href = '/login.html';
@@ -140,7 +140,7 @@
         function renderWorkload(data) {
             const container = document.getElementById('workloadContainer');
             if (data.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">${t('dash_no_data') || 'Veri bulunamadı'}</div>`;
+                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">${t('dash_no_data')}</div>`;
                 return;
             }
 
@@ -148,7 +148,7 @@
                 <div class="department-card">
                     <h3>
                         ${window.ui?.escapeHtml(dept.departmentName) || dept.departmentName}
-                        <span class="badge" title="Toplam Açık İş">${dept.openTicketCount}</span>
+                        <span class="badge" title="${t('workload_open_total')}">${dept.openTicketCount}</span>
                     </h3>
                     <div class="agent-list">
                         ${dept.members && dept.members.length > 0 ? dept.members.map(agent => `
@@ -166,7 +166,7 @@
                                     </div>
                                 </div>
                             </div>
-                        `).join('') : `<div style="font-size:12px; color:var(--text-muted); text-align:center;">Ekip üyesi yok</div>`}
+                        `).join('') : `<div style="font-size:12px; color:var(--text-muted); text-align:center;">${t('workload_no_members')}</div>`}
                     </div>
                 </div>
             `).join('');
@@ -181,7 +181,7 @@
                 renderWorkload(rawWorkload);
             } catch (err) {
                 console.error(err);
-                document.getElementById('loadingState').textContent = 'Veri yüklenemedi.';
+                document.getElementById('loadingState').textContent = t('common_err_load_data');
                 document.getElementById('loadingState').style.color = 'var(--danger)';
             }
         }
@@ -213,9 +213,9 @@
         window.globalGroups = await window.api.getGroups().catch(e=>[]);
         
         function renderUserTooltipContent(user) {
-            const dept = window.globalLookup?.departments?.find(d => d.id == user.departmentId)?.name || 'None';
-            const userGroups = user.groupIds && window.globalGroups ? user.groupIds.map(gid => window.globalGroups.find(g => g.id == gid)?.name).filter(Boolean).join(', ') : 'None';
-            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+            const dept = window.globalLookup?.departments?.find(d => d.id == user.departmentId)?.name || t('admin_no_dept');
+            const userGroups = user.groupIds && window.globalGroups ? user.groupIds.map(gid => window.globalGroups.find(g => g.id == gid)?.name).filter(Boolean).join(', ') : t('admin_no_groups');
+            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString(getLocale()) : t('dash_unknown');
             const avatar = '<div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">' + (user.firstName ? user.firstName.charAt(0).toUpperCase() : 'U') + '</div>';
 
             return `
@@ -227,9 +227,9 @@
                     </div>
                 </div>
                 <div style="font-size:12px; display:flex; flex-direction:column; gap:4px;">
-                    <div><strong style="color:var(--text-muted);">Joined:</strong> ${createdAt}</div>
-                    <div><strong style="color:var(--text-muted);">Dept:</strong> ${window.ui?.escapeHtml(dept)}</div>
-                    <div><strong style="color:var(--text-muted);">Groups:</strong> ${window.ui?.escapeHtml(userGroups)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_joined')}</strong> ${createdAt}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_dept')}</strong> ${window.ui?.escapeHtml(dept)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_groups')}</strong> ${window.ui?.escapeHtml(userGroups)}</div>
                 </div>
             `;
         }

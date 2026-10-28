@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Create Ticket</title>
+    <title data-i18n="tc_title" data-i18n-target="document-title">ITSM Tool - Create Ticket</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         .form-section { background: var(--bg-surface); padding: var(--spacing-lg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); margin-bottom: var(--spacing-lg); border: 1px solid var(--border); }
@@ -21,15 +21,15 @@
                     </button>
 
                     <div style="display:flex; align-items:center; gap: 8px;">
-                        <a href="/tickets.html" class="btn btn-ghost" style="padding: 4px;"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></a>
+                        <a href="/tickets.html" class="btn btn-ghost" style="padding: 4px;"><svg class="flip-rtl" viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></a>
                         <h2 data-i18n="tc_title">Create New Ticket</h2>
                     </div>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -51,11 +51,11 @@
                             <h3 data-i18n="tc_basic">Basic Details</h3>
                             <div class="form-group">
                                 <label class="form-label" for="title" data-i18n="tc_lbl_title">Title *</label>
-                                <input class="form-control" type="text" id="title" required>
+                                <input class="form-control" type="text" id="title" dir="auto" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="desc" data-i18n="tc_lbl_desc">Description *</label>
-                                <textarea class="form-control" id="desc" rows="5" required></textarea>
+                                <textarea class="form-control" id="desc" dir="auto" rows="5" required></textarea>
                             </div>
                             <div class="grid-2">
                                 <div class="form-group">
@@ -90,7 +90,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="colorHex">Color</label>
+                                    <label class="form-label" for="colorHex" data-i18n="td_color">Color</label>
                                     <input type="color" class="form-control" id="colorHex" value="#1976D2" style="height: 38px; padding: 2px 4px;" aria-label="Color">
                                 </div>
 
@@ -156,7 +156,7 @@
                 populate('priorityId', lookup.priorities);
             } catch (err) {
                 console.error(err);
-                showToast('Failed to load lookup data', 'error');
+                showToast(t('tc_lookup_failed'), 'error');
             }
         }
 
@@ -235,7 +235,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                container.innerHTML = '<span class="text-danger">Failed to load fields.</span>';
+                container.innerHTML = `<span class="text-danger">${t('tc_fields_failed')}</span>`;
             }
         };
 

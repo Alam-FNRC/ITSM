@@ -146,13 +146,13 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
 
         var isNowDeleted = entry.Entity.IsDeleted;
         var wasDeleted = (bool)(isDeletedProp.OriginalValue ?? false);
-        var fieldLabel = ctx.EntityType == "SlaPolicy" ? "SLA Politikası" : "Kayıt Durumu";
+        var fieldLabel = ctx.EntityType == "SlaPolicy" ? "SLA Policy" : "Record Status";
 
         if (isNowDeleted && !wasDeleted)
         {
             var summary = GetEntitySummary(entry, ctx.Context);
             logs.Add(SystemAuditInterceptor.CreateAuditLog(new AuditLogEntry(
-                ctx.EntityType, ctx.EntityName, ctx.EntityId, "Deleted", fieldLabel, summary, "Silindi (Soft Deleted)", ctx.UserId, ctx.Now)));
+                ctx.EntityType, ctx.EntityName, ctx.EntityId, "Deleted", fieldLabel, summary, "Deleted (soft delete)", ctx.UserId, ctx.Now)));
             return true;
         }
 
@@ -160,7 +160,7 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
         {
             var summary = GetEntitySummary(entry, ctx.Context);
             logs.Add(SystemAuditInterceptor.CreateAuditLog(new AuditLogEntry(
-                ctx.EntityType, ctx.EntityName, ctx.EntityId, "Restored", fieldLabel, "Silindi (Soft Deleted)", $"Aktif / Geri Alındı ({summary})", ctx.UserId, ctx.Now)));
+                ctx.EntityType, ctx.EntityName, ctx.EntityId, "Restored", fieldLabel, "Deleted (soft delete)", $"Active / restored ({summary})", ctx.UserId, ctx.Now)));
             return true;
         }
 
@@ -252,7 +252,7 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
                 entityName, 
                 "0", 
                 "Created", 
-                "Yeni Kayıt", 
+                "New Record", 
                 "-", 
                 summary, 
                 userId, 
@@ -262,7 +262,7 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
         else if (entry.State == EntityState.Deleted)
         {
             var summary = GetEntitySummary(entry, context);
-            var fieldLabel = entityType == "SlaPolicy" ? "SLA Politikası" : "Kayıt Durumu";
+            var fieldLabel = entityType == "SlaPolicy" ? "SLA Policy" : "Record Status";
             logsToAdd.Add(SystemAuditInterceptor.CreateAuditLog(new AuditLogEntry(
                 entityType, 
                 entityName, 
@@ -270,7 +270,7 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
                 "Deleted", 
                 fieldLabel, 
                 isGroupMember ? entityName : summary, 
-                "Kalıcı Silindi", 
+                "Permanently deleted", 
                 userId, 
                 now)));
         }
@@ -304,13 +304,13 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
             SlaPolicy sla => GetSlaSummary(sla, context),
             User u => GetUserSummary(u),
             Project p => GetProjectSummary(p),
-            Category c => $"Kategori: {c.Name}" + (string.IsNullOrWhiteSpace(c.Description) ? "" : $" | Açıklama: {c.Description}"),
-            Department d => $"Departman: {d.Name}" + (string.IsNullOrWhiteSpace(d.Description) ? "" : $" | Açıklama: {d.Description}") + (d.ManagerUserId.HasValue ? $" | Yönetici ID: {d.ManagerUserId}" : ""),
-            Group g => $"Grup: {g.Name}" + (g.DepartmentId.HasValue ? $" | Departman ID: {g.DepartmentId}" : ""),
-            Role r => $"Rol: {r.Name}" + (string.IsNullOrWhiteSpace(r.Description) ? "" : $" | Açıklama: {r.Description}"),
-            KnowledgeArticle ka => $"Makale: {ka.Title} | Kategori #{ka.CategoryId} | Durum: {ka.Status}",
-            AssignmentRule ar => $"Atama Kuralı: {ar.Name} | Sıra: {ar.SortOrder}",
-            WebhookSubscription ws => $"Webhook: {ws.Url} | Olaylar: {ws.EventsCsv}",
+            Category c => $"Category: {c.Name}" + (string.IsNullOrWhiteSpace(c.Description) ? "" : $" | Description: {c.Description}"),
+            Department d => $"Department: {d.Name}" + (string.IsNullOrWhiteSpace(d.Description) ? "" : $" | Description: {d.Description}") + (d.ManagerUserId.HasValue ? $" | Manager ID: {d.ManagerUserId}" : ""),
+            Group g => $"Group: {g.Name}" + (g.DepartmentId.HasValue ? $" | Department ID: {g.DepartmentId}" : ""),
+            Role r => $"Role: {r.Name}" + (string.IsNullOrWhiteSpace(r.Description) ? "" : $" | Description: {r.Description}"),
+            KnowledgeArticle ka => $"Article: {ka.Title} | Category #{ka.CategoryId} | Status: {ka.Status}",
+            AssignmentRule ar => $"Assignment rule: {ar.Name} | Order: {ar.SortOrder}",
+            WebhookSubscription ws => $"Webhook: {ws.Url} | Events: {ws.EventsCsv}",
             _ => null
         };
     }
@@ -319,24 +319,24 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
     {
         var fullName = $"{u.FirstName} {u.LastName}".Trim();
         var displayName = string.IsNullOrWhiteSpace(fullName) ? u.Username : fullName;
-        var dept = u.DepartmentId.HasValue ? u.DepartmentId.Value.ToString() : "Yok";
-        return $"Kullanıcı: {displayName} (@{u.Username}, {u.Email}) | Departman ID: {dept}";
+        var dept = u.DepartmentId.HasValue ? u.DepartmentId.Value.ToString() : "None";
+        return $"User: {displayName} (@{u.Username}, {u.Email}) | Department ID: {dept}";
     }
 
     internal static string GetProjectSummary(Project p)
     {
-        var desc = string.IsNullOrWhiteSpace(p.Description) ? "" : $" | Açıklama: {p.Description}";
-        return $"Proje: {p.Name} (Anahtar: {p.ProjectKey}) | Durum: {p.Status}{desc}";
+        var desc = string.IsNullOrWhiteSpace(p.Description) ? "" : $" | Description: {p.Description}";
+        return $"Project: {p.Name} (Key: {p.ProjectKey}) | Status: {p.Status}{desc}";
     }
 
     internal static string GetSlaSummary(SlaPolicy sla, DbContext? context)
     {
-        string projectName = "Genel Sistem";
+        string projectName = "Global";
         if (sla.ProjectId.HasValue && context != null)
         {
             var proj = context.Set<Project>().Local.FirstOrDefault(p => p.Id == sla.ProjectId.Value)
                        ?? context.Set<Project>().FirstOrDefault(p => p.Id == sla.ProjectId.Value);
-            projectName = proj != null ? proj.Name : $"Proje #{sla.ProjectId.Value}";
+            projectName = proj != null ? proj.Name : $"Project #{sla.ProjectId.Value}";
         }
 
         string targetsSummary = "";
@@ -350,16 +350,16 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
                 var priorities = context.Set<Priority>().ToList();
                 var targetDescriptions = targets.Select(t =>
                 {
-                    var prioName = priorities.FirstOrDefault(pr => pr.Id == t.PriorityId)?.Name ?? $"Öncelik {t.PriorityId}";
-                    return $"{prioName}: Yanıt {t.FirstResponseMinutes}dk / Çözüm {t.ResolutionMinutes}dk";
+                    var prioName = priorities.FirstOrDefault(pr => pr.Id == t.PriorityId)?.Name ?? $"Priority {t.PriorityId}";
+                    return $"{prioName}: response {t.FirstResponseMinutes} min / resolution {t.ResolutionMinutes} min";
                 });
-                targetsSummary = " | Hedefler: [" + string.Join(", ", targetDescriptions) + "]";
+                targetsSummary = " | Targets: [" + string.Join(", ", targetDescriptions) + "]";
             }
         }
 
-        var desc = string.IsNullOrWhiteSpace(sla.Description) ? "" : $" | Açıklama: {sla.Description}";
-        var esc = sla.EscalateOnBreach ? " | Eskalasyon: Açık" : " | Eskalasyon: Kapalı";
-        return $"Politika: {sla.Name} | Kapsam: {projectName}{esc}{desc}{targetsSummary}";
+        var desc = string.IsNullOrWhiteSpace(sla.Description) ? "" : $" | Description: {sla.Description}";
+        var esc = sla.EscalateOnBreach ? " | Escalation: on" : " | Escalation: off";
+        return $"Policy: {sla.Name} | Scope: {projectName}{esc}{desc}{targetsSummary}";
     }
 
     internal static string GetGeneralPropertiesSummary(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry)

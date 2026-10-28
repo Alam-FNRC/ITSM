@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Kanban</title>
+    <title data-i18n="nav_kanban" data-i18n-target="document-title">ITSM Tool - Kanban</title>
     <link rel="stylesheet" href="css/design-system.css?v=999">
     <style>
         .kanban-board { display: flex; gap: var(--spacing-lg); overflow-x: auto; overflow-y: hidden; height: calc(100vh - 150px); align-items: flex-start; padding-bottom: var(--spacing-md); }
@@ -11,7 +11,7 @@
         .column-header { padding: var(--spacing-md); font-weight: 600; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid transparent; }
         .column-body { padding: var(--spacing-sm); flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: var(--spacing-sm); min-height: 200px; }
         
-        .card { background: var(--bg-surface); padding: var(--spacing-md); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; display: flex; flex-direction: column; gap: var(--spacing-sm); border-left: 3px solid transparent; transition: box-shadow 0.2s; }
+        .card { background: var(--bg-surface); padding: var(--spacing-md); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; display: flex; flex-direction: column; gap: var(--spacing-sm); border-inline-start: 3px solid transparent; transition: box-shadow 0.2s; }
         .card:hover { box-shadow: var(--shadow-md); }
         .card:active { cursor: grabbing; }
         
@@ -23,10 +23,10 @@
         .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-xs); }
         
         /* Priorites mapping to border */
-        .priority-Critical { border-left-color: var(--danger); }
-        .priority-High { border-left-color: var(--warning); }
-        .priority-Medium { border-left-color: var(--info); }
-        .priority-Low { border-left-color: var(--success); }
+        .priority-Critical { border-inline-start-color: var(--danger); }
+        .priority-High { border-inline-start-color: var(--warning); }
+        .priority-Medium { border-inline-start-color: var(--info); }
+        .priority-Low { border-inline-start-color: var(--success); }
 
         /* Column Status Header Strips */
         .col-1 .column-header { border-bottom-color: var(--info); }
@@ -48,10 +48,10 @@
                     <h2 data-i18n="kanban_title">Kanban Board</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -70,9 +70,9 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div style="background: var(--bg-hover); padding: 8px 12px; border-radius: var(--radius); font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
                         <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                        <span data-i18n="kanban_info">Kapalı talepler KAPATILDI kolonunda arşivlenir; buradan reopen edilebilir. Kolon başlıklarını sürükleyerek sıralayabilirsiniz.</span>
+                        <span data-i18n="kanban_info">Closed tickets are archived in CLOSED. You can drag and drop column headers to reorder.</span>
                     </div>
-                    <button class="btn btn-ghost" onclick="window.resetColumnOrder()" data-i18n="kanban_reset_order">Sırayı Sıfırla</button>
+                    <button class="btn btn-ghost" onclick="window.resetColumnOrder()" data-i18n="kanban_reset_order">Reset Order</button>
                 </div>
 
                 <div class="kanban-board" id="board">
@@ -279,8 +279,8 @@
                 <a href="/ticket-detail.html?id=${ticket.id}" class="card-number" target="_blank">${escapeHtml(ticket.ticketNumber)}</a>
                 ${getPriorityIcon(ticket.priorityId)}
             </div>
-            <div class="card-title">${escapeHtml(ticket.title)}</div>
-            <button type="button" class="card-footer assignee-footer" style="display: flex; align-items: center; justify-content: flex-start; gap: 6px; cursor: pointer; padding: 4px; margin: -4px; border-radius: 4px; border:none; background:transparent; width:100%; text-align:left;" title="${t('kanban_view_assignees')}" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees); event.stopPropagation();">
+            <div class="card-title" dir="auto">${escapeHtml(ticket.title)}</div>
+            <button type="button" class="card-footer assignee-footer" style="display: flex; align-items: center; justify-content: flex-start; gap: 6px; cursor: pointer; padding: 4px; margin: -4px; border-radius: 4px; border:none; background:transparent; width:100%; text-align:start;" title="${t('kanban_view_assignees')}" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees); event.stopPropagation();">
                 ${getAvatar(assigneeInitialId, assigneeName)}
                 <span style="font-size: 12px; font-weight: 500; color: var(--text-main); pointer-events: none;">${escapeHtml(assigneeName)}</span>
             </div>

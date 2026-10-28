@@ -9,8 +9,8 @@ export function initCrudPage(cfg) {
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
             <h1 style="font-size: 24px; font-weight: 600; color: var(--text-main); margin: 0;">${pageTitle}</h1>
             <div style="display: flex; gap: 16px; align-items: center;">
-                <input type="search" id="crudSearchInput" class="form-control" placeholder="${t('users_search') || 'Search...'}" style="width: 250px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;">
-                <button class="btn btn-primary" onclick="window.openCrudModal()">+ ${t('admin_modal_new_prefix') || 'New'} ${pageTitle}</button>
+                <input type="search" id="crudSearchInput" class="form-control" placeholder="${t('users_search')}" style="width: 250px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;">
+                <button class="btn btn-primary" onclick="window.openCrudModal()">+ ${t('admin_modal_new_prefix')} ${pageTitle}</button>
             </div>
         </div>
         <div class="card" style="padding: 0;">
@@ -19,7 +19,7 @@ export function initCrudPage(cfg) {
                     <thead>
                         <tr>
                             ${columns.map(c => `<th>${c.label || (c.key.charAt(0).toUpperCase() + c.key.slice(1))}</th>`).join('')}
-                            <th style="width: 100px;">${t('users_col_actions') || 'Actions'}</th>
+                            <th style="width: 100px;">${t('users_col_actions')}</th>
                         </tr>
                     </thead>
                     <tbody id="dataTableBody"></tbody>
@@ -33,8 +33,8 @@ export function initCrudPage(cfg) {
                 <form id="${modalId}Form">
                     <input type="hidden" id="${formFields.id}">
                     <div class="modal-header">
-                        <h2 id="${modalId}Title">${t('users_modal_title_new') || 'New Record'}</h2>
-                        <button type="button" class="close-btn" data-action="closeModal" data-target="${modalId}" aria-label="Close">
+                        <h2 id="${modalId}Title">${t('users_modal_title_new')}</h2>
+                        <button type="button" class="close-btn" data-action="closeModal" data-target="${modalId}" aria-label="${t('btn_close')}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
@@ -42,8 +42,8 @@ export function initCrudPage(cfg) {
                         ${formHtml || ''}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-ghost" data-action="closeModal" data-target="${modalId}">${t('users_btn_cancel') || 'Cancel'}</button>
-                        <button type="submit" class="btn btn-primary">${t('users_btn_save') || 'Save'}</button>
+                        <button type="button" class="btn btn-ghost" data-action="closeModal" data-target="${modalId}">${t('users_btn_cancel')}</button>
+                        <button type="submit" class="btn btn-primary">${t('users_btn_save')}</button>
                     </div>
                 </form>
             </div>
@@ -83,7 +83,7 @@ export function initCrudPage(cfg) {
 
     const renderTable = (data) => {
         if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: 20px; color: var(--text-muted);">${t('users_no_data') || 'No records found'}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: 20px; color: var(--text-muted);">${t('users_no_data')}</td></tr>`;
             return;
         }
         
@@ -96,7 +96,7 @@ export function initCrudPage(cfg) {
             let html = columns.map((col, index) => {
                 if (index === 0 && hasExpand) {
                     return `<td style="white-space: nowrap;">
-                        <button type="button" class="btn btn-ghost expand-btn" style="padding: 2px 4px; margin-right: 8px; vertical-align: middle;" aria-expanded="false">
+                        <button type="button" class="btn btn-ghost expand-btn" style="padding: 2px 4px; margin-inline-end: 8px; vertical-align: middle;" aria-expanded="false">
                             <svg viewBox="0 0 24 24" width="18" height="18" style="transition: transform 0.2s;"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
                         </button>
                         ${buildCellHtml(item, col).replaceAll('<td>', '').replaceAll('</td>', '')}
@@ -106,8 +106,8 @@ export function initCrudPage(cfg) {
             }).join('');
             html += `
                 <td>
-                    <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="edit" data-id="${item.id}">${t('users_btn_edit') || 'Edit'}</button>
-                    <button type="button" class="btn btn-ghost" style="color: var(--danger); padding: 4px 8px;" data-action="delete" data-id="${item.id}">${t('users_btn_del') || 'Del'}</button>
+                    <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="edit" data-id="${item.id}">${t('users_btn_edit')}</button>
+                    <button type="button" class="btn btn-ghost" style="color: var(--danger); padding: 4px 8px;" data-action="delete" data-id="${item.id}">${t('users_btn_del')}</button>
                 </td>
             `;
             tr.innerHTML = html;
@@ -118,7 +118,7 @@ export function initCrudPage(cfg) {
     window.loadData = async function() {
         if (!window.api.token) return;
         try {
-            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: 20px;">${t('admin_role_loading') || 'Loading...'}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: 20px;">${t('admin_role_loading')}</td></tr>`;
             currentData = (await window.api.request(endpoint)) || [];
             window.currentData = currentData;
             renderTable(currentData);
@@ -138,8 +138,8 @@ export function initCrudPage(cfg) {
             }
         } catch (err) {
             console.error(err);
-            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi</td></tr>`;
-            if (window.ui?.showToast) window.ui.showToast('Error loading data', 'error');
+            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${t('common_err_load_data')}</td></tr>`;
+            if (window.ui?.showToast) window.ui.showToast(t('common_err_load_data'), 'error');
         }
     };
 
@@ -154,7 +154,7 @@ export function initCrudPage(cfg) {
     window.openCrudModal = async function(id = null) {
         form.reset();
         document.getElementById(formFields.id).value = id || '';
-        modalTitleEl.textContent = id ? (t('users_modal_title_edit') || 'Edit') : (createTitle || (t('users_modal_title_new') || 'New Record'));
+        modalTitleEl.textContent = id ? (t('users_modal_title_edit')) : (createTitle || (t('users_modal_title_new')));
         
         if (cfg.onModalOpen) await cfg.onModalOpen(id);
         
@@ -175,10 +175,10 @@ export function initCrudPage(cfg) {
     const persistData = async (id, payload) => {
         if (id) {
             await window.api.request(`${endpoint}/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
-            if (window.ui?.showToast) window.ui.showToast('Record updated successfully');
+            if (window.ui?.showToast) window.ui.showToast(t('crud_updated'));
         } else {
             await window.api.request(endpoint, { method: 'POST', body: JSON.stringify(payload) });
-            if (window.ui?.showToast) window.ui.showToast('Record created successfully');
+            if (window.ui?.showToast) window.ui.showToast(t('crud_created'));
         }
     };
 
@@ -191,7 +191,7 @@ export function initCrudPage(cfg) {
             await window.loadData();
         } catch (err) {
             console.error(err);
-            if (window.ui?.showToast) window.ui.showToast(err.message || 'Error saving record', 'error');
+            if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_save_failed'), 'error');
         }
     };
 
@@ -201,7 +201,7 @@ export function initCrudPage(cfg) {
             tr.style.pointerEvents = 'none';
         }
         
-        const confirmed = await window.ui.showUndoToast('Kayıt silinecek...', async () => {
+        const confirmed = await window.ui.showUndoToast(t('crud_deleting'), async () => {
             if (tr) {
                 tr.style.opacity = '1';
                 tr.style.pointerEvents = 'auto';
@@ -214,7 +214,7 @@ export function initCrudPage(cfg) {
                 if (tr) tr.remove();
             } catch(err) {
                 console.error(err);
-                if (window.ui?.showToast) window.ui.showToast(err.message || 'Error deleting record', 'error');
+                if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_delete_failed'), 'error');
                 if (tr) {
                     tr.style.opacity = '1';
                     tr.style.pointerEvents = 'auto';
@@ -229,12 +229,12 @@ export function initCrudPage(cfg) {
                 await performUndoableDelete(id, currentData.find(x => x.id === id), tr);
             } else {
                 await window.api.request(`${endpoint}/${id}`, { method: 'DELETE' });
-                if (window.ui?.showToast) window.ui.showToast('Record deleted successfully');
+                if (window.ui?.showToast) window.ui.showToast(t('crud_deleted'));
                 await window.loadData();
             }
         } catch (err) {
             console.error(err);
-            if (window.ui?.showToast) window.ui.showToast(err.message || 'Error deleting record', 'error');
+            if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_delete_failed'), 'error');
             await window.loadData();
         }
     };
@@ -259,8 +259,8 @@ export function initCrudPage(cfg) {
             const expandTr = document.createElement('tr');
             expandTr.className = 'expandable-content';
             expandTr.innerHTML = `<td colspan="100" style="padding: 0; background: rgba(0,0,0,0.02); border-bottom: 2px solid var(--border);">
-                <div style="padding: var(--spacing-lg) var(--spacing-xl); padding-left: 48px;" class="expand-container">
-                    <div style="text-align: center; color: var(--text-muted);"><span class="spinner" style="width: 20px; height: 20px; display: inline-block;"></span> Yükleniyor...</div>
+                <div style="padding: var(--spacing-lg) var(--spacing-xl); padding-inline-start: 48px;" class="expand-container">
+                    <div style="text-align: center; color: var(--text-muted);"><span class="spinner" style="width: 20px; height: 20px; display: inline-block;"></span> ${t('common_loading')}</div>
                 </div>
             </td>`;
             tr.parentNode.insertBefore(expandTr, tr.nextSibling);
@@ -273,8 +273,8 @@ export function initCrudPage(cfg) {
 
     const handleDeleteAction = async (delBtn) => {
         const isConfirmed = window.ui?.showConfirmModal 
-            ? await window.ui.showConfirmModal(t('kb_yes') || 'Are you sure?', t('kb_confirm_del') || 'Are you sure you want to delete this record?')
-            : confirm(t('kb_confirm_del') || 'Are you sure you want to delete this record?');
+            ? await window.ui.showConfirmModal(t('kb_yes'), t('kb_confirm_del'))
+            : confirm(t('kb_confirm_del'));
             
         if (!isConfirmed) return;
         await deleteRecord(Number.parseInt(delBtn.dataset.id, 10), delBtn.closest('tr'));

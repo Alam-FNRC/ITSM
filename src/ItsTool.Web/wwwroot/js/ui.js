@@ -58,7 +58,7 @@ export function showToast(message, type = 'success') {
     }, 3000);
 }
 
-export function showUndoToast(message, undoFn, ms = 6000, undoText = 'Geri Al') {
+export function showUndoToast(message, undoFn, ms = 6000, undoText = t('common_undo')) {
     let container = document.getElementById('toastContainer');
     if (!container) {
         container = document.createElement('div');
@@ -72,13 +72,13 @@ export function showUndoToast(message, undoFn, ms = 6000, undoText = 'Geri Al') 
         toast.className = 'toast undo-toast';
         toast.style.background = 'var(--bg-surface)';
         toast.style.color = 'var(--text-main)';
-        toast.style.borderLeft = '4px solid var(--info)';
+        toast.style.borderInlineStart = '4px solid var(--info)';
         toast.setAttribute('role', 'status');
         
         toast.innerHTML = `
             <div class="d-flex align-items-center gap-sm" style="flex: 1; justify-content: space-between;">
                 <span class="toast-message" style="font-weight: 500;"></span>
-                <button type="button" class="btn btn-secondary btn-undo" style="padding: 4px 10px; font-size: 12px; margin-left: 12px; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: 600;"></button>
+                <button type="button" class="btn btn-secondary btn-undo" style="padding: 4px 10px; font-size: 12px; margin-inline-start: 12px; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: 600;"></button>
             </div>
             <div class="undo-progress" style="animation-duration: ${ms}ms;"></div>
         `;
@@ -180,8 +180,8 @@ function createAssigneeRow(item, escapeHtml) {
 
 function createAssigneeEmptyRow(item, escapeHtml) {
     return `
-        <div class="assignee-subitem-for-${item.parentGroupId}" style="display: none; align-items: center; padding: var(--spacing-md) var(--spacing-xl); padding-left: 56px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.015);">
-            <div style="font-size: 13px; color: var(--text-muted); font-style: italic;">Bu grupta kayıtlı kullanıcı bulunmuyor.</div>
+        <div class="assignee-subitem-for-${item.parentGroupId}" style="display: none; align-items: center; padding: var(--spacing-md) var(--spacing-xl); padding-inline-start: 56px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.015);">
+            <div style="font-size: 13px; color: var(--text-muted); font-style: italic;">${escapeHtml(t('ui_group_no_users'))}</div>
         </div>`;
 }
 
@@ -189,12 +189,12 @@ function createAssigneeGroupRow(item, escapeHtml) {
     const iconHtml = `<div class="avatar" style="width: 36px; height: 36px; min-width: 36px; font-size: 14px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
            </div>`;
-    const extraInfo = `<div style="font-size: 12px; color: var(--text-muted);">Ekip</div>`;
-    const badge = `<span class="badge badge-warning" style="font-size: 10px;">Ekip</span>`;
+    const extraInfo = `<div style="font-size: 12px; color: var(--text-muted);">${escapeHtml(t('ui_team'))}</div>`;
+    const badge = `<span class="badge badge-warning" style="font-size: 10px;">${escapeHtml(t('ui_team'))}</span>`;
     const toggleIcon = `<svg class="toggle-icon" viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor; transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>`;
     
     return `
-        <button type="button" style="display: flex; width: 100%; font: inherit; color: inherit; text-align: left; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-left: var(--spacing-lg); border-left: 3px solid transparent; border-bottom: 1px solid var(--border); border-top: none; border-right: none; background: transparent; transition: background 0.2s; cursor: pointer;" onclick="window.toggleAssigneeGroup(${item.id}, this)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
+        <button type="button" style="display: flex; width: 100%; font: inherit; color: inherit; text-align: start; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-inline-start: var(--spacing-lg); border-inline-start: 3px solid transparent; border-bottom: 1px solid var(--border); border-top: none; border-inline-end: none; background: transparent; transition: background 0.2s; cursor: pointer;" onclick="window.toggleAssigneeGroup(${item.id}, this)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
             <div style="display: flex; align-items: center; gap: 12px;">
                 ${iconHtml}
                 <div>
@@ -220,19 +220,19 @@ function createAssigneeUserRow(item, escapeHtml) {
     
     const fs = isSub ? 11 : 12;
     const extraInfo = `<div style="font-size: ${fs}px; color: var(--text-muted);">${escapeHtml(item.email)}</div>`;
-    const badge = `<span class="badge badge-info" style="font-size: 10px;">Kullanıcı</span>`;
+    const badge = `<span class="badge badge-info" style="font-size: 10px;">${escapeHtml(t('ui_user'))}</span>`;
     
     const paddingLeft = isSub ? 'var(--spacing-xl)' : 'var(--spacing-lg)';
     const borderLeft = isSub ? '3px solid rgba(var(--primary-rgb), 0.3)' : '3px solid transparent';
     const bgColor = isSub ? 'rgba(0,0,0,0.015)' : 'transparent';
-    const nestingArrow = isSub ? `<svg viewBox="0 0 24 24" width="16" height="16" style="fill: var(--text-muted); opacity: 0.6; margin-right: 4px; margin-left: -8px;"><path d="M19 15l-6 6-1.42-1.42L15.17 17H5V5h2v10h8.17l-3.59-3.58L13 10l6 6z"/></svg>` : '';
+    const nestingArrow = isSub ? `<svg viewBox="0 0 24 24" width="16" height="16" style="fill: var(--text-muted); opacity: 0.6; margin-inline-end: 4px; margin-inline-start: -8px;"><path d="M19 15l-6 6-1.42-1.42L15.17 17H5V5h2v10h8.17l-3.59-3.58L13 10l6 6z"/></svg>` : '';
     const displayAttr = isSub ? 'display: none;' : 'display: flex;';
     const classAttr = isSub ? `class="assignee-subitem-for-${item.parentGroupId}"` : '';
     const avatarMargin = isSub ? 8 : 12;
     const nameFs = isSub ? 13 : 14;
 
     return `
-        <button type="button" ${classAttr} style="${displayAttr} width: 100%; font: inherit; color: inherit; text-align: left; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-left: ${paddingLeft}; border-left: ${borderLeft}; border-bottom: 1px solid var(--border); border-top: none; border-right: none; background: ${bgColor}; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='${bgColor}'" onclick="if(window.ui && window.ui.showUserDetails) window.ui.showUserDetails(${item.id})">
+        <button type="button" ${classAttr} style="${displayAttr} width: 100%; font: inherit; color: inherit; text-align: start; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-inline-start: ${paddingLeft}; border-inline-start: ${borderLeft}; border-bottom: 1px solid var(--border); border-top: none; border-inline-end: none; background: ${bgColor}; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='${bgColor}'" onclick="if(window.ui && window.ui.showUserDetails) window.ui.showUserDetails(${item.id})">
             <div style="display: flex; align-items: center; gap: ${avatarMargin}px;">
                 ${nestingArrow}
                 ${iconHtml}
@@ -268,9 +268,9 @@ export function showAssigneesModal(encodedData) {
                 <div class="modal-header" style="border-bottom: 1px solid var(--border); padding: var(--spacing-md) var(--spacing-lg); background: var(--bg-hover);">
                     <h2 style="font-size: 16px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px;">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--primary)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                        Atananlar Listesi
+                        ${escapeHtml(t('ui_assignees_title'))}
                     </h2>
-                    <button type="button" class="close-btn" onclick="closeModal('${modalId}')" aria-label="Close" style="background: none; border: none; cursor: pointer; color: var(--text-muted);">
+                    <button type="button" class="close-btn" onclick="closeModal('${modalId}')" aria-label="${escapeHtml(t('btn_close'))}" style="background: none; border: none; cursor: pointer; color: var(--text-muted);">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 </div>
@@ -283,7 +283,7 @@ export function showAssigneesModal(encodedData) {
     
     const body = document.getElementById(`${modalId}-body`);
     if (data.length === 0) {
-        body.innerHTML = `<div style="padding: var(--spacing-xl); text-align: center; color: var(--text-muted);">Bu kayda kimse atanmamış.</div>`;
+        body.innerHTML = `<div style="padding: var(--spacing-xl); text-align: center; color: var(--text-muted);">${escapeHtml(t('ui_no_assignees'))}</div>`;
     } else {
         const escapeHtml = (unsafe) => (unsafe || '').toString().replaceAll('&', "&amp;").replaceAll('<', "&lt;").replaceAll('>', "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
         // Expose a global function to toggle group users
@@ -322,8 +322,8 @@ export function showInfoModal(title, text) {
         overlay.innerHTML = `
             <div class="modal" style="width: min(400px, 90%);">
                 <div class="modal-header">
-                    <h2 id="${modalId}-title">Info</h2>
-                    <button type="button" class="close-btn" onclick="closeModal('${modalId}')" aria-label="Close">
+                    <h2 id="${modalId}-title">${escapeHtml(t('common_info'))}</h2>
+                    <button type="button" class="close-btn" onclick="closeModal('${modalId}')" aria-label="${escapeHtml(t('btn_close'))}">
                         <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 </div>
@@ -331,7 +331,7 @@ export function showInfoModal(title, text) {
                     <p id="${modalId}-text" style="font-size: 14px; line-height: 1.5; color: var(--text-main); white-space: pre-wrap;"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="closeModal('${modalId}')">OK</button>
+                    <button type="button" class="btn btn-primary" onclick="closeModal('${modalId}')">${escapeHtml(t('common_ok'))}</button>
                 </div>
             </div>
         `;
@@ -342,7 +342,7 @@ export function showInfoModal(title, text) {
     openModal(modalId);
 }
 
-export function showConfirmModal(title, text, okText = 'Tamam', cancelText = 'İptal') {
+export function showConfirmModal(title, text, okText = t('common_ok'), cancelText = t('btn_cancel')) {
     return new Promise((resolve) => {
         let modalId = 'globalConfirmModal';
         let overlay = document.getElementById(modalId);
@@ -353,8 +353,8 @@ export function showConfirmModal(title, text, okText = 'Tamam', cancelText = 'İ
             overlay.innerHTML = `
                 <div class="modal" style="width: min(400px, 90%);">
                     <div class="modal-header">
-                        <h2 id="${modalId}-title">Confirm</h2>
-                        <button type="button" class="close-btn" id="${modalId}-close" aria-label="Close">
+                        <h2 id="${modalId}-title">${escapeHtml(t('common_confirm'))}</h2>
+                        <button type="button" class="close-btn" id="${modalId}-close" aria-label="${escapeHtml(t('btn_close'))}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
@@ -362,8 +362,8 @@ export function showConfirmModal(title, text, okText = 'Tamam', cancelText = 'İ
                         <p id="${modalId}-text" style="font-size: 14px; line-height: 1.5; color: var(--text-main); white-space: pre-wrap;"></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-ghost" id="${modalId}-cancel">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="${modalId}-ok" style="background-color: var(--danger); border-color: var(--danger);">OK</button>
+                        <button type="button" class="btn btn-ghost" id="${modalId}-cancel">${escapeHtml(t('btn_cancel'))}</button>
+                        <button type="button" class="btn btn-primary" id="${modalId}-ok" style="background-color: var(--danger); border-color: var(--danger);">${escapeHtml(t('common_ok'))}</button>
                     </div>
                 </div>
             `;
@@ -436,7 +436,7 @@ export function bindShellActions() {
         themeBtn.className = 'btn btn-ghost';
         themeBtn.style.padding = '6px';
         themeBtn.style.borderRadius = '50%';
-        themeBtn.title = 'Switch Theme';
+        themeBtn.title = t('ui_switch_theme');
         themeBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`;
         themeContainer.appendChild(themeBtn);
 
@@ -446,15 +446,15 @@ export function bindShellActions() {
         themeDropdown.style.width = '160px';
         
         const themes = [
-            { id: 'light', name: 'Light (Default)' },
-            { id: 'dark', name: 'Dark Classic' },
+            { id: 'light', name: t('ui_theme_light') },
+            { id: 'dark', name: t('ui_theme_dark') },
             { id: 'dracula', name: 'Dracula' },
             { id: 'monokai', name: 'Monokai' },
             { id: 'github-dark', name: 'GitHub Dark' }
         ];
         
         const currentTheme = localStorage.getItem('itsm_theme') || 'light';
-        themeDropdown.innerHTML = `<div class="dropdown-header">${t('topbar_theme') || 'Select Theme'}</div><hr class="dropdown-divider">` + 
+        themeDropdown.innerHTML = `<div class="dropdown-header">${t('topbar_theme')}</div><hr class="dropdown-divider">` + 
             themes.map(tObj => `<div class="dropdown-item theme-option ${tObj.id === currentTheme ? 'active' : ''}" data-theme-id="${tObj.id}" style="display:flex; justify-content:space-between; align-items:center;">
                 ${tObj.name}
                 ${tObj.id === currentTheme ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : ''}
@@ -500,7 +500,7 @@ export function bindShellActions() {
         langBtn.className = 'btn btn-ghost';
         langBtn.style.padding = '6px';
         langBtn.style.borderRadius = '50%';
-        langBtn.title = 'Switch Language';
+        langBtn.title = t('topbar_language');
         // Globe icon
         langBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.09 13.36 4 12.69 4 12s.09-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.17.64.26 1.31.26 2s-.09 1.36-.26 2h-3.38z"/></svg>`;
         langContainer.appendChild(langBtn);
@@ -513,7 +513,7 @@ export function bindShellActions() {
         const langs = LANGUAGES;
         
         const currentLang = getCurrentLanguage();
-        langDropdown.innerHTML = `<div class="dropdown-header">${t('topbar_language') || 'Language'}</div><hr class="dropdown-divider">` + 
+        langDropdown.innerHTML = `<div class="dropdown-header">${t('topbar_language')}</div><hr class="dropdown-divider">` + 
             langs.map(l => `<div class="dropdown-item lang-option ${l.id === currentLang ? 'active' : ''}" data-lang-id="${l.id}" style="display:flex; justify-content:space-between; align-items:center;">
                 ${l.name}
                 ${l.id === currentLang ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : ''}
@@ -547,7 +547,7 @@ export function bindShellActions() {
             shortcutsBtn.id = 'topbarShortcutsBtn';
             shortcutsBtn.style.padding = '6px';
             shortcutsBtn.style.borderRadius = '50%';
-            shortcutsBtn.title = `${t('kbd_shortcuts_title') || 'Klavye Kısayolları'} (?)`;
+            shortcutsBtn.title = `${t('kbd_shortcuts_title')} (?)`;
             shortcutsBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>`;
             shortcutsBtn.addEventListener('click', () => {
                 openShortcutsModal();
@@ -568,7 +568,7 @@ export function bindShellActions() {
         panel.style.display = 'none';
         panel.style.position = 'absolute';
         panel.style.top = '60px';
-        panel.style.right = '20px';
+        panel.style.insetInlineEnd = '20px';
         panel.style.width = '300px';
         panel.style.background = 'var(--bg-surface)';
         panel.style.color = 'var(--text-main)';
@@ -579,7 +579,7 @@ export function bindShellActions() {
         panel.style.zIndex = '1000';
         panel.style.maxHeight = '80vh';
         panel.style.overflowY = 'auto';
-        panel.innerHTML = '<div style="text-align:center; padding:20px;">Loading...</div>';
+        panel.innerHTML = `<div style="text-align:center; padding:20px;">${escapeHtml(t('common_loading'))}</div>`;
         
         document.body.appendChild(panel);
         
@@ -608,7 +608,7 @@ export function bindShellActions() {
                         let permsHtml = perms.map(p => {
                             const isOverride = overrides.includes(p);
                             const def = allPermsDef.find(x => x.key === p);
-                            const desc = def?.description || 'Açıklama bulunmuyor.';
+                            const desc = def?.description || t('ui_no_description');
                             return `<div style="font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                                 <div style="display: flex; align-items: center; gap: 4px;">
                                     <span>${escapeHtml(p)}</span>
@@ -627,30 +627,30 @@ export function bindShellActions() {
                                 <div style="font-size: 12px; color: var(--text-muted);">${escapeHtml(me.email)}</div>
                             </div>
                             <div style="margin-bottom: 12px;">
-                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('users_lbl_roles') || 'Roles'}</div>
+                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('users_lbl_roles')}</div>
                                 <div>${rolesHtml || '-'}</div>
                             </div>
                             <div style="margin-bottom: 16px;">
-                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('users_lbl_groups') || 'Groups'}</div>
+                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('users_lbl_groups')}</div>
                                 <div>${groupsHtml || '-'}</div>
                             </div>
                             <div style="margin-bottom: 16px;">
-                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('kb_lbl_contributions') || 'KB Contributions'}</div>
+                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('kb_lbl_contributions')}</div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span class="badge badge-success" style="font-size: 13px; padding: 4px 8px;">${me.kbArticleCount || 0} Makale Önerisi</span>
+                                    <span class="badge badge-success" style="font-size: 13px; padding: 4px 8px;">${escapeHtml(t('ui_kb_suggestions').replaceAll('{0}', me.kbArticleCount || 0))}</span>
                                 </div>
                             </div>
                             <div>
-                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('users_lbl_eff_perms') || 'Effective Permissions'}</div>
+                                <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('users_lbl_eff_perms')}</div>
                                 <div style="max-height: 200px; overflow-y: auto; background: var(--bg-hover); padding: 8px; border-radius: var(--radius-sm);">
-                                    ${permsHtml || `<div style="font-size:12px;">${t('users_roles_none') || 'No permissions'}</div>`}
+                                    ${permsHtml || `<div style="font-size:12px;">${t('users_roles_none')}</div>`}
                                 </div>
                             </div>
                             <div style="border-top: 1px solid var(--border); margin-top: 14px; padding-top: 10px;">
                                 <button type="button" class="btn btn-ghost btn-sm" id="profileShortcutsBtn" style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 12px; color: var(--text-muted); padding: 6px 8px; border-radius: var(--radius-sm);">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
-                                    <span>${t('kbd_shortcuts_title') || 'Klavye Kısayolları'}</span>
-                                    <kbd style="margin-left: auto; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: monospace; font-size: 10px; font-weight: 600;">?</kbd>
+                                    <span>${t('kbd_shortcuts_title')}</span>
+                                    <kbd style="margin-inline-start: auto; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: monospace; font-size: 10px; font-weight: 600;">?</kbd>
                                 </button>
                             </div>
                         `;
@@ -663,7 +663,7 @@ export function bindShellActions() {
                             openShortcutsModal();
                         });
                     } catch (err) { console.error(err); 
-                        panel.innerHTML = '<div class="text-danger">Failed to load profile details.</div>';
+                        panel.innerHTML = `<div class="text-danger">${escapeHtml(t('ui_profile_load_failed'))}</div>`;
                      }
                 }
             } else {
@@ -729,7 +729,7 @@ export function bindShellActions() {
         }
 
         if (!perms.includes('config.manage') && !perms.includes('user.manage')) {
-            const adminTitle = Array.from(document.querySelectorAll('.sidebar-nav-title')).find(el => el.textContent.includes('Administration'));
+            const adminTitle = document.querySelector('.sidebar-nav-title[data-i18n="nav_admin_title"]');
             if (adminTitle) adminTitle.style.display = 'none';
         }
 
@@ -763,42 +763,42 @@ export function openShortcutsModal() {
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
                     <h3 style="margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px;">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
-                        <span>${t('kbd_shortcuts_title') || 'Klavye Kısayolları'}</span>
+                        <span>${t('kbd_shortcuts_title')}</span>
                     </h3>
-                    <button type="button" class="close-btn" onclick="document.getElementById('shortcutsHelpModal').classList.remove('active')" aria-label="Close" style="cursor: pointer; border: none; background: none; font-size: 20px; line-height: 1;">&times;</button>
+                    <button type="button" class="close-btn" onclick="document.getElementById('shortcutsHelpModal').classList.remove('active')" aria-label="${escapeHtml(t('btn_close'))}" style="cursor: pointer; border: none; background: none; font-size: 20px; line-height: 1;">&times;</button>
                 </div>
                 <div class="modal-body" style="padding: 16px 0;">
                     <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
                         <tbody>
                             <tr style="border-bottom: 1px solid var(--border-light);">
-                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_search') || 'Arama kutusuna odaklan'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">/</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or') || 'veya'}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Ctrl+K</kbd></td>
+                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_search')}</td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">/</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or')}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Ctrl+K</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
-                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_close') || 'Açık modalları / menüleri kapat'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Esc</kbd></td>
+                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_close')}</td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Esc</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
-                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_new_ticket') || 'Yeni bilet oluştur'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">N</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or') || 'veya'}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">C</kbd></td>
+                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_new_ticket')}</td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">N</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or')}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">C</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
-                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_tickets') || 'Biletler listesine git'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">T</kbd></td>
+                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_tickets')}</td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">T</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
-                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_dashboard') || 'Kontrol paneline git'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">D</kbd></td>
+                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_dashboard')}</td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">D</kbd></td>
                             </tr>
                             <tr>
-                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_help') || 'Bu kısayol penceresini aç/kapat'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">?</kbd></td>
+                                <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_help')}</td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">?</kbd></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="modal-footer" style="padding-top: 12px; border-top: 1px solid var(--border); text-align: right;">
-                    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('shortcutsHelpModal').classList.remove('active')">${t('users_btn_close') || 'Kapat'}</button>
+                <div class="modal-footer" style="padding-top: 12px; border-top: 1px solid var(--border); text-align: end;">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('shortcutsHelpModal').classList.remove('active')">${t('users_btn_close')}</button>
                 </div>
             </div>
         `;
@@ -875,15 +875,15 @@ export async function openTicketPreview(ticketData, lookupData) {
         modalOverlay.innerHTML = `
             <div class="modal" style="max-width: 500px;">
                 <div class="modal-header">
-                    <h2>${t('ticket_detail_title') || 'Ticket Preview'}</h2>
-                    <button type="button" class="close-btn" onclick="closeModal('previewModal')" aria-label="Close">
+                    <h2>${t('ticket_detail_title')}</h2>
+                    <button type="button" class="close-btn" onclick="closeModal('previewModal')" aria-label="${escapeHtml(t('btn_close'))}">
                         <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 </div>
                 <div class="modal-body" id="previewContent"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-ghost" onclick="closeModal('previewModal')">${t('users_btn_cancel') || 'Close'}</button>
-                    <a href="#" id="previewDetailLink" class="btn btn-primary">${t('notif_detail_btn') || 'Detaya Git'}</a>
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('previewModal')">${t('users_btn_cancel')}</button>
+                    <a href="#" id="previewDetailLink" class="btn btn-primary">${t('notif_detail_btn')}</a>
                 </div>
             </div>
         `;
@@ -904,11 +904,11 @@ export async function openTicketPreview(ticketData, lookupData) {
         const u = (window.globalUsers || window.allUsers)?.find(x => x.id === id);
         if (u && (u.firstName || u.lastName)) return `${u.firstName || ''} ${u.lastName || ''}`.trim();
         if (u?.username) return u.username;
-        return `User ${id}`;
+        return t('ui_user_fallback').replaceAll('{0}', id);
     };
     const assignedId = ticketData.assignedUserId || (ticketData.assignments && ticketData.assignments.length > 0 ? (ticketData.assignments[0].userId || ticketData.assignments[0].assignedUserId) : null);
-    const assigneeName = (ticketData.assignments && ticketData.assignments.length > 0 && ticketData.assignments[0].assigneeName) ? ticketData.assignments[0].assigneeName : (assignedId ? getFullName(assignedId) : (t('t_unassigned') || 'Unassigned'));
-    const reqName = ticketData.requesterUserId ? getFullName(ticketData.requesterUserId) : 'Unknown';
+    const assigneeName = (ticketData.assignments && ticketData.assignments.length > 0 && ticketData.assignments[0].assigneeName) ? ticketData.assignments[0].assigneeName : (assignedId ? getFullName(assignedId) : (t('t_unassigned')));
+    const reqName = ticketData.requesterUserId ? getFullName(ticketData.requesterUserId) : t('dash_unknown');
     
     const formatDate = (d) => {
         if(!d) return '-';
@@ -921,33 +921,33 @@ export async function openTicketPreview(ticketData, lookupData) {
     const headerEl = modalOverlay.querySelector('.modal-header h2');
     if (headerEl) {
         const translatedStatus = t('db_' + statusName.toLowerCase().replaceAll(' ', '_'), statusName);
-        headerEl.innerHTML = `${escapeHtml(ticketData.ticketNumber)} <span class="badge badge-primary" style="font-size: 12px; margin-left: 8px; text-transform: uppercase;">${escapeHtml(translatedStatus)}</span>`;
+        headerEl.innerHTML = `${escapeHtml(ticketData.ticketNumber)} <span class="badge badge-primary" style="font-size: 12px; margin-inline-start: 8px; text-transform: uppercase;">${escapeHtml(translatedStatus)}</span>`;
     }
 
     const reqBtnHtml = ticketData.requesterUserId ? `<button type="button" class="btn btn-ghost p-0 m-0 d-flex align-items-center gap-sm" style="border:none;" onclick="window.ui.showUserDetails(${ticketData.requesterUserId})">${getAvatar(ticketData.requesterUserId, reqName)} ${escapeHtml(reqName)}</button>` : `<div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">${escapeHtml(reqName)}</div>`;
     const assignBtnHtml = assignedId ? `<button type="button" class="btn btn-ghost p-0 m-0 d-flex align-items-center gap-sm" style="border:none;" onclick="window.ui.showUserDetails(${assignedId})">${getAvatar(assignedId, assigneeName)} ${escapeHtml(assigneeName)}</button>` : `<div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">${escapeHtml(assigneeName)}</div>`;
 
     content.innerHTML = `
-        <div style="font-size: 16px; font-weight: 600; margin-bottom: var(--spacing-md); color: var(--text);">${escapeHtml(ticketData.title)}</div>
-        <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: var(--spacing-md); color: var(--text-muted); font-size: 14px;">
+        <div dir="auto" style="font-size: 16px; font-weight: 600; margin-bottom: var(--spacing-md); color: var(--text);">${escapeHtml(ticketData.title)}</div>
+        <div dir="auto" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: var(--spacing-md); color: var(--text-muted); font-size: 14px;">
             ${escapeHtml(ticketData.description || '')}
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); background: var(--bg-hover); padding: var(--spacing-md); border-radius: var(--radius-md);">
-            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_priority') || 'Priority'}</div><span class="badge badge-${prioColor}">${escapeHtml(t('db_' + prioName.toLowerCase().replaceAll(' ', '_'), prioName))}</span></div>
-            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_project') || 'Project'} / ${t('ticket_prop_category') || 'Category'}</div><div style="font-size: 14px; font-weight: 500;">${escapeHtml(projName)} <span style="color:var(--text-muted);">/</span> ${escapeHtml(catName)}</div></div>
-            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_requester') || 'Requester'}</div>${reqBtnHtml}</div>
-            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_assignee') || 'Assignee'}</div>${assignBtnHtml}</div>
-            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_sla_status') || 'SLA Status'}</div><span class="badge badge-success">${t('ticket_sla_on_track') || 'On Track'}</span></div>
-            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('audit_col_time') || 'Created At'}</div><div style="font-size: 14px;">${formatDate(ticketData.createdAt)}</div></div>
+            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_priority')}</div><span class="badge badge-${prioColor}">${escapeHtml(t('db_' + prioName.toLowerCase().replaceAll(' ', '_'), prioName))}</span></div>
+            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_project')} / ${t('ticket_prop_category')}</div><div style="font-size: 14px; font-weight: 500;">${escapeHtml(projName)} <span style="color:var(--text-muted);">/</span> ${escapeHtml(catName)}</div></div>
+            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_requester')}</div>${reqBtnHtml}</div>
+            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_assignee')}</div>${assignBtnHtml}</div>
+            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_sla_status')}</div><span class="badge badge-success">${t('ticket_sla_on_track')}</span></div>
+            <div><div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('audit_col_time')}</div><div style="font-size: 14px;">${formatDate(ticketData.createdAt)}</div></div>
         </div>
         <div style="margin-top: var(--spacing-md); padding: 10px 14px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <div id="previewColorDot" style="width: 20px; height: 20px; border-radius: 50%; background-color: ${((ticketData.colorHex && ticketData.colorHex.trim() !== '') ? ticketData.colorHex : ['#2563eb','#059669','#d97706','#7c3aed','#dc2626','#0891b2','#ea580c','#db2777','#4f46e5','#16a34a','#9333ea','#0284c7','#b45309','#e11d48','#0d9488','#475569'][((ticketData.id || 1) * 7) % 16])}; border: 1px solid rgba(0,0,0,0.2);"></div>
-                <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">${t('ticket_color') || 'Ticket Color'}</span>
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">${t('ticket_color')}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <input type="color" id="previewColorPicker" value="${((ticketData.colorHex && ticketData.colorHex.trim() !== '') ? ticketData.colorHex : ['#2563eb','#059669','#d97706','#7c3aed','#dc2626','#0891b2','#ea580c','#db2777','#4f46e5','#16a34a','#9333ea','#0284c7','#b45309','#e11d48','#0d9488','#475569'][((ticketData.id || 1) * 7) % 16])}" style="width: 44px; height: 32px; padding: 2px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">
-                <button type="button" id="previewSaveColorBtn" class="btn btn-secondary btn-sm" style="font-size: 12px; padding: 6px 12px;">${t('ticket_save_color') || 'Save Color'}</button>
+                <button type="button" id="previewSaveColorBtn" class="btn btn-secondary btn-sm" style="font-size: 12px; padding: 6px 12px;">${t('ticket_save_color')}</button>
             </div>
         </div>
     `;
@@ -989,14 +989,14 @@ function setupPreviewColorPicker(ticketData) {
                     })
                 });
                 ticketData.colorHex = newColor;
-                showToast('Bilet rengi başarıyla kaydedildi!', 'success');
+                showToast(t('ticket_save_color_success'), 'success');
                 window.dispatchEvent(new CustomEvent('ticketColorChanged', { detail: { ticketId: ticketData.id, colorHex: newColor } }));
             } catch (err) {
                 console.error('Failed to update ticket color', err);
-                showToast('Renk güncellenirken hata oluştu', 'error');
+                showToast(t('ticket_save_color_error'), 'error');
             } finally {
                 saveColorBtn.disabled = false;
-                saveColorBtn.innerText = 'Rengi Kaydet';
+                saveColorBtn.innerText = t('ticket_save_color');
             }
         };
     }
@@ -1052,8 +1052,8 @@ export async function showUserDetails(userId) {
             modalOverlay.innerHTML = `
                 <div class="modal" style="max-width: 450px;">
                     <div class="modal-header">
-                        <h2 id="guModalTitle">${t('users_modal_details') || t('td_modal_user_details') || 'User Details'}</h2>
-                        <button type="button" class="close-btn" onclick="closeModal('globalUserModal')" aria-label="Close">
+                        <h2 id="guModalTitle">${t('users_modal_details') || t('td_modal_user_details')}</h2>
+                        <button type="button" class="close-btn" onclick="closeModal('globalUserModal')" aria-label="${escapeHtml(t('btn_close'))}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
@@ -1062,21 +1062,21 @@ export async function showUserDetails(userId) {
                         <h3 id="guName" style="margin-bottom: 4px;"></h3>
                         <div id="guUsername" style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;"></div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; background: var(--bg-hover); padding: 16px; border-radius: 8px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: start; background: var(--bg-hover); padding: 16px; border-radius: 8px;">
                             <div>
-                                <div id="guLblEmail" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('users_lbl_email') || 'Email'}</div>
+                                <div id="guLblEmail" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('users_lbl_email')}</div>
                                 <div id="guEmail" style="font-weight: 500; font-size: 14px; word-break: break-all;"></div>
                             </div>
                             <div>
-                                <div id="guLblDept" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('users_lbl_dept') || 'Department'}</div>
+                                <div id="guLblDept" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('users_lbl_dept')}</div>
                                 <div id="guDept" style="font-weight: 500; font-size: 14px;"></div>
                             </div>
                             <div>
-                                <div id="guLblStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_status') || 'Status'}</div>
+                                <div id="guLblStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('ticket_prop_status')}</div>
                                 <div id="guStatus"></div>
                             </div>
                             <div style="grid-column: span 2; margin-top: 8px;">
-                                <div id="guLblGroups" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('users_lbl_groups') || 'Groups'}</div>
+                                <div id="guLblGroups" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('users_lbl_groups')}</div>
                                 <div id="guGroups" style="font-weight: 500; font-size: 14px; word-break: break-word;"></div>
                             </div>
                         </div>
@@ -1087,15 +1087,15 @@ export async function showUserDetails(userId) {
         }
         
         const titleEl = document.getElementById('guModalTitle');
-        if (titleEl) titleEl.textContent = t('users_modal_details') || t('td_modal_user_details') || 'User Details';
+        if (titleEl) titleEl.textContent = t('users_modal_details') || t('td_modal_user_details');
         const lblEmail = document.getElementById('guLblEmail');
-        if (lblEmail) lblEmail.textContent = t('users_lbl_email') || 'Email';
+        if (lblEmail) lblEmail.textContent = t('users_lbl_email');
         const lblDept = document.getElementById('guLblDept');
-        if (lblDept) lblDept.textContent = t('users_lbl_dept') || 'Department';
+        if (lblDept) lblDept.textContent = t('users_lbl_dept');
         const lblStatus = document.getElementById('guLblStatus');
-        if (lblStatus) lblStatus.textContent = t('ticket_prop_status') || 'Status';
+        if (lblStatus) lblStatus.textContent = t('ticket_prop_status');
         const lblGroups = document.getElementById('guLblGroups');
-        if (lblGroups) lblGroups.textContent = t('users_lbl_groups') || 'Groups';
+        if (lblGroups) lblGroups.textContent = t('users_lbl_groups');
 
         document.getElementById('guAvatar').innerHTML = getAvatar(user.id, user.firstName, user.profilePhoto, 80);
         document.getElementById('guName').textContent = user.firstName + ' ' + user.lastName;
@@ -1103,14 +1103,14 @@ export async function showUserDetails(userId) {
         document.getElementById('guEmail').textContent = user.email || '-';
         
         document.getElementById('guDept').textContent = await resolveUserDepartmentName(user.departmentId);
-        const activeText = t('users_status_active') || 'Active';
-        const inactiveText = t('users_status_inactive') || 'Inactive';
+        const activeText = t('users_status_active');
+        const inactiveText = t('users_status_inactive');
         document.getElementById('guStatus').innerHTML = user.isActive ? `<span class="badge badge-success">${activeText}</span>` : `<span class="badge badge-default">${inactiveText}</span>`;
         document.getElementById('guGroups').textContent = await resolveUserGroups(user.groupIds);
         
         openModal('globalUserModal');
     } catch(e) {
         console.error(e);
-        showToast(t('users_load_failed') || 'Failed to load user details', 'error');
+        showToast(t('users_load_failed'), 'error');
     }
 }

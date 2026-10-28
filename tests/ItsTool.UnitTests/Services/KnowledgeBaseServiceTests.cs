@@ -178,7 +178,7 @@ public class KnowledgeBaseServiceTests : TestBase
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             _kbService.ReviewArticleAsync(article.Id, reviewDto, reviewerId: 1));
 
-        Assert.Contains("kendi", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("article you suggested", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class KnowledgeBaseServiceTests : TestBase
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             _kbService.UpdateArticleAsync(article.Id, updateDto, currentUserId: 1));
 
-        Assert.Contains("kendi", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("article you suggested", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

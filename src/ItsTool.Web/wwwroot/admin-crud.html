@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration - ITSM Tool</title>
+    <title data-i18n="page_admin" data-i18n-target="document-title">Administration - ITSM Tool</title>
     <link rel="stylesheet" href="css/design-system.css">
 </head>
 <body>
@@ -17,10 +17,10 @@
                     <h2 id="topbarTitle" data-i18n="nav_admin_title">Administration</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -37,8 +37,8 @@
             <div id="crudRoot"></div>
             <div id="emptyState" style="display: none; text-align: center; padding: 40px; color: var(--text-muted);">
                 <svg viewBox="0 0 24 24" width="48" height="48" style="fill: var(--text-muted); opacity: 0.5; margin-bottom: 16px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
-                <h2>Unknown Administration Module</h2>
-                <p>Please select a valid module from the sidebar.</p>
+                <h2 data-i18n="admin_unknown_module">Unknown Administration Module</h2>
+                <p data-i18n="admin_unknown_module_desc">Please select a module from the sidebar.</p>
             </div>
             </div>
         </main>
@@ -61,7 +61,7 @@
 
         const cfg = adminConfigs[type];
         if (cfg) {
-            document.title = `${cfg.pageTitle} - ${t('nav_admin_title') || 'Yönetim'}`;
+            document.title = `${cfg.pageTitle} - ${t('nav_admin_title')}`;
             cfg.rootId = 'crudRoot';
             initCrudPage(cfg);
             await window.loadData();

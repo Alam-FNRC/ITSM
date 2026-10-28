@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Users</title>
+    <title data-i18n="nav_users" data-i18n-target="document-title">ITSM Tool - Users</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg); }
@@ -14,7 +14,7 @@
         .avatar-upload { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
         .avatar-preview { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background-color: var(--bg-body); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 24px; color: var(--text-muted); font-weight: bold; }
         .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .mini-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background-color: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 8px; vertical-align: middle; }
+        .mini-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background-color: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-inline-end: 8px; vertical-align: middle; }
         .row-highlight { animation: highlight-fade 2s ease-out; }
         @keyframes highlight-fade {
             0% { background-color: rgba(var(--primary-rgb), 0.2); }
@@ -35,10 +35,10 @@
                     <h2 data-i18n="users_title">Users Management</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -59,9 +59,9 @@
                         <p class="text-muted" style="margin: 4px 0 0 0; font-size: 13px;" data-i18n="users_desc">Manage system users and access.</p>
                     </div>
                     <div style="display: flex; gap: 16px; align-items: center;">
-                        <input type="search" id="userSearchInput" class="form-control" placeholder="Search users..." style="width: 250px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;" aria-label="Search users">
+                        <input type="search" id="userSearchInput" class="form-control" placeholder="Search users..." data-i18n="users_search_ph" data-i18n-target="placeholder" style="width: 250px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;" aria-label="Search users">
                         <button type="button" class="btn btn-primary" data-action="openUserModal">
-                            <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-right: 4px; vertical-align: middle;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="users_btn_new">New User</span>
+                            <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-inline-end: 4px; vertical-align: middle;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="users_btn_new">New User</span>
                         </button>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
                 <input type="hidden" id="uId">
                 <div class="modal-header">
                     <h2 id="modalTitle" data-i18n="users_modal_title_new">User</h2>
-                    <button type="button" class="close-btn" data-action="closeModal" data-target="userModal" aria-label="Close">
+                    <button type="button" class="close-btn" data-action="closeModal" data-target="userModal" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                         <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 </div>
@@ -104,7 +104,7 @@
                         </div>
                         <div>
                             <label class="btn btn-secondary" for="uAvatarFile" style="cursor: pointer; padding: 6px 12px; font-size: 13px;" data-i18n="users_btn_upload">Upload Photo</label>
-                            <button type="button" class="btn btn-ghost" style="color: var(--danger); padding: 6px 12px; font-size: 13px; margin-left: 8px;" onclick="removeProfilePhoto()" data-i18n="users_btn_remove">Remove Photo</button>
+                            <button type="button" class="btn btn-ghost" style="color: var(--danger); padding: 6px 12px; font-size: 13px; margin-inline-start: 8px;" onclick="removeProfilePhoto()" data-i18n="users_btn_remove">Remove Photo</button>
                             <input type="file" id="uAvatarFile" accept="image/*" style="display: none;">
                             <input type="hidden" id="uProfilePhotoBase64">
                             <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Max 200x200 (Auto-resized)</div>
@@ -144,14 +144,14 @@
                     </div>
                     <div class="form-group">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <label class="form-label" for="uPassword" style="margin: 0;" data-i18n="users_lbl_pass">Şifre</label>
+                            <label class="form-label" for="uPassword" style="margin: 0;" data-i18n="users_lbl_pass">Password</label>
                             <button type="button" class="btn btn-ghost btn-sm" onclick="window.generateAndFillPassword()" style="font-size: 11.5px; padding: 1px 6px; color: var(--primary); font-weight: 500;">
-                                Rastgele Şifre Üret
+                                <span data-i18n="users_generate_pwd">Generate random password</span>
                             </button>
                         </div>
                         <div style="display: flex; gap: 6px;">
-                            <input id="uPassword" class="form-control" placeholder="Değiştirmek istemiyorsanız boş bırakın" style="flex: 1;">
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.copyGeneratedPassword()" title="Şifreyi Kopyala" style="padding: 4px 8px;">
+                            <input id="uPassword" class="form-control" placeholder="Leave empty to keep the current password" data-i18n="users_pwd_ph" data-i18n-target="placeholder" style="flex: 1;">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.copyGeneratedPassword()" title="Copy password" data-i18n="users_copy_pwd" data-i18n-target="title" style="padding: 4px 8px;">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                             </button>
                         </div>
@@ -174,7 +174,7 @@
         <div class="modal" style="width: min(600px, 90%);">
             <div class="modal-header">
                 <h2 data-i18n="users_roles_title">Manage Roles</h2>
-                <button type="button" class="close-btn" data-action="closeModal" data-target="rolesModal" aria-label="Close">
+                <button type="button" class="close-btn" data-action="closeModal" data-target="rolesModal" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -200,7 +200,7 @@
         <div class="modal" style="width: min(800px, 90%);">
             <div class="modal-header">
                 <h2 data-i18n="users_overrides_title">Manage Permission Overrides</h2>
-                <button type="button" class="close-btn" data-action="closeModal" data-target="overridesModal" aria-label="Close">
+                <button type="button" class="close-btn" data-action="closeModal" data-target="overridesModal" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -217,34 +217,34 @@
     <div id="resetPasswordModal" class="modal-overlay">
         <div class="modal" style="width: min(480px, 92%); border-radius: 8px;">
             <div class="modal-header">
-                <h2 style="font-size: 16px; margin: 0; font-weight: 700;" data-i18n="users_reset_modal_title">Kullanıcı Şifresini Sıfırla</h2>
+                <h2 style="font-size: 16px; margin: 0; font-weight: 700;" data-i18n="users_reset_modal_title">Reset User Password</h2>
                 <button type="button" class="close-btn" data-action="closeModal" data-target="resetPasswordModal" aria-label="Kapat">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
             <div class="modal-body" style="padding: 16px 20px;">
                 <p class="text-muted" style="margin-top:0; font-size: 13px;">
-                    <span data-i18n="users_reset_user_prefix">Kullanıcı:</span> <strong id="resetTargetUsername" style="color: var(--text-main);"></strong>
+                    <span data-i18n="users_reset_user_prefix">User:</span> <strong id="resetTargetUsername" style="color: var(--text-main);"></strong>
                 </p>
                 <div class="form-group" style="margin-bottom: 14px;">
-                    <label class="form-label" for="resetNewPasswordInput" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;" data-i18n="users_reset_lbl_new">Yeni Geçici Şifre:</label>
+                    <label class="form-label" for="resetNewPasswordInput" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;" data-i18n="users_reset_lbl_new">New Temporary Password:</label>
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="resetNewPasswordInput" class="form-control" style="font-family: monospace; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; flex: 1;">
                         <button type="button" class="btn btn-secondary" onclick="window.generateResetPassword()" style="font-size: 12px; white-space: nowrap; padding: 6px 10px;" data-i18n="users_reset_btn_generate">
-                            Yeniden Üret
+                            Generate
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="window.copyResetPassword()" style="font-size: 12px; white-space: nowrap; padding: 6px 10px;" title="Panoya Kopyala" data-i18n="users_reset_btn_copy">
                             Kopyala
                         </button>
                     </div>
                 </div>
-                <div id="resetPasswordAlertBox" style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-left: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; font-size: 12px; color: var(--text-main, #1E40AF); line-height: 1.45;">
-                    <strong data-i18n="users_reset_procedure_title">Şifre Kurtarma Prosedürü:</strong> <span data-i18n="users_reset_procedure_desc">Bu geçici şifreyi sisteme kaydedip kullanıcıya iletebilirsiniz. Kullanıcı bu şifreyle sisteme ilk girişinde otomatik olarak kendi yeni şifresini belirleyecektir.</span>
+                <div id="resetPasswordAlertBox" style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-inline-start: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; font-size: 12px; color: var(--text-main, #1E40AF); line-height: 1.45;">
+                    <strong data-i18n="users_reset_procedure_title">Password Recovery Procedure:</strong> <span data-i18n="users_reset_procedure_desc">You can save this temporary password and send it to the user. Upon first login with this password, the user will be prompted to set their own new password.</span>
                 </div>
             </div>
             <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px;">
-                <button type="button" class="btn btn-ghost" data-action="closeModal" data-target="resetPasswordModal" data-i18n="users_btn_cancel">İptal</button>
-                <button type="button" class="btn btn-primary" id="btnConfirmResetPassword" onclick="window.confirmResetPassword()" data-i18n="users_reset_btn_confirm">Şifreyi Kaydet ve Uygula</button>
+                <button type="button" class="btn btn-ghost" data-action="closeModal" data-target="resetPasswordModal" data-i18n="users_btn_cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmResetPassword" onclick="window.confirmResetPassword()" data-i18n="users_reset_btn_confirm">Save and Apply Password</button>
             </div>
         </div>
     </div>
@@ -300,7 +300,7 @@
             data.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.dataset.id = item.id;
-                const badge = item.isActive ? `<span class="badge badge-success" style="cursor:pointer;" data-action="toggleUserStatus" data-id="${item.id}" data-flag="false">${t('users_status_active') || 'Active'}</span>` : `<span class="badge badge-default" style="cursor:pointer;" data-action="toggleUserStatus" data-id="${item.id}" data-flag="true">${t('users_status_inactive') || 'Inactive'}</span>`;
+                const badge = item.isActive ? `<span class="badge badge-success" style="cursor:pointer;" data-action="toggleUserStatus" data-id="${item.id}" data-flag="false">${t('users_status_active')}</span>` : `<span class="badge badge-default" style="cursor:pointer;" data-action="toggleUserStatus" data-id="${item.id}" data-flag="true">${t('users_status_inactive')}</span>`;
                 tr.innerHTML = `
                     <td style="font-weight: 500;">
                         ${item.profilePhoto ? `<img src="${escapeHtml(item.profilePhoto)}" class="mini-avatar" alt="Avatar">` : `<div class="mini-avatar">${escapeHtml(item.firstName.charAt(0).toUpperCase())}</div>`}
@@ -310,11 +310,11 @@
                     <td class="text-muted">${escapeHtml(item.email)}</td>
                     <td>${badge}</td>
                     <td>
-                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="openRolesModal" data-id="${item.id}">${t('users_btn_roles') || 'Roller'}</button>
-                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="openOverridesModal" data-id="${item.id}">${t('users_btn_perms') || 'İzinler'}</button>
-                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px; color: var(--primary); font-weight: 500;" data-action="openResetPasswordModal" data-id="${item.id}" title="${t('users_title_reset_pass') || 'Geçici şifre oluşturup sıfırla'}">${t('users_btn_reset_pass') || 'Şifre Sıfırla'}</button>
-                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="openUserModal" data-id="${item.id}">${t('users_btn_edit') || 'Düzenle'}</button>
-                        <button type="button" class="btn btn-ghost" style="color: var(--danger); padding: 4px 8px;" data-action="promptDelete" data-id="${item.id}">${t('users_btn_del') || 'Sil'}</button>
+                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="openRolesModal" data-id="${item.id}">${t('users_btn_roles')}</button>
+                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="openOverridesModal" data-id="${item.id}">${t('users_btn_perms')}</button>
+                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px; color: var(--primary); font-weight: 500;" data-action="openResetPasswordModal" data-id="${item.id}" title="${t('users_title_reset_pass')}">${t('users_btn_reset_pass')}</button>
+                        <button type="button" class="btn btn-ghost" style="padding: 4px 8px;" data-action="openUserModal" data-id="${item.id}">${t('users_btn_edit')}</button>
+                        <button type="button" class="btn btn-ghost" style="color: var(--danger); padding: 4px 8px;" data-action="promptDelete" data-id="${item.id}">${t('users_btn_del')}</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -364,14 +364,14 @@
                 let errEl = document.querySelector('tbody') || document.querySelector('#overviewCards') || document.querySelector('#board') || document.querySelector('#articleList') || document.querySelector('.content-area');
                 if (errEl) {
                     if (errEl.tagName === 'TBODY') {
-                        errEl.innerHTML = '<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</td></tr>';
+                        errEl.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${t('common_err_load_data')}</td></tr>`;
                      } else {
-                        errEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</div>';
+                        errEl.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger);">${t('common_err_load_data')}</div>`;
                     }
                 }
 
                 console.error(err);
-                showToast('Error loading users', 'error');
+                showToast(t('users_load_failed'), 'error');
             }
         };
 
@@ -387,10 +387,10 @@
                     isActive: newStatus,
                     profilePhoto: item.profilePhoto
                 });
-                showToast('User status updated');
+                showToast(t('users_status_updated'));
                 loadData();
             } catch (e) { console.error(e);  
-                showToast('Failed to update status', 'error'); 
+                showToast(t('admin_status_update_failed'), 'error'); 
              }
         };
 
@@ -520,32 +520,32 @@
                 
                 if (isEffectiveGranted) {
                     if (hasCustomOverride) {
-                        badgeHtml = `<span class="badge" style="background:#ECFDF5; color:#047857; border:1px solid #A7F3D0; font-size:11px; padding:2px 6px;">Özel İzinli</span>`;
+                        badgeHtml = `<span class="badge" style="background:#ECFDF5; color:#047857; border:1px solid #A7F3D0; font-size:11px; padding:2px 6px;">${t('users_perm_custom_granted')}</span>`;
                     } else {
-                        badgeHtml = `<span class="badge" style="background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE; font-size:11px; padding:2px 6px;">Rollerden İzinli</span>`;
+                        badgeHtml = `<span class="badge" style="background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE; font-size:11px; padding:2px 6px;">${t('users_perm_from_roles')}</span>`;
                     }
                     // Since user already HAS permission, the only action is to REDDET (Deny/Revoke)
                     actionBtnHtml = `
                         <button type="button" class="btn btn-outline btn-sm" style="color:#DC2626; border-color:#FECACA; padding: 3px 8px; font-size:12px; font-weight:600;" onclick="window.setOverride(${p.id}, false)">
-                            ${t('users_btn_deny') || 'Reddet'}
+                            ${t('users_btn_deny')}
                         </button>
                     `;
                 } else {
                     if (hasCustomOverride) {
-                        badgeHtml = `<span class="badge" style="background:#FEF2F2; color:#B91C1C; border:1px solid #FECACA; font-size:11px; padding:2px 6px;">Özel Engellendi</span>`;
+                        badgeHtml = `<span class="badge" style="background:#FEF2F2; color:#B91C1C; border:1px solid #FECACA; font-size:11px; padding:2px 6px;">${t('users_perm_custom_denied')}</span>`;
                     } else {
-                        badgeHtml = `<span class="badge" style="background:#F1F5F9; color:#64748B; border:1px solid #CBD5E1; font-size:11px; padding:2px 6px;">Yetki Yok</span>`;
+                        badgeHtml = `<span class="badge" style="background:#F1F5F9; color:#64748B; border:1px solid #CBD5E1; font-size:11px; padding:2px 6px;">${t('users_perm_none')}</span>`;
                     }
                     // Since user DOES NOT have permission, the only action is to İZİN VER (Allow/Grant)
                     actionBtnHtml = `
                         <button type="button" class="btn btn-outline btn-sm" style="color:#059669; border-color:#A7F3D0; padding: 3px 8px; font-size:12px; font-weight:600;" onclick="window.setOverride(${p.id}, true)">
-                            ${t('users_btn_allow') || 'İzin Ver'}
+                            ${t('users_btn_allow')}
                         </button>
                     `;
                 }
 
                 const resetBtnHtml = hasCustomOverride 
-                    ? `<button type="button" class="btn btn-ghost btn-sm" style="padding: 2px 6px; font-size:11px; color:var(--text-muted);" title="Özel istisnayı kaldırıp rol varsayılanına dön" onclick="window.removeOverride(${p.id})">Sıfırla</button>`
+                    ? `<button type="button" class="btn btn-ghost btn-sm" style="padding: 2px 6px; font-size:11px; color:var(--text-muted);" title="${t('users_override_reset_title')}" onclick="window.removeOverride(${p.id})">${t('users_override_reset')}</button>`
                     : '';
 
                 list.innerHTML += `
@@ -570,12 +570,12 @@
             if (!activeUserId) return;
             try {
                 await window.api.setPermissionOverride(activeUserId, permId, isGranted);
-                showToast(isGranted ? 'Özel izin tanımlandı' : 'İzin engellendi (Reddedildi)');
+                showToast(t(isGranted ? 'users_override_granted' : 'users_override_denied'));
                 await loadData();
                 window.openOverridesModal(activeUserId);
             } catch (err) {
                 console.error(err);
-                showToast('İşlem başarısız', 'error');
+                showToast(t('common_failed'), 'error');
             }
         };
 
@@ -583,12 +583,12 @@
             if (!activeUserId) return;
             try {
                 await window.api.removePermissionOverride(activeUserId, permId);
-                showToast('Özel istisna kaldırıldı (Rol varsayılanına dönüldü)');
+                showToast(t('users_override_removed'));
                 await loadData();
                 window.openOverridesModal(activeUserId);
             } catch (err) {
                 console.error(err);
-                showToast('İstisna kaldırılamadı', 'error');
+                showToast(t('users_override_remove_failed'), 'error');
             }
         };
 
@@ -630,14 +630,14 @@
             const input = document.getElementById('resetNewPasswordInput');
             if (!input) return;
             navigator.clipboard.writeText(input.value);
-            showToast('Şifre panoya kopyalandı');
+            showToast(t('users_pwd_copied'));
         };
 
         window.confirmResetPassword = async function() {
             if (!resetUserId) return;
             const newPass = document.getElementById('resetNewPasswordInput').value.trim();
             if (!newPass) {
-                showToast('Şifre boş olamaz', 'warning');
+                showToast(t('users_pwd_empty'), 'warning');
                 return;
             }
 
@@ -647,11 +647,11 @@
             try {
                 await window.api.resetUserPassword(resetUserId, newPass);
                 await navigator.clipboard.writeText(newPass);
-                showToast(t('users_reset_toast_success') || `Şifre sıfırlandı ve panoya kopyalandı! Kullanıcı ilk girişinde yeni şifresini belirleyecektir.`, 'success');
+                showToast(t('users_reset_toast_success'), 'success');
                 closeModal('resetPasswordModal');
             } catch (err) {
                 console.error(err);
-                showToast(window.api.errorMessage(err, t('users_reset_toast_fail') || 'Şifre sıfırlanamadı'), 'error');
+                showToast(window.api.errorMessage(err, t('users_reset_toast_fail')), 'error');
             } finally {
                 if (btn) btn.disabled = false;
             }
@@ -663,7 +663,7 @@
             if (input) {
                 input.value = pass;
                 navigator.clipboard.writeText(pass);
-                showToast(`Geçici şifre oluşturuldu ve kopyalandı: ${pass}`);
+                showToast(t('users_temp_pwd_created').replaceAll('{0}', pass));
             }
         };
 
@@ -671,9 +671,9 @@
             const input = document.getElementById('uPassword');
             if (input && input.value) {
                 navigator.clipboard.writeText(input.value);
-                showToast('Şifre panoya kopyalandı');
+                showToast(t('users_pwd_copied'));
             } else {
-                showToast('Kopyalanacak şifre bulunamadı', 'warning');
+                showToast(t('users_pwd_nothing_to_copy'), 'warning');
             }
         };
 
@@ -682,11 +682,11 @@
             if (!roleId || !activeUserId) return;
             try {
                 await window.api.assignRole(activeUserId, roleId);
-                showToast('Role assigned');
+                showToast(t('users_role_assigned'));
                 await loadData();
                 window.openRolesModal(activeUserId);
             } catch (err) { console.error(err); 
-                showToast('Failed to assign role', 'error');
+                showToast(t('users_role_assign_failed'), 'error');
              }
         });
 
@@ -694,23 +694,23 @@
             if (!activeUserId) return;
             try {
                 await window.api.revokeRole(activeUserId, roleId);
-                showToast('Role revoked');
+                showToast(t('users_role_revoked'));
                 await loadData();
                 window.openRolesModal(activeUserId);
             } catch (err) { console.error(err); 
-                showToast('Failed to revoke role', 'error');
+                showToast(t('users_role_revoke_failed'), 'error');
              }
         };
 
         window.promptDelete = async function(id) {
-            const proceed = await showUndoToast('Öğe silinecek. Geri almak için tıklayın.', null, 4000);
+            const proceed = await showUndoToast(t('common_deleting_undo'), null, 4000);
             if (proceed) {
                 try {
                     await window.api.deleteUser(id);
-                    showToast('Silme işlemi tamamlandı');
+                    showToast(t('common_deleted'));
                     loadData();
                 } catch (e) { console.error(e); 
-                    showToast('Silme işlemi başarısız', 'error');
+                    showToast(t('common_delete_failed'), 'error');
                  }
             }
         };
@@ -781,10 +781,10 @@
                 else await window.api.createUser(data);
                 
                 closeModal('userModal');
-                showToast('User saved');
+                showToast(t('users_saved'));
         loadData(); // removed await for resilience
             } catch (err) { console.error(err); 
-                showToast(window.api.errorMessage(err, 'Failed to save user'), 'error');
+                showToast(window.api.errorMessage(err, t('users_save_failed')), 'error');
              }
         });
 

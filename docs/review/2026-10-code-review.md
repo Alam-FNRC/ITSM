@@ -27,6 +27,7 @@ Each fix has integration tests in `tests/ItsTool.IntegrationTests/Api/` that run
 | Audit | Partly fixed | Logins and password changes are in AuthEvents (`f061746`). Role assignments, role permissions and permission overrides are audited with names and the acting administrator (`4682777`). The application refuses to change or delete audit rows (`14e94d0`). Still open (Phase 3): protection at the database level, tamper evidence (hash chain), IP address and request ID on audit rows |
 | — | Fixed | Found during the fixes: deny permission overrides were ignored, so a role's permission could not be taken away from one user (`5380920`) |
 | — | Fixed | Found during the fixes: stored script injection. Pages inserted user text (ticket titles, survey comments, names, KB article HTML, notification text) as HTML or inside inline handlers, so any user could run script in an administrator's browser and take the login token. The pages now escape or sanitize it (`8978c67`, `cfed0a6`..`64c94c0`), DOMPurify is updated to 3.4.17 (`eac6682`), ticket colours must be #RRGGBB (`d2f4445`) and notification e-mails encode user text (`da056fe`) |
+| — | Fixed | Found during the fixes: the survey and knowledge-base article pages put `?id=` from the address into API paths, so a crafted link sent their request to another endpoint (verified: rating a ticket through `survey.html?id=../users/2/roles/1?x=` gave user 2 SuperAdmin). Only numeric ids are accepted (`ca3eee9`) |
 
 # Part 1: Security and data layer
 

@@ -221,7 +221,7 @@ public class NotificationDispatcher : INotificationDispatcher
         string humanReadableEvent = GetHumanReadableEventName(eventKey);
         foreach (var recipient in recipients)
         {
-            string notifBody = additionalContext ?? $"#{ticket.TicketNumber} numaralı bilet";
+            string notifBody = additionalContext ?? $"Ticket #{ticket.TicketNumber}";
             if (eventKey == EventCommentMention && additionalContext != null && additionalContext.Contains('|'))
             {
                 var parts = additionalContext.Split('|', 2);
@@ -316,7 +316,7 @@ public class NotificationDispatcher : INotificationDispatcher
             if (status == null)
             {
                 var s = await _context.Statuses.FindAsync(ticket.StatusId);
-                status = s?.Name ?? "Açık";
+                status = s?.Name ?? "Open";
             }
 
             var templateData = new Dictionary<string, string>
@@ -350,24 +350,24 @@ public class NotificationDispatcher : INotificationDispatcher
     {
         return eventKey switch
         {
-            "ticket.created" => "Bilet Oluşturuldu",
-            "ticket.assigned" => "Bilet Atandı",
-            "ticket.transferred" => "Bilet Aktarıldı",
-            "comment.added" or "ticket.comment.added" => "Yeni Yorum",
-            EventCommentMention => "Etiketlendiniz",
-            "status.changed" => "Bilet Durumu Değişti",
-            "ticket.reopened" => "Bilet Yeniden Açıldı",
-            "ticket.resolved" => "Bilet Çözüldü",
-            "ticket.closed" => "Bilet Kapatıldı",
-            "ticket.closed.survey" => "Memnuniyet Anketi",
-            "sla.risk" => "SLA Riski",
-            "sla.breached" or "sla.breach" => "SLA İhlali",
-            "sla.warning" => "SLA Uyarısı",
-            "critical.unassigned" => "Kritik Bilet Atanmadı",
-            "survey.low" => "Düşük Anket Puanı",
-            "kb.suggested" => "Yeni Makale Önerisi",
-            "kb.reviewed" => "Makale İncelendi",
-            _ => "Sistem Bildirimi"
+            "ticket.created" => "Ticket Created",
+            "ticket.assigned" => "Ticket Assigned",
+            "ticket.transferred" => "Ticket Transferred",
+            "comment.added" or "ticket.comment.added" => "New Comment",
+            EventCommentMention => "You Were Mentioned",
+            "status.changed" => "Ticket Status Changed",
+            "ticket.reopened" => "Ticket Reopened",
+            "ticket.resolved" => "Ticket Resolved",
+            "ticket.closed" => "Ticket Closed",
+            "ticket.closed.survey" => "Satisfaction Survey",
+            "sla.risk" => "SLA Risk",
+            "sla.breached" or "sla.breach" => "SLA Breached",
+            "sla.warning" => "SLA Warning",
+            "critical.unassigned" => "Critical Ticket Unassigned",
+            "survey.low" => "Low Survey Score",
+            "kb.suggested" => "New Article Suggestion",
+            "kb.reviewed" => "Article Reviewed",
+            _ => "System Notification"
         };
     }
 }

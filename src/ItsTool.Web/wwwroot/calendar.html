@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Calendar</title>
+    <title data-i18n="nav_calendar" data-i18n-target="document-title">ITSM Tool - Calendar</title>
     <link rel="stylesheet" href="css/design-system.css?v=1008">
     <script src="js/fullcalendar.global.min.js"></script>
     <style>
@@ -31,10 +31,10 @@
                     <h2 data-i18n="nav_calendar">Calendar</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -52,23 +52,10 @@
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 12px; align-items: center; gap: 12px;">
                     <label for="calendarMonthSelect" style="font-size: 13px; font-weight: 500; color: var(--text-muted);" data-i18n="calendar_jump_date">Tarihe Git:</label>
                     <div style="display: flex; gap: 4px; background: var(--bg-surface); padding: 4px; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
-                        <select id="calendarMonthSelect" aria-label="Ay Seçimi" style="border: none; background: transparent; padding: 4px 8px; outline: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-main);">
-                            <option value="01">Ocak</option>
-                            <option value="02">Şubat</option>
-                            <option value="03">Mart</option>
-                            <option value="04">Nisan</option>
-                            <option value="05">Mayıs</option>
-                            <option value="06">Haziran</option>
-                            <option value="07">Temmuz</option>
-                            <option value="08">Ağustos</option>
-                            <option value="09">Eylül</option>
-                            <option value="10">Ekim</option>
-                            <option value="11">Kasım</option>
-                            <option value="12">Aralık</option>
-                        </select>
+                        <select id="calendarMonthSelect" aria-label="Month" data-i18n="cal_month_select" data-i18n-target="aria-label" style="border: none; background: transparent; padding: 4px 8px; outline: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-main);"></select>
                         <div style="width: 1px; background: var(--border); margin: 4px 0;"></div>
-                        <label for="calendarYearSelect" style="display:none;" data-i18n="calendar_jump_year">Yıl Seçimi</label>
-                        <select id="calendarYearSelect" aria-label="Yıl Seçimi" style="border: none; background: transparent; padding: 4px 8px; outline: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-main);">
+                        <label for="calendarYearSelect" style="display:none;" data-i18n="calendar_jump_year">Year:</label>
+                        <select id="calendarYearSelect" aria-label="Year" data-i18n="cal_year_select" data-i18n-target="aria-label" style="border: none; background: transparent; padding: 4px 8px; outline: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-main);">
                         </select>
                     </div>
                 </div>
@@ -82,15 +69,15 @@
         <div class="modal" style="width: min(400px, 90%);">
             <div class="modal-header">
                 <h2 data-i18n="td_modal_user_details">User Details</h2>
-                <button type="button" class="close-btn" onclick="window.ui.closeModal('assigneeModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="window.ui.closeModal('assigneeModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
             <div class="modal-body" style="text-align: center;">
                 <div id="aModalAvatar" style="margin-bottom: 16px; display: flex; justify-content: center;"></div>
-                <h3 id="aModalName" style="margin: 0 0 4px 0;" aria-label="Assignee Name">Assignee</h3>
+                <h3 id="aModalName" style="margin: 0 0 4px 0;"></h3>
                 <p id="aModalUsername" class="text-muted" style="margin: 0 0 16px 0; font-size: 13px;"></p>
-                <div style="text-align: left; background: var(--bg-surface); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                <div style="text-align: start; background: var(--bg-surface); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border);">
                     <div style="margin-bottom: 8px;"><strong data-i18n="td_email">Email:</strong> <span id="aModalEmail"></span></div>
                     <div style="margin-bottom: 8px;"><strong data-i18n="td_dept">Department:</strong> <span id="aModalDept"></span></div>
                     <div><strong data-i18n="td_status">Status:</strong> <span id="aModalStatus"></span></div>
@@ -103,7 +90,7 @@
         import './js/api.js?v=1002';
         import { injectShell } from './js/layout.js?v=1002';
         import { bindShellActions, showToast } from './js/ui.js?v=1002';
-        import { getCurrentLanguage, t } from './js/i18n.js?v=1002';
+        import { getLocale, getTextDirection, t } from './js/i18n.js?v=1002';
         
         injectShell();
         
@@ -158,39 +145,29 @@
                 console.warn('Lookup data failed', err);
             }
 
-            const currentLang = getCurrentLanguage();
-            const isTr = currentLang === 'tr';
-
-            const trLocale = {
-                code: 'tr',
-                week: {
-                    dow: 1, // Hafta Pazartesi başlar
-                    doy: 7
-                },
+            // FullCalendar formats dates with Intl, so the interface locale also gives Latin digits for Arabic
+            const calendarLocale = {
+                code: getLocale(),
+                week: { dow: 1, doy: 7 },
                 buttonText: {
-                    prev: 'Geri',
-                    next: 'İleri',
-                    today: 'Bugün',
-                    month: 'Ay',
-                    week: 'Hafta',
-                    day: 'Gün',
-                    list: 'Ajanda'
+                    today: t('cal_btn_today'),
+                    month: t('cal_btn_month'),
+                    week: t('cal_btn_week'),
+                    day: t('cal_btn_day'),
+                    list: t('cal_btn_list')
                 },
-                weekText: 'Hf',
-                allDayText: 'Tüm gün',
-                moreLinkText: function(n) {
-                    return '+ daha fazla ' + n;
-                },
-                noEventsText: 'Gösterilecek etkinlik yok'
+                weekText: t('cal_week_short'),
+                allDayText: t('cal_all_day'),
+                moreLinkText: (n) => t('cal_more').replaceAll('{0}', n),
+                noEventsText: t('cal_no_events')
             };
 
             const mSelect = document.getElementById('calendarMonthSelect');
             const ySelect = document.getElementById('calendarYearSelect');
 
             if (mSelect) {
-                const monthNamesTr = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
-                const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                const monthNames = isTr ? monthNamesTr : monthNamesEn;
+                const monthFormat = new Intl.DateTimeFormat(getLocale(), { month: 'long' });
+                const monthNames = Array.from({ length: 12 }, (_, idx) => monthFormat.format(new Date(2026, idx, 1)));
                 mSelect.innerHTML = monthNames.map((name, idx) => {
                     const val = (idx + 1).toString().padStart(2, '0');
                     return `<option value="${val}">${name}</option>`;
@@ -214,32 +191,28 @@
 
             if (typeof FullCalendar === 'undefined') {
                 console.error("FullCalendar is not defined");
-                calendarEl.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);">Takvim kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.</div>';
+                calendarEl.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-muted);">${t('cal_lib_failed')}</div>`;
                 return;
             }
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                locales: [trLocale],
-                locale: isTr ? 'tr' : 'en',
+                locales: [calendarLocale],
+                locale: calendarLocale.code,
+                direction: getTextDirection(),
                 firstDay: 1,
-                buttonText: isTr ? {
-                    today: 'Bugün',
-                    month: 'Ay',
-                    week: 'Hafta',
-                    day: 'Gün',
-                    list: 'Ajanda'
-                } : {
-                    today: 'Today',
-                    month: 'Month',
-                    week: 'Week',
-                    day: 'Day',
-                    list: 'List'
-                },
+                // Also given directly: FullCalendar does not match a locale code with a -u- extension to the texts above
+                buttonText: calendarLocale.buttonText,
+                // The arrow buttons keep their icons; these name them for screen readers
+                buttonHints: { prev: t('cal_btn_prev'), next: t('cal_btn_next') },
+                weekText: calendarLocale.weekText,
+                allDayText: calendarLocale.allDayText,
+                moreLinkText: calendarLocale.moreLinkText,
+                noEventsText: calendarLocale.noEventsText,
                 headerToolbar: {
-                    left: 'prev,next today',
+                    start: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    end: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 events: async function(fetchInfo, successCallback, failureCallback) {
                     try {
@@ -276,7 +249,7 @@
                     } catch (e) {
                         console.error('Failed to load tickets for calendar', e);
                         failureCallback(e);
-                        showToast('Takvim verileri yüklenemedi', 'error');
+                        showToast(t('cal_load_failed'), 'error');
                     }
                 },
                 eventContent: function(arg) {
@@ -301,7 +274,7 @@
                     assigneesDiv.style.alignItems = 'center';
                     assigneesDiv.style.gap = '4px';
                     assigneesDiv.style.flexShrink = '0';
-                    assigneesDiv.style.marginLeft = '4px';
+                    assigneesDiv.style.marginInlineStart = '4px';
                     
                     const assignees = arg.event.extendedProps.activeAssignees;
                     if (arg.isEnd && assignees && assignees.length > 0) {

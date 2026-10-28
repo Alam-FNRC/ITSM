@@ -160,7 +160,7 @@ public class TicketService : ITicketService
         }
 
         var prio = await _context.Priorities.FindAsync(t.PriorityId);
-        var prioName = prio?.Name ?? $"Öncelik #{t.PriorityId}";
+        var prioName = prio?.Name ?? $"Priority #{t.PriorityId}";
         var cat = await _context.Categories.FindAsync(t.CategoryId);
         var catName = cat?.Name ?? "Genel";
         var proj = await _context.Projects.FindAsync(t.ProjectId);
@@ -172,7 +172,7 @@ public class TicketService : ITicketService
             Action = "Created",
             FieldName = "Yeni Bilet",
             OldValue = "-",
-            NewValue = $"{t.TicketNumber} — {t.Title} (Öncelik: {prioName}, Kategori: {catName}, Proje: {projName})",
+            NewValue = $"{t.TicketNumber} — {t.Title} (Priority: {prioName}, Category: {catName}, Project: {projName})",
             CreatedBy = dto.RequesterUserId.ToString()
         });
         await _context.SaveChangesAsync();
@@ -182,7 +182,7 @@ public class TicketService : ITicketService
         await _context.SaveChangesAsync();
 
         await _slaEngine.AttachSlaToTicketAsync(t.Id);
-        await _notificationDispatcher.DispatchEventAsync("ticket.created", t.Id, dto.RequesterUserId, $"#{t.TicketNumber} numaralı yeni bilet oluşturuldu.");
+        await _notificationDispatcher.DispatchEventAsync("ticket.created", t.Id, dto.RequesterUserId, $"Ticket #{t.TicketNumber} was created.");
 
         return new TicketDto(t.Id, t.TicketNumber, t.Title, t.Description, t.ProjectId, t.CategoryId, t.TypeId, t.StatusId, t.PriorityId, t.RequesterUserId, new List<TicketAssigneeDto>(), null, t.EstimatedStartDate, t.EstimatedEndDate,
                 t.ColorHex);
@@ -438,7 +438,7 @@ public class TicketService : ITicketService
         // Notify for CSAT if status changes to Closed (Assuming 5 is Closed)
         if (dto.NewStatusId == 5 && oldStatus != 5)
         {
-            await _notificationDispatcher.DispatchEventAsync("ticket.closed.survey", t.Id, dto.UserId, $"#{t.TicketNumber} numaralı bilet kapatıldı. Lütfen memnuniyet anketini doldurunuz.");
+            await _notificationDispatcher.DispatchEventAsync("ticket.closed.survey", t.Id, dto.UserId, $"Ticket #{t.TicketNumber} was closed. Please fill in the satisfaction survey.");
         }
     }
 
@@ -520,7 +520,7 @@ public class TicketService : ITicketService
         });
 
         await _context.SaveChangesAsync();
-        await _notificationDispatcher.DispatchEventAsync("ticket.assigned", t.Id, dto.AssignerUserId, $"#{t.TicketNumber} numaralı bilet size veya ekibinize atandı.");
+        await _notificationDispatcher.DispatchEventAsync("ticket.assigned", t.Id, dto.AssignerUserId, $"Ticket #{t.TicketNumber} was assigned to you or your team.");
     }
 
     private async Task VerifyHierarchyCheckAsync(Ticket t, AssignTicketDto dto, User? assigner)
@@ -632,13 +632,13 @@ public class TicketService : ITicketService
         await _context.SaveChangesAsync();
         
         await _slaEngine.ProcessTicketCommentAsync(ticketId, dto.IsInternal);
-        await _notificationDispatcher.DispatchEventAsync("ticket.comment.added", ticketId, dto.AuthorUserId, $"#{ticket?.TicketNumber} numaralı bilete yeni bir yorum eklendi.");
+        await _notificationDispatcher.DispatchEventAsync("ticket.comment.added", ticketId, dto.AuthorUserId, $"A new comment was added to ticket #{ticket?.TicketNumber}.");
         
         if (dto.MentionedUserIds != null && dto.MentionedUserIds.Length > 0)
         {
             foreach(var uid in dto.MentionedUserIds)
             {
-                await _notificationDispatcher.DispatchEventAsync("comment.mention", ticketId, dto.AuthorUserId, $"{uid}|#{ticket?.TicketNumber} ({ticket?.Title}) numaralı bilette sizden bahsedildi.|{c.Id}");
+                await _notificationDispatcher.DispatchEventAsync("comment.mention", ticketId, dto.AuthorUserId, $"{uid}|You were mentioned on ticket #{ticket?.TicketNumber} ({ticket?.Title}).|{c.Id}");
                 
                 _context.TicketHistories.Add(new TicketHistory
                 {
@@ -686,7 +686,7 @@ public class TicketService : ITicketService
             var ticket = await _context.Tickets.FindAsync(ticketId);
             foreach(var uid in dto.MentionedUserIds)
             {
-                await _notificationDispatcher.DispatchEventAsync("comment.mention", ticketId, userId, $"{uid}|#{ticket?.TicketNumber} ({ticket?.Title}) numaralı bilette sizden bahsedildi.|{c.Id}");
+                await _notificationDispatcher.DispatchEventAsync("comment.mention", ticketId, userId, $"{uid}|You were mentioned on ticket #{ticket?.TicketNumber} ({ticket?.Title}).|{c.Id}");
                 
                 _context.TicketHistories.Add(new TicketHistory
                 {

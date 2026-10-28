@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Audit Log</title>
+    <title data-i18n="nav_audit" data-i18n-target="document-title">ITSM Tool - Audit Log</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spacing-lg); flex-wrap: wrap; gap: var(--spacing-md); }
@@ -52,10 +52,10 @@
                     <h2 data-i18n="audit_title">System Audit Log</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -80,15 +80,15 @@
                 <div class="filter-panel">
                     <div class="filter-group">
                         <label for="filterTicket" data-i18n="audit_filter_ticket">Ticket ID</label>
-                        <input id="filterTicket" placeholder="e.g. ITS-1">
+                        <input id="filterTicket" placeholder="e.g. ITS-1" data-i18n="audit_ph_ticket" data-i18n-target="placeholder">
                     </div>
                     <div class="filter-group">
                         <label for="filterUserId" data-i18n="audit_filter_user">User ID</label>
-                        <input id="filterUserId" placeholder="e.g. 5">
+                        <input id="filterUserId" placeholder="e.g. 5" data-i18n="audit_ph_user" data-i18n-target="placeholder">
                     </div>
                     <div class="filter-group">
                         <label for="filterAction" data-i18n="audit_filter_action">Action Type</label>
-                        <input id="filterAction" placeholder="e.g. Created, Updated">
+                        <input id="filterAction" placeholder="e.g. Created, Updated" data-i18n="audit_ph_action" data-i18n-target="placeholder">
                     </div>
                     <div class="filter-group">
                         <label for="filterFrom" data-i18n="audit_filter_from">From Date</label>
@@ -99,13 +99,13 @@
                         <input id="filterTo">
                     </div>
                     <button type="button" class="btn btn-primary" id="btnSearchAudit" style="height: 38px; padding: 0 16px;">
-                        <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-right: 4px; vertical-align: middle;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <span data-i18n="audit_filter_btn">Filter</span>
+                        <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-inline-end: 4px; vertical-align: middle;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <span data-i18n="audit_filter_btn">Filter</span>
                     </button>
                     <button type="button" class="btn btn-secondary" id="btnResetAudit" style="height: 38px; padding: 0 14px;">
-                        <span data-i18n="btn_reset_filter">Filtreleri Sıfırla</span>
+                        <span data-i18n="btn_reset_filter">Reset Filters</span>
                     </button>
                     <button type="button" class="btn btn-ghost" id="btnExportCsv" style="height: 38px; padding: 0 14px; border: 1px solid var(--border); color: var(--text-main);">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 4px; vertical-align: middle;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> <span data-i18n="btn_export_csv">CSV Olarak İndir</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-inline-end: 4px; vertical-align: middle;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> <span data-i18n="btn_export_csv">Export CSV</span>
                     </button>
                 </div>
                 
@@ -120,7 +120,7 @@
                                 <th data-i18n="audit_col_field">Field Modified</th>
                                 <th data-i18n="audit_col_old">Old Value</th>
                                 <th data-i18n="audit_col_new">New Value</th>
-                                <th style="width: 140px; text-align:right; position: sticky; right: 0; background: var(--bg-surface); z-index: 2; box-shadow: -2px 0 5px rgba(0,0,0,0.05);" data-i18n="audit_col_actions">Actions</th>
+                                <th style="width: 140px; text-align:end; position: sticky; inset-inline-end: 0; background: var(--bg-surface); z-index: 2; box-shadow: -2px 0 5px rgba(0,0,0,0.05);" data-i18n="audit_col_actions">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="auditList">
@@ -136,7 +136,7 @@
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
         import { bindShellActions, showToast } from './js/ui.js?v=999';
-        import { t, getCurrentLanguage } from './js/i18n.js';
+        import { t, getLocale } from './js/i18n.js';
         injectShell();
 
         if (!window.api.token) window.location.href = '/login.html';
@@ -176,9 +176,9 @@
                     tbody.innerHTML = `<tr><td colspan="8">
                         <div class="empty-state" style="padding: 48px 24px;">
                             <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--border)"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                            <h3 style="margin: 12px 0 4px; font-size: 16px; color: var(--text-main);">${t('audit_no_data') || 'Kayıt Bulunamadı'}</h3>
-                            <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">Belirtilen arama kriterlerine uygun denetim kaydı bulunamadı.</p>
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetAuditFilters()">${t('btn_reset_filter') || 'Filtreleri Sıfırla'}</button>
+                            <h3 style="margin: 12px 0 4px; font-size: 16px; color: var(--text-main);">${t('audit_no_data')}</h3>
+                            <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">${t('audit_no_data_desc')}</p>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetAuditFilters()">${t('btn_reset_filter')}</button>
                         </div>
                     </td></tr>`;
                     return;
@@ -189,8 +189,8 @@
                     
                     const { mappedOld, mappedNew } = resolveAuditMappedValues(a, lookup, users);
                     
-                    const oldVal = mappedOld ? `<span class="value-cell" title="${escapeHtml(mappedOld)}">${escapeHtml(mappedOld)}</span>` : '<span class="text-muted">-</span>';
-                    const newVal = mappedNew ? `<span class="value-cell" title="${escapeHtml(mappedNew)}">${escapeHtml(mappedNew)}</span>` : '<span class="text-muted">-</span>';
+                    const oldVal = mappedOld ? `<span class="value-cell" dir="auto" title="${escapeHtml(mappedOld)}">${escapeHtml(mappedOld)}</span>` : '<span class="text-muted">-</span>';
+                    const newVal = mappedNew ? `<span class="value-cell" dir="auto" title="${escapeHtml(mappedNew)}">${escapeHtml(mappedNew)}</span>` : '<span class="text-muted">-</span>';
                     
                     const entityNameText = a.entityName || (a.ticketId ? `ITS-${a.ticketId}` : 'Unknown');
                     const entityIdText = a.entityId || (a.ticketId ? a.ticketId.toString() : '');
@@ -198,7 +198,7 @@
 
                     const entityLink = entityType === 'Ticket' 
                         ? `<a href="/ticket-detail.html?id=${encodeURIComponent(entityIdText)}&highlight=true" style="font-weight:600; color:var(--primary);">ITS-${escapeHtml(entityIdText)}</a>` 
-                        : `<span class="badge badge-default" style="margin-right:4px;">${escapeHtml(entityType)}</span> <span style="font-weight:500;">${escapeHtml(entityNameText)}</span>`;
+                        : `<span class="badge badge-default" style="margin-inline-end:4px;">${escapeHtml(formatEntityType(entityType))}</span> <span style="font-weight:500;">${escapeHtml(entityNameText)}</span>`;
                     
                     const creatorUser = users.find(u => String(u.id) === a.createdBy);
                     const creatorName = creatorUser ? `@${creatorUser.username}` : (a.createdBy || '-');
@@ -217,14 +217,14 @@
                     }
 
                     tr.innerHTML = `
-                        <td style="font-size: 13px; color: var(--text-muted);">${new Date(a.createdAt).toLocaleString()}</td>
+                        <td style="font-size: 13px; color: var(--text-muted);">${new Date(a.createdAt).toLocaleString(getLocale())}</td>
                         <td>${entityLink}</td>
                         <td style="font-family: monospace;">${escapeHtml(creatorName)}</td>
-                        <td><span class="badge badge-default" style="${actionBadgeStyle}">${escapeHtml(a.action)}</span></td>
+                        <td><span class="badge badge-default" style="${actionBadgeStyle}" title="${escapeHtml(a.action)}">${escapeHtml(formatAuditAction(a.action))}</span></td>
                         <td style="font-size: 13px; font-weight: 500;">${escapeHtml(formatAuditFieldName(a.fieldName)) || '-'}</td>
                         <td>${oldVal}</td>
                         <td>${newVal}</td>
-                        <td style="text-align:right; position: sticky; right: 0; background: var(--bg-surface); z-index: 1; box-shadow: -2px 0 5px rgba(0,0,0,0.05);">
+                        <td style="text-align:end; position: sticky; inset-inline-end: 0; background: var(--bg-surface); z-index: 1; box-shadow: -2px 0 5px rgba(0,0,0,0.05);">
                             <button type="button" class="btn btn-ghost audit-detail-btn" style="padding:4px 8px; font-size:12px;">${t('audit_btn_detail')}</button>
                             <a href="${escapeHtml(deepLink)}" class="btn btn-ghost" style="padding:4px 8px; font-size:12px; color:var(--primary); ${deepLink === '#' ? 'display:none;' : ''}">${t('audit_btn_go')}</a>
                         </td>
@@ -236,9 +236,9 @@
                 let errEl = document.querySelector('tbody') || document.querySelector('#overviewCards') || document.querySelector('#board') || document.querySelector('#articleList') || document.querySelector('.content-area');
                 if (errEl) {
                     if (errEl.tagName === 'TBODY') {
-                        errEl.innerHTML = '<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</td></tr>';
+                        errEl.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${t('common_err_load_data')}</td></tr>`;
                      } else {
-                        errEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</div>';
+                        errEl.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger);">${t('common_err_load_data')}</div>`;
                     }
                 }
  
@@ -247,122 +247,117 @@
             }
         }
 
+        // Stored field names (property names, and Turkish labels in older rows) to dictionary keys
+        const AUDIT_FIELD_KEYS = {
+            'New Record': 'audit_field_new_record',
+            'Record Status': 'audit_field_record_status',
+            'SLA Policy': 'audit_field_sla_policy',
+            'Renk Kodu': 'audit_field_color',
+            'CommentDeleted': 'audit_field_comment_deleted',
+            'StatusId': 'audit_field_status',
+            'ProjectId': 'audit_field_project',
+            'Atanan Kullanıcı': 'audit_field_assignee',
+            'Ek Dosya Eklendi': 'audit_field_attachment_added',
+            'IsActive': 'audit_field_active',
+            'AttachmentDeleted': 'audit_field_attachment_deleted',
+            'InternalNoteAdded': 'audit_field_note_added',
+            'Permissions': 'audit_field_permissions',
+            'UserMentioned': 'audit_field_user_mentioned',
+            'EstimatedEndDate': 'audit_field_end',
+            'FullName': 'audit_field_full_name',
+            'CommentRestored': 'audit_field_comment_restored',
+            'Departman/Grup Aktarımı': 'audit_field_transfer',
+            'Atanan Grup': 'audit_field_group',
+            'Kayıt Durumu': 'audit_field_record_status',
+            'CommentEdited': 'audit_field_comment_edited',
+            'Ticket': 'audit_field_new_ticket',
+            'Tahmini Başlangıç': 'audit_field_start',
+            'ProfilePhoto': 'audit_field_profile_photo',
+            'Title': 'audit_field_title',
+            'Roles': 'audit_field_roles',
+            'AssignedUserId': 'audit_field_assignee',
+            'Ek Dosya Silindi': 'audit_field_attachment_deleted',
+            'AssignedGroupId': 'audit_field_group',
+            'Password': 'audit_field_password',
+            'Tahmini Bitiş': 'audit_field_end',
+            'CategoryId': 'audit_field_category',
+            'RoleId': 'audit_field_role',
+            'Yorum Eklendi': 'audit_field_comment_added',
+            'Description': 'audit_field_description',
+            'AttachmentAdded': 'audit_field_attachment_added',
+            'Transfer': 'audit_field_transfer',
+            'EstimatedStartDate': 'audit_field_start',
+            'İç Not Eklendi': 'audit_field_note_added',
+            'PriorityId': 'audit_field_priority',
+            'ColorHex': 'audit_field_color',
+            'IsDeleted': 'audit_field_deleted',
+            'DepartmentId': 'audit_field_department',
+            'Yeni Kayıt': 'audit_field_new_record',
+            'Silinme Durumu': 'audit_field_deleted',
+            'Aktiflik Durumu': 'audit_field_active',
+            'SLA Politikası': 'audit_field_sla_policy',
+            'Email': 'audit_field_email',
+            'TypeId': 'audit_field_type',
+            'CommentAdded': 'audit_field_comment_added'
+        };
+        const AUDIT_ENTITY_KEYS = { 'Ticket': 'audit_entity_ticket', 'User': 'audit_entity_user', 'Role': 'audit_entity_role', 'Group': 'audit_entity_group', 'GroupMember': 'audit_entity_groupmember', 'Department': 'audit_entity_department', 'Category': 'audit_entity_category', 'Project': 'audit_entity_project', 'SlaPolicy': 'audit_entity_slapolicy', 'KnowledgeArticle': 'audit_entity_knowledgearticle', 'AssignmentRule': 'audit_entity_assignmentrule', 'Webhook': 'audit_entity_webhook', 'Permission': 'audit_entity_permission', 'Status': 'audit_entity_status', 'Priority': 'audit_entity_priority', 'TicketType': 'audit_entity_tickettype', 'Config': 'audit_entity_config' };
+        const AUDIT_ACTION_KEYS = { 'Created': 'audit_action_created', 'Updated': 'audit_action_updated', 'Deleted': 'audit_action_deleted', 'Restored': 'audit_action_restored', 'Moved': 'audit_action_moved', 'Assigned': 'audit_action_assigned', 'Unassigned': 'audit_action_unassigned', 'Transferred': 'audit_action_transferred', 'Escalated': 'audit_action_escalated', 'CreatedViaEmail': 'audit_action_createdviaemail', 'StatusChanged': 'audit_action_statuschanged', 'CommentAdded': 'audit_action_commentadded', 'CommentReplied': 'audit_action_commentreplied', 'InternalNoteAdded': 'audit_action_internalnoteadded', 'CommentEdited': 'audit_action_commentedited', 'CommentDeleted': 'audit_action_commentdeleted', 'CommentRestored': 'audit_action_commentrestored', 'AttachmentAdded': 'audit_action_attachmentadded', 'AttachmentDeleted': 'audit_action_attachmentdeleted', 'UserMentioned': 'audit_action_usermentioned', 'RoleAssigned': 'audit_action_roleassigned', 'RoleRevoked': 'audit_action_rolerevoked', 'PermissionAdded': 'audit_action_permissionadded', 'PermissionRemoved': 'audit_action_permissionremoved', 'PermissionOverrideSet': 'audit_action_permissionoverrideset', 'PermissionOverrideRemoved': 'audit_action_permissionoverrideremoved', 'PasswordReset': 'audit_action_passwordreset', 'ProfilePhotoUpdated': 'audit_action_profilephotoupdated', 'MemberAdded': 'audit_action_memberadded', 'MemberRemoved': 'audit_action_memberremoved' };
+        // Values the server stored in Turkish in older rows
+        const AUDIT_VALUE_KEYS = {
+            'Deleted (soft delete)': 'audit_value_soft_deleted', 'Permanently deleted': 'audit_value_hard_deleted', 'Active / restored': 'audit_value_restored',
+            'Silindi (Soft Deleted)': 'audit_value_soft_deleted', 'Kalıcı Silindi': 'audit_value_hard_deleted', 'Aktif / Geri Alındı': 'audit_value_restored'
+        };
+        const fill = (key, ...values) => values.reduce((s, value, i) => s.replaceAll(`{${i}}`, () => value ?? ''), t(key));
+
         function formatAuditFieldName(name) {
             if (!name || name === '-') return '-';
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
-            if (isEn) {
-                const enDict = {
-                    'Ticket': 'New Ticket',
-                    'Title': 'Title',
-                    'Description': 'Description',
-                    'StatusId': 'Status',
-                    'PriorityId': 'Priority',
-                    'CategoryId': 'Category',
-                    'ProjectId': 'Project',
-                    'TypeId': 'Ticket Type',
-                    'AssignedUserId': 'Assignee',
-                    'AssignedGroupId': 'Assigned Group',
-                    'Transfer': 'Department/Group Transfer',
-                    'CommentAdded': 'Comment Added',
-                    'InternalNoteAdded': 'Internal Note Added',
-                    'CommentEdited': 'Comment Edited',
-                    'CommentDeleted': 'Comment Deleted',
-                    'CommentRestored': 'Comment Restored',
-                    'AttachmentAdded': 'Attachment Added',
-                    'AttachmentDeleted': 'Attachment Deleted',
-                    'UserMentioned': 'User Mentioned',
-                    'IsDeleted': 'Deletion Status',
-                    'IsActive': 'Active Status',
-                    'Email': 'Email',
-                    'FullName': 'Full Name',
-                    'DepartmentId': 'Department',
-                    'RoleId': 'Role',
-                    'Roles': 'Roles',
-                    'Permissions': 'Permissions',
-                    'ColorHex': 'Color Code',
-                    'EstimatedStartDate': 'Estimated Start Date',
-                    'EstimatedEndDate': 'Estimated End Date',
-                    'Tahmini Başlangıç': 'Estimated Start Date',
-                    'Tahmini Bitiş': 'Estimated End Date',
-                    'Departman/Grup Aktarımı': 'Department/Group Transfer',
-                    'SLA Politikası': 'SLA Policy',
-                    'Yeni Kayıt': 'New Record',
-                    'Atanan Kullanıcı': 'Assignee',
-                    'Atanan Grup': 'Assigned Group',
-                    'Yorum Eklendi': 'Comment Added',
-                    'İç Not Eklendi': 'Internal Note Added',
-                    'Ek Dosya Eklendi': 'Attachment Added',
-                    'Ek Dosya Silindi': 'Attachment Deleted',
-                    'Silinme Durumu': 'Deletion Status',
-                    'Aktiflik Durumu': 'Active Status',
-                    'Renk Kodu': 'Color Code'
-                };
-                return enDict[name] || name;
-            }
-            const dict = {
-                'Ticket': 'Yeni Bilet',
-                'Title': 'Başlık',
-                'Description': 'Açıklama',
-                'StatusId': 'Durum',
-                'PriorityId': 'Öncelik',
-                'CategoryId': 'Kategori',
-                'ProjectId': 'Proje',
-                'TypeId': 'Bilet Tipi',
-                'AssignedUserId': 'Atanan Kullanıcı',
-                'AssignedGroupId': 'Atanan Grup',
-                'Transfer': 'Departman/Grup Aktarımı',
-                'CommentAdded': 'Yorum Eklendi',
-                'InternalNoteAdded': 'İç Not Eklendi',
-                'CommentEdited': 'Yorum Düzenlendi',
-                'CommentDeleted': 'Yorum Silindi',
-                'CommentRestored': 'Yorum Geri Alındı',
-                'AttachmentAdded': 'Ek Dosya Eklendi',
-                'AttachmentDeleted': 'Ek Dosya Silindi',
-                'UserMentioned': 'Kullanıcı Etiketlendi',
-                'IsDeleted': 'Silinme Durumu',
-                'IsActive': 'Aktiflik Durumu',
-                'Email': 'E-posta',
-                'FullName': 'Ad Soyad',
-                'DepartmentId': 'Departman',
-                'RoleId': 'Rol',
-                'Roles': 'Roller',
-                'Permissions': 'Yetkiler',
-                'ColorHex': 'Renk Kodu',
-                'EstimatedStartDate': 'Tahmini Başlangıç',
-                'EstimatedEndDate': 'Tahmini Bitiş'
-            };
-            return dict[name] || name;
+            const key = AUDIT_FIELD_KEYS[name];
+            return key ? t(key) : name;
+        }
+
+        function formatEntityType(type) {
+            const key = AUDIT_ENTITY_KEYS[type];
+            return key ? t(key) : type;
+        }
+
+        function formatAuditAction(action) {
+            const key = AUDIT_ACTION_KEYS[action];
+            return key ? t(key) : action;
+        }
+
+        function translateStoredValue(value) {
+            if (typeof value !== 'string') return value;
+            return Object.entries(AUDIT_VALUE_KEYS).reduce((s, [stored, key]) => s.replace(stored, () => t(key)), value);
         }
 
         function resolveAuditMappedValues(a, lookup, users) {
             let mappedOld = a.oldValue;
             let mappedNew = a.newValue;
             
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             if (a.fieldName === 'StatusId') {
                 const sName = lookup.statuses?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = sName ? (t('db_' + sName.toLowerCase().replaceAll(' ', '_')) || sName) : a.oldValue;
+                mappedOld = sName ? (t('db_' + sName.toLowerCase().replaceAll(' ', '_'), sName)) : a.oldValue;
                 const sNew = lookup.statuses?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = sNew ? (t('db_' + sNew.toLowerCase().replaceAll(' ', '_')) || sNew) : a.newValue;
+                mappedNew = sNew ? (t('db_' + sNew.toLowerCase().replaceAll(' ', '_'), sNew)) : a.newValue;
             } else if (a.fieldName === 'Status' && a.entityType === 'KnowledgeArticle') {
-                const sMap = { '0': t('kb_opt_draft') || 'Draft', '1': t('kb_opt_published') || 'Published', '2': t('kb_badge_pending') || 'Pending Review' };
+                const sMap = { '0': t('kb_opt_draft'), '1': t('kb_opt_published'), '2': t('kb_badge_pending') };
                 mappedOld = sMap[a.oldValue] || a.oldValue;
                 mappedNew = sMap[a.newValue] || a.newValue;
             } else if (a.fieldName === 'PriorityId') {
                 const pName = lookup.priorities?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = pName ? (t('db_' + pName.toLowerCase().replaceAll(' ', '_')) || pName) : a.oldValue;
+                mappedOld = pName ? (t('db_' + pName.toLowerCase().replaceAll(' ', '_'), pName)) : a.oldValue;
                 const pNew = lookup.priorities?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = pNew ? (t('db_' + pNew.toLowerCase().replaceAll(' ', '_')) || pNew) : a.newValue;
+                mappedNew = pNew ? (t('db_' + pNew.toLowerCase().replaceAll(' ', '_'), pNew)) : a.newValue;
             } else if (a.fieldName === 'CategoryId') {
                 const cName = lookup.categories?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = cName ? (t('db_' + cName.toLowerCase().replaceAll(' ', '_')) || cName) : a.oldValue;
+                mappedOld = cName ? (t('db_' + cName.toLowerCase().replaceAll(' ', '_'), cName)) : a.oldValue;
                 const cNew = lookup.categories?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = cNew ? (t('db_' + cNew.toLowerCase().replaceAll(' ', '_')) || cNew) : a.newValue;
+                mappedNew = cNew ? (t('db_' + cNew.toLowerCase().replaceAll(' ', '_'), cNew)) : a.newValue;
             } else if (a.fieldName === 'ProjectId') {
                 const prName = lookup.projects?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = prName ? (t('db_' + prName.toLowerCase().replaceAll(' ', '_')) || prName) : a.oldValue;
+                mappedOld = prName ? (t('db_' + prName.toLowerCase().replaceAll(' ', '_'), prName)) : a.oldValue;
                 const prNew = lookup.projects?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = prNew ? (t('db_' + prNew.toLowerCase().replaceAll(' ', '_')) || prNew) : a.newValue;
+                mappedNew = prNew ? (t('db_' + prNew.toLowerCase().replaceAll(' ', '_'), prNew)) : a.newValue;
             } else if (a.fieldName === 'AssignedUserId') {
                 mappedOld = users?.find(s => String(s.id) === a.oldValue)?.firstName ? (users.find(s => String(s.id) === a.oldValue).firstName + ' ' + users.find(s => String(s.id) === a.oldValue).lastName) : a.oldValue;
                 mappedNew = users?.find(s => String(s.id) === a.newValue)?.firstName ? (users.find(s => String(s.id) === a.newValue).firstName + ' ' + users.find(s => String(s.id) === a.newValue).lastName) : a.newValue;
@@ -378,28 +373,14 @@
                     const gId = mGrp && mGrp[1] ? mGrp[1] : null;
                     const prObj = pId && pId !== '-1' ? lookup.projects?.find(x => String(x.id) === pId) : null;
                     const grObj = gId && gId !== '-1' ? lookup.groups?.find(x => String(x.id) === gId) : null;
-                    const pName = prObj ? (t('db_' + prObj.name.toLowerCase().replaceAll(' ', '_')) || prObj.name) : (pId && pId !== '-1' ? `Project ${pId}` : (isEn ? 'No Project' : 'Proje Yok'));
-                    const gName = grObj ? grObj.name : (gId && gId !== '-1' ? `Group ${gId}` : (isEn ? 'No Group' : 'Grup Yok'));
+                    const pName = prObj ? (t('db_' + prObj.name.toLowerCase().replaceAll(' ', '_'), prObj.name)) : (pId && pId !== '-1' ? fill('audit_project_n', pId) : t('audit_no_project'));
+                    const gName = grObj ? grObj.name : (gId && gId !== '-1' ? fill('audit_group_n', gId) : t('audit_no_group'));
                     return `Proj:${pId || 'none'},Grp:${gId || 'none'} (${pName}, ${gName})`;
                 };
                 mappedOld = parseTransfer(a.oldValue);
                 mappedNew = parseTransfer(a.newValue);
             }
-            if (isEn) {
-                if (typeof mappedNew === 'string') {
-                    mappedNew = mappedNew
-                        .replace('Silindi (Soft Deleted)', 'Deleted (Soft Deleted)')
-                        .replace('Kalıcı Silindi', 'Permanently Deleted')
-                        .replace('Aktif / Geri Alındı', 'Active / Restored');
-                }
-                if (typeof mappedOld === 'string') {
-                    mappedOld = mappedOld
-                        .replace('Silindi (Soft Deleted)', 'Deleted (Soft Deleted)')
-                        .replace('Kalıcı Silindi', 'Permanently Deleted')
-                        .replace('Aktif / Geri Alındı', 'Active / Restored');
-                }
-            }
-            return { mappedOld, mappedNew };
+            return { mappedOld: translateStoredValue(mappedOld), mappedNew: translateStoredValue(mappedNew) };
         }
 
         function resolveAuditDeepLink(a, entityType, entityIdText) {
@@ -437,50 +418,25 @@
 
         function buildAuditDetailSentence(a, creatorName, entityNameText, entityType, mappedOld, mappedNew) {
             const act = (a.action || '').toUpperCase();
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
+            const entity = formatEntityType(entityType);
+            const has = (value) => value && value !== '-';
 
             if (act === 'DELETED') {
-                if (isEn) {
-                    const info = mappedOld && mappedOld !== '-' ? `Deleted Record Summary: ${mappedOld}` : 'Record deleted.';
-                    return `${creatorName} deleted ${entityType} '${entityNameText}'. ${info}`;
-                }
-                const info = mappedOld && mappedOld !== '-' ? `Silinen Kayıt Özeti: ${mappedOld}` : 'Kayıt silindi.';
-                return `${creatorName}, '${entityNameText}' adlı ${entityType} kaydını sildi. ${info}`;
+                return fill('audit_s_deleted', creatorName, entity, entityNameText, has(mappedOld) ? fill('audit_s_deleted_summary', mappedOld) : t('audit_s_record_deleted')).trim();
             }
             if (act === 'RESTORED') {
-                if (isEn) {
-                    const info = mappedNew && mappedNew !== '-' ? `Status: ${mappedNew}` : '';
-                    return `${creatorName} restored ${entityType} '${entityNameText}' (Undo / Restore). ${info}`;
-                }
-                const info = mappedNew && mappedNew !== '-' ? `Durum: ${mappedNew}` : '';
-                return `${creatorName}, '${entityNameText}' adlı ${entityType} kaydını geri aldı (Undo / Restore). ${info}`;
+                return fill('audit_s_restored', creatorName, entity, entityNameText, has(mappedNew) ? fill('audit_s_status', mappedNew) : '').trim();
             }
             if (act === 'CREATED') {
-                if (isEn) {
-                    const info = mappedNew && mappedNew !== '-' ? `Details: ${mappedNew}` : '';
-                    return `${creatorName} created a new ${entityType} ('${entityNameText}'). ${info}`.trim();
-                }
-                const info = mappedNew && mappedNew !== '-' ? `Detaylar: ${mappedNew}` : '';
-                return `${creatorName}, yeni bir ${entityType} kaydı oluşturdu ('${entityNameText}'). ${info}`.trim();
+                return fill('audit_s_created', creatorName, entity, entityNameText, has(mappedNew) ? fill('audit_s_details', mappedNew) : '').trim();
             }
             if (act === 'COMMENTADDED' || act === 'INTERNALNOTEADDED') {
-                if (isEn) {
-                    return `${creatorName} added a new ${act === 'INTERNALNOTEADDED' ? 'internal note' : 'comment'} to ticket '${entityNameText}'.`;
-                }
-                return `${creatorName}, '${entityNameText}' biletine yeni bir ${act === 'INTERNALNOTEADDED' ? 'iç not' : 'yorum'} ekledi.`;
+                return fill(act === 'INTERNALNOTEADDED' ? 'audit_s_note' : 'audit_s_comment', creatorName, entityNameText);
             }
-            const fieldPretty = formatAuditFieldName(a.fieldName);
-            if (isEn) {
-                if (entityType.toLowerCase() === 'group' && a.action === 'Moved') {
-                    return `${creatorName} moved group '${entityNameText}' from '${mappedOld}' to '${mappedNew}'.`;
-                }
-                return `${creatorName} updated field '${fieldPretty || '-'}' of ${entityType} '${entityNameText}' from '${mappedOld || '-'}' to '${mappedNew || '-'}'. Action: ${a.action}`;
-            }
-            let sentence = `${creatorName}, '${entityNameText}' adlı ${entityType} kaydının '${fieldPretty || '-'}' alanını '${mappedOld || '-'}' değerinden '${mappedNew || '-'}' değerine güncelledi. İşlem: ${a.action}`;
             if (entityType.toLowerCase() === 'group' && a.action === 'Moved') {
-                sentence = `${creatorName}, '${entityNameText}' grubunu '${mappedOld}' -> '${mappedNew}' taşıdı.`;
+                return fill('audit_s_moved', creatorName, entityNameText, mappedOld, mappedNew);
             }
-            return sentence;
+            return fill('audit_s_updated', creatorName, formatAuditFieldName(a.fieldName) || '-', entity, entityNameText, mappedOld || '-', mappedNew || '-', formatAuditAction(a.action));
         }
 
         function escapeHtml(unsafe) {
@@ -508,10 +464,10 @@
 
         window.exportAuditCsv = function() {
             if (!currentAuditItems || currentAuditItems.length === 0) {
-                showToast('Dışa aktarılacak denetim kaydı bulunamadı.', 'warning');
+                showToast(t('audit_export_empty'), 'warning');
                 return;
             }
-            const headers = ['Zaman Damgası', 'Varlık Tipi', 'Varlık / Bilet', 'Kullanıcı', 'İşlem', 'Değişen Alan', 'Eski Değer', 'Yeni Değer'];
+            const headers = ['audit_col_time', 'audit_col_entity_type', 'audit_col_entity', 'audit_col_user', 'audit_col_action', 'audit_col_field', 'audit_col_old', 'audit_col_new'].map(key => t(key));
             const rows = currentAuditItems.map(a => {
                 const { mappedOld, mappedNew } = resolveAuditMappedValues(a, currentLookup, currentUsers);
                 const entityType = a.entityType || (a.ticketId ? 'Ticket' : 'Config');
@@ -520,11 +476,11 @@
                 const creatorName = creatorUser ? `@${creatorUser.username}` : (a.createdBy || '-');
 
                 return [
-                    new Date(a.createdAt).toLocaleString(),
-                    entityType,
+                    new Date(a.createdAt).toLocaleString(getLocale()),
+                    formatEntityType(entityType),
                     entityNameText,
                     creatorName,
-                    a.action || '',
+                    formatAuditAction(a.action || ''),
                     formatAuditFieldName(a.fieldName || ''),
                     mappedOld || '',
                     mappedNew || ''
@@ -542,7 +498,7 @@
             downloadAnchor.click();
             document.body.removeChild(downloadAnchor);
             URL.revokeObjectURL(url);
-            showToast('Audit log başarıyla CSV olarak indirildi!', 'success');
+            showToast(t('audit_export_done'), 'success');
         };
 
         document.getElementById('btnResetAudit')?.addEventListener('click', window.resetAuditFilters);
@@ -554,7 +510,7 @@
             btn.innerHTML = t('audit_filter_loading');
             await loadAuditLogs();
             btn.style.opacity = '1';
-            btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-right: 4px; vertical-align: middle;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <span data-i18n="audit_filter_btn">${t('audit_filter_btn')}</span>`;
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-inline-end: 4px; vertical-align: middle;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <span data-i18n="audit_filter_btn">${t('audit_filter_btn')}</span>`;
         });
 
         // Add enter key support for inputs
