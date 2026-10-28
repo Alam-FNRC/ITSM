@@ -101,7 +101,7 @@
 
                 <div class="filter-bar" style="margin-top: 12px; margin-bottom: 24px;">
                     <fieldset class="btn-group" id="statusFilterGroup" style="border:none; padding:0; margin:0;">
-                        <legend style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;">Ticket Status Filter</legend>
+                        <legend style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;" data-i18n="tickets_status_filter">Ticket Status Filter</legend>
                         <button type="button" class="btn btn-secondary active" id="filterActive" aria-pressed="true" data-i18n="t_filter_active">Aktif</button>
                         <button type="button" class="btn btn-secondary" id="filterClosed" aria-pressed="false" data-i18n="t_filter_closed">Closed</button>
                         <button type="button" class="btn btn-secondary" id="filterAll" aria-pressed="false" data-i18n="t_filter_all">All</button>
@@ -112,7 +112,7 @@
                         <span data-i18n="recent_tickets_title">Recently Viewed:</span>
                     </span>
                     <div id="recentTicketsList" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"></div>
-                    <button type="button" class="btn btn-ghost btn-sm" id="btnClearRecentTickets" onclick="window.clearRecentTickets()" style="margin-inline-start: auto; font-size: 11px; padding: 2px 6px; color: var(--text-muted);" title="Geçmişi Temizle" data-i18n="recent_tickets_clear">Temizle</button>
+                    <button type="button" class="btn btn-ghost btn-sm" id="btnClearRecentTickets" onclick="window.clearRecentTickets()" style="margin-inline-start: auto; font-size: 11px; padding: 2px 6px; color: var(--text-muted);" data-i18n="recent_tickets_clear">Clear</button>
                 </div>
 
                 <div class="table-container" style="overflow-x: auto;">
@@ -192,7 +192,7 @@
                             details.push({ type: 'user', id: mu.id, name: muName, email: mu.email, initial: muName.charAt(0).toUpperCase(), isSubItem: true, parentGroupId: a.groupId });
                         });
                     } else {
-                        details.push({ type: 'empty', id: 0, name: 'Ekipte kullanıcı yok', initial: '-', isSubItem: true, parentGroupId: a.groupId });
+                        details.push({ type: 'empty', id: 0, name: t('ui_group_no_users'), initial: '-', isSubItem: true, parentGroupId: a.groupId });
                     }
                 }
             });
@@ -323,7 +323,7 @@
                         </td>
                         <td>${getStatusBadge(statusName)}</td>
                         <td>${getPriorityBadge(prioName)}</td>
-                        <td><button type="button" style="cursor:pointer; border:none; background:none; padding:0; text-align:start; font:inherit; color:inherit; max-width:100%; display:flex; align-items:center; gap:var(--spacing-sm);" title="Tüm atananları gör" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees)">${getAvatar(assigneeInitialId, assigneeName)} <span style="pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(assigneeName)}</span></button></td>
+                        <td><button type="button" style="cursor:pointer; border:none; background:none; padding:0; text-align:start; font:inherit; color:inherit; max-width:100%; display:flex; align-items:center; gap:var(--spacing-sm);" title="${escapeHtml(t('kanban_view_assignees'))}" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees)">${getAvatar(assigneeInitialId, assigneeName)} <span style="pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(assigneeName)}</span></button></td>
                         <td>${renderSlaCell(ticketItem.sla, isClosed)}</td>
                         <td style="text-align: end; white-space: nowrap;">
                             <div class="row-actions">
@@ -457,7 +457,7 @@
                 a.click();
             } catch (e) {
                 console.error(e);
-                showToast('Export failed', 'error');
+                showToast(t('tickets_export_failed'), 'error');
             }
         }
 
@@ -522,10 +522,10 @@
 
         window.deleteTicket = async function(id, ticketNumber) {
             const confirmed = await showConfirmModal(
-                'Bileti Sil',
-                `${ticketNumber} numaralı bileti silmek istediğinize emin misiniz?\n(Bu işlem sistem denetim kaydına/loguna yazılacaktır)`,
-                'Sil',
-                'İptal'
+                t('tickets_delete_title'),
+                t('tickets_delete_confirm').replaceAll('{0}', ticketNumber),
+                t('btn_delete'),
+                t('btn_cancel')
             );
             if (!confirmed) return;
 
@@ -534,20 +534,20 @@
                 await search();
 
                 // Undo Pattern (Geri Al Bildirimi)
-                showUndoToast(`${ticketNumber} numaralı bilet silindi.`, async () => {
+                showUndoToast(t('tickets_deleted').replaceAll('{0}', ticketNumber), async () => {
                     try {
                         await window.api.request(`/Ticket/${id}/restore`, { method: 'POST' });
-                        showToast(`${ticketNumber} başarıyla geri yüklendi!`, 'success');
+                        showToast(t('tickets_restored').replaceAll('{0}', ticketNumber), 'success');
                         await search();
                     } catch (restoreErr) {
-                        console.error('Geri yükleme hatası', restoreErr);
-                        showToast('Bilet geri yüklenirken bir hata oluştu.', 'error');
+                        console.error('Ticket restore failed', restoreErr);
+                        showToast(t('tickets_restore_failed'), 'error');
                     }
-                }, 7000, 'Geri Al');
+                }, 7000, t('common_undo'));
 
             } catch (e) {
-                console.error('Bilet silme hatası', e);
-                showToast('Bilet silinirken bir hata oluştu.', 'error');
+                console.error('Ticket delete failed', e);
+                showToast(t('tickets_delete_failed'), 'error');
             }
         };
 
@@ -581,7 +581,7 @@
                             <span style="color: var(--primary); font-weight: 600;">${escapeHtml(item.ticketNumber || '')}</span>
                             <span dir="auto" style="max-width: 140px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;">${escapeHtml(item.title || '')}</span>
                         </a>
-                        <button type="button" style="border: none; background: none; color: var(--text-muted); cursor: pointer; padding: 0 2px; font-size: 12px; line-height: 1;" title="Kaldır" onclick="window.removeRecentTicket(${item.id})">&times;</button>
+                        <button type="button" style="border: none; background: none; color: var(--text-muted); cursor: pointer; padding: 0 2px; font-size: 12px; line-height: 1;" title="${t('tickets_recent_remove')}" onclick="window.removeRecentTicket(${item.id})">&times;</button>
                     `;
                     list.appendChild(chip);
                 });
@@ -607,7 +607,7 @@
         window.clearRecentTickets = function() {
             localStorage.removeItem('itsm_recent_tickets');
             renderRecentTickets();
-            showToast('Son görüntülenen biletler temizlendi', 'info');
+            showToast(t('tickets_recent_cleared'), 'info');
         };
 
         window.clearTicketFilters = function() {

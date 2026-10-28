@@ -885,7 +885,17 @@ export const translations = {
         "common_deleted": "Deleted.",
         "common_delete_failed": "Could not delete.",
         "users_saved": "User saved.",
-        "users_save_failed": "Could not save the user."
+        "users_save_failed": "Could not save the user.",
+        "tickets_status_filter": "Ticket status filter",
+        "tickets_export_failed": "Export failed.",
+        "tickets_delete_title": "Delete Ticket",
+        "tickets_delete_confirm": "Are you sure you want to delete ticket {0}?\n(This is recorded in the audit log.)",
+        "tickets_deleted": "Ticket {0} deleted.",
+        "tickets_restored": "Ticket {0} restored.",
+        "tickets_restore_failed": "Could not restore the ticket.",
+        "tickets_delete_failed": "Could not delete the ticket.",
+        "tickets_recent_remove": "Remove",
+        "tickets_recent_cleared": "Recently viewed tickets cleared."
     },
     "tr": {
         // Sidebar Navigation
@@ -1772,7 +1782,17 @@ export const translations = {
         "common_deleted": "Silme işlemi tamamlandı.",
         "common_delete_failed": "Silme işlemi başarısız.",
         "users_saved": "Kullanıcı kaydedildi.",
-        "users_save_failed": "Kullanıcı kaydedilemedi."
+        "users_save_failed": "Kullanıcı kaydedilemedi.",
+        "tickets_status_filter": "Bilet durumu filtresi",
+        "tickets_export_failed": "Dışa aktarma başarısız.",
+        "tickets_delete_title": "Bileti Sil",
+        "tickets_delete_confirm": "{0} numaralı bileti silmek istediğinize emin misiniz?\n(Bu işlem sistem denetim kaydına yazılacaktır.)",
+        "tickets_deleted": "{0} numaralı bilet silindi.",
+        "tickets_restored": "{0} başarıyla geri yüklendi!",
+        "tickets_restore_failed": "Bilet geri yüklenirken bir hata oluştu.",
+        "tickets_delete_failed": "Bilet silinirken bir hata oluştu.",
+        "tickets_recent_remove": "Kaldır",
+        "tickets_recent_cleared": "Son görüntülenen biletler temizlendi."
     },
     "ar": ar
 };

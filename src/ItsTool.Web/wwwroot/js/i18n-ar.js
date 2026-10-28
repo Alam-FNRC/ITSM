@@ -841,5 +841,15 @@ export const ar = {
     "common_deleted": "تم الحذف.",
     "common_delete_failed": "تعذر الحذف.",
     "users_saved": "تم حفظ المستخدم.",
-    "users_save_failed": "تعذر حفظ المستخدم."
+    "users_save_failed": "تعذر حفظ المستخدم.",
+    "tickets_status_filter": "تصفية حالة التذاكر",
+    "tickets_export_failed": "تعذر التصدير.",
+    "tickets_delete_title": "حذف التذكرة",
+    "tickets_delete_confirm": "هل أنت متأكد من حذف التذكرة {0}؟\n(يُسجَّل هذا الإجراء في سجل التدقيق.)",
+    "tickets_deleted": "تم حذف التذكرة {0}.",
+    "tickets_restored": "تمت استعادة التذكرة {0}.",
+    "tickets_restore_failed": "تعذر استعادة التذكرة.",
+    "tickets_delete_failed": "تعذر حذف التذكرة.",
+    "tickets_recent_remove": "إزالة",
+    "tickets_recent_cleared": "تم مسح التذاكر التي شوهدت مؤخراً."
 };
