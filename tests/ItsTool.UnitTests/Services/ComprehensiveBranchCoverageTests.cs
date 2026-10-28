@@ -690,10 +690,10 @@ public class ComprehensiveBranchCoverageTests : TestBase
     [Fact]
     public void EmailTemplateService_FileExists_And_Fallback_Branches()
     {
-        var service = new EmailTemplateService(NullLogger<EmailTemplateService>.Instance);
-
-        var templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Email");
+        // A folder of its own: other tests read the shipped templates at the same time
+        var templateDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(templateDir);
+        var service = new EmailTemplateService(NullLogger<EmailTemplateService>.Instance, templateDir);
         var slaPath = Path.Combine(templateDir, "SlaEmailTemplate.html");
         var basePath = Path.Combine(templateDir, "BaseTemplate.html");
 
@@ -718,8 +718,7 @@ public class ComprehensiveBranchCoverageTests : TestBase
         }
         finally
         {
-            if (File.Exists(slaPath)) File.Delete(slaPath);
-            if (File.Exists(basePath)) File.Delete(basePath);
+            Directory.Delete(templateDir, true);
         }
     }
 

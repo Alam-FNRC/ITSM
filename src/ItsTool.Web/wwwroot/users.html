@@ -24,15 +24,6 @@
 </head>
 <body>
 
-    <script>
-        window.addEventListener('error', function(e) {
-            document.body.innerHTML = '<div style="color:red;font-size:20px;padding:20px;background:white;">ERROR: ' + e.message + '</div>';
-        });
-        window.addEventListener('unhandledrejection', function(e) {
-            document.body.innerHTML = '<div style="color:red;font-size:20px;padding:20px;background:white;">PROMISE ERROR: ' + e.reason + '</div>';
-        });
-    </script>
-
     <div class="app-shell" data-shell>
         <main class="main-content">
             <header class="topbar">
@@ -312,7 +303,7 @@
                 const badge = item.isActive ? `<span class="badge badge-success" style="cursor:pointer;" data-action="toggleUserStatus" data-id="${item.id}" data-flag="false">${t('users_status_active') || 'Active'}</span>` : `<span class="badge badge-default" style="cursor:pointer;" data-action="toggleUserStatus" data-id="${item.id}" data-flag="true">${t('users_status_inactive') || 'Inactive'}</span>`;
                 tr.innerHTML = `
                     <td style="font-weight: 500;">
-                        ${item.profilePhoto ? `<img src="${item.profilePhoto}" class="mini-avatar" alt="Avatar">` : `<div class="mini-avatar">${item.firstName.charAt(0).toUpperCase()}</div>`}
+                        ${item.profilePhoto ? `<img src="${escapeHtml(item.profilePhoto)}" class="mini-avatar" alt="Avatar">` : `<div class="mini-avatar">${escapeHtml(item.firstName.charAt(0).toUpperCase())}</div>`}
                         ${escapeHtml(item.firstName)} ${escapeHtml(item.lastName)}
                     </td>
                     <td>${escapeHtml(item.username)}</td>
@@ -444,7 +435,7 @@
                     }
                     document.getElementById('uProfilePhotoBase64').value = item.profilePhoto || '';
                     if (item.profilePhoto) {
-                        document.getElementById('uAvatarPreview').innerHTML = `<img src="${item.profilePhoto}">`;
+                        document.getElementById('uAvatarPreview').innerHTML = `<img src="${escapeHtml(item.profilePhoto)}">`;
                     } else {
                         document.getElementById('uAvatarPreview').innerHTML = `<svg viewBox="0 0 24 24" width="32" height="32" style="fill: currentColor;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
                     }

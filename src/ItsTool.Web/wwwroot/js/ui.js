@@ -9,9 +9,9 @@ import { setLanguage, t, getCurrentLanguage, getLocale, LANGUAGES } from './i18n
 export const escapeHtml = (unsafe) => (unsafe || '').toString().replaceAll('&', "&amp;").replaceAll('<', "&lt;").replaceAll('>', "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 
 export const getAvatar = (id, fallback, profilePhoto, size = 32) => {
-    if (profilePhoto) return `<img src="${profilePhoto}" class="avatar" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;" title="${fallback || ''}">`;
+    if (profilePhoto) return `<img src="${escapeHtml(profilePhoto)}" class="avatar" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;" title="${escapeHtml(fallback)}">`;
     if (!id || id === '-') return `<div class="avatar" style="background: var(--bg-hover); color: var(--text-muted); border: 1px dashed var(--border); width:${size}px;height:${size}px;font-size:${size*0.4}px;">?</div>`;
-    return `<div class="avatar" title="${fallback || ''}" style="width:${size}px;height:${size}px;font-size:${size*0.4}px;">${String(fallback || id).charAt(0).toUpperCase()}</div>`;
+    return `<div class="avatar" title="${escapeHtml(fallback)}" style="width:${size}px;height:${size}px;font-size:${size*0.4}px;">${escapeHtml(String(fallback || id).charAt(0).toUpperCase())}</div>`;
 };
 
 // ui.js - Reusable UI components
@@ -42,9 +42,11 @@ export function showToast(message, type = 'success') {
     toast.innerHTML = `
         <div class="d-flex align-items-center gap-sm">
             ${icon}
-            <span style="font-weight: 500;">${message}</span>
+            <span class="toast-message" style="font-weight: 500;"></span>
         </div>
     `;
+    // Text, not HTML: messages often come from the API and can quote what a user typed
+    toast.querySelector('.toast-message').textContent = message;
     
     container.appendChild(toast);
     
@@ -75,11 +77,13 @@ export function showUndoToast(message, undoFn, ms = 6000, undoText = 'Geri Al') 
         
         toast.innerHTML = `
             <div class="d-flex align-items-center gap-sm" style="flex: 1; justify-content: space-between;">
-                <span style="font-weight: 500;">${message}</span>
-                <button type="button" class="btn btn-secondary btn-undo" style="padding: 4px 10px; font-size: 12px; margin-left: 12px; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: 600;">${undoText}</button>
+                <span class="toast-message" style="font-weight: 500;"></span>
+                <button type="button" class="btn btn-secondary btn-undo" style="padding: 4px 10px; font-size: 12px; margin-left: 12px; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: 600;"></button>
             </div>
             <div class="undo-progress" style="animation-duration: ${ms}ms;"></div>
         `;
+        toast.querySelector('.toast-message').textContent = message;
+        toast.querySelector('.btn-undo').textContent = undoText;
         
         container.appendChild(toast);
         
@@ -588,8 +592,8 @@ export function bindShellActions() {
                     try {
                         const me = await window.api.getMe();
                         
-                        let rolesHtml = (me.roles || []).map(r => `<span class="badge badge-primary">${r}</span>`).join(' ');
-                        let groupsHtml = (me.groups || []).map(g => `<span class="badge badge-default">${g}</span>`).join(' ');
+                        let rolesHtml = (me.roles || []).map(r => `<span class="badge badge-primary">${escapeHtml(r)}</span>`).join(' ');
+                        let groupsHtml = (me.groups || []).map(g => `<span class="badge badge-default">${escapeHtml(g)}</span>`).join(' ');
                         
                         let perms = me.permissions || [];
                         perms.sort();
@@ -604,11 +608,11 @@ export function bindShellActions() {
                         let permsHtml = perms.map(p => {
                             const isOverride = overrides.includes(p);
                             const def = allPermsDef.find(x => x.key === p);
-                            const desc = def?.description ? escapeHtml(def.description) : 'Açıklama bulunmuyor.';
+                            const desc = def?.description || 'Açıklama bulunmuyor.';
                             return `<div style="font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                                 <div style="display: flex; align-items: center; gap: 4px;">
-                                    <span>${p}</span>
-                                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer; color: var(--primary); display: inline-flex;" onclick="window.showInfoModal('${p}', '${desc.replaceAll(`'`, String.raw`\'`).replaceAll(`"`, `&quot;`)}')">
+                                    <span>${escapeHtml(p)}</span>
+                                    <button type="button" class="permission-info-btn" data-key="${escapeHtml(p)}" data-description="${escapeHtml(desc)}" style="border: none; background: none; padding: 0; cursor: pointer; color: var(--primary); display: inline-flex;">
                                         <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                                     </button>
                                 </div>
@@ -618,9 +622,9 @@ export function bindShellActions() {
                         
                         panel.innerHTML = `
                             <div style="text-align:center; margin-bottom: 16px;">
-                                <div class="avatar" style="width:48px; height:48px; font-size:20px; margin: 0 auto 8px;">${me.username.charAt(0).toUpperCase()}</div>
-                                <div style="font-weight: 600;">${me.username}</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">${me.email || ''}</div>
+                                <div class="avatar" style="width:48px; height:48px; font-size:20px; margin: 0 auto 8px;">${escapeHtml(me.username.charAt(0).toUpperCase())}</div>
+                                <div style="font-weight: 600;">${escapeHtml(me.username)}</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">${escapeHtml(me.email)}</div>
                             </div>
                             <div style="margin-bottom: 12px;">
                                 <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">${t('users_lbl_roles') || 'Roles'}</div>
@@ -650,6 +654,9 @@ export function bindShellActions() {
                                 </button>
                             </div>
                         `;
+                        panel.querySelectorAll('.permission-info-btn').forEach(btn => {
+                            btn.addEventListener('click', () => showInfoModal(btn.dataset.key, btn.dataset.description));
+                        });
                         loaded = true;
                         document.getElementById('profileShortcutsBtn')?.addEventListener('click', () => {
                             panel.style.display = 'none';

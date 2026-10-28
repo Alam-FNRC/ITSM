@@ -1,5 +1,7 @@
 
 
+import { escapeHtml } from './ui.js';
+
 export function initMentions(textareaId, ticketId = null) {
     const textarea = document.getElementById(textareaId);
     if (!textarea || textarea.dataset.mentionsInitialized === 'true') return;
@@ -63,10 +65,10 @@ export function initMentions(textareaId, ticketId = null) {
             a.href = '#';
             const fullName = u.firstName + ' ' + u.lastName;
             a.innerHTML = `<div style="display:flex; align-items:center; gap:8px;">
-                <div class="avatar" style="width:24px; height:24px; font-size:10px;">${fullName.charAt(0).toUpperCase()}</div>
+                <div class="avatar" style="width:24px; height:24px; font-size:10px;">${escapeHtml(fullName.charAt(0).toUpperCase())}</div>
                 <div>
-                    <div style="font-size:13px; font-weight:500;">${fullName}</div>
-                    <div style="font-size:11px; color:var(--text-muted);">${u.email}</div>
+                    <div style="font-size:13px; font-weight:500;">${escapeHtml(fullName)}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">${escapeHtml(u.email)}</div>
                 </div>
             </div>`;
             a.dataset.userId = u.id;

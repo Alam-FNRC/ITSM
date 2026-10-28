@@ -12,10 +12,10 @@ public record UpdateTicketTypeDto(string Name, bool IsActive);
 
 // Status
 public record StatusDto(int Id, string Name, string? ColorHex, int SortOrder, bool IsClosedStatus, bool IsSystemDefault, bool IsActive);
-public record CreateStatusDto(string Name, string? ColorHex, int SortOrder, bool IsClosedStatus, bool IsSystemDefault);
-public record UpdateStatusDto(string Name, string? ColorHex, int SortOrder, bool IsClosedStatus, bool IsSystemDefault, bool IsActive);
+public record CreateStatusDto(string Name, [ColorHex] string? ColorHex, int SortOrder, bool IsClosedStatus, bool IsSystemDefault);
+public record UpdateStatusDto(string Name, [ColorHex] string? ColorHex, int SortOrder, bool IsClosedStatus, bool IsSystemDefault, bool IsActive);
 
 // Priority
 public record PriorityDto(int Id, string Name, string? ColorHex, int Weight, int SeverityLevel, bool IsActive);
-public record CreatePriorityDto(string Name, string? ColorHex, int Weight, int SeverityLevel);
-public record UpdatePriorityDto(string Name, string? ColorHex, int Weight, int SeverityLevel, bool IsActive);
+public record CreatePriorityDto(string Name, [ColorHex] string? ColorHex, int Weight, int SeverityLevel);
+public record UpdatePriorityDto(string Name, [ColorHex] string? ColorHex, int Weight, int SeverityLevel, bool IsActive);

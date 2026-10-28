@@ -110,7 +110,7 @@
     <script type="module">
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
-        import { bindShellActions, showToast, openTicketPreview, openModal, closeModal } from './js/ui.js?v=999';
+        import { bindShellActions, showToast, openTicketPreview, openModal, closeModal, escapeHtml } from './js/ui.js?v=999';
         import { t } from './js/i18n.js';
         injectShell();
         
@@ -196,15 +196,15 @@
                 : workload.map(w => `
                     <div style="margin-bottom: 24px;">
                         <h4 style="margin: 0 0 12px 0; font-size: 14px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between;">
-                            ${w.departmentName} 
+                            ${escapeHtml(w.departmentName)} 
                             <span class="badge badge-warning" style="font-size: 11px;">${t('dash_total')}: ${w.openTicketCount}</span>
                         </h4>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             ${w.agents.map(a => `
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--bg-body); border-radius: var(--radius-sm);">
                                     <div style="display: flex; align-items: center; gap: 8px;">
-                                        <div class="avatar" style="width: 24px; height: 24px; font-size: 11px;">${a.agentName.charAt(0)}</div>
-                                        <span style="font-size: 13px; font-weight: 500;">${a.agentName}</span>
+                                        <div class="avatar" style="width: 24px; height: 24px; font-size: 11px;">${escapeHtml(a.agentName.charAt(0))}</div>
+                                        <span style="font-size: 13px; font-weight: 500;">${escapeHtml(a.agentName)}</span>
                                     </div>
                                     <span style="font-size: 13px; font-weight: 600; color: var(--danger);">${a.openTicketCount} ${t('dash_status_open')}</span>
                                 </div>
@@ -239,9 +239,9 @@
             return workload.map(w => `
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 12px; font-size: 14px;">
-                        <div class="avatar" style="width:32px; height:32px; font-size:14px; border-radius: 8px;">${w.departmentName ? w.departmentName.charAt(0).toUpperCase() : 'D'}</div>
+                        <div class="avatar" style="width:32px; height:32px; font-size:14px; border-radius: 8px;">${w.departmentName ? escapeHtml(w.departmentName.charAt(0).toUpperCase()) : 'D'}</div>
                         <div style="flex:1;">
-                            <div style="font-weight: 500;">${w.departmentName || 'Dept ' + w.departmentId}</div>
+                            <div style="font-weight: 500;">${escapeHtml(w.departmentName || 'Dept ' + w.departmentId)}</div>
                             <div style="width: 100%; height: 4px; background: var(--border); border-radius: 2px; margin-top: 4px; overflow: hidden;">
                                 <div style="height: 100%; background: var(--primary); width: ${Math.min(w.openTicketCount * 10, 100)}%;"></div>
                             </div>
@@ -252,7 +252,7 @@
                         <div style="padding-left: 44px; display: flex; flex-direction: column; gap: 4px;">
                             ${w.members.map(m => `
                                 <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);">
-                                    <span>${m.userName}</span>
+                                    <span>${escapeHtml(m.userName)}</span>
                                     <span>${m.openTicketCount}</span>
                                 </div>
                             `).join('')}
@@ -283,9 +283,9 @@
             return allAgents.map(m => `
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 12px; font-size: 14px;">
-                        <div class="avatar" style="width:32px; height:32px; font-size:14px; border-radius: 8px;">${m.userName ? m.userName.charAt(0).toUpperCase() : 'U'}</div>
+                        <div class="avatar" style="width:32px; height:32px; font-size:14px; border-radius: 8px;">${m.userName ? escapeHtml(m.userName.charAt(0).toUpperCase()) : 'U'}</div>
                         <div style="flex:1;">
-                            <div style="font-weight: 500;">${m.userName}</div>
+                            <div style="font-weight: 500;">${escapeHtml(m.userName)}</div>
                             <div style="width: 100%; height: 4px; background: var(--border); border-radius: 2px; margin-top: 4px; overflow: hidden;">
                                 <div style="height: 100%; background: var(--info); width: ${Math.min(m.openTicketCount * 10, 100)}%;"></div>
                             </div>
@@ -301,14 +301,14 @@
             const getStatusBadge = (status) => {
                 const map = { 'Open': 'info', 'In Progress': 'warning', 'Pending': 'warning', 'Resolved': 'success', 'Closed': 'default', 'Açık': 'info', 'Devam Ediyor': 'warning', 'Beklemede': 'warning', 'Çözüldü': 'success', 'Kapatıldı': 'default' };
                 let translationKey = 'db_' + status.toLowerCase().replaceAll(' ', '_');
-                return `<span class="badge badge-${map[status] || 'default'}" style="font-size: 11px;">${t(translationKey)}</span>`;
+                return `<span class="badge badge-${map[status] || 'default'}" style="font-size: 11px;">${escapeHtml(t(translationKey, status))}</span>`;
             };
             
             if (recentTickets.length === 0) return `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_data')}</div>`;
             return recentTickets.map(tData => `
                 <button type="button" style="width: 100%; border: none; text-align: left; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-hover); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg-hover)'">
-                    <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${tData.ticketNumber}</div>
-                    <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${tData.title}</div>
+                    <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${escapeHtml(tData.ticketNumber)}</div>
+                    <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
                     ${getStatusBadge(getStatusName(tData.statusId))}
                 </button>
             `).join('');
@@ -418,8 +418,8 @@
 
             document.getElementById('drillDownList').innerHTML = items.map(tData => `
                 <button type="button" style="width: 100%; border: 1px solid var(--border); text-align: left; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-surface); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-surface)'">
-                    <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${tData.ticketNumber}</div>
-                    <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${tData.title}</div>
+                    <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${escapeHtml(tData.ticketNumber)}</div>
+                    <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
                     ${getStatusBadge(getStatusName(tData.statusId))}
                     ${getPriorityBadge(getPriorityName(tData.priorityId))}
                 </button>
@@ -438,7 +438,7 @@
                             <strong style="color:var(--primary);">Rating: ${s.rating}/5</strong>
                             <span style="font-size: 12px; color: var(--text-muted);">${new Date(s.createdAt).toLocaleString()}</span>
                         </div>
-                        <div style="font-size: 14px; color: var(--text-main); font-style: italic;">"${s.comment || 'No comment'}"</div>
+                        <div style="font-size: 14px; color: var(--text-main); font-style: italic;">"${escapeHtml(s.comment || 'No comment')}"</div>
                     </div>
                 `).join('');
             }

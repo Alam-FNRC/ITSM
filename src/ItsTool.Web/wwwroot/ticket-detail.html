@@ -868,14 +868,15 @@
         }
 
         const getAvatar = (id, fallback, profilePhoto, size = 32) => {
-            if (profilePhoto) return `<img src="${profilePhoto}" class="avatar" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;" title="${fallback}">`;
+            if (profilePhoto) return `<img src="${escapeHtml(profilePhoto)}" class="avatar" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;" title="${escapeHtml(fallback)}">`;
             if (!id || id === '-') return `<div class="avatar" style="width:${size}px;height:${size}px;background: var(--bg-hover); color: var(--text-muted); border: 1px dashed var(--border); display:flex;align-items:center;justify-content:center;border-radius:50%;">?</div>`;
             const initial = String(fallback || id).charAt(0).toUpperCase();
-            return `<div class="avatar" style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;border-radius:50%;" title="${fallback}">${initial}</div>`;
+            return `<div class="avatar" style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;border-radius:50%;" title="${escapeHtml(fallback)}">${escapeHtml(initial)}</div>`;
         };
 
         const urlParams = new URLSearchParams(window.location.search);
-        const ticketId = urlParams.get('id');
+        // Only a number: the id goes into links and markup on this page
+        const ticketId = /^\d+$/.test(urlParams.get('id') ?? '') ? urlParams.get('id') : null;
 
         const TICKET_PALETTE = [
             '#2563eb', '#059669', '#d97706', '#7c3aed',
@@ -1034,8 +1035,8 @@
             const autoColorLabel = t('ticket_color_auto') || '(Automatic)';
             document.getElementById('tColorHex').innerHTML = `
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <input type="color" id="instantColorPicker" value="${activeColor}" title="${t('ticket_color_edit_title') || 'Click to edit color'}" style="width:24px; height:24px; padding:0; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:transparent;">
-                    <span id="tColorLabel" style="font-size:13px; font-weight:500;">${currentTicket.colorHex ? currentTicket.colorHex : (activeColor + ' ' + autoColorLabel)}</span>
+                    <input type="color" id="instantColorPicker" value="${escapeHtml(activeColor)}" title="${t('ticket_color_edit_title') || 'Click to edit color'}" style="width:24px; height:24px; padding:0; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:transparent;">
+                    <span id="tColorLabel" style="font-size:13px; font-weight:500;">${escapeHtml(currentTicket.colorHex ? currentTicket.colorHex : (activeColor + ' ' + autoColorLabel))}</span>
                 </div>
             `;
             const instantPicker = document.getElementById('instantColorPicker');
@@ -1675,7 +1676,7 @@
                         <li style="margin-bottom: 8px;">
                             <button type="button" style="display:flex; align-items:center; gap:8px; font-weight:600; padding:6px; background:var(--bg-hover); border-radius:4px; cursor:pointer; width:100%; border:none; text-align:left;" onclick="const ul = this.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.dept-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.dept-chevron').style.transform = ''; }">
                                 <svg class="dept-chevron" viewBox="0 0 24 24" width="16" height="16" style="transition: transform 0.2s; transform: ${deptExpanded ? 'rotate(90deg)' : 'none'};"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-                                <svg viewBox="0 0 24 24" width="16" height="16" style="fill:${d.color || 'currentColor'};"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                                <svg viewBox="0 0 24 24" width="16" height="16" style="fill:${escapeHtml(d.color || 'currentColor')};"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
                                 ${escapeHtml(d.name)}
                             </button>
                             <ul style="list-style:none; padding-left:24px; margin-top:8px; display:${deptExpanded ? 'block' : 'none'};">
@@ -1825,7 +1826,7 @@
         window.openUserDetails = function(userId) { return window.ui.showUserDetails(userId); };
 
         function renderDynamicSelect(def, dp, val) {
-            let inputStr = `<select class="form-control dyn-input" data-key="${def.key}" style="max-width:300px;" ${dp.isRequired ? 'required' : ''} ${def.fieldType === 4 ? 'multiple' : ''}>`;
+            let inputStr = `<select class="form-control dyn-input" data-key="${escapeHtml(def.key)}" style="max-width:300px;" ${dp.isRequired ? 'required' : ''} ${def.fieldType === 4 ? 'multiple' : ''}>`;
             inputStr += `<option value="">Select option...</option>`;
             dp.options.forEach(o => {
                 const sel = val === o.value ? 'selected' : '';
@@ -1845,7 +1846,7 @@
                     inputStr = renderDynamicSelect(def, dp, val);
                 } else {
                     const typeMap = {0: 'text', 1: 'number', 2: 'date'};
-                    inputStr = `<input type="${typeMap[def.fieldType]}" class="form-control dyn-input" data-key="${def.key}" style="max-width:300px;" ${dp.isRequired ? 'required' : ''} value="${escapeHtml(val || '')}">`;
+                    inputStr = `<input type="${typeMap[def.fieldType]}" class="form-control dyn-input" data-key="${escapeHtml(def.key)}" style="max-width:300px;" ${dp.isRequired ? 'required' : ''} value="${escapeHtml(val || '')}">`;
                 }
                 html += `<div class="property-group"><div class="property-label">${escapeHtml(def.label)}${dp.isRequired ? ' *' : ''}</div><div class="property-value">${inputStr}</div></div>`;
             }
@@ -1914,7 +1915,7 @@
 
             const tColorHex = document.getElementById('tColorHex');
             if (tColorHex) {
-                tColorHex.innerHTML = `<input type="color" id="inlineEditColorHex" value="${currentTicket.colorHex || getTicketDefaultColor(currentTicket.id)}" class="form-control" style="width: 50px; padding: 2px; cursor: pointer;">`;
+                tColorHex.innerHTML = `<input type="color" id="inlineEditColorHex" value="${escapeHtml(currentTicket.colorHex || getTicketDefaultColor(currentTicket.id))}" class="form-control" style="width: 50px; padding: 2px; cursor: pointer;">`;
             }
 
 
@@ -1947,7 +1948,7 @@
 
             const tColorHexS = document.getElementById('tColorHex');
             if (tColorHexS) {
-                tColorHexS.innerHTML = `<input type="color" id="sidebarEditColorHex" value="${currentTicket.colorHex || getTicketDefaultColor(currentTicket.id)}" class="form-control form-control-sm" style="width: 50px; padding: 2px; cursor: pointer;">`;
+                tColorHexS.innerHTML = `<input type="color" id="sidebarEditColorHex" value="${escapeHtml(currentTicket.colorHex || getTicketDefaultColor(currentTicket.id))}" class="form-control form-control-sm" style="width: 50px; padding: 2px; cursor: pointer;">`;
             }
 
             const tProject = document.getElementById('tProject');
@@ -2112,7 +2113,7 @@
         window.resolveTimelineUser = function(id) {
             if (!id || id === 'none' || id === 'null') return 'None';
             const u = window.globalUsers ? window.globalUsers.find(x => x.id == id) : null;
-            return u ? escapeHtml(u.firstName + ' ' + u.lastName) : `User ${id}`;
+            return u ? escapeHtml(u.firstName + ' ' + u.lastName) : `User ${escapeHtml(String(id))}`;
         };
 
         window.parseTimelineGrp = function(str) {
@@ -2270,8 +2271,8 @@
             const newVal = h.newValue || noneText;
             
             text = (t('log_changed_general') || `{0} <strong>{1}</strong> from <em>{2}</em> to <em>{3}</em>`)
-                .replaceAll('{0}', actionKey)
-                .replaceAll('{1}', h.fieldName || '')
+                .replaceAll('{0}', escapeHtml(actionKey))
+                .replaceAll('{1}', escapeHtml(h.fieldName || ''))
                 .replaceAll('{2}', escapeHtml(oldVal))
                 .replaceAll('{3}', escapeHtml(newVal));
             
@@ -2345,7 +2346,7 @@
                 }
                 const editorName = window.resolveTimelineUser(h.createdBy);
                 const editedAt = new Date(e.timestamp).toLocaleString();
-                detailsHtml = `<button class="btn btn-ghost" style="font-size:11px; padding:4px 8px; margin-top:4px; color:var(--primary); font-weight:600; background:rgba(10, 107, 234, 0.05); border:1px solid rgba(10, 107, 234, 0.1);" onclick="showEditDetails('${oldEnc}', '${newEnc}', '${escapeHtml(origAuthor)}', '${escapeHtml(editorName)}', '${origCreatedAt}', '${editedAt}')">${t('audit_btn_detail') || 'View Details'}</button>`;
+                detailsHtml = `<button class="btn btn-ghost" style="font-size:11px; padding:4px 8px; margin-top:4px; color:var(--primary); font-weight:600; background:rgba(10, 107, 234, 0.05); border:1px solid rgba(10, 107, 234, 0.1);" data-old="${oldEnc}" data-new="${newEnc}" data-author="${escapeHtml(origAuthor)}" data-editor="${escapeHtml(editorName)}" data-created="${escapeHtml(origCreatedAt)}" data-edited="${escapeHtml(editedAt)}" onclick="showEditDetails(this.dataset.old, this.dataset.new, this.dataset.author, this.dataset.editor, this.dataset.created, this.dataset.edited)">${t('audit_btn_detail') || 'View Details'}</button>`;
             } else if (h.action === 'CommentDeleted' && h.oldValue) {
                 detailsHtml = `<div style="background:var(--bg-danger-light); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border-danger-light); font-size:11px; color:var(--text-danger-strong);"><del>${escapeHtml(h.oldValue)}</del></div>`;
             }
@@ -3478,7 +3479,7 @@
                     badge.style.border = '';
                     if (res.isAvailable || res.isEndpointReachable) {
                         badge.className = 'badge ai-status-active';
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981; animation: pulse-dot 2s infinite; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">LLM: ${res.model || 'Aktif'}</span>`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981; animation: pulse-dot 2s infinite; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">LLM: ${escapeHtml(res.model || 'Aktif')}</span>`;
                         badge.title = `Sağlayıcı: ${res.provider || 'LLM'} | Model: ${res.model} | Endpoint: ${res.endpoint}\n(Ayarları değiştirmek için tıklayın)`;
                     } else if (res.fallbackToHeuristic) {
                         badge.className = 'badge ai-status-fallback';
@@ -3663,7 +3664,7 @@
                             <span>Bağlantı Başarılı</span>
                             <span style="font-weight:400; font-size:11px; color:#047857;">(${res.latencyMs || 0} ms)</span>
                         </div>
-                        <small style="color:#047857; display:block;">Model: <code>${res.model}</code> | Yanıt: ${res.testResponse || 'OK'}</small>
+                        <small style="color:#047857; display:block;">Model: <code>${escapeHtml(res.model)}</code> | Yanıt: ${escapeHtml(res.testResponse || 'OK')}</small>
                     `;
                 } else {
                     statusBox.style.background = '#FEF2F2';
@@ -3674,7 +3675,7 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                             <span>Bağlantı Kurulamadı</span>
                         </div>
-                        <div style="font-size:11.5px; color:#7F1D1D;">${res && res.message ? res.message : 'LLM servisi yanıt vermedi.'}</div>
+                        <div style="font-size:11.5px; color:#7F1D1D;">${escapeHtml(res && res.message ? res.message : 'LLM servisi yanıt vermedi.')}</div>
                     `;
                 }
             } catch (err) {
@@ -3686,7 +3687,7 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                         <span>Hata Oluştu</span>
                     </div>
-                    <div style="font-size:11.5px; color:#7F1D1D;">${err.message || 'Ağ hatası oluştu.'}</div>
+                    <div style="font-size:11.5px; color:#7F1D1D;">${escapeHtml(err.message || 'Ağ hatası oluştu.')}</div>
                 `;
             } finally {
                 if (btn) btn.disabled = false;
