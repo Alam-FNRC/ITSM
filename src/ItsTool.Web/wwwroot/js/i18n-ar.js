@@ -678,5 +678,22 @@ export const ar = {
     "notif_mark_read": "تعليم كمقروء",
     "notif_delete": "حذف",
     "notif_none": "لا توجد إشعارات",
-    "notif_priority_high": "عالية"
+    "notif_priority_high": "عالية",
+    "common_undo": "تراجع",
+    "common_ok": "حسناً",
+    "common_loading": "جارٍ التحميل...",
+    "common_info": "معلومات",
+    "common_confirm": "تأكيد",
+    "ui_group_no_users": "لا يوجد مستخدمون في هذه المجموعة.",
+    "ui_team": "فريق",
+    "ui_user": "مستخدم",
+    "ui_assignees_title": "قائمة المسندين",
+    "ui_no_assignees": "لم يُسند هذا السجل إلى أي شخص.",
+    "ui_switch_theme": "تغيير المظهر",
+    "ui_theme_light": "فاتح (افتراضي)",
+    "ui_theme_dark": "داكن كلاسيكي",
+    "ui_no_description": "لا يوجد وصف.",
+    "ui_kb_suggestions": "اقتراحات المقالات: {0}",
+    "ui_profile_load_failed": "تعذر تحميل تفاصيل ملفك الشخصي.",
+    "ui_user_fallback": "المستخدم {0}"
 };

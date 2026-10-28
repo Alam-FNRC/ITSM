@@ -722,7 +722,24 @@ export const translations = {
         "notif_mark_read": "Mark as read",
         "notif_delete": "Delete",
         "notif_none": "No notifications",
-        "notif_priority_high": "High"
+        "notif_priority_high": "High",
+        "common_undo": "Undo",
+        "common_ok": "OK",
+        "common_loading": "Loading...",
+        "common_info": "Information",
+        "common_confirm": "Confirm",
+        "ui_group_no_users": "No users in this group.",
+        "ui_team": "Team",
+        "ui_user": "User",
+        "ui_assignees_title": "Assignees",
+        "ui_no_assignees": "No one is assigned to this record.",
+        "ui_switch_theme": "Switch theme",
+        "ui_theme_light": "Light (default)",
+        "ui_theme_dark": "Dark classic",
+        "ui_no_description": "No description.",
+        "ui_kb_suggestions": "{0} article suggestions",
+        "ui_profile_load_failed": "Could not load your profile details.",
+        "ui_user_fallback": "User {0}"
     },
     "tr": {
         // Sidebar Navigation
@@ -1446,7 +1463,24 @@ export const translations = {
         "notif_mark_read": "Okundu Olarak İşaretle",
         "notif_delete": "Sil",
         "notif_none": "Bildirim yok",
-        "notif_priority_high": "Yüksek"
+        "notif_priority_high": "Yüksek",
+        "common_undo": "Geri Al",
+        "common_ok": "Tamam",
+        "common_loading": "Yükleniyor...",
+        "common_info": "Bilgi",
+        "common_confirm": "Onay",
+        "ui_group_no_users": "Bu grupta kayıtlı kullanıcı bulunmuyor.",
+        "ui_team": "Ekip",
+        "ui_user": "Kullanıcı",
+        "ui_assignees_title": "Atananlar Listesi",
+        "ui_no_assignees": "Bu kayda kimse atanmamış.",
+        "ui_switch_theme": "Temayı değiştir",
+        "ui_theme_light": "Açık (varsayılan)",
+        "ui_theme_dark": "Koyu klasik",
+        "ui_no_description": "Açıklama bulunmuyor.",
+        "ui_kb_suggestions": "{0} Makale Önerisi",
+        "ui_profile_load_failed": "Profil bilgileri yüklenemedi.",
+        "ui_user_fallback": "Kullanıcı {0}"
     },
     "ar": ar
 };
