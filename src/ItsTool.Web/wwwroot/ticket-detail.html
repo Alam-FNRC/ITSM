@@ -324,7 +324,7 @@
                         <div class="ticket-header">
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                                 <div class="ticket-number" id="tNumber"></div>
-                                <button type="button" class="btn btn-ghost btn-sm" id="btnCopyTicket" onclick="window.copyTicketDetails()" title="Bilet numarasını ve bağlantısını panoya kopyala" style="padding: 2px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); border-radius: 4px; border: 1px solid var(--border); background: var(--bg-surface);">
+                                <button type="button" class="btn btn-ghost btn-sm" id="btnCopyTicket" onclick="window.copyTicketDetails()" style="padding: 2px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); border-radius: 4px; border: 1px solid var(--border); background: var(--bg-surface);">
                                     <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                                     <span data-i18n="td_btn_copy_ticket">Kopyala</span>
                                 </button>
@@ -995,10 +995,10 @@
                     document.execCommand('copy');
                     document.body.removeChild(temp);
                 }
-                showToast(`${currentTicket.ticketNumber} ve bağlantısı panoya kopyalandı!`, 'success');
+                showToast(t('td_copied').replaceAll('{0}', currentTicket.ticketNumber), 'success');
             } catch (e) {
-                console.error('Kopyalama hatası', e);
-                showToast('Kopyalama başarısız oldu.', 'error');
+                console.error('Copy failed', e);
+                showToast(t('td_copy_failed'), 'error');
             }
         };
 
@@ -1222,14 +1222,14 @@
         };
 
         window.deleteMainAttachment = async function(attId) {
-            const proceed = await showConfirmModal('Görseli Sil', 'Bu görseli silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');
+            const proceed = await showConfirmModal(t('td_image_delete_title'), t('td_image_delete_confirm'));
             if (!proceed) return;
             
             // Optimiztically hide the attachment from the UI
             window.pendingDeletions.add(attId);
             renderMainAttachments(isEditMode);
 
-            const finalProceed = await showUndoToast('Görsel siliniyor. İptal etmek için tıklayın.', null, 4000);
+            const finalProceed = await showUndoToast(t('td_image_deleting'), null, 4000);
             if (!finalProceed) {
                 // User clicked Undo, restore the attachment to the UI
                 window.pendingDeletions.delete(attId);
@@ -1240,7 +1240,7 @@
             try {
                 await window.api.request(`/Ticket/${ticketId}/attachments/${attId}`, { method: 'DELETE' });
                 // api.js doesn't show toast on 204 No Content, so we show our own success toast
-                showToast('Görsel başarıyla silindi', 'success');
+                showToast(t('td_image_deleted'), 'success');
                 
                 window.pendingDeletions.delete(attId);
                 // Refresh attachments
@@ -1381,7 +1381,7 @@
         
         async function loadTicket() {
             if (!ticketId) {
-                document.querySelector('.content-area').innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3>Bilet ID bulunamadı</h3><p>Lütfen geçerli bir bilet seçerek tekrar deneyin.</p></div>';
+                document.querySelector('.content-area').innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3>${t('td_no_id_title')}</h3><p>${t('td_no_id_desc')}</p></div>`;
                 return;
             }
             try {
@@ -1515,23 +1515,23 @@
                     const is404 = e.message && (e.message.includes('404') || e.message.includes('Not Found'));
                     let message = t('common_err_load_data');
                     if (is403) {
-                        message = 'Bu bileti görüntüleme yetkiniz bulunmuyor (403).';
+                        message = t('td_err_403');
                     } else if (is404) {
-                        message = 'Bilet bulunamadı veya silinmiş olabilir (404).';
+                        message = t('td_err_404');
                     }
                     errEl.innerHTML = `
                         <div style="padding: 60px 20px; text-align: center;">
                             <div style="font-size: 40px; margin-bottom: 12px;">${is403 ? '🔒' : '⚠️'}</div>
                             <h3 style="color: var(--text-main); margin-bottom: 8px;">${escapeHtml(message)}</h3>
-                            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Hata detayı: ${escapeHtml(e.message || 'Bilinmeyen hata')}</p>
+                            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">${escapeHtml(t('td_err_detail').replaceAll('{0}', e.message || t('td_err_unknown')))}</p>
                             <a href="/tickets.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
                                 <svg class="flip-rtl" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                Bilet Listesine Dön
+                                ${t('td_back_to_list')}
                             </a>
                         </div>
                     `;
                 }
-                showToast(e.message && e.message.includes('403') ? 'Yetkisiz erişim (403)' : 'Bilet yüklenemedi', 'error'); 
+                showToast(t(e.message && e.message.includes('403') ? 'td_err_forbidden_short' : 'td_load_failed'), 'error'); 
             }
             
             setTimeout(() => {
@@ -1545,11 +1545,9 @@
             const slaGroup = document.getElementById('tSlaGroup');
             if (!slaGroup) return;
 
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
-
             if (!sla) {
-                document.getElementById('tSlaOverallBadge').innerHTML = `<span class="badge" style="background:var(--bg-hover); color:var(--text-muted); font-size:10px;">${isEn ? 'Undefined' : 'Tanımsız'}</span>`;
-                document.getElementById('tSlaContainer').innerHTML = `<div style="color:var(--text-muted); font-size:12px;">${isEn ? 'No active SLA policy assigned to this ticket.' : 'Bu bilet için aktif bir SLA politikası atanmamış.'}</div>`;
+                document.getElementById('tSlaOverallBadge').innerHTML = `<span class="badge" style="background:var(--bg-hover); color:var(--text-muted); font-size:10px;">${t('td_sla_undefined')}</span>`;
+                document.getElementById('tSlaContainer').innerHTML = `<div style="color:var(--text-muted); font-size:12px;">${t('td_sla_none')}</div>`;
                 return;
             }
 
@@ -1572,18 +1570,18 @@
             let overallBadge = '';
             if (isClosed) {
                 if (isResBreached || isFirstRespBreached) {
-                    overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:600;">${isEn ? 'Breached' : 'İhlal Edildi'}</span>`;
+                    overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:600;">${t('td_sla_breached')}</span>`;
                 } else {
-                    overallBadge = `<span class="badge badge-success" style="font-size:10px; font-weight:600;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
+                    overallBadge = `<span class="badge badge-success" style="font-size:10px; font-weight:600;">${t('sla_met')}</span>`;
                 }
             } else if (sla.pausedAt) {
-                overallBadge = `<span class="badge badge-default" style="font-size:10px; font-weight:600;">${isEn ? 'Paused' : 'Duraklatıldı'}</span>`;
+                overallBadge = `<span class="badge badge-default" style="font-size:10px; font-weight:600;">${t('sla_paused')}</span>`;
             } else if (isResBreached) {
-                overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${isEn ? 'Resolution Breached' : 'Çözüm Aşıldı'}</span>`;
+                overallBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${t('sla_res_breached')}</span>`;
             } else if (isFirstRespBreached) {
-                overallBadge = `<span class="badge badge-warning" style="font-size:10px; font-weight:700;">${isEn ? 'First Response Breached' : 'İlk Yanıt Aşıldı'}</span>`;
+                overallBadge = `<span class="badge badge-warning" style="font-size:10px; font-weight:700;">${t('sla_first_resp_breached')}</span>`;
             } else {
-                overallBadge = `<span class="badge badge-info" style="font-size:10px; font-weight:600;">${isEn ? 'On Track' : 'Süresinde'}</span>`;
+                overallBadge = `<span class="badge badge-info" style="font-size:10px; font-weight:600;">${t('sla_on_track')}</span>`;
             }
             document.getElementById('tSlaOverallBadge').innerHTML = overallBadge;
 
@@ -1593,9 +1591,9 @@
             if (firstRespDate) {
                 firstRespDateText = firstRespDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 if (isFirstRespMet) {
-                    firstRespBadge = `<span class="badge badge-success" style="font-size:10px;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
+                    firstRespBadge = `<span class="badge badge-success" style="font-size:10px;">${t('sla_met')}</span>`;
                 } else if (isFirstRespBreached) {
-                    firstRespBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${isEn ? 'Breached' : 'Aşıldı'}</span>`;
+                    firstRespBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${t('td_sla_breached')}</span>`;
                 } else {
                     const diffMs = firstRespDate - now;
                     firstRespBadge = `<span class="badge badge-info" style="font-size:10px;">${formatRemainingTime(diffMs)}</span>`;
@@ -1610,9 +1608,9 @@
             if (resDate) {
                 resDateText = resDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 if (isResMet) {
-                    resBadge = `<span class="badge badge-success" style="font-size:10px;">${isEn ? 'Met' : 'Karşılandı'}</span>`;
+                    resBadge = `<span class="badge badge-success" style="font-size:10px;">${t('sla_met')}</span>`;
                 } else if (isResBreached) {
-                    resBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${isEn ? 'Breached' : 'Aşıldı'}</span>`;
+                    resBadge = `<span class="badge badge-danger" style="font-size:10px; font-weight:700;">${t('td_sla_breached')}</span>`;
                 } else {
                     const diffMs = resDate - now;
                     resBadge = `<span class="badge badge-info" style="font-size:10px;">${formatRemainingTime(diffMs)}</span>`;
@@ -1622,25 +1620,24 @@
             document.getElementById('tSlaResolutionDate').textContent = resDateText;
         }
 
+        // Intl gives each language its own units and plural forms
+        const formatUnit = (value, unit, unitDisplay) => new Intl.NumberFormat(getLocale(), { style: 'unit', unit, unitDisplay }).format(value);
+
         function formatRemainingTime(diffMs) {
-            const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
-            if (diffMs <= 0) return isEn ? 'Expired' : 'Süre doldu';
+            if (diffMs <= 0) return t('sla_expired');
             const mins = Math.floor(diffMs / 60000);
-            if (mins <= 60) return isEn ? `${Math.max(1, mins)} min left` : `${Math.max(1, mins)} dk kaldı`;
+            if (mins <= 60) return t('td_sla_left').replaceAll('{0}', formatUnit(Math.max(1, mins), 'minute', 'short'));
             if (mins <= 1440) {
-                const hrs = Math.floor(mins / 60);
-                const rm = mins % 60;
-                return isEn ? `${hrs}h ${rm}m` : `${hrs} sa ${rm} dk`;
+                return `${formatUnit(Math.floor(mins / 60), 'hour', 'narrow')} ${formatUnit(mins % 60, 'minute', 'narrow')}`;
             }
-            const days = Math.ceil(mins / 1440);
-            return isEn ? `${days} days left` : `${days} gün kaldı`;
+            return t('td_sla_left').replaceAll('{0}', formatUnit(Math.ceil(mins / 1440), 'day', 'long'));
         }
 
 
 // Setup Manage Assignees Modal
         window.openAssignModal = async () => {
             const container = document.getElementById('assignTreeContainer');
-            container.innerHTML = '<div style="text-align:center; padding: 20px;">Yükleniyor...</div>';
+            container.innerHTML = `<div style="text-align:center; padding: 20px;">${t('common_loading')}</div>`;
             openModal('manageAssigneesModal');
             
             try {
@@ -1705,7 +1702,7 @@
                             `;
                             
                             if (gUsers.length === 0) {
-                                html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">Kullanıcı yok</li>`;
+                                html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">${t('td_no_users')}</li>`;
                             } else {
                                 gUsers.forEach(u => {
                                     const isUsrSelected = assignedUserIds.has(u.id);
@@ -1731,7 +1728,7 @@
                 
             } catch (err) {
                 console.error("Error loading assign tree", err);
-                container.innerHTML = '<div style="color:var(--danger); padding:20px; text-align:center;">Atama ağacı yüklenemedi.</div>';
+                container.innerHTML = `<div style="color:var(--danger); padding:20px; text-align:center;">${t('td_assign_tree_failed')}</div>`;
             }
         };
 
@@ -1746,15 +1743,15 @@
                 const req = { userIds: uIds, groupIds: gIds };
                 await window.api.request(`/Ticket/${ticketId}/assign`, { method: 'POST', body: JSON.stringify(req) });
                 if (uIds.length === 0 && gIds.length === 0) {
-                    showToast('Tüm atamalar kaldırıldı (Bilet atamasız).');
+                    showToast(t('td_assign_cleared'));
                 } else {
-                    showToast('Atamalar başarıyla güncellendi.');
+                    showToast(t('td_assign_updated'));
                 }
                 closeModal('manageAssigneesModal');
                 window.location.reload();
             } catch (e) {
                 console.error(e);
-                showToast('Atama işlemi başarısız: ' + (e.message || ''), 'error');
+                showToast(t('td_assign_failed').replaceAll('{0}', e.message || ''), 'error');
             }
         };
 
@@ -2057,7 +2054,7 @@
             });
 
             if(validationFailed) {
-                showToast('Lütfen zorunlu alanları doldurun.', 'error');
+                showToast(t('td_required_missing'), 'error');
                 return;
             }
 
@@ -2093,7 +2090,7 @@
                     window.pendingUploads = [];
                 }
 
-                showToast('Talep güncellendi');
+                showToast(t('td_ticket_updated'));
                 isEditMode = false;
                 document.getElementById('btnEditInline').style.display = 'inline-block';
                 document.getElementById('editActions').style.display = 'none';
@@ -2103,7 +2100,7 @@
                 if(err.message) {
                     showToast(err.message, 'error'); // Usually from backend 400 Bad Request
                 } else {
-                    showToast('Update failed. Dinamik alan kurallarına dikkat edin.', 'error');
+                    showToast(t('td_update_failed'), 'error');
                 }
             }
         };
@@ -2958,7 +2955,7 @@
                 loadTicket(); // Refresh to update allowed transitions
             } catch(e) { 
                 console.error(e);
-                showToast(`Geçersiz geçiş: ${statusName} durumuna geçilemez.`, 'error');
+                showToast(t('td_invalid_transition').replaceAll('{0}', statusName), 'error');
                 loadTicket(); // Reset dropdown to previous state
             }
         });
