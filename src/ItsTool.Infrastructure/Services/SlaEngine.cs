@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using ItsTool.Application.Interfaces;
 using ItsTool.Domain.Entities.SLA;
@@ -337,15 +338,19 @@ public class SlaEngine : ISlaEngine
         var user = await _context.Users.FindAsync(userId);
         if (user != null)
         {
+            // The ticket title comes from the requester, so it is encoded before it goes into the email
+            string titleHtml = WebUtility.HtmlEncode(title);
+            string messageHtml = WebUtility.HtmlEncode(message);
+            string ticketInfoHtml = WebUtility.HtmlEncode(ticketInfo);
             string htmlBody = $@"
 <div style=""font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;"">
     <div style=""max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"">
         <div style=""border-bottom: 2px solid #ff4d4f; padding-bottom: 10px; margin-bottom: 20px;"">
-            <h2 style=""color: #ff4d4f; margin: 0;"">⚠️ {title}</h2>
+            <h2 style=""color: #ff4d4f; margin: 0;"">⚠️ {titleHtml}</h2>
         </div>
         <div style=""font-size: 16px; line-height: 1.5;"">
-            <p><strong>Uyarı:</strong> {message}</p>
-            <p><strong>Bilet:</strong> <a href=""http://localhost:5246/ticket-detail.html?id={ticketId}"" style=""color: #1890ff; text-decoration: none;"">{ticketInfo}</a></p>
+            <p><strong>Uyarı:</strong> {messageHtml}</p>
+            <p><strong>Bilet:</strong> <a href=""http://localhost:5246/ticket-detail.html?id={ticketId}"" style=""color: #1890ff; text-decoration: none;"">{ticketInfoHtml}</a></p>
         </div>
         <div style=""margin-top: 30px; font-size: 12px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 15px;"">
             Bu e-posta ITSM Sistemi tarafından otomatik olarak gönderilmiştir.

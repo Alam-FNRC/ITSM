@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using ItsTool.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -12,10 +13,15 @@ public class EmailTemplateService : IEmailTemplateService
     private readonly string _templatePath;
 
     public EmailTemplateService(ILogger<EmailTemplateService> logger)
+        : this(logger, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Email"))
+    {
+    }
+
+    // Tests pass their own folder so they never overwrite the shipped templates
+    internal EmailTemplateService(ILogger<EmailTemplateService> logger, string templatePath)
     {
         _logger = logger;
-        // In a real application, you might want to configure this path or use embedded resources.
-        _templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Email");
+        _templatePath = templatePath;
     }
 
     public string GenerateEmailBody(string eventKey, Dictionary<string, string> templateData)
@@ -52,9 +58,11 @@ public class EmailTemplateService : IEmailTemplateService
             templateContent = "<h2>{{EventName}}</h2><p>{{Context}}</p><p><a href=\"{{AppUrl}}\">View Ticket {{TicketNumber}}</a></p>";
         }
 
+        // The values are plain text, and some come from users (a requester chooses the ticket title),
+        // so they are encoded and cannot add markup or links to the email
         foreach (var kvp in templateData)
         {
-            templateContent = templateContent.Replace($"{{{{{kvp.Key}}}}}", kvp.Value);
+            templateContent = templateContent.Replace($"{{{{{kvp.Key}}}}}", WebUtility.HtmlEncode(kvp.Value));
         }
 
         return templateContent;
