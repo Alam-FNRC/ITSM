@@ -211,7 +211,8 @@
         bindShellActions();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const articleId = urlParams.get('id');
+        // Only a number: the id goes into API paths (including PUT and DELETE), where "../" would reach another endpoint
+        const articleId = /^\d+$/.test(urlParams.get('id') ?? '') ? urlParams.get('id') : null;
 
         function escapeHtml(unsafe) {
             return (unsafe || '').toString()

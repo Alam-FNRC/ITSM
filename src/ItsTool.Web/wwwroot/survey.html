@@ -156,7 +156,8 @@
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        const ticketId = urlParams.get('id');
+        // Only a number: the id goes into the API path, and "../" in it would send the rating to another endpoint
+        const ticketId = /^\d+$/.test(urlParams.get('id') ?? '') ? urlParams.get('id') : null;
         const ticketInfo = document.getElementById('ticketInfo');
 
         if (!ticketId) {
