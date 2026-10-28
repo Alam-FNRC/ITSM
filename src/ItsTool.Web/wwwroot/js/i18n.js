@@ -841,7 +841,22 @@ export const translations = {
         "kb_submit_failed": "Could not submit the article for approval.",
         "kb_publish_toggle_failed": "Could not change the publish status.",
         "kb_deleting": "The article will be deleted.",
-        "kb_categories_load_failed": "Could not load the categories."
+        "kb_categories_load_failed": "Could not load the categories.",
+        "cal_btn_prev": "Previous",
+        "cal_btn_next": "Next",
+        "cal_btn_today": "Today",
+        "cal_btn_month": "Month",
+        "cal_btn_week": "Week",
+        "cal_btn_day": "Day",
+        "cal_btn_list": "List",
+        "cal_week_short": "Wk",
+        "cal_all_day": "All day",
+        "cal_more": "+{0} more",
+        "cal_no_events": "No events to show",
+        "cal_month_select": "Month",
+        "cal_year_select": "Year",
+        "cal_lib_failed": "The calendar could not be loaded. Please refresh the page.",
+        "cal_load_failed": "Could not load the calendar data."
     },
     "tr": {
         // Sidebar Navigation
@@ -1684,7 +1699,22 @@ export const translations = {
         "kb_submit_failed": "Onaya gönderilirken hata oluştu.",
         "kb_publish_toggle_failed": "Yayın durumu değiştirilemedi.",
         "kb_deleting": "Makale silinecek.",
-        "kb_categories_load_failed": "Kategoriler yüklenemedi."
+        "kb_categories_load_failed": "Kategoriler yüklenemedi.",
+        "cal_btn_prev": "Geri",
+        "cal_btn_next": "İleri",
+        "cal_btn_today": "Bugün",
+        "cal_btn_month": "Ay",
+        "cal_btn_week": "Hafta",
+        "cal_btn_day": "Gün",
+        "cal_btn_list": "Ajanda",
+        "cal_week_short": "Hf",
+        "cal_all_day": "Tüm gün",
+        "cal_more": "+{0} daha",
+        "cal_no_events": "Gösterilecek etkinlik yok",
+        "cal_month_select": "Ay seçimi",
+        "cal_year_select": "Yıl seçimi",
+        "cal_lib_failed": "Takvim kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.",
+        "cal_load_failed": "Takvim verileri yüklenemedi."
     },
     "ar": ar
 };

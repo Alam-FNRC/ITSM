@@ -797,5 +797,20 @@ export const ar = {
     "kb_submit_failed": "تعذر إرسال المقال للموافقة.",
     "kb_publish_toggle_failed": "تعذر تغيير حالة النشر.",
     "kb_deleting": "سيتم حذف المقال.",
-    "kb_categories_load_failed": "تعذر تحميل الفئات."
+    "kb_categories_load_failed": "تعذر تحميل الفئات.",
+    "cal_btn_prev": "السابق",
+    "cal_btn_next": "التالي",
+    "cal_btn_today": "اليوم",
+    "cal_btn_month": "شهر",
+    "cal_btn_week": "أسبوع",
+    "cal_btn_day": "يوم",
+    "cal_btn_list": "قائمة",
+    "cal_week_short": "أسبوع",
+    "cal_all_day": "طوال اليوم",
+    "cal_more": "+{0} أخرى",
+    "cal_no_events": "لا توجد أحداث لعرضها",
+    "cal_month_select": "الشهر",
+    "cal_year_select": "السنة",
+    "cal_lib_failed": "تعذر تحميل التقويم. يرجى تحديث الصفحة.",
+    "cal_load_failed": "تعذر تحميل بيانات التقويم."
 };
