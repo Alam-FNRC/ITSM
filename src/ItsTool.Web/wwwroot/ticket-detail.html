@@ -329,7 +329,7 @@
                                     <span data-i18n="td_btn_copy_ticket">Kopyala</span>
                                 </button>
                             </div>
-                            <h1 class="ticket-title" id="tTitle" dir="auto">Loading Title...</h1>
+                            <h1 class="ticket-title" id="tTitle" dir="auto">...</h1>
                         </div>
                         
                         <div class="property-label" data-i18n="ticket_tab_desc">Description</div>
@@ -369,7 +369,7 @@
                                             
                                             <div class="d-flex justify-content-between align-items-center" style="padding: 4px 8px; border-top: 1px solid var(--border-light); margin-top: 4px; padding-top: 12px;">
                                                 <div class="d-flex align-items-center gap-md">
-                                                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('commentAttachmentInput').click()" title="Attach File" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
+                                                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('commentAttachmentInput').click()" title="Attach File" data-i18n="td_attach_file" data-i18n-target="title" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
                                                         📎
                                                     </button>
                                                     <input type="file" id="commentAttachmentInput" multiple style="display: none;" onchange="uploadCommentAttachment(this)" aria-label="Attach File">
@@ -379,7 +379,7 @@
                                                     </label>
                                                 </div>
                                                 
-                                                <button type="submit" class="btn btn-primary" id="btnSubmitComment" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Send Comment">
+                                                <button type="submit" class="btn btn-primary" id="btnSubmitComment" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Send Comment" data-i18n="td_send_comment" data-i18n-target="title">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                                 </button>
                                             </div>
@@ -554,7 +554,7 @@
                                 <div class="property-value" id="tCategory"></div>
                             </div>
                             <div class="property-group">
-                                <div class="property-label">Color</div>
+                                <div class="property-label" data-i18n="td_color">Color</div>
                                 <div class="property-value" id="tColorHex"></div>
                             </div>
 
@@ -693,7 +693,7 @@
                 <h2 data-i18n="td_modal_comment_logs">Comment Logs</h2>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <input type="text" id="commentLogSearch" class="form-control" style="width:200px; padding: 4px 8px; font-size: 12px;" placeholder="Search logs..." data-i18n="td_search_logs" data-i18n-target="placeholder" aria-label="Search Comment Logs">
-                    <button class="btn btn-ghost" onclick="downloadCommentLogs()" title="Download CSV">
+                    <button class="btn btn-ghost" onclick="downloadCommentLogs()" title="Download CSV" data-i18n="td_download_csv" data-i18n-target="title">
                         <svg viewBox="0 0 24 24" width="18" height="18" style="fill:currentColor;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                     </button>
                     <button type="button" class="close-btn" onclick="document.getElementById('commentLogsModal').classList.remove('active')">
@@ -942,7 +942,7 @@
 
 
             } catch (e) { console.error(e); 
-                showToast('Failed to load transfer data', 'error');
+                showToast(t('td_transfer_load_failed'), 'error');
              }
         };
 
@@ -958,10 +958,10 @@
             try {
                 await window.api.request(`/Ticket/${ticketId}/transfer`, { method: 'POST', body: JSON.stringify(dto) });
                 closeModal('transferModal');
-                showToast('Ticket transferred successfully');
+                showToast(t('td_transferred'));
                 window.location.reload();
             } catch (err) { console.error(err); 
-                showToast(err.message || 'Transfer failed', 'error');
+                showToast(err.message || t('td_transfer_failed'), 'error');
              }
         });
 
@@ -1025,7 +1025,7 @@
         function renderTicketData() {
             document.getElementById('tNumber').textContent = currentTicket.ticketNumber;
             document.getElementById('tTitle').textContent = currentTicket.title;
-            document.getElementById('tDesc').textContent = currentTicket.description || 'No description provided.';
+            document.getElementById('tDesc').textContent = currentTicket.description || t('td_no_description');
             
             const prioName = window.globalLookup.priorities?.find(x => x.id === currentTicket.priorityId)?.name || 'Normal';
             
@@ -1115,7 +1115,7 @@
                             <div class="comment-attachment-img-container" style="position:relative;">
                                 ${delBtn}
                                 <img data-auth-src="/Ticket/${ticketId}/attachments/${att.id}/download" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="${escapeHtml(att.fileName)}" onclick="window.openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
-                                <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${att.id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="Download">
+                                <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${att.id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="${t('common_download')}">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                 </a>
                             </div>
@@ -1145,7 +1145,7 @@
                 html += `
                     <label id="btnAddNewAttachmentLabel" for="editNewAttachments" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width: 150px; height: 150px; border: 2px dashed var(--primary); border-radius: 6px; background: rgba(var(--primary-rgb), 0.05); cursor: pointer; transition: all 0.2s; margin:0;" onmouseover="this.style.background='rgba(var(--primary-rgb), 0.1)'" onmouseout="this.style.background='rgba(var(--primary-rgb), 0.05)'">
                         <svg viewBox="0 0 24 24" width="32" height="32" fill="var(--primary)"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        <span style="font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 8px;">Add Attachments</span>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 8px;">${t('td_add_attachments')}</span>
                         <input type="file" id="editNewAttachments" multiple style="display: none;" onchange="window.updateNewAttachmentsPreview(this)">
                     </label>
                 `;
@@ -1211,7 +1211,7 @@
                 }
 
                 item.innerHTML += `
-                    <button type="button" class="btn btn-ghost" style="position:absolute; top:4px; inset-inline-end:4px; width:24px; height:24px; padding:0; border-radius:50%; background:var(--danger); color:white;" onclick="window.removePendingUpload(${p.id})" title="Remove">
+                    <button type="button" class="btn btn-ghost" style="position:absolute; top:4px; inset-inline-end:4px; width:24px; height:24px; padding:0; border-radius:50%; background:var(--danger); color:white;" onclick="window.removePendingUpload(${p.id})" title="${t('common_remove')}">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 `;
@@ -1254,7 +1254,7 @@
                 renderMainAttachments(isEditMode);
                 // api.js automatically shows a toast for errors, but we can add a fallback
                 if (!e.message.includes('404') && !e.message.includes('403')) {
-                    showToast('Failed to delete attachment', 'error');
+                    showToast(t('td_attachment_delete_failed'), 'error');
                 }
             }
         }
@@ -1275,7 +1275,7 @@
             const activeAssignments = Array.from(uniqueAssignmentsMap.values());
             
             if (activeAssignments.length === 0) {
-                return '<span class="text-muted">No active assignments</span>';
+                return `<span class="text-muted">${t('td_no_active_assignments')}</span>`;
             }
             
             const grouped = {};
@@ -1316,7 +1316,7 @@
 
             let deptBlocks = [];
             for (const [deptId, deptData] of Object.entries(grouped)) {
-                let deptName = 'No Department';
+                let deptName = t('admin_no_dept');
                 if (deptId !== 'none') {
                     const d = deptsLookup.find(x => x.id == deptId);
                     if (d) deptName = d.name;
@@ -1341,7 +1341,7 @@
                     if (gData.users.length > 0) {
                         blockHtml += `<div style="padding-inline-start: 20px; display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">`;
                         gData.users.forEach(u => {
-                            const uName = u ? (u.firstName + ' ' + u.lastName) : 'Unknown User';
+                            const uName = u ? (u.firstName + ' ' + u.lastName) : t('td_unknown_user');
                             const uId = u ? u.id : 0;
                             blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:start;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
                         });
@@ -1350,7 +1350,7 @@
                 }
 
                 deptData.usersWithoutGroup.forEach(u => {
-                    const uName = u ? (u.firstName + ' ' + u.lastName) : 'Unknown User';
+                    const uName = u ? (u.firstName + ' ' + u.lastName) : t('td_unknown_user');
                     const uId = u ? u.id : 0;
                     blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:start;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
                 });
@@ -1444,7 +1444,7 @@
                     const deptsLookup = window.globalLookup && window.globalLookup.departments ? window.globalLookup.departments : [];
                     assignHTML = buildAssignmentsHtml(ticketData.assignments, window.globalGroups, window.globalUsers, deptsLookup);
                 } else {
-                    assignHTML = '<span class="text-muted">Unassigned</span>';
+                    assignHTML = `<span class="text-muted">${t('kanban_unassigned')}</span>`;
                 }
                 const assignedEl = document.getElementById('tAssigned');
                 if (assignedEl) assignedEl.innerHTML = assignHTML;
@@ -1680,7 +1680,7 @@
                     `;
                     
                     if (dGroups.length === 0) {
-                        html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">Grup yok</li>`;
+                        html += `<li style="color:var(--text-muted); font-size:12px; padding:4px;">${t('admin_no_groups')}</li>`;
                     } else {
                         dGroups.forEach(g => {
                             const isGrpSelected = assignedGroupIds.has(g.id);
@@ -1759,7 +1759,7 @@
         window.openAssignmentTree = async () => {
                     openModal('assignmentTreeModal');
                     const container = document.getElementById('assignmentTreeContainer');
-                    container.innerHTML = '<div style="text-align:center; padding: 20px;">Loading tree...</div>';
+                    container.innerHTML = `<div style="text-align:center; padding: 20px;">${t('common_loading')}</div>`;
                     try {
                         const tree = await window.api.request(`/Ticket/${ticketId}/assignments/tree`);
                         
@@ -1768,23 +1768,23 @@
                             let icon = '';
                             if (node.userId) {
                                 const u = window.globalUsers.find(x => x.id === node.userId);
-                                assigneeName = u ? (u.firstName + ' ' + u.lastName) : (node.assigneeName || 'Unknown User');
+                                assigneeName = u ? (u.firstName + ' ' + u.lastName) : (node.assigneeName || t('td_unknown_user'));
                                 icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--primary); margin-inline-end:4px; vertical-align:middle;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
                             } else if (node.groupId) {
                                 const g = window.globalGroups.find(x => x.id === node.groupId);
-                                assigneeName = g ? g.name : (node.assigneeName || 'Unknown Group');
+                                assigneeName = g ? g.name : (node.assigneeName || t('td_unknown_group'));
                                 icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--text-muted); margin-inline-end:4px; vertical-align:middle;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`;
                             }
                             
                             const assigner = window.globalUsers.find(x => x.id === node.assignedByUserId);
-                            const assignerName = assigner ? assigner.username : 'System';
+                            const assignerName = assigner ? assigner.username : t('td_system');
                             const date = new Date(node.createdAt).toLocaleString();
                             
                             let status = '';
                             if (node.isAssigneeDeleted) {
-                                status += '<span class="badge badge-danger" style="font-size:10px; margin-inline-end:4px;">Deleted</span>';
+                                status += `<span class="badge badge-danger" style="font-size:10px; margin-inline-end:4px;">${t('td_deleted')}</span>`;
                             }
-                            status += node.isActive ? '<span class="badge badge-success" style="font-size:10px;">Active</span>' : '<span class="badge badge-default" style="font-size:10px;">Inactive</span>';
+                            status += node.isActive ? `<span class="badge badge-success" style="font-size:10px;">${t('users_status_active')}</span>` : `<span class="badge badge-default" style="font-size:10px;">${t('users_status_inactive')}</span>`;
                             
                             let html = `<div style="border-inline-start: 2px solid var(--border); padding-inline-start: 16px; margin-inline-start: 8px; margin-top: 8px; position:relative;">
                                 <div style="position:absolute; inset-inline-start:0; top: 12px; width:16px; border-top: 2px solid var(--border);"></div>
@@ -1816,7 +1816,7 @@
                         }
                     } catch(e) {
                         console.error(e);
-                        container.innerHTML = `<div style="color:var(--danger)">Failed to load assignment tree.</div>`;
+                        container.innerHTML = `<div style="color:var(--danger)">${t('td_assign_tree_failed')}</div>`;
                     }
                 };
 
@@ -1824,7 +1824,7 @@
 
         function renderDynamicSelect(def, dp, val) {
             let inputStr = `<select class="form-control dyn-input" data-key="${escapeHtml(def.key)}" style="max-width:300px;" ${dp.isRequired ? 'required' : ''} ${def.fieldType === 4 ? 'multiple' : ''}>`;
-            inputStr += `<option value="">Select option...</option>`;
+            inputStr += `<option value="">${t('td_select_option')}</option>`;
             dp.options.forEach(o => {
                 const sel = val === o.value ? 'selected' : '';
                 inputStr += `<option value="${escapeHtml(o.value)}" ${sel}>${escapeHtml(o.label)}</option>`;
@@ -1852,7 +1852,7 @@
 
         window.downloadHistoryCsv = function() {
             if (!window.ticketTimeline || window.ticketTimeline.length === 0) {
-                showToast('No history to download', 'warning');
+                showToast(t('td_no_history_download'), 'warning');
                 return;
             }
             
@@ -1949,7 +1949,7 @@
             }
 
             const tProject = document.getElementById('tProject');
-            let projHtml = '<select id="sidebarEditProject" class="form-control form-control-sm"><option value="">No Project</option>';
+            let projHtml = `<select id="sidebarEditProject" class="form-control form-control-sm"><option value="">${t('audit_no_project')}</option>`;
             (window.globalLookup.projects || []).forEach(p => {
                 projHtml += `<option value="${p.id}" ${p.id === currentTicket.projectId ? 'selected' : ''}>${escapeHtml(p.name)}</option>`;
             });
@@ -2009,13 +2009,13 @@
                     });
                 }
 
-                showToast('Properties updated successfully');
+                showToast(t('td_properties_updated'));
                 document.getElementById('btnEditSidebar').style.display = 'inline-block';
                 document.getElementById('sidebarEditActions').style.display = 'none';
                 await loadTicket();
             } catch (e) {
                 console.error(e);
-                showToast('Failed to update properties', 'error');
+                showToast(t('td_properties_update_failed'), 'error');
             }
         };
 
@@ -2033,7 +2033,7 @@
 
             const titleInput = document.getElementById('inlineEditTitle');
             if(titleInput.value.trim() === '') {
-                showToast('Title is required', 'error');
+                showToast(t('td_title_required'), 'error');
                 return;
             }
 
@@ -2108,19 +2108,19 @@
         
         // --- SONARQUBE R15 & R21 REFACTORING HELPERS ---
         window.resolveTimelineUser = function(id) {
-            if (!id || id === 'none' || id === 'null') return 'None';
+            if (!id || id === 'none' || id === 'null') return t('td_none');
             const u = window.globalUsers ? window.globalUsers.find(x => x.id == id) : null;
             return u ? escapeHtml(u.firstName + ' ' + u.lastName) : `User ${escapeHtml(String(id))}`;
         };
 
         window.parseTimelineGrp = function(str) {
-            if(!str) return 'None';
+            if(!str) return t('td_none');
             const m = str.match(/Grp:(\d+)/);
             if(m && m[1]) {
                 const g = window.globalGroups ? window.globalGroups.find(x => x.id == m[1]) : null;
                 return g ? escapeHtml(g.name) : `Group ${m[1]}`;
             }
-            return 'None';
+            return t('td_none');
         };
 
         window.parseHistoryTransfer = function(val) {
@@ -2153,7 +2153,7 @@
                         if (isImage) {
                             return `<div class="comment-attachment-img-container">
                                         <img data-auth-src="/Ticket/${ticketId}/attachments/${id}/download" class="comment-attachment-img" style="max-width: 150px; border-radius: 4px; box-shadow: var(--shadow-sm); max-height: 150px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" alt="Attachment" onclick="openLightbox(this.src)" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
-                                        <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="Download">
+                                        <a href="#" data-auth-href="/Ticket/${ticketId}/attachments/${id}/download" download="${escapeHtml(att.fileName)}" class="download-btn" title="${t('common_download')}">
                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                                         </a>
                                     </div>`;
@@ -2193,7 +2193,7 @@
                         ${aiBadge}
                     </div>
                     <div class="d-flex align-items-center gap-sm">
-                        ${c.isInternal ? '<span class="badge badge-warning">Internal Note</span>' : ''}
+                        ${c.isInternal ? `<span class="badge badge-warning">${t('td_internal_note')}</span>` : ''}
                         <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineReplyToComment(${c.id}, ${c.isInternal})">${t('ticket_btn_reply')}</button>
                         <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineEditComment(${c.id})">${t('ticket_btn_edit')}</button>
                         <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px; color: var(--danger);" onclick="deleteComment(${c.id})">${t('btn_delete')}</button>
@@ -2210,7 +2210,7 @@
                     
                     <div class="d-flex justify-content-between align-items-center" style="padding: 4px 8px; border-top: 1px solid var(--border-light); margin-top: 4px; padding-top: 12px;">
                         <div class="d-flex align-items-center gap-md">
-                            <button type="button" class="btn btn-ghost" onclick="document.getElementById('editAttachmentInput-${c.id}').click()" title="Attach File" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
+                            <button type="button" class="btn btn-ghost" onclick="document.getElementById('editAttachmentInput-${c.id}').click()" title="${t('td_attach_file')}" style="padding: 6px; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--text-secondary);">
                                 📎
                             </button>
                             <input type="file" id="editAttachmentInput-${c.id}" multiple style="display: none;" onchange="window.uploadEditAttachment(this, ${c.id})">
@@ -2332,8 +2332,8 @@
             } else if (h.action === 'CommentEdited' && h.oldValue && h.newValue) {
                 const oldEnc = btoa(unescape(encodeURIComponent(h.oldValue)));
                 const newEnc = btoa(unescape(encodeURIComponent(h.newValue)));
-                let origAuthor = 'Unknown';
-                let origCreatedAt = 'Unknown';
+                let origAuthor = t('dash_unknown');
+                let origCreatedAt = t('dash_unknown');
                 if (h.fieldName && !Number.isNaN(Number(h.fieldName))) {
                     const origEvent = events.find(ev => ev.eventType === 'Comment' && ev.data.id == h.fieldName);
                     if (origEvent) {
@@ -2600,11 +2600,11 @@
                     method: 'POST',
                     body: JSON.stringify({ content: content, isInternal: isInternal, parentCommentId: parentId, mentionedUserIds: mentionedUserIds })
                 });
-                showToast('Reply added');
+                showToast(t('td_reply_added'));
                 loadTimeline();
             } catch (e) {
                 console.error(e);
-                showToast('Failed to add reply', 'error');
+                showToast(t('td_reply_failed'), 'error');
             }
         };
 
@@ -2637,7 +2637,7 @@
                 const wrapper = document.createElement('div');
                 wrapper.style.cssText = 'position: relative; display: inline-block; margin-inline-end: 8px; margin-top: 6px;';
                 
-                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, '${textareaId}')" title="Remove" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
+                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, '${textareaId}')" title="${t('common_remove')}" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
@@ -2659,7 +2659,7 @@
             
             const btn = document.getElementById(`btnSaveEdit-${commentId}`);
             const originalText = btn.innerHTML;
-            btn.innerHTML = 'Uploading...';
+            btn.innerHTML = t('td_uploading');
             btn.disabled = true;
 
             try {
@@ -2682,7 +2682,7 @@
                 window.syncEditPreviews(commentId);
             } catch (err) {
                 console.error('Failed to upload attachment:', err);
-                showToast('Failed to upload attachment.', 'error');
+                showToast(t('td_upload_failed'), 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
@@ -2795,7 +2795,7 @@
                     method: 'PUT',
                     body: JSON.stringify({ content: newContent, mentionedUserIds: mentionedUserIds })
                 });
-                showToast('Comment updated');
+                showToast(t('td_comment_updated'));
                 loadTimeline();
             } catch(e) {
                 console.error(e);
@@ -2813,17 +2813,17 @@
             overlay.innerHTML = `
                 <div class="modal" style="width: 400px;">
                     <div class="modal-header">
-                        <h2>Delete Comment</h2>
+                        <h2>${t('td_comment_delete_title')}</h2>
                         <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()" aria-label="${t('btn_close')}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete this comment? You can undo this action shortly after.</p>
+                        <p>${t('td_comment_delete_confirm')}</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-                        <button type="button" class="btn btn-primary" style="background-color: var(--danger);" onclick="confirmDeleteComment(${id}, this)">Delete</button>
+                        <button type="button" class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">${t('btn_cancel')}</button>
+                        <button type="button" class="btn btn-primary" style="background-color: var(--danger);" onclick="confirmDeleteComment(${id}, this)">${t('btn_delete')}</button>
                     </div>
                 </div>
             `;
@@ -2835,15 +2835,15 @@
             btn.dataset.submitting = 'true';
             try {
                 btn.disabled = true;
-                btn.innerText = 'Deleting...';
+                btn.innerText = t('common_deleting');
                 await window.api.request(`/Ticket/${ticketId}/comments/${id}`, { method: 'DELETE' });
                 
                 const duration = 5000; // 5 seconds
                 const undoHtml = `
                     <div style="position:relative; width:100%; min-width: 250px; overflow: hidden; padding-bottom: 4px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>Comment deleted.</span>
-                            <button class="btn btn-ghost" style="padding: 2px 8px; font-size: 12px; color: white; border: 1px solid white;" onclick="restoreComment(${id}, this)">Undo</button>
+                            <span>${t('td_comment_deleted')}</span>
+                            <button class="btn btn-ghost" style="padding: 2px 8px; font-size: 12px; color: white; border: 1px solid white;" onclick="restoreComment(${id}, this)">${t('common_undo')}</button>
                         </div>
                         <div style="position:absolute; bottom:0; inset-inline-start:0; height:3px; background:var(--primary); width:100%; transition: width ${duration}ms linear;" id="undoProgress-${id}"></div>
                     </div>
@@ -2878,27 +2878,27 @@
                 console.error(e);
                 showToast('Failed to delete comment: ' + e.message, 'error');
                 btn.disabled = false;
-                btn.innerText = 'Delete';
+                btn.innerText = t('btn_delete');
             }
         };
 
         window.restoreComment = async (id, btn) => {
             try {
                 btn.disabled = true;
-                btn.innerText = 'Restoring...';
+                btn.innerText = t('common_restoring');
                 await window.api.request(`/Ticket/${ticketId}/comments/${id}/restore`, { method: 'POST' });
                 const toast = btn.closest('.toast');
                 if(toast) {
                     toast.classList.remove('show');
                     setTimeout(() => toast.remove(), 300);
                 }
-                showToast('Comment restored successfully', 'success');
+                showToast(t('td_comment_restored'), 'success');
                 loadTimeline();
             } catch(e) {
                 console.error(e);
-                showToast('Failed to restore comment', 'error');
+                showToast(t('td_comment_restore_failed'), 'error');
                 btn.disabled = false;
-                btn.innerText = 'Undo';
+                btn.innerText = t('common_undo');
             }
         };
 
@@ -2935,11 +2935,11 @@
                 
                 document.getElementById('isInternalComment').checked = false;
                 
-                showToast('Comment added');
+                showToast(t('td_comment_added'));
                 loadTimeline();
             } catch(e) { 
                 console.error(e);
-                showToast('Error adding comment', 'error'); 
+                showToast(t('td_comment_add_failed'), 'error'); 
             }
         });
 
@@ -2951,7 +2951,7 @@
                     method: 'POST',
                     body: JSON.stringify(newStatus)
                 });
-                showToast('Status updated');
+                showToast(t('td_status_updated'));
                 loadTicket(); // Refresh to update allowed transitions
             } catch(e) { 
                 console.error(e);
@@ -3076,26 +3076,26 @@
             modal.innerHTML = `
                 <div class="modal" style="width: min(800px, 90%);">
                     <div class="modal-header">
-                        <h2>Comment Edit Details</h2>
-                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()">
+                        <h2>${t('td_edit_details_title')}</h2>
+                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()" aria-label="${t('btn_close')}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
                     <div class="modal-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div>
                             <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted);">
-                                <strong>Original Author:</strong> ${authorName}<br>
-                                <strong>Written At:</strong> ${createdAt}
+                                <strong>${t('td_original_author')}</strong> ${authorName}<br>
+                                <strong>${t('td_written_at')}</strong> ${createdAt}
                             </div>
-                            <strong style="color:var(--error); font-size:12px; text-transform:uppercase;">Before (Eski Hali)</strong>
+                            <strong style="color:var(--error); font-size:12px; text-transform:uppercase;">${t('td_before')}</strong>
                             <div style="background:var(--bg-hover); padding:8px; border-radius:4px; font-size:13px; margin-top:4px; min-height:60px;">${finalOldHtml}</div>
                         </div>
                         <div>
                             <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted);">
-                                <strong>Edited By:</strong> ${editorName}<br>
-                                <strong>Edited At:</strong> ${updatedAt}
+                                <strong>${t('td_edited_by')}</strong> ${editorName}<br>
+                                <strong>${t('td_edited_at')}</strong> ${updatedAt}
                             </div>
-                            <strong style="color:var(--success); font-size:12px; text-transform:uppercase;">After (Yeni Hali)</strong>
+                            <strong style="color:var(--success); font-size:12px; text-transform:uppercase;">${t('td_after')}</strong>
                             <div style="background:var(--bg-hover); padding:8px; border-radius:4px; font-size:13px; margin-top:4px; min-height:60px;">${finalNewHtml}</div>
                         </div>
                     </div>
@@ -3133,7 +3133,7 @@
         window.downloadCommentLogs = () => {
             const items = document.querySelectorAll('.comment-log-item');
             if (items.length === 0) {
-                showToast('No logs to download', 'error');
+                showToast(t('td_no_logs_download'), 'error');
                 return;
             }
             
@@ -3162,11 +3162,11 @@
 
         
         function renderUserTooltipContent(user) {
-            const dept = (window.globalLookup !== undefined && window.globalLookup.departments ? window.globalLookup.departments : []).find(d => d.id == user.departmentId)?.name || 'No Department';
+            const dept = (window.globalLookup !== undefined && window.globalLookup.departments ? window.globalLookup.departments : []).find(d => d.id == user.departmentId)?.name || t('admin_no_dept');
             const userGroups = user.groupIds && user.groupIds.length > 0 
                 ? user.groupIds.map(gid => (window.globalGroups !== undefined ? window.globalGroups : []).find(g => g.id == gid)?.name || `Group ${gid}`).join(', ') 
-                : 'No Groups';
-            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+                : t('admin_no_groups');
+            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString(getLocale()) : t('dash_unknown');
 
             return `
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:8px;">
@@ -3177,9 +3177,9 @@
                     </div>
                 </div>
                 <div style="font-size:12px; display:flex; flex-direction:column; gap:4px;">
-                    <div><strong style="color:var(--text-muted);">Joined:</strong> ${createdAt}</div>
-                    <div><strong style="color:var(--text-muted);">Dept:</strong> ${escapeHtml(dept)}</div>
-                    <div><strong style="color:var(--text-muted);">Groups:</strong> ${escapeHtml(userGroups)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_joined')}</strong> ${createdAt}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_dept')}</strong> ${escapeHtml(dept)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_groups')}</strong> ${escapeHtml(userGroups)}</div>
                 </div>
             `;
         }
@@ -3248,10 +3248,10 @@
                     textArea.dispatchEvent(new Event('input'));
                 }
                 
-                showToast('Files attached successfully!');
+                showToast(t('td_files_attached'));
             } catch (err) {
                 console.error('Failed to upload file for comment:', err);
-                showToast('Failed to upload one or more files.', 'error');
+                showToast(t('td_files_upload_failed'), 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
@@ -3281,7 +3281,7 @@
                 const wrapper = document.createElement('div');
                 wrapper.style.cssText = 'position: relative; display: inline-block; margin-inline-end: 8px; margin-top: 8px;';
                 
-                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, 'commentText')" title="Remove" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
+                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, 'commentText')" title="${t('common_remove')}" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
