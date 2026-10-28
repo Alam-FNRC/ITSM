@@ -10,7 +10,7 @@ import { setLanguage, t, getCurrentLanguage, getLocale, LANGUAGES } from './i18n
 // a leading ' keeps it text. Exports contain user text such as ticket titles.
 export const csvCell = (value) => {
     let text = (value ?? '').toString();
-    if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+    if (/^[=+\-@\t\r]/.test(text) && text !== '-') text = `'${text}`;
     return `"${text.replaceAll('"', '""')}"`;
 };
 

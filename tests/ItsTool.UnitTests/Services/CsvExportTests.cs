@@ -12,6 +12,7 @@ public class CsvExportTests
     [InlineData("-2+3", "'-2+3")]
     [InlineData("@SUM(A1)", "'@SUM(A1)")]
     [InlineData("Printer \"offline\"", "Printer \"\"offline\"\"")]
+    [InlineData("-", "-")]
     [InlineData(null, "")]
     public void Cells_that_a_spreadsheet_would_run_are_kept_as_text(string? value, string expected)
     {

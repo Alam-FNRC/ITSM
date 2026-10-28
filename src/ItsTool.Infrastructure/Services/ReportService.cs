@@ -88,7 +88,7 @@ public class ReportService : IReportService
     internal static string EscapeCsv(string? field)
     {
         if (string.IsNullOrEmpty(field)) return "";
-        if ("=+-@\t\r".Contains(field[0])) field = "'" + field;
+        if (field != "-" && "=+-@\t\r".Contains(field[0])) field = "'" + field;
         return field.Replace("\"", "\"\"");
     }
 }

@@ -84,5 +84,6 @@ test('CSV cells stay text in spreadsheets', () => {
     assert.equal(csvCell('+1 555'), `"'+1 555"`);
     assert.equal(csvCell('@SUM(A1)'), `"'@SUM(A1)"`);
     assert.equal(csvCell('Printer offline'), '"Printer offline"');
+    assert.equal(csvCell('-'), '"-"');
     assert.equal(csvCell(null), '""');
 });
