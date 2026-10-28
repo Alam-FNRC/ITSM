@@ -847,7 +847,7 @@
 
         if (!window.api.token) window.location.href = '/login.html';
         bindShellActions();
-        initAuthorizedAttachments(window.api, () => showToast(t('attachment_download_failed', 'The attachment could not be downloaded.'), 'error'));
+        initAuthorizedAttachments(window.api, () => showToast(t('attachment_download_failed'), 'error'));
         
         const initialAiLang = localStorage.getItem('itsm_ai_lang') || getCurrentLanguage() || 'en';
         const aiLangSelect = document.getElementById('aiResponseLang');

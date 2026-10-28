@@ -307,7 +307,7 @@
                     const canEdit = isManagerOrAdmin || userPerms.has('ticket.edit') || userPerms.has('ticket.manage') || userPerms.has('ticket.assign');
                     const canDelete = isManagerOrAdmin || userPerms.has('ticket.delete') || userPerms.has('ticket.manage') || userPerms.has('ticket.assign');
                     
-                    const editBtnHtml = canEdit ? `<a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost" style="color: var(--primary);">${t('ticket_btn_edit', 'Düzenle')}</a>` : '';
+                    const editBtnHtml = canEdit ? `<a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost" style="color: var(--primary);">${t('ticket_btn_edit')}</a>` : '';
                     const deleteBtnHtml = canDelete ? `<button type="button" data-ticket-number="${escapeHtml(ticketItem.ticketNumber)}" onclick="window.deleteTicket(${ticketItem.id}, this.dataset.ticketNumber)" class="btn btn-ghost" style="color: var(--danger); font-weight: 500;">${t('ticket_btn_delete')}</button>` : '';
 
                     const tr = document.createElement('tr');
@@ -327,7 +327,7 @@
                         <td>${renderSlaCell(ticketItem.sla, isClosed)}</td>
                         <td style="text-align: end; white-space: nowrap;">
                             <div class="row-actions">
-                                <a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost">${t('t_btn_view', 'Görüntüle')}</a>
+                                <a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost">${t('t_btn_view')}</a>
                                 ${editBtnHtml}
                                 ${deleteBtnHtml}
                             </div>
@@ -365,8 +365,8 @@
                     </div>`;
                 }
                 return `<div>
-                    <span class="sla-badge" style="background:#DCFCE7; color:#15803D; border:1px solid #86EFAC;">${t('sla_met', 'Karşılandı')}</span>
-                    <div class="sla-subtext">${t('sla_completed', 'Tamamlandı')}</div>
+                    <span class="sla-badge" style="background:#DCFCE7; color:#15803D; border:1px solid #86EFAC;">${t('sla_met')}</span>
+                    <div class="sla-subtext">${t('sla_completed')}</div>
                 </div>`;
             }
 
@@ -393,7 +393,7 @@
                 const resRemainStr = formatRemaining(resDiffMs);
                 const resDateStr = resDate ? resDate.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
                 return `<div>
-                    <span class="sla-badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D;">${t('sla_first_resp_breached', 'İlk Yanıt Aşıldı')}</span>
+                    <span class="sla-badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D;">${t('sla_first_resp_breached')}</span>
                     <div class="sla-subtext" title="${t('sla_target_prefix')} ${resDateStr}">${t('sla_resolution_prefix')} ${resRemainStr}</div>
                 </div>`;
             }
@@ -421,7 +421,7 @@
                 } else {
                     const days = Math.ceil(diffMins / 1440);
                     badgeStyle = 'background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE;';
-                    badgeText = `${days} ${t('sla_days_left', 'gün kaldı')}`;
+                    badgeText = `${days} ${t('sla_days_left')}`;
                 }
 
                 return `<div>
@@ -443,7 +443,7 @@
                 return `${hrs} ${t('sla_short_hr')} ${rm} ${t('sla_mins_left')}`;
             }
             const days = Math.ceil(mins / 1440);
-            return `${days} ${t('sla_days_left', 'gün kaldı')}`;
+            return `${days} ${t('sla_days_left')}`;
         }
 
         async function exportCsv() {
