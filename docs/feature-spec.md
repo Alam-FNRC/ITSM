@@ -21,6 +21,8 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Satisfaction surveys (sampled, scored) | GLPI | Basic survey exists | P3 | 4 |
 | Ticket templates (mandatory, hidden, preset fields) | GLPI | Partial via custom fields | P2 | 4 |
 | Parent / child tickets with cascade resolve | iTop | No | P2 | 4 |
+| Major incidents (one outage, many reporters, status updates) | iTop | No | P2 | 4 |
+| Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | No: a security issue is an ordinary ticket, visible to every `report.view` holder | P1 | 4 |
 | Business rules engine (routing, auto-assign) | GLPI | Partial: assignment rules | P2 | 4 |
 | SLA matching by service and priority; OLAs; escalation levels | iTop, GLPI | Partial: SLA per priority/project | P2 | 4 |
 | Problem management | iTop, GLPI | No | P1 | 4 |
@@ -64,6 +66,8 @@ Keep the existing ticket, workflow and custom-field engine; add the following.
 
 **Parent and child tickets.** Solving a parent incident solves all open children, copying the solution. Tickets can also be linked as duplicates or as related.
 
+**Major incidents.** An agent can mark an incident as major when it stops a service for many users (e.g. email down). A major incident gets a named incident manager and the highest priority, and IT management is notified at once. Reports from other users about the same outage are linked as its children, and status updates posted on it go to every child's requester. Closing it requires a short review and usually raises a Problem.
+
 **Ticket templates per category.** Fields can be mandatory, preset, hidden or read-only; required fields can also be set per status (e.g. resolution code required to solve).
 
 **Rules engine.** Ordered rules with AND/OR conditions on title, category, requester, requester's department, source, priority and email headers; actions set category, team, agent, priority, SLA or request an approval. Runs on create, update or both, with a log of which rules matched.
@@ -80,6 +84,24 @@ The existing SLA engine (business hours, pause on pending, pre-breach warning) s
 - **Thresholds.** Warning at 75% of the target, breach at 100%; a breach automatically moves the ticket to an Escalated state.
 - **Escalation levels.** Each SLA can have levels that run at a set time before or after the deadline (e.g. 1 hour before: notify team lead; at breach: raise priority and notify IT manager).
 - **Missing today.** Screens to maintain business hours and UAE public holidays.
+
+## Security incidents
+
+Proposed 28 Oct 2026; William to confirm. Neither iTop nor GLPI has a security incident module, so this section is built from ISO 27001:2022 A.5.24–A.5.28 (incident management) and A.6.8 (event reporting).
+
+A security incident (phishing, malware, account compromise, data leak, lost laptop) is kept apart from ordinary incidents because its details are sensitive and auditors check how it was handled.
+
+- **Restricted access.** Only the security team (new permission, e.g. `security.incident.view`) and people they add to an incident can see it. Security incidents never appear in general ticket lists, search, dashboards, Kanban, calendar, exports, reports or notifications for anyone else, including `report.view` holders. The reporter sees only that the report was received and its current status. Every time someone opens one, the system records who and when.
+- **Reporting (A.6.8).** Any staff member can report a suspected security issue from a "Report a security issue" button with only a few required fields. Suspicious emails can later be forwarded to a dedicated mailbox (with email-to-ticket). An agent can move an ordinary ticket into the security area. From then on the restricted rules apply to it.
+- **Triage (A.5.25).** The security team decides whether the report is not a security issue (it goes back to the service desk as a normal ticket), a security event (logged, no response needed) or a security incident. The decision, the reason and who made it are recorded.
+- **Classification.** Category (phishing, malware, unauthorised access, account compromise, data leak or loss, lost or stolen device, denial of service, policy violation, other). Severity 1–4 is set from the impact on confidentiality, integrity and availability and the classification of the affected data. A flag marks incidents where personal data is involved.
+- **Response phases (A.5.26).** New → Triage → Containment → Eradication → Recovery → Post-incident review → Closed. Each phase change is timestamped, and the times to triage, contain and resolve are stored for the KPIs. Severity sets the SLA targets and escalation, e.g. severity 1 notifies the security lead and IT manager at once.
+- **Action log.** A dated, append-only record of every action taken (who, what, when), kept separate from comments. It cannot be edited or deleted.
+- **Evidence (A.5.28).** Each evidence item (log export, screenshot, email, device) records a description, who collected it and when, and where it is kept. Files also get a SHA-256 hash. Every hand-over is recorded (chain of custody). Evidence files cannot be deleted or replaced.
+- **Affected items.** Affected users, devices, systems and services. These are linked to CMDB items once the CMDB exists.
+- **Lessons learned (A.5.27).** Closing a severity 1 or 2 incident requires a post-incident review: root cause, what worked, what to improve, and follow-up actions. Each follow-up action can raise a Problem or a Change. The review is optional for severity 3 and 4.
+- **External reporting.** If FNRC must report incidents to an outside body (e.g. a national CERT or regulator), the incident records whether it was reported, when, by whom, and the reference number.
+- **KPIs.** Counts by category and severity, mean time to triage, contain and resolve, the share of incidents with a completed review, and open incidents by age.
 
 ## Problem and Known Error
 
@@ -158,7 +180,7 @@ Every KPI filters by date range, department, category, priority, team and agent,
 | Problems open and age | Count, average age | Problem management |
 | Access changes | Role/permission grants and revocations, by whom | ISO 27001 A.5.18 |
 | User access review | Users, roles, last login, inactive accounts | ISO 27001 A.5.18 |
-| Security incidents | Count, severity, time to resolve | ISO 27001 A.5.24–A.5.27 |
+| Security incidents | Count by category and severity; time to triage, contain and resolve; share with a completed review | ISO 27001 A.5.24–A.5.28 |
 | Asset register, warranty and contract expiries | Current list, upcoming 90 days | ISO 27001 A.5.9 |
 
 ISO 27001 control numbers refer to the 2022 edition and are a guide; the final list follows what FNRC's auditors asked for.
@@ -187,3 +209,6 @@ iTop is AGPL and GLPI is GPL. This spec and the reference notes were written by 
 - [ ] Does FNRC already have an asset inventory tool (Intune, SCCM, spreadsheet)?
 - [ ] Who sits on the CAB, and how often does it meet?
 - [ ] Does the service desk serve only internal staff, or also other entities?
+- [ ] Who handles security incidents (CISO, security team), and who else may see them?
+- [ ] Must FNRC report security incidents to an outside authority, and within what time?
+- [ ] Does FNRC already have an incident response procedure or severity scale to follow?
