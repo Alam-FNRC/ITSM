@@ -135,7 +135,7 @@
     <script type="module">
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
-        import { bindShellActions, showToast } from './js/ui.js?v=999';
+        import { bindShellActions, showToast, downloadCsv } from './js/ui.js?v=999';
         import { t, getLocale } from './js/i18n.js';
         injectShell();
 
@@ -484,20 +484,10 @@
                     formatAuditFieldName(a.fieldName || ''),
                     mappedOld || '',
                     mappedNew || ''
-                ].map(cell => `"${(cell || '').toString().replaceAll('"', '""')}"`).join(',');
+                ];
             });
 
-            const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.href = url;
-            const dateStr = new Date().toISOString().slice(0, 10);
-            downloadAnchor.download = `audit-log-${dateStr}.csv`;
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            document.body.removeChild(downloadAnchor);
-            URL.revokeObjectURL(url);
+            downloadCsv(`audit-log-${new Date().toISOString().slice(0, 10)}.csv`, headers, rows);
             showToast(t('audit_export_done'), 'success');
         };
 
