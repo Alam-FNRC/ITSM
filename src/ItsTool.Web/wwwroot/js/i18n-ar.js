@@ -785,5 +785,17 @@ export const ar = {
     "workload_groups": "المجموعات:",
     "app_name": "ITSM Tool",
     "page_admin": "الإدارة",
-    "page_survey": "استبيان الرضا"
+    "page_survey": "استبيان الرضا",
+    "kb_toggle_publish": "نشر أو إلغاء النشر",
+    "kb_article_loading": "يرجى الانتظار حتى يتم تحميل المقال...",
+    "kb_tip_label": "تلميح:",
+    "kb_tip_select": "للتعليق أو طلب تعديل بسرعة، حدّد بالفأرة أي جزء من نص المقال أدناه.",
+    "kb_revision_done": "أكمل الكاتب تعديل المقال. ملاحظة مراجعتك السابقة أدناه.",
+    "kb_pending_title": "المقال بانتظار الموافقة",
+    "kb_pending_desc": "أُرسل هذا المقال إلى المديرين للمراجعة. وفق مبدأ الأعين الأربع، يجب أن يراجعه مدير آخر.",
+    "kb_id_missing": "معرّف المقال مفقود.",
+    "kb_submit_failed": "تعذر إرسال المقال للموافقة.",
+    "kb_publish_toggle_failed": "تعذر تغيير حالة النشر.",
+    "kb_deleting": "سيتم حذف المقال.",
+    "kb_categories_load_failed": "تعذر تحميل الفئات."
 };

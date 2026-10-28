@@ -829,7 +829,19 @@ export const translations = {
         "workload_groups": "Groups:",
         "app_name": "ITSM Tool",
         "page_admin": "Administration",
-        "page_survey": "Satisfaction Survey"
+        "page_survey": "Satisfaction Survey",
+        "kb_toggle_publish": "Publish or unpublish",
+        "kb_article_loading": "Please wait while the article loads...",
+        "kb_tip_label": "Tip:",
+        "kb_tip_select": "To comment or request a revision quickly, select any part of the article text below with your mouse.",
+        "kb_revision_done": "The author has revised the article. Your earlier review note is below.",
+        "kb_pending_title": "Article awaiting approval",
+        "kb_pending_desc": "This article was sent to the managers for review. Under the four-eyes rule, a different manager must review it.",
+        "kb_id_missing": "The article ID is missing.",
+        "kb_submit_failed": "Could not submit the article for approval.",
+        "kb_publish_toggle_failed": "Could not change the publish status.",
+        "kb_deleting": "The article will be deleted.",
+        "kb_categories_load_failed": "Could not load the categories."
     },
     "tr": {
         // Sidebar Navigation
@@ -1660,7 +1672,19 @@ export const translations = {
         "workload_groups": "Gruplar:",
         "app_name": "ITSM Tool",
         "page_admin": "Yönetim",
-        "page_survey": "Memnuniyet Anketi"
+        "page_survey": "Memnuniyet Anketi",
+        "kb_toggle_publish": "Yayınla veya yayından kaldır",
+        "kb_article_loading": "Makale yüklenirken lütfen bekleyin...",
+        "kb_tip_label": "İpucu:",
+        "kb_tip_select": "Yorum yapmak veya hızlıca revizyon istemek için aşağıdaki makale metninden istediğiniz bir kısmı farenizle seçebilirsiniz.",
+        "kb_revision_done": "Yazar revizyonu tamamladı! Önceki inceleme notunuz aşağıdadır.",
+        "kb_pending_title": "Makale onay bekliyor",
+        "kb_pending_desc": "Bu makale inceleme ve onay için yöneticilere iletilmiştir. Dört göz ilkesi gereği farklı bir yöneticinin incelemesi beklenmektedir.",
+        "kb_id_missing": "Makale kimliği eksik.",
+        "kb_submit_failed": "Onaya gönderilirken hata oluştu.",
+        "kb_publish_toggle_failed": "Yayın durumu değiştirilemedi.",
+        "kb_deleting": "Makale silinecek.",
+        "kb_categories_load_failed": "Kategoriler yüklenemedi."
     },
     "ar": ar
 };

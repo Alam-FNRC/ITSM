@@ -90,7 +90,7 @@
                     <div id="managerTip" style="display: none; background: rgba(var(--primary-rgb, 59,130,246), 0.05); border: 1px dashed rgba(var(--primary-rgb, 59,130,246), 0.3); padding: 10px; border-radius: 4px; margin-bottom: 20px; align-items: center; gap: 8px;">
                         <svg viewBox="0 0 24 24" width="20" height="20" style="fill: var(--primary); flex-shrink: 0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                         <span style="font-size: 13px; color: var(--text-secondary);">
-                            <strong>İpucu:</strong> Yorum yapmak veya hızlıca revizyon istemek için aşağıdaki makale metninden istediğiniz bir kısmı farenizle seçebilirsiniz.
+                            <strong data-i18n="kb_tip_label">Tip:</strong> <span data-i18n="kb_tip_select">To comment or request a revision quickly, select any part of the article text below with your mouse.</span>
                         </span>
                     </div>
 
@@ -202,6 +202,9 @@
         import { bindShellActions, showToast, showUndoToast, openModal, closeModal } from './js/ui.js?v=999';
         import { t, getLocale } from './js/i18n.js';
         injectShell();
+        // Placeholders until the article arrives; not data-i18n, which would overwrite the loaded article
+        document.getElementById('articleTitle').textContent = t('common_loading');
+        document.querySelector('#articleContent p').textContent = t('kb_article_loading');
         window.closeModal = closeModal;
         
         if (!window.api.token) window.location.href = '/login.html';
@@ -239,22 +242,22 @@
                 alertBox.style.background = 'rgba(var(--warning-rgb, 245,158,11), 0.1)';
                 alertBox.style.borderInlineStartColor = 'var(--warning)';
                 titleBox.style.color = 'var(--warning)';
-                titleBox.textContent = 'Manager Feedback / Revision Request';
+                titleBox.textContent = t('kb_lbl_manager_feedback');
                 textBox.textContent = a.managerFeedback;
             } else if (a.status === 2 && a.managerFeedback && !isAuthor) {
                 alertBox.style.display = 'block';
                 alertBox.style.background = 'rgba(var(--info-rgb, 59,130,246), 0.1)';
                 alertBox.style.borderInlineStartColor = 'var(--info)';
                 titleBox.style.color = 'var(--info)';
-                titleBox.textContent = '📌 Yazar Revizyonu Tamamladı! (Önceki İnceleme Notunuz Aşağıdadır)';
+                titleBox.textContent = '📌 ' + t('kb_revision_done');
                 textBox.textContent = a.managerFeedback;
             } else if (a.status === 2 && isAuthor) {
                 alertBox.style.display = 'block';
                 alertBox.style.background = 'rgba(var(--info-rgb, 59,130,246), 0.1)';
                 alertBox.style.borderInlineStartColor = 'var(--info)';
                 titleBox.style.color = 'var(--info)';
-                titleBox.textContent = '📌 Makale Onay Bekliyor';
-                textBox.textContent = 'Bu makale inceleme ve onay için yöneticilere iletilmiştir. Kalite ve güvenlik standartları (dört göz ilkesi) gereği farklı bir yöneticinin incelemesi beklenmektedir.';
+                titleBox.textContent = '📌 ' + t('kb_pending_title');
+                textBox.textContent = t('kb_pending_desc');
             } else {
                 alertBox.style.display = 'none';
             }
@@ -316,7 +319,7 @@
 
         async function loadArticle() {
             if (!articleId) {
-                showToast('Article ID missing', 'error');
+                showToast(t('kb_id_missing'), 'error');
                 return;
             }
             try {
@@ -328,7 +331,7 @@
                 if (a.authorName) {
                     document.getElementById('articleAuthor').style.display = 'inline';
                     const deptStr = a.authorDepartment ? ` (${a.authorDepartment})` : '';
-                    document.getElementById('articleAuthor').textContent = ` • Gönderen: ${a.authorName}${deptStr}`;
+                    document.getElementById('articleAuthor').textContent = ` • ${t('kb_by')}: ${a.authorName}${deptStr}`;
                 }
 
                 document.getElementById('articleViews').textContent = a.viewCount;
@@ -489,7 +492,7 @@
                 loadArticle();
             } catch (e) {
                 console.error(e);
-                showToast(e.message || 'Onaya gönderilirken hata oluştu.', 'error');
+                showToast(e.message || t('kb_submit_failed'), 'error');
             }
         });
 
@@ -515,7 +518,7 @@
                 });
             } catch (e) { console.error(e); 
                 loadedArticle.status = oldStatus;
-                showToast(e.message || 'Failed to change publish status.', 'error');
+                showToast(e.message || t('kb_publish_toggle_failed'), 'error');
              }
         });
 
@@ -557,7 +560,7 @@
         });
 
         document.getElementById('btnDeleteArticle')?.addEventListener('click', () => {
-            showUndoToast('Article will be deleted.', async () => {
+            showUndoToast(t('kb_deleting'), async () => {
                 // Cancelled
                 console.log('Delete cancelled by Undo.');
             }).then(async (proceed) => {
