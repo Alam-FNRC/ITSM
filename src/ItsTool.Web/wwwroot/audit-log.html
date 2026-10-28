@@ -249,6 +249,9 @@
 
         // Stored field names (property names, and Turkish labels in older rows) to dictionary keys
         const AUDIT_FIELD_KEYS = {
+            'New Record': 'audit_field_new_record',
+            'Record Status': 'audit_field_record_status',
+            'SLA Policy': 'audit_field_sla_policy',
             'Renk Kodu': 'audit_field_color',
             'CommentDeleted': 'audit_field_comment_deleted',
             'StatusId': 'audit_field_status',
@@ -300,7 +303,10 @@
         const AUDIT_ENTITY_KEYS = { 'Ticket': 'audit_entity_ticket', 'User': 'audit_entity_user', 'Role': 'audit_entity_role', 'Group': 'audit_entity_group', 'GroupMember': 'audit_entity_groupmember', 'Department': 'audit_entity_department', 'Category': 'audit_entity_category', 'Project': 'audit_entity_project', 'SlaPolicy': 'audit_entity_slapolicy', 'KnowledgeArticle': 'audit_entity_knowledgearticle', 'AssignmentRule': 'audit_entity_assignmentrule', 'Webhook': 'audit_entity_webhook', 'Permission': 'audit_entity_permission', 'Status': 'audit_entity_status', 'Priority': 'audit_entity_priority', 'TicketType': 'audit_entity_tickettype', 'Config': 'audit_entity_config' };
         const AUDIT_ACTION_KEYS = { 'Created': 'audit_action_created', 'Updated': 'audit_action_updated', 'Deleted': 'audit_action_deleted', 'Restored': 'audit_action_restored', 'Moved': 'audit_action_moved', 'Assigned': 'audit_action_assigned', 'Unassigned': 'audit_action_unassigned', 'Transferred': 'audit_action_transferred', 'Escalated': 'audit_action_escalated', 'CreatedViaEmail': 'audit_action_createdviaemail', 'StatusChanged': 'audit_action_statuschanged', 'CommentAdded': 'audit_action_commentadded', 'CommentReplied': 'audit_action_commentreplied', 'InternalNoteAdded': 'audit_action_internalnoteadded', 'CommentEdited': 'audit_action_commentedited', 'CommentDeleted': 'audit_action_commentdeleted', 'CommentRestored': 'audit_action_commentrestored', 'AttachmentAdded': 'audit_action_attachmentadded', 'AttachmentDeleted': 'audit_action_attachmentdeleted', 'UserMentioned': 'audit_action_usermentioned', 'RoleAssigned': 'audit_action_roleassigned', 'RoleRevoked': 'audit_action_rolerevoked', 'PermissionAdded': 'audit_action_permissionadded', 'PermissionRemoved': 'audit_action_permissionremoved', 'PermissionOverrideSet': 'audit_action_permissionoverrideset', 'PermissionOverrideRemoved': 'audit_action_permissionoverrideremoved', 'PasswordReset': 'audit_action_passwordreset', 'ProfilePhotoUpdated': 'audit_action_profilephotoupdated', 'MemberAdded': 'audit_action_memberadded', 'MemberRemoved': 'audit_action_memberremoved' };
         // Values the server stored in Turkish in older rows
-        const AUDIT_VALUE_KEYS = { 'Silindi (Soft Deleted)': 'audit_value_soft_deleted', 'Kalıcı Silindi': 'audit_value_hard_deleted', 'Aktif / Geri Alındı': 'audit_value_restored' };
+        const AUDIT_VALUE_KEYS = {
+            'Deleted (soft delete)': 'audit_value_soft_deleted', 'Permanently deleted': 'audit_value_hard_deleted', 'Active / restored': 'audit_value_restored',
+            'Silindi (Soft Deleted)': 'audit_value_soft_deleted', 'Kalıcı Silindi': 'audit_value_hard_deleted', 'Aktif / Geri Alındı': 'audit_value_restored'
+        };
         const fill = (key, ...values) => values.reduce((s, value, i) => s.replaceAll(`{${i}}`, () => value ?? ''), t(key));
 
         function formatAuditFieldName(name) {
