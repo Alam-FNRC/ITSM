@@ -64,8 +64,8 @@ test('tickets.html - Table layout, column widths, and SLA badge styling', () => 
     assert.ok(content.includes('class="sla-subtext"'), 'renderSlaCell must use sla-subtext class');
 
     // Button translations
-    assert.ok(content.includes("t('ticket_btn_delete', 'Sil')"), 'Delete button must use localized key');
-    assert.ok(content.includes("t('ticket_btn_edit', 'Düzenle')"), 'Edit button must use localized key');
+    assert.ok(content.includes("t('ticket_btn_delete')"), 'Delete button must use localized key');
+    assert.ok(content.includes("t('ticket_btn_edit')"), 'Edit button must use localized key');
 
     // No emojis in SLA badges
     const slaFunctionBody = content.substring(content.indexOf('function renderSlaCell'), content.indexOf('function formatRemaining'));
