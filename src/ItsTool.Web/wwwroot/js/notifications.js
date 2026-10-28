@@ -1,4 +1,5 @@
 import { t } from './i18n.js';
+import { escapeHtml } from './ui.js';
 
 let hubConnection = null;
 
@@ -272,15 +273,7 @@ function showToastNotification(payload) {
     const borderCol = payload.priority === 'High' ? 'var(--danger)' : 'var(--primary)';
     const iconColor = payload.priority === 'High' ? 'var(--danger)' : 'var(--primary)';
     
-    let bodyText = payload.body;
-    let commentId = null;
-    if (payload.type === 'comment.mention' && bodyText?.includes('|')) {
-        const p = bodyText.split('|');
-        bodyText = p[0];
-        commentId = p[1];
-    }
-    bodyText = formatNotificationBody(bodyText);
-    
+    const { bodyText, commentId } = parseNotificationBody(payload);
     const { displayTitle, iconSvg } = getToastIconAndTitle(payload);
 
     let linkUrl = '#';
@@ -299,13 +292,13 @@ function showToastNotification(payload) {
                 <div style="color: ${iconColor}; margin-right: 8px; display: flex; align-items: center;">
                     ${iconSvg}
                 </div>
-                <strong style="font-size: 13px; color: var(--text-main); font-weight: 600; flex: 1;">${displayTitle}</strong>
+                <strong style="font-size: 13px; color: var(--text-main); font-weight: 600; flex: 1;">${escapeHtml(displayTitle)}</strong>
                 <button type="button" onclick="document.getElementById('${toastId}').remove()" style="font-size: 14px; margin-left: 8px; background: transparent; border: none; cursor: pointer; color: var(--text-muted); opacity: 0.6; padding: 0 4px; line-height: 1;">&times;</button>
             </div>
             <div style="padding: 4px 12px 12px 12px; font-size: 12px; color: var(--text-muted); line-height: 1.4;">
-                <div style="margin-bottom: 8px;">${bodyText}</div>
+                <div style="margin-bottom: 8px;">${escapeHtml(bodyText)}</div>
                 <div style="text-align: right;">
-                    <a href="${linkUrl}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">Bilete Git</a>
+                    <a href="${escapeHtml(linkUrl)}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">Bilete Git</a>
                 </div>
             </div>
         </div>
@@ -332,19 +325,21 @@ function getNotificationLink(n, commentId) {
     return '#';
 }
 
-function parseNotificationBody(n) {
+// Mention notifications end in "|<comment id>"; the text before it can itself contain "|" (it includes the ticket title)
+export function parseNotificationBody(n) {
     let bodyText = n.body || '';
     let commentId = null;
-    if (n.type === 'comment.mention' && bodyText.includes('|')) {
-        const p = bodyText.split('|');
-        bodyText = p[0];
-        commentId = p[1];
+    const separator = bodyText.lastIndexOf('|');
+    if (n.type === 'comment.mention' && separator >= 0) {
+        const id = bodyText.slice(separator + 1).trim();
+        bodyText = bodyText.slice(0, separator);
+        if (/^\d+$/.test(id)) commentId = id;
     }
     bodyText = formatNotificationBody(bodyText);
     return { bodyText, commentId };
 }
 
-function createNotificationItem(n) {
+export function createNotificationItem(n) {
     const priorityHtml = n.priority === 'High' ? '<span class="badge" style="background:var(--danger);font-size:10px;">High</span>' : '';
     const bgClass = n.isRead ? 'background: var(--bg-hover); opacity: 0.8;' : 'background: var(--bg-surface);';
     
@@ -364,17 +359,17 @@ function createNotificationItem(n) {
             <div style="flex: 1;">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <div class="d-flex align-items-center gap-2">
-                        <strong style="font-size: 14px;">${displayTitle}</strong>
+                        <strong style="font-size: 14px;">${escapeHtml(displayTitle)}</strong>
                         ${priorityHtml}
                     </div>
                 </div>
-                <div style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">${bodyText}</div>
+                <div style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">${escapeHtml(bodyText)}</div>
                 
                 <div class="d-flex justify-content-between align-items-center">
                     <div style="font-size: 11px; color: #999;">${new Date(n.createdAt).toLocaleString()}</div>
                     <div class="d-flex gap-sm">
-                        <button type="button" class="btn btn-outline-secondary" style="padding: 2px 8px; font-size: 11px; border-radius: 4px;" onclick="event.preventDefault(); event.stopPropagation(); window.showInfoModal('${t ? t('notif_detail') : 'Bildirim Detayı'}', '${bodyText.replaceAll("'", String.raw`\'`).replaceAll('"', '&quot;')}');">${t ? t('notif_detail_btn') : 'Detay'}</button>
-                        <a href="${linkUrl}" class="btn btn-primary" style="padding: 2px 8px; font-size: 11px; border-radius: 4px; color: white; text-decoration: none;" onclick="event.stopPropagation(); if (window.api && !${Boolean(n.isRead)}) { window.api.request('/notifications/${n.id}/read', { method: 'POST' }).catch(()=>{}); }">Git</a>
+                        <button type="button" class="btn btn-outline-secondary notification-detail-btn" style="padding: 2px 8px; font-size: 11px; border-radius: 4px;">${t ? t('notif_detail_btn') : 'Detay'}</button>
+                        <a href="${escapeHtml(linkUrl)}" class="btn btn-primary" style="padding: 2px 8px; font-size: 11px; border-radius: 4px; color: white; text-decoration: none;" onclick="event.stopPropagation(); if (window.api && !${Boolean(n.isRead)}) { window.api.request('/notifications/${n.id}/read', { method: 'POST' }).catch(()=>{}); }">Git</a>
                     </div>
                 </div>
             </div>
@@ -406,6 +401,12 @@ function createNotificationItem(n) {
                     loadNotifications();
                 } catch(err) { console.error(err); }
             }
+            return;
+        }
+        if (e.target.closest('.notification-detail-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.showInfoModal(t ? t('notif_detail') : 'Bildirim Detayı', bodyText);
             return;
         }
         if (e.target.closest('.btn')) {
