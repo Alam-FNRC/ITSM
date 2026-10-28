@@ -1,4 +1,4 @@
-import { t } from './i18n.js';
+import { t, getLocale } from './i18n.js';
 import { escapeHtml } from './ui.js';
 
 let hubConnection = null;
@@ -21,11 +21,11 @@ function setupNotificationActionButtons(notifList) {
             <div style="display: flex; justify-content: space-between; padding: 4px 12px 12px 12px; border-bottom: 1px solid var(--border); margin-bottom: 8px;">
                 <button type="button" onclick="markAllAsRead(event)" style="background: none; border: none; color: var(--primary); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                    ${t ? t('topbar_mark_all_read') : 'Mark all as read'}
+                    ${t('topbar_mark_all_read')}
                 </button>
                 <button type="button" id="btnDeleteAllNotifs" onclick="deleteAllNotifications(event)" style="background: none; border: none; color: var(--danger); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
-                    ${t ? t('topbar_delete_all') : 'Delete All'}
+                    ${t('topbar_delete_all')}
                 </button>
             </div>
         `;
@@ -102,7 +102,7 @@ async function loadNotifications() {
         let unreadCount = 0;
 
         if (data.length === 0) {
-            container.innerHTML = '<div class="p-3 text-center text-muted"><small>No notifications</small></div>';
+            container.innerHTML = `<div class="p-3 text-center text-muted"><small>${escapeHtml(t('notif_none'))}</small></div>`;
         } else {
             data.forEach(n => {
                 if (!n.isRead) unreadCount++;
@@ -125,7 +125,7 @@ async function loadNotifications() {
 
 window.deleteAllNotifications = async function(e) {
     e.preventDefault();
-    if (!confirm(t ? t('notif_confirm_delete') : 'Tüm bildirimleri kalıcı olarak silmek istediğinize emin misiniz?')) return;
+    if (!confirm(t('notif_confirm_delete'))) return;
     try {
         await window.api.request(`/notifications/all`, { method: 'DELETE' });
         loadNotifications();
@@ -151,100 +151,67 @@ function getOrCreateToastContainer() {
         toastContainer.id = 'toast-container';
         toastContainer.style.position = 'fixed';
         toastContainer.style.top = '20px';
-        toastContainer.style.right = '20px';
+        toastContainer.style.insetInlineEnd = '20px';
         toastContainer.style.zIndex = '9999';
         document.body.appendChild(toastContainer);
     }
     return toastContainer;
 }
 
-const EVENT_TITLES = {
-    'ticket.assigned': 'Bilet Atandı',
-    'ticket.created': 'Bilet Oluşturuldu',
-    'ticket.transferred': 'Bilet Aktarıldı',
-    'ticket.comment.added': 'Yeni Yorum',
-    'comment.added': 'Yeni Yorum',
-    'comment.mention': 'Etiketlendiniz',
-    'status.changed': 'Durum Değişti',
-    'ticket.reopened': 'Bilet Yeniden Açıldı',
-    'ticket.resolved': 'Bilet Çözüldü',
-    'ticket.closed': 'Bilet Kapatıldı',
-    'ticket.closed.survey': 'Memnuniyet Anketi',
-    'sla.breached': 'SLA İhlali',
-    'sla.breach': 'SLA İhlali',
-    'sla.risk': 'SLA Riski',
-    'sla.warning': 'SLA Uyarısı',
-    'critical.unassigned': 'Kritik Bilet Atanmadı',
-    'survey.low': 'Düşük Anket Puanı',
-    'kb.suggested': 'Yeni Makale Önerisi',
-    'kb.reviewed': 'Makale İncelendi'
+// Titles by event type, so they follow the reader's language; the server's own title is the fallback
+const EVENT_TITLE_KEYS = {
+    'ticket.assigned': 'notif_title_assigned',
+    'ticket.created': 'notif_title_created',
+    'ticket.transferred': 'notif_title_transferred',
+    'ticket.comment.added': 'notif_title_comment',
+    'comment.added': 'notif_title_comment',
+    'comment.mention': 'notif_title_mention',
+    'status.changed': 'notif_title_status',
+    'ticket.reopened': 'notif_title_reopened',
+    'ticket.resolved': 'notif_title_resolved',
+    'ticket.closed': 'notif_title_closed',
+    'ticket.closed.survey': 'notif_title_survey',
+    'sla.breached': 'notif_title_sla_breached',
+    'sla.breach': 'notif_title_sla_breached',
+    'sla.risk': 'notif_title_sla_risk',
+    'sla.warning': 'notif_title_sla_warning',
+    'critical.unassigned': 'notif_title_critical_unassigned',
+    'survey.low': 'notif_title_survey_low',
+    'kb.suggested': 'notif_title_kb_suggested',
+    'kb.reviewed': 'notif_title_kb_reviewed'
 };
 
-const LEGACY_TITLE_MAP = {
-    'new ticket created': 'Bilet Oluşturuldu',
-    'ticket assigned to you': 'Bilet Atandı',
-    'ticket transferred': 'Bilet Aktarıldı',
-    'new comment on ticket': 'Yeni Yorum',
-    'you were mentioned': 'Etiketlendiniz',
-    'ticket status changed': 'Durum Değişti',
-    'ticket reopened': 'Bilet Yeniden Açıldı',
-    'ticket resolved': 'Bilet Çözüldü',
-    'ticket closed': 'Bilet Kapatıldı',
-    'sla breach risk': 'SLA Riski',
-    'sla breached': 'SLA İhlali',
-    'sla warning': 'SLA Uyarısı',
-    'critical ticket unassigned': 'Kritik Bilet Atanmadı',
-    'low survey score received': 'Düşük Anket Puanı',
-    'new knowledge base suggestion': 'Yeni Makale Önerisi',
-    'article reviewed': 'Makale İncelendi',
-    'itsm notification': 'Sistem Bildirimi'
-};
+// The messages the server writes (in English) for known events; anything else is shown as stored
+const BODY_PATTERNS = [
+    [/^Ticket #(\S+) was created\.$/, 'notif_body_created'],
+    [/^Ticket #(\S+) was assigned to you or your team\.$/, 'notif_body_assigned'],
+    [/^A new comment was added to ticket #(\S+)\.$/, 'notif_body_comment'],
+    [/^You were mentioned on ticket #(\S+) \(([\s\S]*)\)\.$/, 'notif_body_mention'],
+    [/^Ticket #(\S+) was closed\. Please fill in the satisfaction survey\.$/, 'notif_body_survey'],
+    [/^Ticket #(\S+)$/, 'notif_body_ticket'],
+    [/^First response SLA breached\.$/, 'notif_body_sla_fr_breached'],
+    [/^Resolution SLA breached\.$/, 'notif_body_sla_res_breached'],
+    [/^First response SLA is about to be breached\. \(([\s\S]*)\)$/, 'notif_body_sla_fr_warning'],
+    [/^Resolution SLA is about to be breached\. \(([\s\S]*)\)$/, 'notif_body_sla_res_warning'],
+    [/^A new article '([\s\S]*)' requires your review\.$/, 'notif_body_kb_suggested'],
+    [/^Your article '([\s\S]*)' has been published\.$/, 'notif_body_kb_published'],
+    [/^Your article '([\s\S]*)' has been marked for revision\.$/, 'notif_body_kb_revision'],
+    [/^Your article '([\s\S]*)' has been rejected\.$/, 'notif_body_kb_rejected']
+];
 
-function getNotificationTitle(type, defaultTitle) {
-    if (type && EVENT_TITLES[type.toLowerCase()]) {
-        return EVENT_TITLES[type.toLowerCase()];
-    }
-    let clean = (defaultTitle || '').replaceAll('Event ', '').trim();
-    if (clean && EVENT_TITLES[clean.toLowerCase()]) {
-        return EVENT_TITLES[clean.toLowerCase()];
-    }
-    if (clean && LEGACY_TITLE_MAP[clean.toLowerCase()]) {
-        return LEGACY_TITLE_MAP[clean.toLowerCase()];
-    }
-    if (clean.includes('.')) {
-        const mapped = EVENT_TITLES[clean.toLowerCase()];
-        if (mapped) return mapped;
-        return clean.split('.').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-    }
-    return clean || 'Bildirim';
+export function getNotificationTitle(type, defaultTitle) {
+    const clean = (defaultTitle || '').replaceAll('Event ', '').trim();
+    const key = EVENT_TITLE_KEYS[(type || '').toLowerCase()] ?? EVENT_TITLE_KEYS[clean.toLowerCase()];
+    if (key) return t(key);
+    return clean || t('notif_title_default');
 }
 
-function formatNotificationBody(bodyText) {
-    if (!bodyText) return '';
-    let text = bodyText.trim();
-    if (text === 'Ticket assigned to multiple entities' || text.startsWith('Ticket assigned to')) {
-        return 'Bilet size veya ekibinize atandı.';
-    }
-    if (text === 'A new ticket has been created.') {
-        return 'Yeni bir bilet oluşturuldu.';
-    }
-    if (text === 'A new comment was added.') {
-        return 'Bilete yeni bir yorum eklendi.';
-    }
-    if (text.includes('First Response SLA breached!')) {
-        return text.replace('First Response SLA breached!', 'İlk yanıt SLA süresi aşıldı!');
-    }
-    if (text.includes('Resolution SLA breached!')) {
-        return text.replace('Resolution SLA breached!', 'Çözüm SLA süresi aşıldı!');
-    }
-    if (text.includes('First Response SLA approaching breach.')) {
-        return text.replace('First Response SLA approaching breach.', 'İlk yanıt SLA süresi dolmak üzere!');
-    }
-    if (text.includes('Resolution SLA approaching breach.')) {
-        return text.replace('Resolution SLA approaching breach.', 'Çözüm SLA süresi dolmak üzere!');
-    }
-    if (text.startsWith('Ticket ') && text.length < 20) {
-        return text.replace('Ticket ', 'Bilet #');
+export function formatNotificationBody(bodyText) {
+    const text = (bodyText || '').trim();
+    for (const [pattern, key] of BODY_PATTERNS) {
+        const match = text.match(pattern);
+        // A function as replacement, so a "$&" in a ticket title is not read as a pattern
+        if (match) return match.slice(1).reduce((s, value, i) => s.replaceAll(`{${i}}`, () => value), t(key));
     }
     return text;
 }
@@ -287,18 +254,18 @@ function showToastNotification(payload) {
     }
 
     const toastHtml = `
-        <div id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" style="display: flex; flex-direction: column; margin-bottom: 10px; width: 280px; border: none; border-left: 3px solid ${borderCol}; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); background: var(--bg-surface); opacity: 1; transition: opacity 0.4s ease;">
+        <div id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" style="display: flex; flex-direction: column; margin-bottom: 10px; width: 280px; border: none; border-inline-start: 3px solid ${borderCol}; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); background: var(--bg-surface); opacity: 1; transition: opacity 0.4s ease;">
             <div style="display: flex; align-items: center; padding: 10px 12px 4px 12px;">
-                <div style="color: ${iconColor}; margin-right: 8px; display: flex; align-items: center;">
+                <div style="color: ${iconColor}; margin-inline-end: 8px; display: flex; align-items: center;">
                     ${iconSvg}
                 </div>
                 <strong style="font-size: 13px; color: var(--text-main); font-weight: 600; flex: 1;">${escapeHtml(displayTitle)}</strong>
-                <button type="button" onclick="document.getElementById('${toastId}').remove()" style="font-size: 14px; margin-left: 8px; background: transparent; border: none; cursor: pointer; color: var(--text-muted); opacity: 0.6; padding: 0 4px; line-height: 1;">&times;</button>
+                <button type="button" onclick="document.getElementById('${toastId}').remove()" aria-label="${escapeHtml(t('btn_close'))}" style="font-size: 14px; margin-inline-start: 8px; background: transparent; border: none; cursor: pointer; color: var(--text-muted); opacity: 0.6; padding: 0 4px; line-height: 1;">&times;</button>
             </div>
             <div style="padding: 4px 12px 12px 12px; font-size: 12px; color: var(--text-muted); line-height: 1.4;">
                 <div style="margin-bottom: 8px;">${escapeHtml(bodyText)}</div>
-                <div style="text-align: right;">
-                    <a href="${escapeHtml(linkUrl)}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">Bilete Git</a>
+                <div style="text-align: end;">
+                    <a href="${escapeHtml(linkUrl)}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">${escapeHtml(t('notif_go_ticket'))}</a>
                 </div>
             </div>
         </div>
@@ -340,7 +307,7 @@ export function parseNotificationBody(n) {
 }
 
 export function createNotificationItem(n) {
-    const priorityHtml = n.priority === 'High' ? '<span class="badge" style="background:var(--danger);font-size:10px;">High</span>' : '';
+    const priorityHtml = n.priority === 'High' ? `<span class="badge" style="background:var(--danger);font-size:10px;">${escapeHtml(t('notif_priority_high'))}</span>` : '';
     const bgClass = n.isRead ? 'background: var(--bg-hover); opacity: 0.8;' : 'background: var(--bg-surface);';
     
     const { bodyText, commentId } = parseNotificationBody(n);
@@ -348,8 +315,8 @@ export function createNotificationItem(n) {
     const displayTitle = getNotificationTitle(n.type, n.title);
     
     const readIcon = n.isRead 
-        ? '<div class="already-read-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; cursor:default;"><svg viewBox="0 0 24 24" width="18" height="18" style="fill:var(--success);" title="Okundu"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>' 
-        : '<button class="mark-read-btn" style="background:none; border:none; padding:0; display:flex; align-items:center; justify-content:center; width:24px; height:24px; cursor:pointer;" title="Okundu Olarak İşaretle"><svg viewBox="0 0 24 24" width="18" height="18" style="fill:var(--text-muted); opacity: 0.5; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>';
+        ? `<div class="already-read-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; cursor:default;"><svg viewBox="0 0 24 24" width="18" height="18" style="fill:var(--success);" title="${escapeHtml(t('notif_read'))}"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>`
+        : `<button class="mark-read-btn" style="background:none; border:none; padding:0; display:flex; align-items:center; justify-content:center; width:24px; height:24px; cursor:pointer;" title="${escapeHtml(t('notif_mark_read'))}"><svg viewBox="0 0 24 24" width="18" height="18" style="fill:var(--text-muted); opacity: 0.5; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>`;
     
     const item = document.createElement('div');
     item.className = `dropdown-item py-2 px-3 border-bottom`;
@@ -366,16 +333,16 @@ export function createNotificationItem(n) {
                 <div style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">${escapeHtml(bodyText)}</div>
                 
                 <div class="d-flex justify-content-between align-items-center">
-                    <div style="font-size: 11px; color: #999;">${new Date(n.createdAt).toLocaleString()}</div>
+                    <div style="font-size: 11px; color: #999;">${new Date(n.createdAt).toLocaleString(getLocale())}</div>
                     <div class="d-flex gap-sm">
-                        <button type="button" class="btn btn-outline-secondary notification-detail-btn" style="padding: 2px 8px; font-size: 11px; border-radius: 4px;">${t ? t('notif_detail_btn') : 'Detay'}</button>
-                        <a href="${escapeHtml(linkUrl)}" class="btn btn-primary" style="padding: 2px 8px; font-size: 11px; border-radius: 4px; color: white; text-decoration: none;" onclick="event.stopPropagation(); if (window.api && !${Boolean(n.isRead)}) { window.api.request('/notifications/${n.id}/read', { method: 'POST' }).catch(()=>{}); }">Git</a>
+                        <button type="button" class="btn btn-outline-secondary notification-detail-btn" style="padding: 2px 8px; font-size: 11px; border-radius: 4px;">${escapeHtml(t('notif_detail_btn'))}</button>
+                        <a href="${escapeHtml(linkUrl)}" class="btn btn-primary" style="padding: 2px 8px; font-size: 11px; border-radius: 4px; color: white; text-decoration: none;" onclick="event.stopPropagation(); if (window.api && !${Boolean(n.isRead)}) { window.api.request('/notifications/${n.id}/read', { method: 'POST' }).catch(()=>{}); }">${escapeHtml(t('notif_open'))}</a>
                     </div>
                 </div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px; align-items: center; margin-top: 2px;">
                 ${readIcon}
-                <button class="delete-notification-btn" data-id="${n.id}" style="background:none; border:none; color:var(--danger); padding:0; display:flex; align-items:center; justify-content:center; width:24px; height:24px; cursor:pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7" title="Sil">
+                <button class="delete-notification-btn" data-id="${n.id}" style="background:none; border:none; color:var(--danger); padding:0; display:flex; align-items:center; justify-content:center; width:24px; height:24px; cursor:pointer; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7" title="${escapeHtml(t('notif_delete'))}">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
                 </button>
             </div>
@@ -406,7 +373,7 @@ export function createNotificationItem(n) {
         if (e.target.closest('.notification-detail-btn')) {
             e.preventDefault();
             e.stopPropagation();
-            window.showInfoModal(t ? t('notif_detail') : 'Bildirim Detayı', bodyText);
+            window.showInfoModal(t('notif_detail'), bodyText);
             return;
         }
         if (e.target.closest('.btn')) {
