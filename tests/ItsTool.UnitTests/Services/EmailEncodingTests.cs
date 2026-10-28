@@ -6,6 +6,7 @@ using ItsTool.Domain.Entities.Organization;
 using ItsTool.Domain.Entities.SLA;
 using ItsTool.Domain.Entities.Ticket;
 using ItsTool.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -41,6 +42,27 @@ public class EmailEncodingTests : TestBase
     [Fact]
     public async Task SlaWarningEmail_EncodesTheTicketTitle()
     {
+        var body = await SendSlaWarningAsync(null);
+
+        Assert.DoesNotContain("<a href=\"https://evil.example\"", body);
+        Assert.Contains("&lt;a href=&quot;https://evil.example&quot;&gt;", body);
+    }
+
+    [Fact]
+    public async Task SlaWarningEmail_LinksToTheConfiguredSite()
+    {
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["AppBaseUrl"] = "https://itsm.fnrc.test/" })
+            .Build();
+
+        var body = await SendSlaWarningAsync(config);
+
+        Assert.Contains("href=\"https://itsm.fnrc.test/ticket-detail.html?id=1\"", body);
+        Assert.DoesNotContain("localhost", body);
+    }
+
+    private async Task<string> SendSlaWarningAsync(IConfiguration? config)
+    {
         _context.Users.Add(new User { Id = 1, Username = "agent", Email = "agent@fnrc.test", PasswordHash = "x", IsActive = true });
         _context.Tickets.Add(new Ticket
         {
@@ -59,10 +81,9 @@ public class EmailEncodingTests : TestBase
             .Callback<string, string, string, bool>((_, _, b, _) => body = b)
             .Returns(Task.CompletedTask);
 
-        await new SlaEngine(_context, email.Object, Mock.Of<INotificationDispatcher>()).CheckBreachesAsync(now);
+        await new SlaEngine(_context, email.Object, Mock.Of<INotificationDispatcher>(), config).CheckBreachesAsync(now);
 
         Assert.NotNull(body);
-        Assert.DoesNotContain("<a href=\"https://evil.example\"", body);
-        Assert.Contains("&lt;a href=&quot;https://evil.example&quot;&gt;", body);
+        return body!;
     }
 }

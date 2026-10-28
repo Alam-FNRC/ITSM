@@ -9,6 +9,7 @@ using ItsTool.Domain.Entities.Ticket;
 using ItsTool.Domain.Entities.Notification;
 using ItsTool.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ItsTool.Infrastructure.Services;
 
@@ -17,12 +18,14 @@ public class SlaEngine : ISlaEngine
     private readonly ItsToolDbContext _context;
     private readonly IEmailService _emailService;
     private readonly INotificationDispatcher _notificationDispatcher;
+    private readonly IConfiguration? _config;
 
-    public SlaEngine(ItsToolDbContext context, IEmailService emailService, INotificationDispatcher notificationDispatcher)
+    public SlaEngine(ItsToolDbContext context, IEmailService emailService, INotificationDispatcher notificationDispatcher, IConfiguration? config = null)
     {
         _context = context;
         _emailService = emailService;
         _notificationDispatcher = notificationDispatcher;
+        _config = config;
     }
 
     private async Task<DateTime> CalculateDueTimeAsync(DateTime startTimeUtc, int minutesToAdd)
@@ -342,6 +345,8 @@ public class SlaEngine : ISlaEngine
             string titleHtml = WebUtility.HtmlEncode(title);
             string messageHtml = WebUtility.HtmlEncode(message);
             string ticketInfoHtml = WebUtility.HtmlEncode(ticketInfo);
+            // Same setting as the other notification e-mails (NotificationDispatcher)
+            string ticketUrl = WebUtility.HtmlEncode($"{(_config?["AppBaseUrl"] ?? string.Empty).TrimEnd('/')}/ticket-detail.html?id={ticketId}");
             string htmlBody = $@"
 <div style=""font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;"">
     <div style=""max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"">
@@ -350,7 +355,7 @@ public class SlaEngine : ISlaEngine
         </div>
         <div style=""font-size: 16px; line-height: 1.5;"">
             <p><strong>Uyarı:</strong> {messageHtml}</p>
-            <p><strong>Bilet:</strong> <a href=""http://localhost:5246/ticket-detail.html?id={ticketId}"" style=""color: #1890ff; text-decoration: none;"">{ticketInfoHtml}</a></p>
+            <p><strong>Bilet:</strong> <a href=""{ticketUrl}"" style=""color: #1890ff; text-decoration: none;"">{ticketInfoHtml}</a></p>
         </div>
         <div style=""margin-top: 30px; font-size: 12px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 15px;"">
             Bu e-posta ITSM Sistemi tarafından otomatik olarak gönderilmiştir.
