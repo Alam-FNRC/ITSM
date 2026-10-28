@@ -220,20 +220,20 @@
             const map = { 'Open': 'info', 'Açık': 'info', 'In Progress': 'warning', 'Devam Ediyor': 'warning', 'Pending': 'warning', 'Beklemede': 'warning', 'Resolved': 'success', 'Çözüldü': 'success', 'Closed': 'default', 'Kapatıldı': 'default' };
             const labelKey = status ? 'db_' + status.toLowerCase().replaceAll(' ', '_') : 'dash_unknown';
             const label = t(labelKey) || status;
-            return `<span class="badge badge-${map[status] || 'default'}">${label}</span>`;
+            return `<span class="badge badge-${map[status] || 'default'}">${escapeHtml(label)}</span>`;
         };
 
         const getPriorityBadge = (priority) => {
             const map = { 'Critical': 'danger', 'Kritik': 'danger', 'High': 'warning', 'Yüksek': 'warning', 'Medium': 'info', 'Orta': 'info', 'Low': 'success', 'Düşük': 'success' };
             const labelKey = priority ? 'db_' + priority.toLowerCase() : 'dash_unknown';
             const label = t(labelKey) || priority;
-            return `<span class="badge badge-${map[priority] || 'default'}">${label}</span>`;
+            return `<span class="badge badge-${map[priority] || 'default'}">${escapeHtml(label)}</span>`;
         };
 
         const getAvatar = (id, fallback) => {
             if (!id || id === '-') return `<div class="avatar" style="background: var(--bg-hover); color: var(--text-muted); border: 1px dashed var(--border); visibility: hidden;"></div>`;
             const initial = String(fallback || id).charAt(0).toUpperCase();
-            return `<div class="avatar" title="${fallback}">${initial}</div>`;
+            return `<div class="avatar" title="${escapeHtml(fallback)}">${escapeHtml(initial)}</div>`;
         };
 
         let lookupData = {};
@@ -308,7 +308,7 @@
                     const canDelete = isManagerOrAdmin || userPerms.has('ticket.delete') || userPerms.has('ticket.manage') || userPerms.has('ticket.assign');
                     
                     const editBtnHtml = canEdit ? `<a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost" style="color: var(--primary);">${t('ticket_btn_edit', 'Düzenle')}</a>` : '';
-                    const deleteBtnHtml = canDelete ? `<button type="button" onclick="window.deleteTicket(${ticketItem.id}, '${escapeHtml(ticketItem.ticketNumber)}')" class="btn btn-ghost" style="color: var(--danger); font-weight: 500;">${t('ticket_btn_delete', 'Sil')}</button>` : '';
+                    const deleteBtnHtml = canDelete ? `<button type="button" data-ticket-number="${escapeHtml(ticketItem.ticketNumber)}" onclick="window.deleteTicket(${ticketItem.id}, this.dataset.ticketNumber)" class="btn btn-ghost" style="color: var(--danger); font-weight: 500;">${t('ticket_btn_delete', 'Sil')}</button>` : '';
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -323,7 +323,7 @@
                         </td>
                         <td>${getStatusBadge(statusName)}</td>
                         <td>${getPriorityBadge(prioName)}</td>
-                        <td><button type="button" style="cursor:pointer; border:none; background:none; padding:0; text-align:left; font:inherit; color:inherit; max-width:100%; display:flex; align-items:center; gap:var(--spacing-sm);" title="Tüm atananları gör" onclick="window.showAssigneesModal('${encodedAssignees}')">${getAvatar(assigneeInitialId, assigneeName)} <span style="pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(assigneeName)}</span></button></td>
+                        <td><button type="button" style="cursor:pointer; border:none; background:none; padding:0; text-align:left; font:inherit; color:inherit; max-width:100%; display:flex; align-items:center; gap:var(--spacing-sm);" title="Tüm atananları gör" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees)">${getAvatar(assigneeInitialId, assigneeName)} <span style="pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(assigneeName)}</span></button></td>
                         <td>${renderSlaCell(ticketItem.sla, isClosed)}</td>
                         <td style="text-align: right; white-space: nowrap;">
                             <div class="row-actions">
