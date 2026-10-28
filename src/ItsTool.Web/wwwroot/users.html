@@ -24,15 +24,6 @@
 </head>
 <body>
 
-    <script>
-        window.addEventListener('error', function(e) {
-            document.body.innerHTML = '<div style="color:red;font-size:20px;padding:20px;background:white;">ERROR: ' + e.message + '</div>';
-        });
-        window.addEventListener('unhandledrejection', function(e) {
-            document.body.innerHTML = '<div style="color:red;font-size:20px;padding:20px;background:white;">PROMISE ERROR: ' + e.reason + '</div>';
-        });
-    </script>
-
     <div class="app-shell" data-shell>
         <main class="main-content">
             <header class="topbar">
