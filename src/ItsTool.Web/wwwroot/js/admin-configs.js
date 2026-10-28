@@ -1,4 +1,4 @@
-import { t } from './i18n.js';
+import { t, getLocale } from './i18n.js';
 
 export const adminConfigs = {
     departments: {
@@ -30,7 +30,7 @@ export const adminConfigs = {
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <div style="font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="color: #f59e0b;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                                    ${window.ui?.escapeHtml(g.name)} <span class="badge badge-default" style="font-size: 11px;">${groupUsers.length} üye</span>
+                                    ${window.ui?.escapeHtml(g.name)} <span class="badge badge-default" style="font-size: 11px;">${t('admin_members_count').replaceAll('{0}', groupUsers.length)}</span>
                                 </div>
                                 <button type="button" class="btn btn-ghost" style="font-size: 12px; padding: 4px 8px; color: var(--primary);" data-action="moveGroup" data-group-id="${g.id}">${t('admin_dept_change')}</button>
                             </div>
@@ -122,9 +122,9 @@ export const adminConfigs = {
                 
                 return `
                 <select class="badge badge-${color}" style="border:none; cursor:pointer; outline:none; font-weight:bold; appearance:none; padding-inline-end:12px; text-align:center;" onchange="window.updateProjectStatusInline(${item.id}, this.value)">
-                    <option value="Active" ${statusStr === 'Active' ? 'selected' : ''} style="background: var(--success-light); color: var(--success); font-weight: bold;">Active</option>
-                    <option value="Inactive" ${statusStr === 'Inactive' ? 'selected' : ''} style="background: var(--bg-hover); color: var(--text-muted); font-weight: bold;">Inactive</option>
-                    <option value="Postponed" ${statusStr === 'Postponed' ? 'selected' : ''} style="background: var(--warning-light); color: #B36200; font-weight: bold;">Postponed</option>
+                    <option value="Active" ${statusStr === 'Active' ? 'selected' : ''} style="background: var(--success-light); color: var(--success); font-weight: bold;">${t('users_status_active')}</option>
+                    <option value="Inactive" ${statusStr === 'Inactive' ? 'selected' : ''} style="background: var(--bg-hover); color: var(--text-muted); font-weight: bold;">${t('users_status_inactive')}</option>
+                    <option value="Postponed" ${statusStr === 'Postponed' ? 'selected' : ''} style="background: var(--warning-light); color: #B36200; font-weight: bold;">${t('admin_status_postponed')}</option>
                 </select>`;
             }}
         ],
@@ -140,9 +140,9 @@ export const adminConfigs = {
             <div class="form-group">
                 <label class="form-label" for="pStatus">${t('admin_lbl_status')}</label>
                 <select id="pStatus" class="form-control">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Postponed">Postponed</option>
+                    <option value="Active">${t('users_status_active')}</option>
+                    <option value="Inactive">${t('users_status_inactive')}</option>
+                    <option value="Postponed">${t('admin_status_postponed')}</option>
                 </select>
             </div>`
     },
@@ -190,14 +190,14 @@ export const adminConfigs = {
             const select = document.getElementById('gDept');
             if (select?.options.length === 0) {
                 const depts = (await window.api.request('/Departments')) || [];
-                select.innerHTML = '<option value="">Select a Department...</option>' + 
+                select.innerHTML = `<option value="">${t('admin_select_dept')}</option>` + 
                     depts.map(d => `<option value="${d.id}">${window.ui?.escapeHtml(d.name)}</option>`).join('');
             }
             
             // Populate users list for checkbox selection
             const container = document.getElementById('gUsersList');
             if (container) {
-                container.innerHTML = `<div style="font-size: 13px; color: var(--text-muted);">Yükleniyor...</div>`;
+                container.innerHTML = `<div style="font-size: 13px; color: var(--text-muted);">${t('common_loading')}</div>`;
                 try {
                     const uRes = await window.api.getUsers();
                     const allUsers = Array.isArray(uRes) ? uRes : (uRes.items || []);
@@ -218,7 +218,7 @@ export const adminConfigs = {
                     `).join('') + `</div>`;
                 } catch (e) {
                     console.error(e);
-                    container.innerHTML = `<div style="color: var(--danger); font-size: 13px;">Kullanıcılar yüklenemedi.</div>`;
+                    container.innerHTML = `<div style="color: var(--danger); font-size: 13px;">${t('admin_group_err_load')}</div>`;
                 }
             }
         },
@@ -265,7 +265,7 @@ export const adminConfigs = {
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label">Grup Üyeleri</label>
+                <label class="form-label">${t('admin_group_members')}</label>
                 <div id="gUsersList" style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--spacing-sm); background: rgba(0,0,0,0.01);"></div>
             </div>`
     },
@@ -296,7 +296,7 @@ export const adminConfigs = {
                     };
                 } catch(err) {
                     console.error(err);
-                    container.innerHTML = '<div style="color: var(--danger); font-size: 13px;">Error loading permissions.</div>';
+                    container.innerHTML = `<div style="color: var(--danger); font-size: 13px;">${t('admin_role_err')}</div>`;
                 }
             }
             
@@ -325,7 +325,7 @@ export const adminConfigs = {
             { key: 'id', label: t('admin_lbl_id'), render: (item) => `<span class="text-muted">#${item.id}</span>` },
             { key: 'name', label: t('admin_lbl_name'), render: (item) => `<span style="font-weight: 500;">${window.ui?.escapeHtml(item.name || '')}</span>` },
             { key: 'description', label: t('admin_lbl_desc'), render: (item) => window.ui?.escapeHtml(item.description) || '-' },
-            { key: 'isActive', label: t('admin_lbl_status'), render: (item) => item.isActive ? `<span class="badge badge-success">Active</span>` : `<span class="badge badge-default">Inactive</span>` }
+            { key: 'isActive', label: t('admin_lbl_status'), render: (item) => item.isActive ? `<span class="badge badge-success">${t('users_status_active')}</span>` : `<span class="badge badge-default">${t('users_status_inactive')}</span>` }
         ],
         formHtml: `
             <div class="form-group">
@@ -392,7 +392,7 @@ if (!window.updateProjectStatusInline) {
             if (window.loadData) window.loadData();
         } catch(e) {
             console.error(e);
-            if (window.ui?.showToast) window.ui.showToast('Error updating status', 'error');
+            if (window.ui?.showToast) window.ui.showToast(t('admin_status_update_failed'), 'error');
             if (window.loadData) window.loadData(); // revert UI change
         }
     };
@@ -418,24 +418,24 @@ document.addEventListener('click', async (e) => {
                         <form id="moveGroupForm">
                             <input type="hidden" id="moveGroupId">
                             <div class="modal-header">
-                                <h2>Departman Değiştir</h2>
-                                <button type="button" class="close-btn" onclick="document.getElementById('moveGroupModal').classList.remove('active')" aria-label="Close">
+                                <h2>${t('admin_dept_change')}</h2>
+                                <button type="button" class="close-btn" onclick="document.getElementById('moveGroupModal').classList.remove('active')" aria-label="${t('btn_close')}">
                                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label class="form-label">Grup</label>
+                                    <label class="form-label">${t('admin_modal_group')}</label>
                                     <input type="text" class="form-control" id="moveGroupName" disabled>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="moveTargetDept">Hedef Departman</label>
+                                    <label class="form-label" for="moveTargetDept">${t('admin_target_dept')}</label>
                                     <select id="moveTargetDept" class="form-control" required></select>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-ghost" onclick="document.getElementById('moveGroupModal').classList.remove('active')">İptal</button>
-                                <button type="submit" class="btn btn-primary">Taşı</button>
+                                <button type="button" class="btn btn-ghost" onclick="document.getElementById('moveGroupModal').classList.remove('active')">${t('btn_cancel')}</button>
+                                <button type="submit" class="btn btn-primary">${t('admin_btn_move')}</button>
                             </div>
                         </form>
                     </div>
@@ -461,14 +461,14 @@ document.addEventListener('click', async (e) => {
                         });
                         
                         document.getElementById('moveGroupModal').classList.remove('active');
-                        window.ui?.showToast('Grup başarıyla taşındı.');
+                        window.ui?.showToast(t('admin_group_moved'));
                         
                         // Invalidate caches and reload
                         window._groupsCache = null;
                         if (window.loadData) window.loadData();
                     } catch(err) {
                         console.error(err);
-                        window.ui?.showToast('Grup taşınırken hata oluştu', 'error');
+                        window.ui?.showToast(t('admin_group_move_failed'), 'error');
                     }
                 });
             }
@@ -545,7 +545,7 @@ if (typeof document !== 'undefined' && !window._dragLogicInitialized) {
         await window.api.removeGroupMember(sourceGroupId, userId);
         await window.api.addGroupMember(targetGroupId, userId);
         
-        window.ui?.showToast('Kullanıcı başarıyla yeni gruba taşındı.');
+        window.ui?.showToast(t('admin_user_moved'));
         
         // Invalidate and re-fetch users
         window._usersCache = null;
@@ -595,7 +595,7 @@ if (typeof document !== 'undefined' && !window._dragLogicInitialized) {
                 await handleUserMove(data.userId, data.sourceGroupId, targetGroupId);
             } catch (err) {
                 console.error('Drop error:', err);
-                window.ui?.showToast('Kullanıcı taşınırken hata oluştu.', 'error');
+                window.ui?.showToast(t('admin_user_move_failed'), 'error');
             }
         }
     });
@@ -620,11 +620,11 @@ if (typeof document !== 'undefined') {
                     try { window._groupsCache = await window.api.request('/Groups'); } catch(err) { window._groupsCache = []; }
                 }
                 
-                const dept = window._deptsCache?.find(d => d.id == user.departmentId)?.name || 'No Department';
+                const dept = window._deptsCache?.find(d => d.id == user.departmentId)?.name || t('admin_no_dept');
                 const userGroups = user.groupIds?.length > 0 
                     ? user.groupIds.map(gid => window._groupsCache?.find(g => g.id == gid)?.name || `Group ${gid}`).join(', ') 
-                    : 'No Groups';
-                const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+                    : t('admin_no_groups');
+                const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString(getLocale()) : t('dash_unknown');
 
                 const initial = (user.firstName + ' ' + user.lastName).charAt(0).toUpperCase();
                 const avatarHtml = user.profilePhoto 

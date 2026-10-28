@@ -147,7 +147,7 @@ export function initMentions(textareaId, ticketId = null) {
         } else if (e.key === 'Backspace' && textarea.selectionStart === textarea.selectionEnd) {
             const cursor = textarea.selectionEnd;
             const textToCursor = textarea.value.substring(0, cursor);
-            const match = textToCursor.match(/@([a-zA-ZçğıöşüÇĞİÖŞÜ0-9\s]+)$/);
+            const match = textToCursor.match(/@([\p{L}\p{M}0-9\s]+)$/u);
             if (match && users.length > 0) {
                 const possibleName = match[1];
                 const possibleNameTrimmed = possibleName.trim();

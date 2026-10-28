@@ -34,7 +34,7 @@ export function initCrudPage(cfg) {
                     <input type="hidden" id="${formFields.id}">
                     <div class="modal-header">
                         <h2 id="${modalId}Title">${t('users_modal_title_new')}</h2>
-                        <button type="button" class="close-btn" data-action="closeModal" data-target="${modalId}" aria-label="Close">
+                        <button type="button" class="close-btn" data-action="closeModal" data-target="${modalId}" aria-label="${t('btn_close')}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>
@@ -138,8 +138,8 @@ export function initCrudPage(cfg) {
             }
         } catch (err) {
             console.error(err);
-            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi</td></tr>`;
-            if (window.ui?.showToast) window.ui.showToast('Error loading data', 'error');
+            tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${t('common_err_load_data')}</td></tr>`;
+            if (window.ui?.showToast) window.ui.showToast(t('common_err_load_data'), 'error');
         }
     };
 
@@ -175,10 +175,10 @@ export function initCrudPage(cfg) {
     const persistData = async (id, payload) => {
         if (id) {
             await window.api.request(`${endpoint}/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
-            if (window.ui?.showToast) window.ui.showToast('Record updated successfully');
+            if (window.ui?.showToast) window.ui.showToast(t('crud_updated'));
         } else {
             await window.api.request(endpoint, { method: 'POST', body: JSON.stringify(payload) });
-            if (window.ui?.showToast) window.ui.showToast('Record created successfully');
+            if (window.ui?.showToast) window.ui.showToast(t('crud_created'));
         }
     };
 
@@ -191,7 +191,7 @@ export function initCrudPage(cfg) {
             await window.loadData();
         } catch (err) {
             console.error(err);
-            if (window.ui?.showToast) window.ui.showToast(err.message || 'Error saving record', 'error');
+            if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_save_failed'), 'error');
         }
     };
 
@@ -201,7 +201,7 @@ export function initCrudPage(cfg) {
             tr.style.pointerEvents = 'none';
         }
         
-        const confirmed = await window.ui.showUndoToast('Kayıt silinecek...', async () => {
+        const confirmed = await window.ui.showUndoToast(t('crud_deleting'), async () => {
             if (tr) {
                 tr.style.opacity = '1';
                 tr.style.pointerEvents = 'auto';
@@ -214,7 +214,7 @@ export function initCrudPage(cfg) {
                 if (tr) tr.remove();
             } catch(err) {
                 console.error(err);
-                if (window.ui?.showToast) window.ui.showToast(err.message || 'Error deleting record', 'error');
+                if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_delete_failed'), 'error');
                 if (tr) {
                     tr.style.opacity = '1';
                     tr.style.pointerEvents = 'auto';
@@ -229,12 +229,12 @@ export function initCrudPage(cfg) {
                 await performUndoableDelete(id, currentData.find(x => x.id === id), tr);
             } else {
                 await window.api.request(`${endpoint}/${id}`, { method: 'DELETE' });
-                if (window.ui?.showToast) window.ui.showToast('Record deleted successfully');
+                if (window.ui?.showToast) window.ui.showToast(t('crud_deleted'));
                 await window.loadData();
             }
         } catch (err) {
             console.error(err);
-            if (window.ui?.showToast) window.ui.showToast(err.message || 'Error deleting record', 'error');
+            if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_delete_failed'), 'error');
             await window.loadData();
         }
     };
@@ -260,7 +260,7 @@ export function initCrudPage(cfg) {
             expandTr.className = 'expandable-content';
             expandTr.innerHTML = `<td colspan="100" style="padding: 0; background: rgba(0,0,0,0.02); border-bottom: 2px solid var(--border);">
                 <div style="padding: var(--spacing-lg) var(--spacing-xl); padding-inline-start: 48px;" class="expand-container">
-                    <div style="text-align: center; color: var(--text-muted);"><span class="spinner" style="width: 20px; height: 20px; display: inline-block;"></span> Yükleniyor...</div>
+                    <div style="text-align: center; color: var(--text-muted);"><span class="spinner" style="width: 20px; height: 20px; display: inline-block;"></span> ${t('common_loading')}</div>
                 </div>
             </td>`;
             tr.parentNode.insertBefore(expandTr, tr.nextSibling);

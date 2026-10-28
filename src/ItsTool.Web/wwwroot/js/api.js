@@ -1,4 +1,5 @@
 import { showToast } from './ui.js';
+import { t } from './i18n.js';
 
 // The API serves these pages, so it is on the same origin in every environment
 const API_BASE_URL = '/api';
@@ -118,7 +119,7 @@ class ApiClient {
             console.error(`API Error 403 on ${endpoint}:`, errorText);
             // While a temporary password must be replaced, the API refuses everything else; the change dialog explains it
             if (!options.silent && !this.decodedToken?.mustChangePassword) {
-                showToast('Bu işlemi yapmaya veya bu sayfayı görüntülemeye yetkiniz bulunmuyor (403).', 'error');
+                showToast(t('api_forbidden'), 'error');
             }
             throw new Error(`Forbidden: ${endpoint}`);
         }
@@ -127,7 +128,7 @@ class ApiClient {
             const errorText = await response.text();
             console.error(`API Error ${response.status}:`, errorText);
             if (!options.silent) {
-                showToast(`İşlem başarısız (${response.status})`, 'error');
+                showToast(t('api_failed').replaceAll('{0}', response.status), 'error');
             }
             throw new Error(errorText || 'API Error');
         }
