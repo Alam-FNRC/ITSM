@@ -90,7 +90,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="colorHex">Color</label>
+                                    <label class="form-label" for="colorHex" data-i18n="td_color">Color</label>
                                     <input type="color" class="form-control" id="colorHex" value="#1976D2" style="height: 38px; padding: 2px 4px;" aria-label="Color">
                                 </div>
 
@@ -156,7 +156,7 @@
                 populate('priorityId', lookup.priorities);
             } catch (err) {
                 console.error(err);
-                showToast('Failed to load lookup data', 'error');
+                showToast(t('tc_lookup_failed'), 'error');
             }
         }
 
@@ -235,7 +235,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                container.innerHTML = '<span class="text-danger">Failed to load fields.</span>';
+                container.innerHTML = `<span class="text-danger">${t('tc_fields_failed')}</span>`;
             }
         };
 

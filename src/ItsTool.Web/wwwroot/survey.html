@@ -107,8 +107,8 @@
 <body>
     <div class="survey-card" id="surveyContainer">
         <div class="survey-header">
-            <h2>Customer Satisfaction</h2>
-            <p>How would you rate the resolution of your ticket?</p>
+            <h2 data-i18n="survey_title">Customer Satisfaction</h2>
+            <p data-i18n="survey_question">How would you rate the resolution of your ticket?</p>
             <div id="ticketInfo" class="ticket-badge" style="display:none;"></div>
         </div>
 
@@ -116,28 +116,28 @@
             <div class="rating-group">
                 <div class="rating">
                     <input type="radio" id="star5" name="rating" value="5" required />
-                    <label for="star5" title="Excellent" for="star4">★</label>
+                    <label for="star5" title="Excellent" data-i18n="survey_excellent" data-i18n-target="title" for="star4">★</label>
                     <input id="star4" name="rating" value="4" />
-                    <label for="star4" title="Good" for="star3">★</label>
+                    <label for="star4" title="Good" data-i18n="survey_good" data-i18n-target="title" for="star3">★</label>
                     <input id="star3" name="rating" value="3" />
-                    <label for="star3" title="Average" for="star2">★</label>
+                    <label for="star3" title="Average" data-i18n="survey_average" data-i18n-target="title" for="star2">★</label>
                     <input id="star2" name="rating" value="2" />
-                    <label for="star2" title="Poor" for="star1">★</label>
+                    <label for="star2" title="Poor" data-i18n="survey_poor" data-i18n-target="title" for="star1">★</label>
                     <input id="star1" name="rating" value="1" />
-                    <label for="star1" title="Terrible">★</label>
+                    <label for="star1" title="Terrible" data-i18n="survey_terrible" data-i18n-target="title">★</label>
                 </div>
                 <div class="rating-labels">
-                    <span>Terrible</span>
-                    <span>Excellent</span>
+                    <span data-i18n="survey_terrible">Terrible</span>
+                    <span data-i18n="survey_excellent">Excellent</span>
                 </div>
             </div>
             
             <div class="form-group">
-                <label for="comment" class="form-label" style="text-align: center; display: block; margin-bottom: var(--spacing-sm);" for="comment">Additional comments (optional)</label>
-                <textarea id="comment" class="form-control" placeholder="Tell us more about your experience..."></textarea>
+                <label for="comment" class="form-label" style="text-align: center; display: block; margin-bottom: var(--spacing-sm);" data-i18n="survey_comment_label">Additional comments (optional)</label>
+                <textarea id="comment" class="form-control" dir="auto" placeholder="Tell us more about your experience..." data-i18n="survey_comment_ph" data-i18n-target="placeholder"></textarea>
             </div>
             
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 16px;">Submit Feedback</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 16px;" data-i18n="survey_submit">Submit Feedback</button>
         </form>
     </div>
 
@@ -145,6 +145,7 @@
         import { injectShell } from './js/layout.js?v=999';
         import './js/api.js';
         import { showToast } from './js/ui.js';
+        import { t } from './js/i18n.js';
         injectShell();
         
         // Survey might be public or require token depending on implementation
@@ -164,12 +165,12 @@
             document.getElementById('surveyContainer').innerHTML = `
                 <div class="success-state" style="color: var(--danger);">
                     <svg viewBox="0 0 24 24" width="48" height="48" style="fill: currentColor; margin-bottom: 16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                    <h3 style="margin:0; font-size: 20px;">Invalid Link</h3>
-                    <p style="margin:0; color: var(--text-muted);">No ticket ID provided.</p>
+                    <h3 style="margin:0; font-size: 20px;">${t('survey_invalid_title')}</h3>
+                    <p style="margin:0; color: var(--text-muted);">${t('survey_invalid_desc')}</p>
                 </div>
             `;
         } else {
-            ticketInfo.textContent = `Ticket #${ticketId}`;
+            ticketInfo.textContent = t('notif_body_ticket').replaceAll('{0}', ticketId);
             ticketInfo.style.display = 'inline-block';
         }
 
@@ -178,7 +179,7 @@
             
             const ratingInput = document.querySelector('input[name="rating"]:checked');
             if (!ratingInput) {
-                showToast("Please select a rating.", "error");
+                showToast(t('survey_select_rating'), 'error');
                 return;
             }
 
@@ -187,7 +188,7 @@
             
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
-            btn.textContent = 'Submitting...';
+            btn.textContent = t('survey_submitting');
             btn.disabled = true;
 
             try {
@@ -201,14 +202,14 @@
                         <div class="success-icon">
                             <svg viewBox="0 0 24 24" width="32" height="32" style="fill: currentColor;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                         </div>
-                        <h3 style="margin:0; font-size: 24px; color: var(--text-main);">Thank You!</h3>
-                        <p style="margin:0; color: var(--text-muted); text-align: center; max-width: 300px;">Your feedback has been recorded. We appreciate you taking the time to help us improve.</p>
-                        <a href="/dashboard.html" class="btn btn-primary" style="margin-top: var(--spacing-lg);">Return to Dashboard</a>
+                        <h3 style="margin:0; font-size: 24px; color: var(--text-main);">${t('survey_thanks')}</h3>
+                        <p style="margin:0; color: var(--text-muted); text-align: center; max-width: 300px;">${t('survey_recorded')}</p>
+                        <a href="/dashboard.html" class="btn btn-primary" style="margin-top: var(--spacing-lg);">${t('survey_back')}</a>
                     </div>
                 `;
             } catch (err) {
                 console.error(err);
-                showToast('Failed to submit feedback', 'error');
+                showToast(t('survey_failed'), 'error');
                 btn.textContent = originalText;
                 btn.disabled = false;
             }
