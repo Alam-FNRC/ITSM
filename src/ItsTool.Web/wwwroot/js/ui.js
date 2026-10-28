@@ -928,8 +928,8 @@ export async function openTicketPreview(ticketData, lookupData) {
     const assignBtnHtml = assignedId ? `<button type="button" class="btn btn-ghost p-0 m-0 d-flex align-items-center gap-sm" style="border:none;" onclick="window.ui.showUserDetails(${assignedId})">${getAvatar(assignedId, assigneeName)} ${escapeHtml(assigneeName)}</button>` : `<div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">${escapeHtml(assigneeName)}</div>`;
 
     content.innerHTML = `
-        <div style="font-size: 16px; font-weight: 600; margin-bottom: var(--spacing-md); color: var(--text);">${escapeHtml(ticketData.title)}</div>
-        <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: var(--spacing-md); color: var(--text-muted); font-size: 14px;">
+        <div dir="auto" style="font-size: 16px; font-weight: 600; margin-bottom: var(--spacing-md); color: var(--text);">${escapeHtml(ticketData.title)}</div>
+        <div dir="auto" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: var(--spacing-md); color: var(--text-muted); font-size: 14px;">
             ${escapeHtml(ticketData.description || '')}
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); background: var(--bg-hover); padding: var(--spacing-md); border-radius: var(--radius-md);">

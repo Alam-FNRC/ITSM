@@ -189,8 +189,8 @@
                     
                     const { mappedOld, mappedNew } = resolveAuditMappedValues(a, lookup, users);
                     
-                    const oldVal = mappedOld ? `<span class="value-cell" title="${escapeHtml(mappedOld)}">${escapeHtml(mappedOld)}</span>` : '<span class="text-muted">-</span>';
-                    const newVal = mappedNew ? `<span class="value-cell" title="${escapeHtml(mappedNew)}">${escapeHtml(mappedNew)}</span>` : '<span class="text-muted">-</span>';
+                    const oldVal = mappedOld ? `<span class="value-cell" dir="auto" title="${escapeHtml(mappedOld)}">${escapeHtml(mappedOld)}</span>` : '<span class="text-muted">-</span>';
+                    const newVal = mappedNew ? `<span class="value-cell" dir="auto" title="${escapeHtml(mappedNew)}">${escapeHtml(mappedNew)}</span>` : '<span class="text-muted">-</span>';
                     
                     const entityNameText = a.entityName || (a.ticketId ? `ITS-${a.ticketId}` : 'Unknown');
                     const entityIdText = a.entityId || (a.ticketId ? a.ticketId.toString() : '');

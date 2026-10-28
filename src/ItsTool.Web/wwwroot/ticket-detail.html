@@ -329,11 +329,11 @@
                                     <span data-i18n="td_btn_copy_ticket">Kopyala</span>
                                 </button>
                             </div>
-                            <h1 class="ticket-title" id="tTitle">Loading Title...</h1>
+                            <h1 class="ticket-title" id="tTitle" dir="auto">Loading Title...</h1>
                         </div>
                         
                         <div class="property-label" data-i18n="ticket_tab_desc">Description</div>
-                        <div class="description-box" id="tDesc"></div>
+                        <div class="description-box" id="tDesc" dir="auto"></div>
 
                         <div id="dynamicFieldsDisplay" style="margin-bottom: var(--spacing-xl);"></div>
 
@@ -363,7 +363,7 @@
                                 <div style="margin-top: var(--spacing-xl);">
                                     <form id="commentForm">
                                         <div class="comment-input-wrapper" style="border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface); padding: 8px; box-shadow: var(--shadow-sm); position: relative; transition: border-color 0.2s;">
-                                            <textarea id="commentText" class="form-control" rows="3" required data-i18n="ticket_add_comment" data-i18n-target="placeholder" placeholder="Add a comment... (Drag & Drop files here)" aria-label="Comment" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
+                                            <textarea id="commentText" dir="auto" class="form-control" rows="3" required data-i18n="ticket_add_comment" data-i18n-target="placeholder" placeholder="Add a comment... (Drag & Drop files here)" aria-label="Comment" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
                                             
                                             <div id="attachmentPreviews" class="d-flex gap-sm flex-wrap mb-sm" style="padding: 0 8px;"></div>
                                             
@@ -1892,10 +1892,10 @@
             document.getElementById('editActions').style.display = 'flex';
 
             const tTitle = document.getElementById('tTitle');
-            tTitle.innerHTML = `<input type="text" id="inlineEditTitle" class="form-control" style="font-size:24px; font-weight:bold; width:100%;" value="${escapeHtml(currentTicket.title)}">`;
+            tTitle.innerHTML = `<input type="text" id="inlineEditTitle" dir="auto" class="form-control" style="font-size:24px; font-weight:bold; width:100%;" value="${escapeHtml(currentTicket.title)}">`;
 
             const tDesc = document.getElementById('tDesc');
-            tDesc.innerHTML = `<textarea id="inlineEditDesc" class="form-control" rows="4" style="width:100%;">${escapeHtml(currentTicket.description || '')}</textarea>`;
+            tDesc.innerHTML = `<textarea id="inlineEditDesc" dir="auto" class="form-control" rows="4" style="width:100%;">${escapeHtml(currentTicket.description || '')}</textarea>`;
 
             const tPriority = document.getElementById('tPriority');
             let prioHtml = '<select id="inlineEditPriority" class="form-control">';
@@ -2208,7 +2208,7 @@
             return `
             <div id="comment-edit-${c.id}" style="display:none; margin-top: 8px;">
                 <div style="border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface); padding: 8px;">
-                    <textarea class="form-control" rows="3" id="edit-textarea-${c.id}" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
+                    <textarea class="form-control" rows="3" id="edit-textarea-${c.id}" dir="auto" style="border: none; box-shadow: none; resize: vertical; margin-bottom: 8px;"></textarea>
                     <div id="edit-attachment-previews-${c.id}" class="d-flex gap-sm flex-wrap mb-sm" style="padding: 0 8px;"></div>
                     
                     <div class="d-flex justify-content-between align-items-center" style="padding: 4px 8px; border-top: 1px solid var(--border-light); margin-top: 4px; padding-top: 12px;">
@@ -2252,7 +2252,7 @@
             
             div.innerHTML = headerHtml + `
                 <div id="comment-content-${c.id}" class="comment-body" data-raw-content="${encodeURIComponent(c.content)}">
-                    <div style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>
+                    <div dir="auto" style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>
                     ${attachmentsHtml}
                 </div>` + editorHtml;
                 
@@ -2546,7 +2546,7 @@
             
             box.innerHTML = `
                 <div class="comment-reply-connector"></div>
-                <textarea class="form-control mb-sm" rows="3" id="inline-reply-text" placeholder="${(t('log_replying_to') || 'Replying to comment #{0}...').replaceAll('{0}', id)}"></textarea>
+                <textarea class="form-control mb-sm" rows="3" id="inline-reply-text" dir="auto" placeholder="${(t('log_replying_to') || 'Replying to comment #{0}...').replaceAll('{0}', id)}"></textarea>
                 ${canWriteInternalNotes ? `<div style="margin-bottom: 8px;">
                     <label style="font-size: 13px; color: var(--text-muted); cursor: ${forceInternal ? 'not-allowed' : 'pointer'};">
                         <input type="checkbox" id="inline-reply-internal" ${forceInternal ? 'checked disabled' : ''}> ${t('log_internal_note_cb') || 'Internal Note'}
@@ -3000,7 +3000,7 @@
                     `</div>`;
                 contentHtml = contentHtml.replace(/\[attachment:\d+\]/g, '').trim();
             }
-            return `<div style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>${attachmentsHtml}`;
+            return `<div dir="auto" style="margin-bottom: ${attachmentsHtml ? '8px' : '0'}; white-space: pre-wrap;">${contentHtml}</div>${attachmentsHtml}`;
         };
 
         window.generateDiff = function(oldStr, newStr) {

@@ -673,7 +673,7 @@
                                             ? `<span class="badge badge-warning" style="font-size: 11px;">${t('sla_auto_escalation_badge') || 'Otomatik Eskalasyon'}</span>` 
                                             : ''}
                                     </div>
-                                    <p class="policy-desc">${escapeHtml(globalPolicy.description || t('sla_global_policy_desc') || 'Özel bir SLA politikası tanımlanmamış tüm uygulamalar ve biletler için geçerlidir.')}</p>
+                                    <p class="policy-desc" dir="auto">${escapeHtml(globalPolicy.description || t('sla_global_policy_desc') || 'Özel bir SLA politikası tanımlanmamış tüm uygulamalar ve biletler için geçerlidir.')}</p>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 8px; align-items: center;">
@@ -740,7 +740,7 @@
                                                 ? `<span class="badge badge-secondary" style="font-size: 11px;">${t('sla_inactive') || 'Pasif'}</span>` 
                                                 : ''}
                                         </div>
-                                        <p class="policy-desc">${escapeHtml(p.description || t('sla_project_policy_desc') || 'Bu uygulamaya ait biletler için özel tanımlanmış SLA kuralıdır.')}</p>
+                                        <p class="policy-desc" dir="auto">${escapeHtml(p.description || t('sla_project_policy_desc') || 'Bu uygulamaya ait biletler için özel tanımlanmış SLA kuralıdır.')}</p>
                                     </div>
                                 </div>
                                 <div style="display: flex; gap: 8px; align-items: center;">

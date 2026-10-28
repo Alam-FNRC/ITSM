@@ -318,7 +318,7 @@
                                     <span class="ticket-number" style="display:inline-block; font-size: 14px; font-weight: 600; color: var(--primary);">${escapeHtml(ticketItem.ticketNumber)}</span>
                                     <span style="font-size: 11px; color: var(--text-muted); margin-inline-start: 4px;">#${ticketItem.id}</span>
                                 </div>
-                                <div style="margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;">${escapeHtml(ticketItem.title)}</div>
+                                <div dir="auto" style="margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;">${escapeHtml(ticketItem.title)}</div>
                             </a>
                         </td>
                         <td>${getStatusBadge(statusName)}</td>
@@ -579,7 +579,7 @@
                     chip.innerHTML = `
                         <a href="/ticket-detail.html?id=${item.id}" style="color: var(--text-main); text-decoration: none; font-weight: 500;" title="${escapeHtml(item.title || '')}">
                             <span style="color: var(--primary); font-weight: 600;">${escapeHtml(item.ticketNumber || '')}</span>
-                            <span style="max-width: 140px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;">${escapeHtml(item.title || '')}</span>
+                            <span dir="auto" style="max-width: 140px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;">${escapeHtml(item.title || '')}</span>
                         </a>
                         <button type="button" style="border: none; background: none; color: var(--text-muted); cursor: pointer; padding: 0 2px; font-size: 12px; line-height: 1;" title="Kaldır" onclick="window.removeRecentTicket(${item.id})">&times;</button>
                     `;

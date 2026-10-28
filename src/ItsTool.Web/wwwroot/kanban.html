@@ -279,7 +279,7 @@
                 <a href="/ticket-detail.html?id=${ticket.id}" class="card-number" target="_blank">${escapeHtml(ticket.ticketNumber)}</a>
                 ${getPriorityIcon(ticket.priorityId)}
             </div>
-            <div class="card-title">${escapeHtml(ticket.title)}</div>
+            <div class="card-title" dir="auto">${escapeHtml(ticket.title)}</div>
             <button type="button" class="card-footer assignee-footer" style="display: flex; align-items: center; justify-content: flex-start; gap: 6px; cursor: pointer; padding: 4px; margin: -4px; border-radius: 4px; border:none; background:transparent; width:100%; text-align:start;" title="${t('kanban_view_assignees')}" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees); event.stopPropagation();">
                 ${getAvatar(assigneeInitialId, assigneeName)}
                 <span style="font-size: 12px; font-weight: 500; color: var(--text-main); pointer-events: none;">${escapeHtml(assigneeName)}</span>
