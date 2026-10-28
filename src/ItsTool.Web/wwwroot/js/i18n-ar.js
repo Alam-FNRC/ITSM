@@ -773,5 +773,17 @@ export const ar = {
     "fields_deleted": "تم حذف الحقل.",
     "fields_delete_failed": "تعذر حذف الحقل.",
     "fields_created": "تم إنشاء الحقل.",
-    "fields_create_failed": "تعذر إنشاء الحقل."
+    "fields_create_failed": "تعذر إنشاء الحقل.",
+    "dash_count": "العدد",
+    "dash_rating": "التقييم: {0}/5",
+    "dash_no_comment": "لا يوجد تعليق",
+    "dash_load_failed": "تعذر تحميل لوحة المعلومات.",
+    "workload_open_total": "إجمالي التذاكر المفتوحة",
+    "workload_no_members": "لا يوجد أعضاء في الفريق",
+    "workload_joined": "تاريخ الانضمام:",
+    "workload_dept": "الإدارة:",
+    "workload_groups": "المجموعات:",
+    "app_name": "ITSM Tool",
+    "page_admin": "الإدارة",
+    "page_survey": "استبيان الرضا"
 };

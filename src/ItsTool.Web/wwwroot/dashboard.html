@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Dashboard</title>
+    <title data-i18n="nav_dashboard" data-i18n-target="document-title">ITSM Tool - Dashboard</title>
     <link rel="stylesheet" href="css/design-system.css">
     <script src="js/lib/chart.js"></script>
 </head>
@@ -93,7 +93,7 @@
     <div id="drillDownModal" class="modal-overlay">
         <div class="modal" style="max-width: 800px; width: 90%;">
             <div class="modal-header">
-                <h2 id="drillDownTitle">Details</h2>
+                <h2 id="drillDownTitle" data-i18n="dash_details">Details</h2>
                 <button type="button" class="close-btn" onclick="closeModal('drillDownModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
@@ -111,7 +111,7 @@
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
         import { bindShellActions, showToast, openTicketPreview, openModal, closeModal, escapeHtml } from './js/ui.js?v=999';
-        import { t } from './js/i18n.js';
+        import { t, getLocale } from './js/i18n.js';
         injectShell();
         
         window.openModal = openModal;
@@ -174,7 +174,7 @@
                         type: 'bar',
                         data: {
                             labels: dist.byPriority.map(d => t('db_' + d.key.toLowerCase().replaceAll(' ', '_'))),
-                            datasets: [{ label: 'Count', data: dist.byPriority.map(d => d.count), backgroundColor: '#0052CC' }]
+                            datasets: [{ label: t('dash_count'), data: dist.byPriority.map(d => d.count), backgroundColor: '#0052CC' }]
                         },
                         options: { 
                             maintainAspectRatio: false, 
@@ -390,7 +390,7 @@
                 }
 
                 if(err.message === 'Unauthorized') return;
-                showToast('Error loading dashboard', 'error');
+                showToast(t('dash_load_failed'), 'error');
             }
         }
         
@@ -435,10 +435,10 @@
                 document.getElementById('drillDownList').innerHTML = surveys.map(s => `
                     <div style="padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <strong style="color:var(--primary);">Rating: ${s.rating}/5</strong>
-                            <span style="font-size: 12px; color: var(--text-muted);">${new Date(s.createdAt).toLocaleString()}</span>
+                            <strong style="color:var(--primary);">${t('dash_rating').replaceAll('{0}', s.rating)}</strong>
+                            <span style="font-size: 12px; color: var(--text-muted);">${new Date(s.createdAt).toLocaleString(getLocale())}</span>
                         </div>
-                        <div dir="auto" style="font-size: 14px; color: var(--text-main); font-style: italic;">"${escapeHtml(s.comment || 'No comment')}"</div>
+                        <div dir="auto" style="font-size: 14px; color: var(--text-main); font-style: italic;">"${escapeHtml(s.comment || t('dash_no_comment'))}"</div>
                     </div>
                 `).join('');
             }
@@ -487,8 +487,8 @@
             }
             
             document.getElementById('drillDownTitle').textContent = `${translatedType} ${t('dash_details')}`;
-            document.getElementById('drillDownCount').textContent = t('admin_role_loading');
-            document.getElementById('drillDownList').innerHTML = `<div style="padding:20px;text-align:center;">${t('admin_role_loading')}</div>`;
+            document.getElementById('drillDownCount').textContent = t('common_loading');
+            document.getElementById('drillDownList').innerHTML = `<div style="padding:20px;text-align:center;">${t('common_loading')}</div>`;
             
             if (window.openModal) window.openModal('drillDownModal');
 
@@ -503,7 +503,7 @@
                 renderDrillDownTickets(res.items || []);
             } catch (err) {
                 console.error("Drill-down error", err);
-                document.getElementById('drillDownList').innerHTML = '<div style="color:var(--danger); padding:20px; text-align:center;">Failed to load data.</div>';
+                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--danger); padding:20px; text-align:center;">${t('common_err_load_data')}</div>`;
             }
         };
         await loadDashboard();

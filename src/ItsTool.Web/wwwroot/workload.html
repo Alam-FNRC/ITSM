@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITSM Tool - Takım Yükü</title>
+    <title data-i18n="nav_workload" data-i18n-target="document-title">ITSM Tool - Team Workload</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         .masonry-grid {
@@ -90,7 +90,7 @@
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                     </button>
-                    <h2 data-i18n="nav_workload">Takım Yükü</h2>
+                    <h2 data-i18n="nav_workload">Team Workload</h2>
                 </div>
                 <div class="topbar-right">
                     <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
@@ -112,11 +112,11 @@
 
             <div class="content-area" style="max-width: 1440px; margin: 0 auto; padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                    <h1 style="margin:0; font-size: 24px;" data-i18n="dash_team_workload">Takım Yükü Detayları</h1>
+                    <h1 style="margin:0; font-size: 24px;" data-i18n="dash_team_workload">Team Workload</h1>
                     <input type="text" id="searchInput" class="form-control" style="width: 300px;" placeholder="Çalışan veya departman ara..." data-i18n="workload_search" data-i18n-target="placeholder" aria-label="Search Workload">
                 </div>
 
-                <div id="loadingState" style="text-align: center; padding: 40px; color: var(--text-muted);" data-i18n="admin_role_loading">Yükleniyor...</div>
+                <div id="loadingState" style="text-align: center; padding: 40px; color: var(--text-muted);" data-i18n="common_loading">Loading...</div>
                 
                 <div id="workloadContainer" class="masonry-grid" style="display: none;">
                     <!-- Rendered by JS -->
@@ -129,7 +129,7 @@
         import './js/api.js?v=999';
         import { injectShell } from './js/layout.js?v=999';
         import { bindShellActions } from './js/ui.js?v=999';
-        import { t } from './js/i18n.js';
+        import { t, getLocale } from './js/i18n.js';
         
         injectShell();
         if (!window.api.token) window.location.href = '/login.html';
@@ -148,7 +148,7 @@
                 <div class="department-card">
                     <h3>
                         ${window.ui?.escapeHtml(dept.departmentName) || dept.departmentName}
-                        <span class="badge" title="Toplam Açık İş">${dept.openTicketCount}</span>
+                        <span class="badge" title="${t('workload_open_total')}">${dept.openTicketCount}</span>
                     </h3>
                     <div class="agent-list">
                         ${dept.members && dept.members.length > 0 ? dept.members.map(agent => `
@@ -166,7 +166,7 @@
                                     </div>
                                 </div>
                             </div>
-                        `).join('') : `<div style="font-size:12px; color:var(--text-muted); text-align:center;">Ekip üyesi yok</div>`}
+                        `).join('') : `<div style="font-size:12px; color:var(--text-muted); text-align:center;">${t('workload_no_members')}</div>`}
                     </div>
                 </div>
             `).join('');
@@ -181,7 +181,7 @@
                 renderWorkload(rawWorkload);
             } catch (err) {
                 console.error(err);
-                document.getElementById('loadingState').textContent = 'Veri yüklenemedi.';
+                document.getElementById('loadingState').textContent = t('common_err_load_data');
                 document.getElementById('loadingState').style.color = 'var(--danger)';
             }
         }
@@ -213,9 +213,9 @@
         window.globalGroups = await window.api.getGroups().catch(e=>[]);
         
         function renderUserTooltipContent(user) {
-            const dept = window.globalLookup?.departments?.find(d => d.id == user.departmentId)?.name || 'None';
-            const userGroups = user.groupIds && window.globalGroups ? user.groupIds.map(gid => window.globalGroups.find(g => g.id == gid)?.name).filter(Boolean).join(', ') : 'None';
-            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+            const dept = window.globalLookup?.departments?.find(d => d.id == user.departmentId)?.name || t('admin_no_dept');
+            const userGroups = user.groupIds && window.globalGroups ? user.groupIds.map(gid => window.globalGroups.find(g => g.id == gid)?.name).filter(Boolean).join(', ') : t('admin_no_groups');
+            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString(getLocale()) : t('dash_unknown');
             const avatar = '<div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">' + (user.firstName ? user.firstName.charAt(0).toUpperCase() : 'U') + '</div>';
 
             return `
@@ -227,9 +227,9 @@
                     </div>
                 </div>
                 <div style="font-size:12px; display:flex; flex-direction:column; gap:4px;">
-                    <div><strong style="color:var(--text-muted);">Joined:</strong> ${createdAt}</div>
-                    <div><strong style="color:var(--text-muted);">Dept:</strong> ${window.ui?.escapeHtml(dept)}</div>
-                    <div><strong style="color:var(--text-muted);">Groups:</strong> ${window.ui?.escapeHtml(userGroups)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_joined')}</strong> ${createdAt}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_dept')}</strong> ${window.ui?.escapeHtml(dept)}</div>
+                    <div><strong style="color:var(--text-muted);">${t('workload_groups')}</strong> ${window.ui?.escapeHtml(userGroups)}</div>
                 </div>
             `;
         }

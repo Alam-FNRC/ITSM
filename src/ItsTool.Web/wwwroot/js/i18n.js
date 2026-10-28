@@ -817,7 +817,19 @@ export const translations = {
         "fields_deleted": "Field deleted.",
         "fields_delete_failed": "Could not delete the field.",
         "fields_created": "Field created.",
-        "fields_create_failed": "Could not create the field."
+        "fields_create_failed": "Could not create the field.",
+        "dash_count": "Count",
+        "dash_rating": "Rating: {0}/5",
+        "dash_no_comment": "No comment",
+        "dash_load_failed": "Could not load the dashboard.",
+        "workload_open_total": "Open tickets in total",
+        "workload_no_members": "No team members",
+        "workload_joined": "Joined:",
+        "workload_dept": "Department:",
+        "workload_groups": "Groups:",
+        "app_name": "ITSM Tool",
+        "page_admin": "Administration",
+        "page_survey": "Satisfaction Survey"
     },
     "tr": {
         // Sidebar Navigation
@@ -1636,7 +1648,19 @@ export const translations = {
         "fields_deleted": "Alan silindi.",
         "fields_delete_failed": "Alan silinemedi.",
         "fields_created": "Alan oluşturuldu.",
-        "fields_create_failed": "Alan oluşturulamadı."
+        "fields_create_failed": "Alan oluşturulamadı.",
+        "dash_count": "Adet",
+        "dash_rating": "Puan: {0}/5",
+        "dash_no_comment": "Yorum yok",
+        "dash_load_failed": "Gösterge paneli yüklenemedi.",
+        "workload_open_total": "Toplam açık iş",
+        "workload_no_members": "Ekip üyesi yok",
+        "workload_joined": "Katılım:",
+        "workload_dept": "Departman:",
+        "workload_groups": "Gruplar:",
+        "app_name": "ITSM Tool",
+        "page_admin": "Yönetim",
+        "page_survey": "Memnuniyet Anketi"
     },
     "ar": ar
 };
@@ -1707,6 +1731,10 @@ function applyTranslationToElement(el, dict) {
     }
     if (target === 'aria-label') {
         el.setAttribute('aria-label', dict[key]);
+        return;
+    }
+    if (target === 'document-title') {
+        document.title = `${dict.app_name} - ${dict[key]}`;
         return;
     }
 
