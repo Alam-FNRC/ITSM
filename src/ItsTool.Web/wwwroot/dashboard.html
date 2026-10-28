@@ -396,9 +396,9 @@
         
         function renderDrillDownTickets(items) {
             window.__drillDownCache = items;
-            document.getElementById('drillDownCount').textContent = `${items.length} ${t('dash_records_found') || 'records found'}`;
+            document.getElementById('drillDownCount').textContent = `${items.length} ${t('dash_records_found')}`;
             if (items.length === 0) {
-                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat') || 'No tickets in this category'}</div>`;
+                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat')}</div>`;
                 return;
             }
             
@@ -428,9 +428,9 @@
 
         async function loadAndRenderSurveys() {
             const surveys = await window.api.getDashboardSurveys();
-            document.getElementById('drillDownCount').textContent = `${surveys.length} ${t('dash_surveys_found') || 'survey(s) found'}`;
+            document.getElementById('drillDownCount').textContent = `${surveys.length} ${t('dash_surveys_found')}`;
             if (surveys.length === 0) {
-                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat') || 'No tickets in this category'}</div>`;
+                document.getElementById('drillDownList').innerHTML = `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_tickets_cat')}</div>`;
             } else {
                 document.getElementById('drillDownList').innerHTML = surveys.map(s => `
                     <div style="padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;">
@@ -478,17 +478,17 @@
             let translatedType;
             if (type.startsWith('Status: ')) {
                 const val = type.replaceAll('Status: ', '');
-                translatedType = `${t('dash_lbl_status') || 'Status'}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
+                translatedType = `${t('dash_lbl_status')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
             } else if (type.startsWith('Priority: ')) {
                 const val = type.replaceAll('Priority: ', '');
-                translatedType = `${t('dash_lbl_priority') || 'Priority'}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
+                translatedType = `${t('dash_lbl_priority')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
             } else {
                 translatedType = t('dash_kpi_' + type.replaceAll(' ', '_').toLowerCase()) || type;
             }
             
-            document.getElementById('drillDownTitle').textContent = `${translatedType} ${t('dash_details') || 'Details'}`;
-            document.getElementById('drillDownCount').textContent = t('admin_role_loading') || 'Loading...';
-            document.getElementById('drillDownList').innerHTML = `<div style="padding:20px;text-align:center;">${t('admin_role_loading') || 'Loading data...'}</div>`;
+            document.getElementById('drillDownTitle').textContent = `${translatedType} ${t('dash_details')}`;
+            document.getElementById('drillDownCount').textContent = t('admin_role_loading');
+            document.getElementById('drillDownList').innerHTML = `<div style="padding:20px;text-align:center;">${t('admin_role_loading')}</div>`;
             
             if (window.openModal) window.openModal('drillDownModal');
 

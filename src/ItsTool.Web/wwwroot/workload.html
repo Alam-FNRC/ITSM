@@ -140,7 +140,7 @@
         function renderWorkload(data) {
             const container = document.getElementById('workloadContainer');
             if (data.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">${t('dash_no_data') || 'Veri bulunamadı'}</div>`;
+                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">${t('dash_no_data')}</div>`;
                 return;
             }
 

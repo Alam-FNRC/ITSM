@@ -61,7 +61,7 @@
 
         const cfg = adminConfigs[type];
         if (cfg) {
-            document.title = `${cfg.pageTitle} - ${t('nav_admin_title') || 'Yönetim'}`;
+            document.title = `${cfg.pageTitle} - ${t('nav_admin_title')}`;
             cfg.rootId = 'crudRoot';
             initCrudPage(cfg);
             await window.loadData();

@@ -1032,10 +1032,10 @@
             document.getElementById('tPriority').innerHTML = `<span class="badge badge-info">${escapeHtml(t('db_' + prioName.toLowerCase().replaceAll(' ', '_')) || prioName)}</span>`;
             const defaultTicketColor = getTicketDefaultColor(currentTicket.id);
             const activeColor = (currentTicket.colorHex && currentTicket.colorHex.trim() !== '') ? currentTicket.colorHex : defaultTicketColor;
-            const autoColorLabel = t('ticket_color_auto') || '(Automatic)';
+            const autoColorLabel = t('ticket_color_auto');
             document.getElementById('tColorHex').innerHTML = `
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <input type="color" id="instantColorPicker" value="${escapeHtml(activeColor)}" title="${t('ticket_color_edit_title') || 'Click to edit color'}" style="width:24px; height:24px; padding:0; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:transparent;">
+                    <input type="color" id="instantColorPicker" value="${escapeHtml(activeColor)}" title="${t('ticket_color_edit_title')}" style="width:24px; height:24px; padding:0; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:transparent;">
                     <span id="tColorLabel" style="font-size:13px; font-weight:500;">${escapeHtml(currentTicket.colorHex ? currentTicket.colorHex : (activeColor + ' ' + autoColorLabel))}</span>
                 </div>
             `;
@@ -1060,10 +1060,10 @@
                         currentTicket.colorHex = newColor;
                         const lbl = document.getElementById('tColorLabel');
                         if (lbl) lbl.textContent = newColor;
-                        showToast(t('ticket_save_color_success') || 'Ticket color saved successfully!', 'success');
+                        showToast(t('ticket_save_color_success'), 'success');
                     } catch (err) {
                         console.error('Failed to update color', err);
-                        showToast(t('ticket_save_color_error') || 'Error updating color', 'error');
+                        showToast(t('ticket_save_color_error'), 'error');
                     }
                 });
             }
@@ -2127,14 +2127,14 @@
         };
 
         window.parseHistoryTransfer = function(val) {
-            if (!val || val === 'Proj:,Grp:') return t('log_none') || 'none';
+            if (!val || val === 'Proj:,Grp:') return t('log_none');
             const mProj = val.match(/Proj:(-?\d*)/);
             const mGrp = val.match(/Grp:(-?\d*)/);
             const pId = mProj && mProj[1] ? mProj[1] : null;
             const gId = mGrp && mGrp[1] ? mGrp[1] : null;
             
-            const pName = pId && pId !== '-1' ? (window.globalLookup && window.globalLookup.projects?.find(x => x.id == pId)?.name || `Project ${pId}`) : (t('log_no_project') || 'No Project');
-            const gName = gId && gId !== '-1' ? (window.globalGroups?.find(x => x.id == gId)?.name || `Group ${gId}`) : (t('log_no_group') || 'No Group');
+            const pName = pId && pId !== '-1' ? (window.globalLookup && window.globalLookup.projects?.find(x => x.id == pId)?.name || `Project ${pId}`) : (t('log_no_project'));
+            const gName = gId && gId !== '-1' ? (window.globalGroups?.find(x => x.id == gId)?.name || `Group ${gId}`) : (t('log_no_group'));
             
             return `Proj:${pId || 'none'},Grp:${gId || 'none'} (${pName}, ${gName})`;
         };
@@ -2174,7 +2174,7 @@
         
         function getCommentEditedHtml(c) {
             if (!c.isEdited) return '';
-            const isEditedText = c.updatedAt ? (t('log_edited_at') || '(Edited at {0})').replaceAll('{0}', new Date(c.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})) : (t('log_edited_only') || '(Edited)');
+            const isEditedText = c.updatedAt ? (t('log_edited_at')).replaceAll('{0}', new Date(c.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})) : (t('log_edited_only'));
             let titleText = '';
             if (c.updatedAt) titleText = new Date(c.updatedAt).toLocaleString();
             return `<span style="font-size: 11px; color: var(--text-muted); font-style: italic;" title="${titleText}">${isEditedText}</span>`;
@@ -2197,9 +2197,9 @@
                     </div>
                     <div class="d-flex align-items-center gap-sm">
                         ${c.isInternal ? '<span class="badge badge-warning">Internal Note</span>' : ''}
-                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineReplyToComment(${c.id}, ${c.isInternal})">${t('ticket_btn_reply') || 'Reply'}</button>
-                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineEditComment(${c.id})">${t('ticket_btn_edit') || 'Edit'}</button>
-                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px; color: var(--danger);" onclick="deleteComment(${c.id})">${t('btn_delete') || 'Delete'}</button>
+                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineReplyToComment(${c.id}, ${c.isInternal})">${t('ticket_btn_reply')}</button>
+                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px;" onclick="inlineEditComment(${c.id})">${t('ticket_btn_edit')}</button>
+                        <button class="btn btn-ghost" style="padding:2px 4px; font-size:12px; color: var(--danger);" onclick="deleteComment(${c.id})">${t('btn_delete')}</button>
                     </div>
                 </div>`;
         }
@@ -2220,8 +2220,8 @@
                         </div>
                         
                         <div class="d-flex gap-sm">
-                            <button class="btn btn-ghost btn-sm" onclick="cancelEditComment(${c.id})">${t('btn_cancel') || 'Cancel'}</button>
-                            <button class="btn btn-primary btn-sm" id="btnSaveEdit-${c.id}" onclick="saveEditComment(${c.id})">${t('btn_save') || 'Save'}</button>
+                            <button class="btn btn-ghost btn-sm" onclick="cancelEditComment(${c.id})">${t('btn_cancel')}</button>
+                            <button class="btn btn-primary btn-sm" id="btnSaveEdit-${c.id}" onclick="saveEditComment(${c.id})">${t('btn_save')}</button>
                         </div>
                     </div>
                 </div>
@@ -2265,57 +2265,57 @@
 
         window.buildHistoryText = function(h) {
             let text = '';
-            const actionKey = h.action === 'Created' ? (t('log_created') || 'Created') : h.action;
-            const noneText = t('log_none') || 'none';
+            const actionKey = h.action === 'Created' ? (t('log_created')) : h.action;
+            const noneText = t('log_none');
             const oldVal = h.oldValue || noneText;
             const newVal = h.newValue || noneText;
             
-            text = (t('log_changed_general') || `{0} <strong>{1}</strong> from <em>{2}</em> to <em>{3}</em>`)
+            text = (t('log_changed_general'))
                 .replaceAll('{0}', escapeHtml(actionKey))
                 .replaceAll('{1}', escapeHtml(h.fieldName || ''))
                 .replaceAll('{2}', escapeHtml(oldVal))
                 .replaceAll('{3}', escapeHtml(newVal));
             
             if (h.action === 'Assigned' && h.fieldName === 'AssignedUserId') {
-                text = (t('log_assigned') || `assigned this ticket to <strong>{0}</strong> (was {1})`)
+                text = (t('log_assigned'))
                     .replaceAll('{0}', window.resolveTimelineUser(h.newValue))
                     .replaceAll('{1}', window.resolveTimelineUser(h.oldValue));
             } else if (h.action === 'Transferred') {
-                text = (t('log_transferred') || `transferred this ticket to <strong>{0}</strong> (was {1})`)
+                text = (t('log_transferred'))
                     .replaceAll('{0}', escapeHtml(window.parseHistoryTransfer(h.newValue)))
                     .replaceAll('{1}', escapeHtml(window.parseHistoryTransfer(h.oldValue)));
             } else if (h.action === 'StatusChanged' || h.action === 'Reopened') {
                 const sOld = window.globalLookup?.statuses?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const sNew = window.globalLookup?.statuses?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_status') || `changed status from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_status'))
                     .replaceAll('{0}', escapeHtml(sOld)).replaceAll('{1}', escapeHtml(sNew));
             } else if (h.fieldName === 'PriorityId' || h.fieldName === 'Priority') {
                 const pOld = window.globalLookup?.priorities?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const pNew = window.globalLookup?.priorities?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_priority') || `changed priority from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_priority'))
                     .replaceAll('{0}', escapeHtml(pOld)).replaceAll('{1}', escapeHtml(pNew));
             } else if (h.fieldName === 'CategoryId' || h.fieldName === 'Category') {
                 const cOld = window.globalLookup?.categories?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const cNew = window.globalLookup?.categories?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_category') || `changed category from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_category'))
                     .replaceAll('{0}', escapeHtml(cOld)).replaceAll('{1}', escapeHtml(cNew));
             } else if (h.fieldName === 'ProjectId' || h.fieldName === 'Project') {
                 const pOld = window.globalLookup?.projects?.find(x => x.id == h.oldValue)?.name || h.oldValue;
                 const pNew = window.globalLookup?.projects?.find(x => x.id == h.newValue)?.name || h.newValue;
-                text = (t('log_changed_project') || `changed project from <em>{0}</em> to <em>{1}</em>`)
+                text = (t('log_changed_project'))
                     .replaceAll('{0}', escapeHtml(pOld)).replaceAll('{1}', escapeHtml(pNew));
             } else if (h.action === 'AttachmentAdded') {
-                text = (t('log_attachment_added') || `added attachment <strong>{0}</strong>`).replaceAll('{0}', escapeHtml(h.newValue));
+                text = (t('log_attachment_added')).replaceAll('{0}', escapeHtml(h.newValue));
             } else if (h.action === 'AttachmentDeleted') {
-                text = (t('log_attachment_deleted') || `deleted attachment <strong>{0}</strong>`).replaceAll('{0}', escapeHtml(h.oldValue));
+                text = (t('log_attachment_deleted')).replaceAll('{0}', escapeHtml(h.oldValue));
             } else if (h.action === 'CommentEdited') {
-                text = t('log_edited_comment') || `edited a comment`;
+                text = t('log_edited_comment');
             } else if (h.action === 'CommentDeleted') {
-                text = t('log_deleted_comment') || `deleted a comment`;
+                text = t('log_deleted_comment');
             } else if (h.action === 'CommentRestored') {
-                text = t('log_restored_comment') || `restored a deleted comment`;
+                text = t('log_restored_comment');
             } else if (h.action === 'UserMentioned') {
-                text = (t('log_mentioned_user') || `mentioned <strong>{0}</strong> in a comment`).replaceAll('{0}', window.resolveTimelineUser(h.newValue));
+                text = (t('log_mentioned_user')).replaceAll('{0}', window.resolveTimelineUser(h.newValue));
             }
             return text;
         };
@@ -2324,13 +2324,13 @@
             let detailsHtml = '';
             if (h.action === 'CommentAdded' || h.action === 'InternalNoteAdded' || h.action === 'CommentReplied' || h.action === 'UserMentioned') {
                 if (h.action === 'UserMentioned' && h.newValue) {
-                    detailsHtml = `<div style="background:var(--bg-hover); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border); font-size:11px;">${t('log_mentioned_user_prefix') || 'Mentioned User:'} <strong>${window.resolveTimelineUser(h.newValue)}</strong></div>`;
+                    detailsHtml = `<div style="background:var(--bg-hover); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border); font-size:11px;">${t('log_mentioned_user_prefix')} <strong>${window.resolveTimelineUser(h.newValue)}</strong></div>`;
                 } else if (h.newValue) {
                     detailsHtml = `<div style="background:var(--bg-hover); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border); font-size:11px;">${window.renderContentWithAttachments(h.newValue)}</div>`;
                 }
                 const commentExists = events.some(ev => ev.eventType === 'Comment' && ev.data.id == h.fieldName);
                 if (commentExists) {
-                    detailsHtml += `<button type="button" onclick="document.getElementById('commentLogsModal').classList.remove('active'); setTimeout(() => { const c = document.getElementById('comment-${h.fieldName}'); if(c) { c.scrollIntoView({behavior:'smooth', block:'center'}); c.style.boxShadow = '0 0 0 4px var(--primary-light)'; setTimeout(()=>c.style.boxShadow='none', 3000); } }, 300);" style="border: none; background: none; padding: 0; cursor: pointer; color: var(--primary); text-decoration: underline; font-size:10px; display:inline-block; margin-top:4px;">${t('log_jump_to_comment') || 'Jump to comment'}</button>`;
+                    detailsHtml += `<button type="button" onclick="document.getElementById('commentLogsModal').classList.remove('active'); setTimeout(() => { const c = document.getElementById('comment-${h.fieldName}'); if(c) { c.scrollIntoView({behavior:'smooth', block:'center'}); c.style.boxShadow = '0 0 0 4px var(--primary-light)'; setTimeout(()=>c.style.boxShadow='none', 3000); } }, 300);" style="border: none; background: none; padding: 0; cursor: pointer; color: var(--primary); text-decoration: underline; font-size:10px; display:inline-block; margin-top:4px;">${t('log_jump_to_comment')}</button>`;
                 }
             } else if (h.action === 'CommentEdited' && h.oldValue && h.newValue) {
                 const oldEnc = btoa(unescape(encodeURIComponent(h.oldValue)));
@@ -2346,7 +2346,7 @@
                 }
                 const editorName = window.resolveTimelineUser(h.createdBy);
                 const editedAt = new Date(e.timestamp).toLocaleString();
-                detailsHtml = `<button class="btn btn-ghost" style="font-size:11px; padding:4px 8px; margin-top:4px; color:var(--primary); font-weight:600; background:rgba(10, 107, 234, 0.05); border:1px solid rgba(10, 107, 234, 0.1);" data-old="${oldEnc}" data-new="${newEnc}" data-author="${escapeHtml(origAuthor)}" data-editor="${escapeHtml(editorName)}" data-created="${escapeHtml(origCreatedAt)}" data-edited="${escapeHtml(editedAt)}" onclick="showEditDetails(this.dataset.old, this.dataset.new, this.dataset.author, this.dataset.editor, this.dataset.created, this.dataset.edited)">${t('audit_btn_detail') || 'View Details'}</button>`;
+                detailsHtml = `<button class="btn btn-ghost" style="font-size:11px; padding:4px 8px; margin-top:4px; color:var(--primary); font-weight:600; background:rgba(10, 107, 234, 0.05); border:1px solid rgba(10, 107, 234, 0.1);" data-old="${oldEnc}" data-new="${newEnc}" data-author="${escapeHtml(origAuthor)}" data-editor="${escapeHtml(editorName)}" data-created="${escapeHtml(origCreatedAt)}" data-edited="${escapeHtml(editedAt)}" onclick="showEditDetails(this.dataset.old, this.dataset.new, this.dataset.author, this.dataset.editor, this.dataset.created, this.dataset.edited)">${t('audit_btn_detail')}</button>`;
             } else if (h.action === 'CommentDeleted' && h.oldValue) {
                 detailsHtml = `<div style="background:var(--bg-danger-light); padding: 4px 8px; margin-top:4px; border-radius:4px; border:1px solid var(--border-danger-light); font-size:11px; color:var(--text-danger-strong);"><del>${escapeHtml(h.oldValue)}</del></div>`;
             }
@@ -2369,13 +2369,13 @@
             } else if (h.action === 'CommentReplied' || h.action === 'CommentAdded' || h.action === 'InternalNoteAdded') {
                 const hasAttachment = h.newValue && h.newValue.includes('[attachment:');
                 if (hasAttachment) {
-                    if (h.action === 'CommentReplied') text = t('log_replied_attachment') || `replied with an attachment`;
-                    else if (h.action === 'InternalNoteAdded') text = t('log_note_attachment') || `added an internal note with an attachment`;
-                    else text = t('log_comment_attachment') || `added a comment with an attachment`;
+                    if (h.action === 'CommentReplied') text = t('log_replied_attachment');
+                    else if (h.action === 'InternalNoteAdded') text = t('log_note_attachment');
+                    else text = t('log_comment_attachment');
                 } else {
-                    if (h.action === 'CommentReplied') text = t('log_replied') || `replied to a comment`;
-                    else if (h.action === 'InternalNoteAdded') text = t('log_added_note') || `added an internal note`;
-                    else text = t('log_added_comment') || `added a comment`;
+                    if (h.action === 'CommentReplied') text = t('log_replied');
+                    else if (h.action === 'InternalNoteAdded') text = t('log_added_note');
+                    else text = t('log_added_comment');
                 }
             }
             
@@ -2546,15 +2546,15 @@
             
             box.innerHTML = `
                 <div class="comment-reply-connector"></div>
-                <textarea class="form-control mb-sm" rows="3" id="inline-reply-text" dir="auto" placeholder="${(t('log_replying_to') || 'Replying to comment #{0}...').replaceAll('{0}', id)}"></textarea>
+                <textarea class="form-control mb-sm" rows="3" id="inline-reply-text" dir="auto" placeholder="${(t('log_replying_to')).replaceAll('{0}', id)}"></textarea>
                 ${canWriteInternalNotes ? `<div style="margin-bottom: 8px;">
                     <label style="font-size: 13px; color: var(--text-muted); cursor: ${forceInternal ? 'not-allowed' : 'pointer'};">
-                        <input type="checkbox" id="inline-reply-internal" ${forceInternal ? 'checked disabled' : ''}> ${t('log_internal_note_cb') || 'Internal Note'}
+                        <input type="checkbox" id="inline-reply-internal" ${forceInternal ? 'checked disabled' : ''}> ${t('log_internal_note_cb')}
                     </label>
                 </div>` : ''}
                 <div class="d-flex gap-sm">
-                    <button class="btn btn-primary btn-sm" onclick="submitInlineReply(${id}, ${forceInternal})">${t('ticket_btn_reply') || 'Reply'}</button>
-                    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inline-reply-box').remove()">${t('btn_cancel') || 'Cancel'}</button>
+                    <button class="btn btn-primary btn-sm" onclick="submitInlineReply(${id}, ${forceInternal})">${t('ticket_btn_reply')}</button>
+                    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inline-reply-box').remove()">${t('btn_cancel')}</button>
                 </div>
             `;
             

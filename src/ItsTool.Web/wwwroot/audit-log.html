@@ -176,9 +176,9 @@
                     tbody.innerHTML = `<tr><td colspan="8">
                         <div class="empty-state" style="padding: 48px 24px;">
                             <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--border)"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                            <h3 style="margin: 12px 0 4px; font-size: 16px; color: var(--text-main);">${t('audit_no_data') || 'Kayıt Bulunamadı'}</h3>
+                            <h3 style="margin: 12px 0 4px; font-size: 16px; color: var(--text-main);">${t('audit_no_data')}</h3>
                             <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">Belirtilen arama kriterlerine uygun denetim kaydı bulunamadı.</p>
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetAuditFilters()">${t('btn_reset_filter') || 'Filtreleri Sıfırla'}</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.resetAuditFilters()">${t('btn_reset_filter')}</button>
                         </div>
                     </td></tr>`;
                     return;
@@ -345,7 +345,7 @@
                 const sNew = lookup.statuses?.find(s => String(s.id) === a.newValue)?.name;
                 mappedNew = sNew ? (t('db_' + sNew.toLowerCase().replaceAll(' ', '_')) || sNew) : a.newValue;
             } else if (a.fieldName === 'Status' && a.entityType === 'KnowledgeArticle') {
-                const sMap = { '0': t('kb_opt_draft') || 'Draft', '1': t('kb_opt_published') || 'Published', '2': t('kb_badge_pending') || 'Pending Review' };
+                const sMap = { '0': t('kb_opt_draft'), '1': t('kb_opt_published'), '2': t('kb_badge_pending') };
                 mappedOld = sMap[a.oldValue] || a.oldValue;
                 mappedNew = sMap[a.newValue] || a.newValue;
             } else if (a.fieldName === 'PriorityId') {
