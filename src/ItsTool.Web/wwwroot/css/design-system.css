@@ -1262,3 +1262,7 @@ h1, h2, h3, h4, h5, h6 {
 .dropdown-header { padding: 8px 16px; margin:0; font-size: 14px; font-weight: 600; color: var(--text-main); }
 .dropdown-divider { height: 1px; margin: 8px 0; overflow: hidden; background-color: var(--border); border: none; }
 
+/* Directional icons (back arrows) point the other way in right-to-left pages */
+[dir="rtl"] .flip-rtl {
+    transform: scaleX(-1);
+}

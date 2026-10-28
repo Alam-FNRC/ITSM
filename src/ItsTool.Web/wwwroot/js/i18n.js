@@ -518,7 +518,7 @@ export const translations = {
         "kb_yes": "Yes",
         "kb_no": "No",
         "kb_related_articles": "Related Articles",
-        "kb_back": "← Back to Knowledge Base",
+        "kb_back": "Back to Knowledge Base",
         "kb_all_categories": "All Categories",
         "kb_by": "By",
         "kb_btn_new": "+ New Article",
@@ -1361,7 +1361,7 @@ export const translations = {
         "kb_no": "Hayır",
         "kb_related_articles": "İlgili Makaleler",
 
-        "kb_back": "← Bilgi Bankasına Dön",
+        "kb_back": "Bilgi Bankasına Dön",
         "kb_all_categories": "Tüm Kategoriler",
         "kb_by": "Yazar:",
         "kb_btn_new": "+ Yeni Makale",

@@ -476,7 +476,7 @@ export const ar = {
     "kb_yes": "نعم",
     "kb_no": "لا",
     "kb_related_articles": "مقالات ذات صلة",
-    "kb_back": "→ العودة إلى قاعدة المعرفة",
+    "kb_back": "العودة إلى قاعدة المعرفة",
     "kb_all_categories": "جميع الفئات",
     "kb_by": "بواسطة",
     "kb_btn_new": "+ مقالة جديدة",
