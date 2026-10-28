@@ -75,8 +75,8 @@ export const ar = {
     "sla_new_policy_modal": "سياسة مستوى خدمة جديدة لتطبيق",
     "sla_app_proj_star": "التطبيق / المشروع *",
     "sla_app_proj_help": "تنطبق هذه السياسة على جميع التذاكر المفتوحة للتطبيق المحدد.",
-    "sla_policy_name_ph": "مثال: سياسة مستوى خدمة البوابة الإلكترونية",
-    "sla_desc_ph": "مثال: أهداف خاصة للمعاملات الحرجة",
+    "sla_policy_name_ph": "مثال: سياسة مستوى الخدمة لنظام تخطيط الموارد",
+    "sla_desc_ph": "مثال: مهل أقصر للطلبات الحرجة للأعمال",
     "sla_initial_targets": "الأهداف الأولية حسب الأولوية",
     "sla_create_policy_btn": "إنشاء السياسة",
     "sla_creating": "جارٍ الإنشاء...",
@@ -851,5 +851,10 @@ export const ar = {
     "tickets_restore_failed": "تعذر استعادة التذكرة.",
     "tickets_delete_failed": "تعذر حذف التذكرة.",
     "tickets_recent_remove": "إزالة",
-    "tickets_recent_cleared": "تم مسح التذاكر التي شوهدت مؤخراً."
+    "tickets_recent_cleared": "تم مسح التذاكر التي شوهدت مؤخراً.",
+    "common_open_menu": "فتح القائمة",
+    "sla_toggle": "توسيع أو طي",
+    "sla_update_failed": "تعذر تحديث السياسة.",
+    "sla_create_failed": "تعذر إنشاء السياسة.",
+    "sla_policy": "سياسة مستوى الخدمة"
 };

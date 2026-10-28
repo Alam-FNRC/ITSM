@@ -79,8 +79,8 @@ export const translations = {
         "sla_new_policy_modal": "New Application SLA Policy",
         "sla_app_proj_star": "Application / Project *",
         "sla_app_proj_help": "This SLA policy applies to all tickets opened for the selected application.",
-        "sla_policy_name_ph": "e.g. Mobile Banking SLA Policy",
-        "sla_desc_ph": "e.g. Dedicated targets for critical payment & mobile transactions",
+        "sla_policy_name_ph": "e.g. ERP system SLA policy",
+        "sla_desc_ph": "e.g. Shorter targets for business-critical requests",
         "sla_initial_targets": "Priority-based Initial Targets",
         "sla_create_policy_btn": "Create Policy",
         "sla_creating": "Creating...",
@@ -895,7 +895,12 @@ export const translations = {
         "tickets_restore_failed": "Could not restore the ticket.",
         "tickets_delete_failed": "Could not delete the ticket.",
         "tickets_recent_remove": "Remove",
-        "tickets_recent_cleared": "Recently viewed tickets cleared."
+        "tickets_recent_cleared": "Recently viewed tickets cleared.",
+        "common_open_menu": "Open menu",
+        "sla_toggle": "Expand or collapse",
+        "sla_update_failed": "Could not update the policy.",
+        "sla_create_failed": "Could not create the policy.",
+        "sla_policy": "SLA policy"
     },
     "tr": {
         // Sidebar Navigation
@@ -973,8 +978,8 @@ export const translations = {
         "sla_new_policy_modal": "Yeni Uygulama SLA Politikası",
         "sla_app_proj_star": "Uygulama / Proje *",
         "sla_app_proj_help": "Seçilen uygulamaya ait açılan tüm biletlerde bu SLA politikası uygulanır.",
-        "sla_policy_name_ph": "Örn: Mobil Bankacılık SLA Politikası",
-        "sla_desc_ph": "Örn: Kritik ödeme ve mobil işlemler için özel süreler",
+        "sla_policy_name_ph": "örn. ERP sistemi SLA politikası",
+        "sla_desc_ph": "örn. İş açısından kritik talepler için daha kısa süreler",
         "sla_initial_targets": "Öncelik Bazlı Başlangıç Hedefleri",
         "sla_create_policy_btn": "Politikayı Oluştur",
         "sla_creating": "Oluşturuluyor...",
@@ -1792,7 +1797,12 @@ export const translations = {
         "tickets_restore_failed": "Bilet geri yüklenirken bir hata oluştu.",
         "tickets_delete_failed": "Bilet silinirken bir hata oluştu.",
         "tickets_recent_remove": "Kaldır",
-        "tickets_recent_cleared": "Son görüntülenen biletler temizlendi."
+        "tickets_recent_cleared": "Son görüntülenen biletler temizlendi.",
+        "common_open_menu": "Menüyü Aç",
+        "sla_toggle": "Aç / Kapat",
+        "sla_update_failed": "Politika güncellenirken hata oluştu.",
+        "sla_create_failed": "Politika oluşturulurken hata oluştu.",
+        "sla_policy": "SLA Politikası"
     },
     "ar": ar
 };
