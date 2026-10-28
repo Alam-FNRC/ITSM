@@ -144,7 +144,7 @@
                     </div>
                     <div class="form-group">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <label class="form-label" for="uPassword" style="margin: 0;" data-i18n="users_lbl_pass">Şifre</label>
+                            <label class="form-label" for="uPassword" style="margin: 0;" data-i18n="users_lbl_pass">Password</label>
                             <button type="button" class="btn btn-ghost btn-sm" onclick="window.generateAndFillPassword()" style="font-size: 11.5px; padding: 1px 6px; color: var(--primary); font-weight: 500;">
                                 Rastgele Şifre Üret
                             </button>
@@ -217,21 +217,21 @@
     <div id="resetPasswordModal" class="modal-overlay">
         <div class="modal" style="width: min(480px, 92%); border-radius: 8px;">
             <div class="modal-header">
-                <h2 style="font-size: 16px; margin: 0; font-weight: 700;" data-i18n="users_reset_modal_title">Kullanıcı Şifresini Sıfırla</h2>
+                <h2 style="font-size: 16px; margin: 0; font-weight: 700;" data-i18n="users_reset_modal_title">Reset User Password</h2>
                 <button type="button" class="close-btn" data-action="closeModal" data-target="resetPasswordModal" aria-label="Kapat">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
             <div class="modal-body" style="padding: 16px 20px;">
                 <p class="text-muted" style="margin-top:0; font-size: 13px;">
-                    <span data-i18n="users_reset_user_prefix">Kullanıcı:</span> <strong id="resetTargetUsername" style="color: var(--text-main);"></strong>
+                    <span data-i18n="users_reset_user_prefix">User:</span> <strong id="resetTargetUsername" style="color: var(--text-main);"></strong>
                 </p>
                 <div class="form-group" style="margin-bottom: 14px;">
-                    <label class="form-label" for="resetNewPasswordInput" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;" data-i18n="users_reset_lbl_new">Yeni Geçici Şifre:</label>
+                    <label class="form-label" for="resetNewPasswordInput" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;" data-i18n="users_reset_lbl_new">New Temporary Password:</label>
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="resetNewPasswordInput" class="form-control" style="font-family: monospace; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; flex: 1;">
                         <button type="button" class="btn btn-secondary" onclick="window.generateResetPassword()" style="font-size: 12px; white-space: nowrap; padding: 6px 10px;" data-i18n="users_reset_btn_generate">
-                            Yeniden Üret
+                            Generate
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="window.copyResetPassword()" style="font-size: 12px; white-space: nowrap; padding: 6px 10px;" title="Panoya Kopyala" data-i18n="users_reset_btn_copy">
                             Kopyala
@@ -239,12 +239,12 @@
                     </div>
                 </div>
                 <div id="resetPasswordAlertBox" style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-inline-start: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; font-size: 12px; color: var(--text-main, #1E40AF); line-height: 1.45;">
-                    <strong data-i18n="users_reset_procedure_title">Şifre Kurtarma Prosedürü:</strong> <span data-i18n="users_reset_procedure_desc">Bu geçici şifreyi sisteme kaydedip kullanıcıya iletebilirsiniz. Kullanıcı bu şifreyle sisteme ilk girişinde otomatik olarak kendi yeni şifresini belirleyecektir.</span>
+                    <strong data-i18n="users_reset_procedure_title">Password Recovery Procedure:</strong> <span data-i18n="users_reset_procedure_desc">You can save this temporary password and send it to the user. Upon first login with this password, the user will be prompted to set their own new password.</span>
                 </div>
             </div>
             <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px;">
-                <button type="button" class="btn btn-ghost" data-action="closeModal" data-target="resetPasswordModal" data-i18n="users_btn_cancel">İptal</button>
-                <button type="button" class="btn btn-primary" id="btnConfirmResetPassword" onclick="window.confirmResetPassword()" data-i18n="users_reset_btn_confirm">Şifreyi Kaydet ve Uygula</button>
+                <button type="button" class="btn btn-ghost" data-action="closeModal" data-target="resetPasswordModal" data-i18n="users_btn_cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmResetPassword" onclick="window.confirmResetPassword()" data-i18n="users_reset_btn_confirm">Save and Apply Password</button>
             </div>
         </div>
     </div>

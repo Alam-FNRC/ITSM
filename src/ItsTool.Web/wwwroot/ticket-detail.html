@@ -282,13 +282,13 @@
                         <a href="/tickets.html" class="btn btn-ghost" style="padding: 4px;"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></a>
                         <h2 data-i18n="ticket_detail_title">Ticket Detail</h2>
                         <button class="btn btn-secondary" id="btnEditInline" onclick="toggleEditMode()" style="margin-inline-start: 8px;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="ticket_btn_edit">Düzenle</span>
+                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="ticket_btn_edit">Edit</span>
                         </button>
                         <button class="btn btn-secondary" id="btnTransfer" onclick="window.openTransferModal()" style="margin-inline-start: 8px;">
                             <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M16 1l-3 3h2v2c0 2.21-1.79 4-4 4s-4-1.79-4-4V4H5v2c0 3.31 2.69 6 6 6s6-2.69 6-6V4h2l-3-3zM9 23l3-3h-2v-2c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2v-2c0-3.31-2.69-6-6-6s-6 2.69-6 6v2H7l-3 3z"/></svg><span data-i18n="ticket_btn_transfer">Transfer</span>
                         </button>
                         <div id="editActions" style="display:none; margin-inline-start: 8px;">
-                            <button class="btn btn-ghost" onclick="cancelEditMode()" data-i18n="users_btn_cancel">İptal</button>
+                            <button class="btn btn-ghost" onclick="cancelEditMode()" data-i18n="users_btn_cancel">Cancel</button>
                             <button class="btn btn-primary" onclick="saveEditMode()" data-i18n="users_btn_save">Kaydet</button>
                         </div>
                     </div>
@@ -309,7 +309,7 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><button type="button" class="dropdown-item text-center" onclick="markAllAsRead(event)" style="border: none; background: none; width: 100%; padding: 12px 0; color: var(--primary); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; border-top: 1px solid var(--border);">
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M0.41,13.41L6,19L7.41,17.58L1.83,12M22.24,5.58L11.66,16.17L7.5,12L6.07,13.41L11.66,19L23.66,7M18,7L16.59,5.58L10.24,11.93L11.66,13.34L18,7Z"/></svg>
-                                <span data-i18n="topbar_mark_all_read">Tümünü Okundu Olarak İşaretle</span>
+                                <span data-i18n="topbar_mark_all_read">Mark all as read</span>
                             </button></li>
                         </ul>
                     </div>
@@ -419,7 +419,7 @@
                             <div class="ai-panel-status-row" style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 8px; padding: 4px 6px; background: var(--bg-hover, rgba(255,255,255,0.75)); border: 1px solid var(--border, #E2E8F0); border-radius: 6px;">
                                 <button type="button" id="aiStatusBadge" class="badge ai-status-fallback" onclick="window.openLlmSettingsModal()" style="font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 12px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; cursor: pointer; max-width: 175px; overflow: hidden; text-overflow: ellipsis; outline: none;" title="LLM Durumu (Ayarlar için tıklayın)">
                                     <span id="aiStatusDot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#F59E0B; flex-shrink: 0;"></span>
-                                    <span id="aiStatusText" data-i18n="ai_status_offline" style="overflow: hidden; text-overflow: ellipsis;">LLM Bağlı Değil (Kural Motoru)</span>
+                                    <span id="aiStatusText" data-i18n="ai_status_offline" style="overflow: hidden; text-overflow: ellipsis;">No LLM (Rule Engine)</span>
                                 </button>
                                 <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
                                     <label for="aiResponseLang" style="font-size: 10px; font-weight: 600; color: var(--text-muted, #64748B); margin: 0;" data-i18n="ai_lang_label">Dil:</label>
@@ -431,22 +431,22 @@
                             </div>
                             
                             <p class="ai-panel-desc" style="font-size: 11px; color: var(--text-muted, #475569); margin: 4px 0 10px 0; line-height: 1.35;" data-i18n="ai_copilot_desc">
-                                Bilet çözüm önerisi, özet ve yanıt taslağı alın.
+                                Get AI resolution suggestions, handoff summaries and draft replies.
                             </p>
 
                             <!-- Quick Action Buttons -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
                                 <button type="button" id="btnAiSuggest" class="ai-action-btn ai-btn-suggest" onclick="window.triggerAiAction('suggest')">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
-                                    <span data-i18n="ai_btn_suggest">Çözüm Önerisi</span>
+                                    <span data-i18n="ai_btn_suggest">Resolution Suggestion</span>
                                 </button>
                                 <button type="button" id="btnAiSummarize" class="ai-action-btn ai-btn-summarize" onclick="window.triggerAiAction('summarize')">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                    <span data-i18n="ai_btn_summarize">Bileti Özetle</span>
+                                    <span data-i18n="ai_btn_summarize">Summarize Ticket</span>
                                 </button>
                                 <button type="button" id="btnAiDraft" class="ai-action-btn ai-btn-draft" onclick="window.triggerAiAction('draft')">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                    <span data-i18n="ai_btn_draft">Yanıt Taslağı</span>
+                                    <span data-i18n="ai_btn_draft">Draft Reply</span>
                                 </button>
                                 <button type="button" id="btnAiAsk" class="ai-action-btn ai-btn-ask" onclick="window.toggleAiAskInput()">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -569,7 +569,7 @@
 
                             <div class="property-group" id="tSlaGroup" style="margin-top: 10px;">
                                 <div class="property-label" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span data-i18n="ticket_prop_sla">SLA Süreleri ve Durumu</span>
+                                    <span data-i18n="ticket_prop_sla">SLA Targets &amp; Timers</span>
                                     <span id="tSlaOverallBadge"></span>
                                 </div>
                                 <div class="property-value" id="tSlaContainer" style="background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; display: flex; flex-direction: column; gap: 8px;">
