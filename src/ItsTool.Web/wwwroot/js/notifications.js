@@ -51,7 +51,7 @@ export async function initNotifications() {
 
     // Setup SignalR
     hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl("http://localhost:5246/hubs/notification", {
+        .withUrl("/hubs/notification", {
             accessTokenFactory: () => token
         })
         .withAutomaticReconnect()

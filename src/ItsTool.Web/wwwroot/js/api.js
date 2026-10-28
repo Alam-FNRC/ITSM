@@ -1,6 +1,7 @@
 import { showToast } from './ui.js';
 
-const API_BASE_URL = 'http://localhost:5246/api';
+// The API serves these pages, so it is on the same origin in every environment
+const API_BASE_URL = '/api';
 
 class ApiClient {
     constructor() {
