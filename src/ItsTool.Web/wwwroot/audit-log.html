@@ -341,28 +341,28 @@
             const isEn = getCurrentLanguage() !== 'tr'; // Turkish has its own text here; every other language shows English
             if (a.fieldName === 'StatusId') {
                 const sName = lookup.statuses?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = sName ? (t('db_' + sName.toLowerCase().replaceAll(' ', '_')) || sName) : a.oldValue;
+                mappedOld = sName ? (t('db_' + sName.toLowerCase().replaceAll(' ', '_'), sName)) : a.oldValue;
                 const sNew = lookup.statuses?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = sNew ? (t('db_' + sNew.toLowerCase().replaceAll(' ', '_')) || sNew) : a.newValue;
+                mappedNew = sNew ? (t('db_' + sNew.toLowerCase().replaceAll(' ', '_'), sNew)) : a.newValue;
             } else if (a.fieldName === 'Status' && a.entityType === 'KnowledgeArticle') {
                 const sMap = { '0': t('kb_opt_draft'), '1': t('kb_opt_published'), '2': t('kb_badge_pending') };
                 mappedOld = sMap[a.oldValue] || a.oldValue;
                 mappedNew = sMap[a.newValue] || a.newValue;
             } else if (a.fieldName === 'PriorityId') {
                 const pName = lookup.priorities?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = pName ? (t('db_' + pName.toLowerCase().replaceAll(' ', '_')) || pName) : a.oldValue;
+                mappedOld = pName ? (t('db_' + pName.toLowerCase().replaceAll(' ', '_'), pName)) : a.oldValue;
                 const pNew = lookup.priorities?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = pNew ? (t('db_' + pNew.toLowerCase().replaceAll(' ', '_')) || pNew) : a.newValue;
+                mappedNew = pNew ? (t('db_' + pNew.toLowerCase().replaceAll(' ', '_'), pNew)) : a.newValue;
             } else if (a.fieldName === 'CategoryId') {
                 const cName = lookup.categories?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = cName ? (t('db_' + cName.toLowerCase().replaceAll(' ', '_')) || cName) : a.oldValue;
+                mappedOld = cName ? (t('db_' + cName.toLowerCase().replaceAll(' ', '_'), cName)) : a.oldValue;
                 const cNew = lookup.categories?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = cNew ? (t('db_' + cNew.toLowerCase().replaceAll(' ', '_')) || cNew) : a.newValue;
+                mappedNew = cNew ? (t('db_' + cNew.toLowerCase().replaceAll(' ', '_'), cNew)) : a.newValue;
             } else if (a.fieldName === 'ProjectId') {
                 const prName = lookup.projects?.find(s => String(s.id) === a.oldValue)?.name;
-                mappedOld = prName ? (t('db_' + prName.toLowerCase().replaceAll(' ', '_')) || prName) : a.oldValue;
+                mappedOld = prName ? (t('db_' + prName.toLowerCase().replaceAll(' ', '_'), prName)) : a.oldValue;
                 const prNew = lookup.projects?.find(s => String(s.id) === a.newValue)?.name;
-                mappedNew = prNew ? (t('db_' + prNew.toLowerCase().replaceAll(' ', '_')) || prNew) : a.newValue;
+                mappedNew = prNew ? (t('db_' + prNew.toLowerCase().replaceAll(' ', '_'), prNew)) : a.newValue;
             } else if (a.fieldName === 'AssignedUserId') {
                 mappedOld = users?.find(s => String(s.id) === a.oldValue)?.firstName ? (users.find(s => String(s.id) === a.oldValue).firstName + ' ' + users.find(s => String(s.id) === a.oldValue).lastName) : a.oldValue;
                 mappedNew = users?.find(s => String(s.id) === a.newValue)?.firstName ? (users.find(s => String(s.id) === a.newValue).firstName + ' ' + users.find(s => String(s.id) === a.newValue).lastName) : a.newValue;
@@ -378,7 +378,7 @@
                     const gId = mGrp && mGrp[1] ? mGrp[1] : null;
                     const prObj = pId && pId !== '-1' ? lookup.projects?.find(x => String(x.id) === pId) : null;
                     const grObj = gId && gId !== '-1' ? lookup.groups?.find(x => String(x.id) === gId) : null;
-                    const pName = prObj ? (t('db_' + prObj.name.toLowerCase().replaceAll(' ', '_')) || prObj.name) : (pId && pId !== '-1' ? `Project ${pId}` : (isEn ? 'No Project' : 'Proje Yok'));
+                    const pName = prObj ? (t('db_' + prObj.name.toLowerCase().replaceAll(' ', '_'), prObj.name)) : (pId && pId !== '-1' ? `Project ${pId}` : (isEn ? 'No Project' : 'Proje Yok'));
                     const gName = grObj ? grObj.name : (gId && gId !== '-1' ? `Group ${gId}` : (isEn ? 'No Group' : 'Grup Yok'));
                     return `Proj:${pId || 'none'},Grp:${gId || 'none'} (${pName}, ${gName})`;
                 };

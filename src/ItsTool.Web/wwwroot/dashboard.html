@@ -140,7 +140,7 @@
                             <svg viewBox="0 0 24 24" width="24" height="24" style="fill: currentColor;">${iconPath}</svg>
                         </div>
                         <div>
-                            <div class="text-muted" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">${t('dash_kpi_' + title.replaceAll(' ', '_').toLowerCase()) || title}</div>
+                            <div class="text-muted" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">${t('dash_kpi_' + title.replaceAll(' ', '_').toLowerCase(), title)}</div>
                             <div style="font-size: 28px; font-weight: 700; color: var(--${title === 'Avg CSAT' || title === 'Open Tickets' || title === 'Unassigned' ? 'text' : color}); line-height: 1.2;">${val}</div>
                         </div>
                     </div>
@@ -221,8 +221,8 @@
                     const statusName = (lookup.statuses && lookup.statuses.find(x => x.id === tData.statusId)?.name) || t('dash_unknown');
                     const priorityName = (lookup.priorities && lookup.priorities.find(x => x.id === tData.priorityId)?.name) || t('dash_unknown');
                     
-                    const localizedStatus = t('db_' + statusName.toLowerCase().replaceAll(' ', '_')) || statusName;
-                    const localizedPriority = t('db_' + priorityName.toLowerCase().replaceAll(' ', '_')) || priorityName;
+                    const localizedStatus = t('db_' + statusName.toLowerCase().replaceAll(' ', '_'), statusName);
+                    const localizedPriority = t('db_' + priorityName.toLowerCase().replaceAll(' ', '_'), priorityName);
 
                     return `
                     <tr style="cursor: pointer;" onclick="openTicketPreview(${tData.id})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTicketPreview(${tData.id});}">
@@ -406,13 +406,13 @@
             const getPriorityName = (id) => window.__lookupCache?.priorities?.find(s => s.id === id)?.name || 'Normal';
             const getStatusBadge = (status) => {
                 const map = { 'Open': 'info', 'Açık': 'info', 'In Progress': 'warning', 'Devam Ediyor': 'warning', 'Pending': 'warning', 'Beklemede': 'warning', 'Resolved': 'success', 'Çözüldü': 'success', 'Closed': 'default', 'Kapatıldı': 'default' };
-                const label = t('db_' + status.toLowerCase().replaceAll(' ', '_')) || status;
+                const label = t('db_' + status.toLowerCase().replaceAll(' ', '_'), status);
                 return `<span class="badge badge-${map[status] || 'default'}" style="font-size: 11px;">${window.ui?.escapeHtml(label) || label}</span>`;
             };
 
             const getPriorityBadge = (priority) => {
                 const pMap = { 'Critical': 'danger', 'Kritik': 'danger', 'High': 'warning', 'Yüksek': 'warning', 'Medium': 'info', 'Orta': 'info', 'Low': 'default', 'Düşük': 'default' };
-                const label = t('db_' + priority.toLowerCase().replaceAll(' ', '_')) || priority;
+                const label = t('db_' + priority.toLowerCase().replaceAll(' ', '_'), priority);
                 return `<span class="badge badge-${pMap[priority] || 'default'}" style="font-size: 11px;">${window.ui?.escapeHtml(label) || label}</span>`;
             };
 
@@ -478,12 +478,12 @@
             let translatedType;
             if (type.startsWith('Status: ')) {
                 const val = type.replaceAll('Status: ', '');
-                translatedType = `${t('dash_lbl_status')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
+                translatedType = `${t('dash_lbl_status')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_'), val)}`;
             } else if (type.startsWith('Priority: ')) {
                 const val = type.replaceAll('Priority: ', '');
-                translatedType = `${t('dash_lbl_priority')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_')) || val}`;
+                translatedType = `${t('dash_lbl_priority')}: ${t('db_' + val.toLowerCase().replaceAll(' ', '_'), val)}`;
             } else {
-                translatedType = t('dash_kpi_' + type.replaceAll(' ', '_').toLowerCase()) || type;
+                translatedType = t('dash_kpi_' + type.replaceAll(' ', '_').toLowerCase(), type);
             }
             
             document.getElementById('drillDownTitle').textContent = `${translatedType} ${t('dash_details')}`;

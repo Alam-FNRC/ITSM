@@ -485,11 +485,11 @@
         function getTranslatedPriority(name) {
             if (!name) return '';
             const lower = name.toLowerCase().trim();
-            if (lower === 'düşük' || lower === 'low') return t('db_düşük') || name;
+            if (lower === 'düşük' || lower === 'low') return t('db_düşük', name);
             if (lower === 'orta' || lower === 'medium') return t('db_orta') || name;
-            if (lower === 'yüksek' || lower === 'high') return t('db_yüksek') || name;
+            if (lower === 'yüksek' || lower === 'high') return t('db_yüksek', name);
             if (lower === 'kritik' || lower === 'critical') return t('db_kritik') || name;
-            return t('db_' + lower) || name;
+            return t('db_' + lower, name);
         }
 
         function toggleGlobalPolicy() {

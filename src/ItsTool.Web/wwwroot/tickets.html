@@ -219,14 +219,14 @@
         const getStatusBadge = (status) => {
             const map = { 'Open': 'info', 'Açık': 'info', 'In Progress': 'warning', 'Devam Ediyor': 'warning', 'Pending': 'warning', 'Beklemede': 'warning', 'Resolved': 'success', 'Çözüldü': 'success', 'Closed': 'default', 'Kapatıldı': 'default' };
             const labelKey = status ? 'db_' + status.toLowerCase().replaceAll(' ', '_') : 'dash_unknown';
-            const label = t(labelKey) || status;
+            const label = t(labelKey, status);
             return `<span class="badge badge-${map[status] || 'default'}">${escapeHtml(label)}</span>`;
         };
 
         const getPriorityBadge = (priority) => {
             const map = { 'Critical': 'danger', 'Kritik': 'danger', 'High': 'warning', 'Yüksek': 'warning', 'Medium': 'info', 'Orta': 'info', 'Low': 'success', 'Düşük': 'success' };
             const labelKey = priority ? 'db_' + priority.toLowerCase() : 'dash_unknown';
-            const label = t(labelKey) || priority;
+            const label = t(labelKey, priority);
             return `<span class="badge badge-${map[priority] || 'default'}">${escapeHtml(label)}</span>`;
         };
 
