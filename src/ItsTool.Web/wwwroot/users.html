@@ -59,7 +59,7 @@
                         <p class="text-muted" style="margin: 4px 0 0 0; font-size: 13px;" data-i18n="users_desc">Manage system users and access.</p>
                     </div>
                     <div style="display: flex; gap: 16px; align-items: center;">
-                        <input type="search" id="userSearchInput" class="form-control" placeholder="Search users..." style="width: 250px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;" aria-label="Search users">
+                        <input type="search" id="userSearchInput" class="form-control" placeholder="Search users..." data-i18n="users_search_ph" data-i18n-target="placeholder" style="width: 250px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px;" aria-label="Search users">
                         <button type="button" class="btn btn-primary" data-action="openUserModal">
                             <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-inline-end: 4px; vertical-align: middle;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="users_btn_new">New User</span>
                         </button>
@@ -146,12 +146,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                             <label class="form-label" for="uPassword" style="margin: 0;" data-i18n="users_lbl_pass">Password</label>
                             <button type="button" class="btn btn-ghost btn-sm" onclick="window.generateAndFillPassword()" style="font-size: 11.5px; padding: 1px 6px; color: var(--primary); font-weight: 500;">
-                                Rastgele Şifre Üret
+                                <span data-i18n="users_generate_pwd">Generate random password</span>
                             </button>
                         </div>
                         <div style="display: flex; gap: 6px;">
-                            <input id="uPassword" class="form-control" placeholder="Değiştirmek istemiyorsanız boş bırakın" style="flex: 1;">
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.copyGeneratedPassword()" title="Şifreyi Kopyala" style="padding: 4px 8px;">
+                            <input id="uPassword" class="form-control" placeholder="Leave empty to keep the current password" data-i18n="users_pwd_ph" data-i18n-target="placeholder" style="flex: 1;">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="window.copyGeneratedPassword()" title="Copy password" data-i18n="users_copy_pwd" data-i18n-target="title" style="padding: 4px 8px;">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                             </button>
                         </div>
@@ -371,7 +371,7 @@
                 }
 
                 console.error(err);
-                showToast('Error loading users', 'error');
+                showToast(t('users_load_failed'), 'error');
             }
         };
 
@@ -387,10 +387,10 @@
                     isActive: newStatus,
                     profilePhoto: item.profilePhoto
                 });
-                showToast('User status updated');
+                showToast(t('users_status_updated'));
                 loadData();
             } catch (e) { console.error(e);  
-                showToast('Failed to update status', 'error'); 
+                showToast(t('admin_status_update_failed'), 'error'); 
              }
         };
 
@@ -520,9 +520,9 @@
                 
                 if (isEffectiveGranted) {
                     if (hasCustomOverride) {
-                        badgeHtml = `<span class="badge" style="background:#ECFDF5; color:#047857; border:1px solid #A7F3D0; font-size:11px; padding:2px 6px;">Özel İzinli</span>`;
+                        badgeHtml = `<span class="badge" style="background:#ECFDF5; color:#047857; border:1px solid #A7F3D0; font-size:11px; padding:2px 6px;">${t('users_perm_custom_granted')}</span>`;
                     } else {
-                        badgeHtml = `<span class="badge" style="background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE; font-size:11px; padding:2px 6px;">Rollerden İzinli</span>`;
+                        badgeHtml = `<span class="badge" style="background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE; font-size:11px; padding:2px 6px;">${t('users_perm_from_roles')}</span>`;
                     }
                     // Since user already HAS permission, the only action is to REDDET (Deny/Revoke)
                     actionBtnHtml = `
@@ -532,9 +532,9 @@
                     `;
                 } else {
                     if (hasCustomOverride) {
-                        badgeHtml = `<span class="badge" style="background:#FEF2F2; color:#B91C1C; border:1px solid #FECACA; font-size:11px; padding:2px 6px;">Özel Engellendi</span>`;
+                        badgeHtml = `<span class="badge" style="background:#FEF2F2; color:#B91C1C; border:1px solid #FECACA; font-size:11px; padding:2px 6px;">${t('users_perm_custom_denied')}</span>`;
                     } else {
-                        badgeHtml = `<span class="badge" style="background:#F1F5F9; color:#64748B; border:1px solid #CBD5E1; font-size:11px; padding:2px 6px;">Yetki Yok</span>`;
+                        badgeHtml = `<span class="badge" style="background:#F1F5F9; color:#64748B; border:1px solid #CBD5E1; font-size:11px; padding:2px 6px;">${t('users_perm_none')}</span>`;
                     }
                     // Since user DOES NOT have permission, the only action is to İZİN VER (Allow/Grant)
                     actionBtnHtml = `
@@ -545,7 +545,7 @@
                 }
 
                 const resetBtnHtml = hasCustomOverride 
-                    ? `<button type="button" class="btn btn-ghost btn-sm" style="padding: 2px 6px; font-size:11px; color:var(--text-muted);" title="Özel istisnayı kaldırıp rol varsayılanına dön" onclick="window.removeOverride(${p.id})">Sıfırla</button>`
+                    ? `<button type="button" class="btn btn-ghost btn-sm" style="padding: 2px 6px; font-size:11px; color:var(--text-muted);" title="${t('users_override_reset_title')}" onclick="window.removeOverride(${p.id})">${t('users_override_reset')}</button>`
                     : '';
 
                 list.innerHTML += `
@@ -570,12 +570,12 @@
             if (!activeUserId) return;
             try {
                 await window.api.setPermissionOverride(activeUserId, permId, isGranted);
-                showToast(isGranted ? 'Özel izin tanımlandı' : 'İzin engellendi (Reddedildi)');
+                showToast(t(isGranted ? 'users_override_granted' : 'users_override_denied'));
                 await loadData();
                 window.openOverridesModal(activeUserId);
             } catch (err) {
                 console.error(err);
-                showToast('İşlem başarısız', 'error');
+                showToast(t('common_failed'), 'error');
             }
         };
 
@@ -583,12 +583,12 @@
             if (!activeUserId) return;
             try {
                 await window.api.removePermissionOverride(activeUserId, permId);
-                showToast('Özel istisna kaldırıldı (Rol varsayılanına dönüldü)');
+                showToast(t('users_override_removed'));
                 await loadData();
                 window.openOverridesModal(activeUserId);
             } catch (err) {
                 console.error(err);
-                showToast('İstisna kaldırılamadı', 'error');
+                showToast(t('users_override_remove_failed'), 'error');
             }
         };
 
@@ -630,14 +630,14 @@
             const input = document.getElementById('resetNewPasswordInput');
             if (!input) return;
             navigator.clipboard.writeText(input.value);
-            showToast('Şifre panoya kopyalandı');
+            showToast(t('users_pwd_copied'));
         };
 
         window.confirmResetPassword = async function() {
             if (!resetUserId) return;
             const newPass = document.getElementById('resetNewPasswordInput').value.trim();
             if (!newPass) {
-                showToast('Şifre boş olamaz', 'warning');
+                showToast(t('users_pwd_empty'), 'warning');
                 return;
             }
 
@@ -663,7 +663,7 @@
             if (input) {
                 input.value = pass;
                 navigator.clipboard.writeText(pass);
-                showToast(`Geçici şifre oluşturuldu ve kopyalandı: ${pass}`);
+                showToast(t('users_temp_pwd_created').replaceAll('{0}', pass));
             }
         };
 
@@ -671,9 +671,9 @@
             const input = document.getElementById('uPassword');
             if (input && input.value) {
                 navigator.clipboard.writeText(input.value);
-                showToast('Şifre panoya kopyalandı');
+                showToast(t('users_pwd_copied'));
             } else {
-                showToast('Kopyalanacak şifre bulunamadı', 'warning');
+                showToast(t('users_pwd_nothing_to_copy'), 'warning');
             }
         };
 
@@ -682,11 +682,11 @@
             if (!roleId || !activeUserId) return;
             try {
                 await window.api.assignRole(activeUserId, roleId);
-                showToast('Role assigned');
+                showToast(t('users_role_assigned'));
                 await loadData();
                 window.openRolesModal(activeUserId);
             } catch (err) { console.error(err); 
-                showToast('Failed to assign role', 'error');
+                showToast(t('users_role_assign_failed'), 'error');
              }
         });
 
@@ -694,23 +694,23 @@
             if (!activeUserId) return;
             try {
                 await window.api.revokeRole(activeUserId, roleId);
-                showToast('Role revoked');
+                showToast(t('users_role_revoked'));
                 await loadData();
                 window.openRolesModal(activeUserId);
             } catch (err) { console.error(err); 
-                showToast('Failed to revoke role', 'error');
+                showToast(t('users_role_revoke_failed'), 'error');
              }
         };
 
         window.promptDelete = async function(id) {
-            const proceed = await showUndoToast('Öğe silinecek. Geri almak için tıklayın.', null, 4000);
+            const proceed = await showUndoToast(t('common_deleting_undo'), null, 4000);
             if (proceed) {
                 try {
                     await window.api.deleteUser(id);
-                    showToast('Silme işlemi tamamlandı');
+                    showToast(t('common_deleted'));
                     loadData();
                 } catch (e) { console.error(e); 
-                    showToast('Silme işlemi başarısız', 'error');
+                    showToast(t('common_delete_failed'), 'error');
                  }
             }
         };
@@ -781,10 +781,10 @@
                 else await window.api.createUser(data);
                 
                 closeModal('userModal');
-                showToast('User saved');
+                showToast(t('users_saved'));
         loadData(); // removed await for resilience
             } catch (err) { console.error(err); 
-                showToast(window.api.errorMessage(err, 'Failed to save user'), 'error');
+                showToast(window.api.errorMessage(err, t('users_save_failed')), 'error');
              }
         });
 
