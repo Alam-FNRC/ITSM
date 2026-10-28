@@ -5,6 +5,8 @@
 #   BOOTSTRAP_ADMIN_USERNAME=<first administrator's username>
 #   BOOTSTRAP_ADMIN_EMAIL=<first administrator's e-mail>
 #   BOOTSTRAP_ADMIN_PASSWORD=<12+ characters>
+# and optionally:
+#   APP_BASE_URL=<the address users open, for example https://itsm.fnrc.gov.ae; e-mail links use it>
 
 services:
   # --------------------------------------------------------------------------
@@ -46,6 +48,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - AutoSeed=true
+      - AppBaseUrl=${APP_BASE_URL:-http://localhost:5246}
       - Bootstrap__AdminUsername=${BOOTSTRAP_ADMIN_USERNAME:-}
       - Bootstrap__AdminEmail=${BOOTSTRAP_ADMIN_EMAIL:-}
       - Bootstrap__AdminPassword=${BOOTSTRAP_ADMIN_PASSWORD:-}
