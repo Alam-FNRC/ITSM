@@ -149,3 +149,16 @@ test('data-i18n-target="title" translates the tooltip and leaves the content alo
         translatable.length = 0;
     }
 });
+
+test('data-i18n-target="aria-label" translates the accessible name of an icon button', () => {
+    useLanguage('ar');
+    const attributes = {};
+    const button = { dataset: { i18n: 'btn_close', i18nTarget: 'aria-label' }, childNodes: [{ nodeType: 1 }], setAttribute: (name, value) => { attributes[name] = value; } };
+    translatable.push(button);
+    try {
+        applyTranslations();
+        assert.equal(attributes['aria-label'], translations.ar.btn_close);
+    } finally {
+        translatable.length = 0;
+    }
+});

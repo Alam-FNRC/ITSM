@@ -1603,6 +1603,10 @@ function applyTranslationToElement(el, dict) {
         el.title = dict[key];
         return;
     }
+    if (target === 'aria-label') {
+        el.setAttribute('aria-label', dict[key]);
+        return;
+    }
 
     let textNodeFound = false;
     for (const node of el.childNodes) {

@@ -618,7 +618,7 @@
         <div class="modal" style="width: min(500px, 90%);">
             <div class="modal-header">
                 <h2 data-i18n="td_modal_transfer">Transfer Ticket</h2>
-                <button type="button" class="close-btn" onclick="closeModal('transferModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('transferModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -652,7 +652,7 @@
         <div class="modal" style="width: min(500px, 90%);">
             <div class="modal-header">
                 <h2 data-i18n="td_manage_assignees">Manage Assignees</h2>
-                <button type="button" class="close-btn" onclick="closeModal('manageAssigneesModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('manageAssigneesModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -675,7 +675,7 @@
         <div class="modal" style="width: min(600px, 90%); max-height: 90vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <h2 data-i18n="td_modal_assign_history">Assignment History Tree</h2>
-                <button type="button" class="close-btn" onclick="closeModal('assignmentTreeModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('assignmentTreeModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -1513,7 +1513,7 @@
                 if (errEl) {
                     const is403 = e.message && (e.message.includes('403') || e.message.includes('Forbidden'));
                     const is404 = e.message && (e.message.includes('404') || e.message.includes('Not Found'));
-                    let message = 'Veri yüklenemedi — API veya bağlantınızı kontrol edin.';
+                    let message = t('common_err_load_data');
                     if (is403) {
                         message = 'Bu bileti görüntüleme yetkiniz bulunmuyor (403).';
                     } else if (is404) {
@@ -2817,7 +2817,7 @@
                 <div class="modal" style="width: 400px;">
                     <div class="modal-header">
                         <h2>Delete Comment</h2>
-                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()" aria-label="Close">
+                        <button type="button" class="close-btn" onclick="this.closest('.modal-overlay').remove()" aria-label="${t('btn_close')}">
                             <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                         </button>
                     </div>

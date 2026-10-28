@@ -78,7 +78,7 @@
             <form id="webhookForm">
                 <div class="modal-header">
                     <h2 id="webhookModalTitle" data-i18n="webhooks_modal_new">Webhook</h2>
-                    <button type="button" class="close-btn" onclick="closeModal('webhookModal')" aria-label="Close">
+                    <button type="button" class="close-btn" onclick="closeModal('webhookModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                         <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 </div>
@@ -114,7 +114,7 @@
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
                 <h2>Confirm Delete</h2>
-                <button type="button" class="close-btn" onclick="closeModal('confirmModal')" aria-label="Close">
+                <button type="button" class="close-btn" onclick="closeModal('confirmModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
@@ -202,9 +202,9 @@
                 let errEl = document.querySelector('tbody') || document.querySelector('#overviewCards') || document.querySelector('#board') || document.querySelector('#articleList') || document.querySelector('.content-area');
                 if (errEl) {
                     if (errEl.tagName === 'TBODY') {
-                        errEl.innerHTML = '<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</td></tr>';
+                        errEl.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${t('common_err_load_data')}</td></tr>`;
                      } else {
-                        errEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Veri yüklenemedi — API\'yi kontrol et</div>';
+                        errEl.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger);">${t('common_err_load_data')}</div>`;
                     }
                 }
 
