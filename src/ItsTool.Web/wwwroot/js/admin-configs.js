@@ -68,7 +68,7 @@ export const adminConfigs = {
         formFields: { id: 'dId', map: { 'name': 'dName', 'description': 'dDesc', 'color': 'dColor' } },
         columns: [
             { key: 'id', label: t('admin_lbl_id'), render: (item) => `<span class="text-muted">#${item.id}</span>` },
-            { key: 'color', label: t('admin_lbl_color'), render: (item) => item.color ? `<div style="width:16px; height:16px; border-radius:50%; background:${item.color}; border:1px solid var(--border);"></div>` : '-' },
+            { key: 'color', label: t('admin_lbl_color'), render: (item) => item.color ? `<div style="width:16px; height:16px; border-radius:50%; background:${window.ui?.escapeHtml(item.color)}; border:1px solid var(--border);"></div>` : '-' },
             { key: 'name', label: t('admin_lbl_name'), render: (item) => `<span style="font-weight: 500;">${window.ui?.escapeHtml(item.name || '')}</span>` },
             { key: 'description', label: t('admin_lbl_desc'), render: (item) => window.ui?.escapeHtml(item.description) || '-' }
         ],
@@ -281,8 +281,8 @@ export const adminConfigs = {
                     const perms = (await window.api.request('/Permissions')) || [];
                     container.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; max-height: 200px; overflow-y: auto; padding-right: 8px;">` + perms.map(p => `
                         <div style="display: flex; align-items: flex-start; gap: 8px; padding: 4px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
-                            <input type="checkbox" id="perm_${p.key}" class="perm-checkbox" value="${p.key}" style="margin-top: 2px;" onchange="updateHiddenPerms()">
-                            <label for="perm_${p.key}" style="margin: 0; font-size: 13px; cursor: pointer; display: flex; flex-direction: column;">
+                            <input type="checkbox" id="perm_${window.ui?.escapeHtml(p.key)}" class="perm-checkbox" value="${window.ui?.escapeHtml(p.key)}" style="margin-top: 2px;" onchange="updateHiddenPerms()">
+                            <label for="perm_${window.ui?.escapeHtml(p.key)}" style="margin: 0; font-size: 13px; cursor: pointer; display: flex; flex-direction: column;">
                                 <span style="font-weight: 500; color: var(--text-main);">${window.ui?.escapeHtml(p.name)}</span>
                                 <span style="font-size: 11px; color: var(--text-muted); line-height: 1.2;">${window.ui?.escapeHtml(p.description || p.key)}</span>
                             </label>
@@ -628,7 +628,7 @@ if (typeof document !== 'undefined') {
 
                 const initial = (user.firstName + ' ' + user.lastName).charAt(0).toUpperCase();
                 const avatarHtml = user.profilePhoto 
-                    ? `<img src="${user.profilePhoto}" class="avatar" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">`
+                    ? `<img src="${window.ui?.escapeHtml(user.profilePhoto)}" class="avatar" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">`
                     : `<div class="avatar" style="width:32px;height:32px;font-size:14px;background:rgba(var(--primary-rgb),0.1);color:var(--primary);display:flex;align-items:center;justify-content:center;border-radius:50%;">${initial}</div>`;
 
                 tooltipEl.innerHTML = `
