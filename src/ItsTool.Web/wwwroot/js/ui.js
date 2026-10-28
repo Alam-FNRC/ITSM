@@ -72,13 +72,13 @@ export function showUndoToast(message, undoFn, ms = 6000, undoText = 'Geri Al') 
         toast.className = 'toast undo-toast';
         toast.style.background = 'var(--bg-surface)';
         toast.style.color = 'var(--text-main)';
-        toast.style.borderLeft = '4px solid var(--info)';
+        toast.style.borderInlineStart = '4px solid var(--info)';
         toast.setAttribute('role', 'status');
         
         toast.innerHTML = `
             <div class="d-flex align-items-center gap-sm" style="flex: 1; justify-content: space-between;">
                 <span class="toast-message" style="font-weight: 500;"></span>
-                <button type="button" class="btn btn-secondary btn-undo" style="padding: 4px 10px; font-size: 12px; margin-left: 12px; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: 600;"></button>
+                <button type="button" class="btn btn-secondary btn-undo" style="padding: 4px 10px; font-size: 12px; margin-inline-start: 12px; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: 600;"></button>
             </div>
             <div class="undo-progress" style="animation-duration: ${ms}ms;"></div>
         `;
@@ -180,7 +180,7 @@ function createAssigneeRow(item, escapeHtml) {
 
 function createAssigneeEmptyRow(item, escapeHtml) {
     return `
-        <div class="assignee-subitem-for-${item.parentGroupId}" style="display: none; align-items: center; padding: var(--spacing-md) var(--spacing-xl); padding-left: 56px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.015);">
+        <div class="assignee-subitem-for-${item.parentGroupId}" style="display: none; align-items: center; padding: var(--spacing-md) var(--spacing-xl); padding-inline-start: 56px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.015);">
             <div style="font-size: 13px; color: var(--text-muted); font-style: italic;">Bu grupta kayıtlı kullanıcı bulunmuyor.</div>
         </div>`;
 }
@@ -194,7 +194,7 @@ function createAssigneeGroupRow(item, escapeHtml) {
     const toggleIcon = `<svg class="toggle-icon" viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor; transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>`;
     
     return `
-        <button type="button" style="display: flex; width: 100%; font: inherit; color: inherit; text-align: left; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-left: var(--spacing-lg); border-left: 3px solid transparent; border-bottom: 1px solid var(--border); border-top: none; border-right: none; background: transparent; transition: background 0.2s; cursor: pointer;" onclick="window.toggleAssigneeGroup(${item.id}, this)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
+        <button type="button" style="display: flex; width: 100%; font: inherit; color: inherit; text-align: start; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-inline-start: var(--spacing-lg); border-inline-start: 3px solid transparent; border-bottom: 1px solid var(--border); border-top: none; border-inline-end: none; background: transparent; transition: background 0.2s; cursor: pointer;" onclick="window.toggleAssigneeGroup(${item.id}, this)" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
             <div style="display: flex; align-items: center; gap: 12px;">
                 ${iconHtml}
                 <div>
@@ -225,14 +225,14 @@ function createAssigneeUserRow(item, escapeHtml) {
     const paddingLeft = isSub ? 'var(--spacing-xl)' : 'var(--spacing-lg)';
     const borderLeft = isSub ? '3px solid rgba(var(--primary-rgb), 0.3)' : '3px solid transparent';
     const bgColor = isSub ? 'rgba(0,0,0,0.015)' : 'transparent';
-    const nestingArrow = isSub ? `<svg viewBox="0 0 24 24" width="16" height="16" style="fill: var(--text-muted); opacity: 0.6; margin-right: 4px; margin-left: -8px;"><path d="M19 15l-6 6-1.42-1.42L15.17 17H5V5h2v10h8.17l-3.59-3.58L13 10l6 6z"/></svg>` : '';
+    const nestingArrow = isSub ? `<svg viewBox="0 0 24 24" width="16" height="16" style="fill: var(--text-muted); opacity: 0.6; margin-inline-end: 4px; margin-inline-start: -8px;"><path d="M19 15l-6 6-1.42-1.42L15.17 17H5V5h2v10h8.17l-3.59-3.58L13 10l6 6z"/></svg>` : '';
     const displayAttr = isSub ? 'display: none;' : 'display: flex;';
     const classAttr = isSub ? `class="assignee-subitem-for-${item.parentGroupId}"` : '';
     const avatarMargin = isSub ? 8 : 12;
     const nameFs = isSub ? 13 : 14;
 
     return `
-        <button type="button" ${classAttr} style="${displayAttr} width: 100%; font: inherit; color: inherit; text-align: left; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-left: ${paddingLeft}; border-left: ${borderLeft}; border-bottom: 1px solid var(--border); border-top: none; border-right: none; background: ${bgColor}; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='${bgColor}'" onclick="if(window.ui && window.ui.showUserDetails) window.ui.showUserDetails(${item.id})">
+        <button type="button" ${classAttr} style="${displayAttr} width: 100%; font: inherit; color: inherit; text-align: start; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); padding-inline-start: ${paddingLeft}; border-inline-start: ${borderLeft}; border-bottom: 1px solid var(--border); border-top: none; border-inline-end: none; background: ${bgColor}; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='${bgColor}'" onclick="if(window.ui && window.ui.showUserDetails) window.ui.showUserDetails(${item.id})">
             <div style="display: flex; align-items: center; gap: ${avatarMargin}px;">
                 ${nestingArrow}
                 ${iconHtml}
@@ -568,7 +568,7 @@ export function bindShellActions() {
         panel.style.display = 'none';
         panel.style.position = 'absolute';
         panel.style.top = '60px';
-        panel.style.right = '20px';
+        panel.style.insetInlineEnd = '20px';
         panel.style.width = '300px';
         panel.style.background = 'var(--bg-surface)';
         panel.style.color = 'var(--text-main)';
@@ -650,7 +650,7 @@ export function bindShellActions() {
                                 <button type="button" class="btn btn-ghost btn-sm" id="profileShortcutsBtn" style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 12px; color: var(--text-muted); padding: 6px 8px; border-radius: var(--radius-sm);">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
                                     <span>${t('kbd_shortcuts_title') || 'Klavye Kısayolları'}</span>
-                                    <kbd style="margin-left: auto; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: monospace; font-size: 10px; font-weight: 600;">?</kbd>
+                                    <kbd style="margin-inline-start: auto; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: monospace; font-size: 10px; font-weight: 600;">?</kbd>
                                 </button>
                             </div>
                         `;
@@ -772,32 +772,32 @@ export function openShortcutsModal() {
                         <tbody>
                             <tr style="border-bottom: 1px solid var(--border-light);">
                                 <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_search') || 'Arama kutusuna odaklan'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">/</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or') || 'veya'}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Ctrl+K</kbd></td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">/</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or') || 'veya'}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Ctrl+K</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
                                 <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_close') || 'Açık modalları / menüleri kapat'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Esc</kbd></td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">Esc</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
                                 <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_new_ticket') || 'Yeni bilet oluştur'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">N</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or') || 'veya'}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">C</kbd></td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">N</kbd> <span style="font-size:11px;color:var(--text-muted);">${t('kbd_or') || 'veya'}</span> <kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">C</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
                                 <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_tickets') || 'Biletler listesine git'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">T</kbd></td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">T</kbd></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border-light);">
                                 <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_dashboard') || 'Kontrol paneline git'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">D</kbd></td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">D</kbd></td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px 12px; color: var(--text-muted);">${t('kbd_help') || 'Bu kısayol penceresini aç/kapat'}</td>
-                                <td style="padding: 8px 12px; text-align: right;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">?</kbd></td>
+                                <td style="padding: 8px 12px; text-align: end;"><kbd style="background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 12px; font-weight: 600;">?</kbd></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="modal-footer" style="padding-top: 12px; border-top: 1px solid var(--border); text-align: right;">
+                <div class="modal-footer" style="padding-top: 12px; border-top: 1px solid var(--border); text-align: end;">
                     <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('shortcutsHelpModal').classList.remove('active')">${t('users_btn_close') || 'Kapat'}</button>
                 </div>
             </div>
@@ -921,7 +921,7 @@ export async function openTicketPreview(ticketData, lookupData) {
     const headerEl = modalOverlay.querySelector('.modal-header h2');
     if (headerEl) {
         const translatedStatus = t('db_' + statusName.toLowerCase().replaceAll(' ', '_'), statusName);
-        headerEl.innerHTML = `${escapeHtml(ticketData.ticketNumber)} <span class="badge badge-primary" style="font-size: 12px; margin-left: 8px; text-transform: uppercase;">${escapeHtml(translatedStatus)}</span>`;
+        headerEl.innerHTML = `${escapeHtml(ticketData.ticketNumber)} <span class="badge badge-primary" style="font-size: 12px; margin-inline-start: 8px; text-transform: uppercase;">${escapeHtml(translatedStatus)}</span>`;
     }
 
     const reqBtnHtml = ticketData.requesterUserId ? `<button type="button" class="btn btn-ghost p-0 m-0 d-flex align-items-center gap-sm" style="border:none;" onclick="window.ui.showUserDetails(${ticketData.requesterUserId})">${getAvatar(ticketData.requesterUserId, reqName)} ${escapeHtml(reqName)}</button>` : `<div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">${escapeHtml(reqName)}</div>`;
@@ -1062,7 +1062,7 @@ export async function showUserDetails(userId) {
                         <h3 id="guName" style="margin-bottom: 4px;"></h3>
                         <div id="guUsername" style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;"></div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; background: var(--bg-hover); padding: 16px; border-radius: 8px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: start; background: var(--bg-hover); padding: 16px; border-radius: 8px;">
                             <div>
                                 <div id="guLblEmail" style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">${t('users_lbl_email') || 'Email'}</div>
                                 <div id="guEmail" style="font-weight: 500; font-size: 14px; word-break: break-all;"></div>

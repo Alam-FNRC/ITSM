@@ -28,7 +28,7 @@
 
         .articles { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-lg); }
         
-        .article-card { background: var(--bg-surface); padding: var(--spacing-lg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; text-align: left; width: 100%; height: 100%; }
+        .article-card { background: var(--bg-surface); padding: var(--spacing-lg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; text-align: start; width: 100%; height: 100%; }
         .article-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary); }
         
         .article-card-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: var(--spacing-sm); }
@@ -52,10 +52,10 @@
                     <h2 data-i18n="kb_title">Knowledge Base</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -109,7 +109,7 @@
                 <form id="articleForm">
                     <input type="hidden" id="articleId" value="">
                     <div id="authorFeedbackAlert" style="display: none; padding: 12px; margin-bottom: 16px; background: rgba(var(--warning-rgb, 245,158,11), 0.1); border: 1px solid var(--warning); border-radius: 8px; color: var(--text);">
-                        <strong style="color: var(--warning);"><svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor; margin-right:4px; vertical-align:text-bottom;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> <span data-i18n="kb_alert_feedback">Manager Feedback</span>:</strong>
+                        <strong style="color: var(--warning);"><svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor; margin-inline-end:4px; vertical-align:text-bottom;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> <span data-i18n="kb_alert_feedback">Manager Feedback</span>:</strong>
                         <p id="authorFeedbackText" style="margin: 4px 0 0 0; font-size: 13px;"></p>
                     </div>
                     <div class="form-group">
@@ -253,7 +253,7 @@
             const isNeedsRevision = a.status == 3 || a.status === 'NeedsRevision';
             
             if (hasManageKb || isAuthor) {
-                actionsHtml = `<div class="article-actions" style="display:flex; align-items:center; gap: 8px; margin-top: 12px; margin-left: auto;" onclick="event.stopPropagation()">`;
+                actionsHtml = `<div class="article-actions" style="display:flex; align-items:center; gap: 8px; margin-top: 12px; margin-inline-start: auto;" onclick="event.stopPropagation()">`;
                 
                 if (isAuthor) {
                     // DÖRT GÖZ İLKESİ: Yazar ASLA kendi makalesini onaylayamaz veya doğrudan yayınlayamaz.
@@ -312,7 +312,7 @@
             desc.style.color = 'var(--text-muted)';
             desc.style.fontSize = '13px';
             desc.style.lineHeight = '1.5';
-            desc.style.textAlign = 'left';
+            desc.style.textAlign = 'start';
             desc.style.marginBottom = '16px';
             desc.style.display = '-webkit-box';
             desc.style.webkitLineClamp = '2';
@@ -346,7 +346,7 @@
 
             if (actionsHtml) {
                 const actionsDiv = document.createElement('div');
-                actionsDiv.style.marginLeft = 'auto';
+                actionsDiv.style.marginInlineStart = 'auto';
                 actionsDiv.style.marginTop = '12px';
                 actionsDiv.innerHTML = actionsHtml;
                 meta.appendChild(actionsDiv);

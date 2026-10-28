@@ -37,7 +37,7 @@ export const adminConfigs = {
                     `;
                     
                     if (groupUsers.length > 0) {
-                        html += '<div style="display: flex; flex-direction: column; gap: 4px; padding-left: 24px;">';
+                        html += '<div style="display: flex; flex-direction: column; gap: 4px; padding-inline-start: 24px;">';
                         groupUsers.forEach(u => {
                             const initial = (u.firstName + ' ' + u.lastName).charAt(0).toUpperCase();
                             html += `
@@ -50,7 +50,7 @@ export const adminConfigs = {
                         });
                         html += '</div>';
                     } else {
-                        html += `<div style="padding-left: 24px; font-size: 12px; color: var(--text-muted);">${t('admin_dept_no_user')}</div>`;
+                        html += `<div style="padding-inline-start: 24px; font-size: 12px; color: var(--text-muted);">${t('admin_dept_no_user')}</div>`;
                     }
                     
                     html += '</div>';
@@ -121,7 +121,7 @@ export const adminConfigs = {
                 if (statusStr === 'Postponed') color = 'warning';
                 
                 return `
-                <select class="badge badge-${color}" style="border:none; cursor:pointer; outline:none; font-weight:bold; appearance:none; padding-right:12px; text-align:center;" onchange="window.updateProjectStatusInline(${item.id}, this.value)">
+                <select class="badge badge-${color}" style="border:none; cursor:pointer; outline:none; font-weight:bold; appearance:none; padding-inline-end:12px; text-align:center;" onchange="window.updateProjectStatusInline(${item.id}, this.value)">
                     <option value="Active" ${statusStr === 'Active' ? 'selected' : ''} style="background: var(--success-light); color: var(--success); font-weight: bold;">Active</option>
                     <option value="Inactive" ${statusStr === 'Inactive' ? 'selected' : ''} style="background: var(--bg-hover); color: var(--text-muted); font-weight: bold;">Inactive</option>
                     <option value="Postponed" ${statusStr === 'Postponed' ? 'selected' : ''} style="background: var(--warning-light); color: #B36200; font-weight: bold;">Postponed</option>
@@ -207,7 +207,7 @@ export const adminConfigs = {
                         groupUsersSet = new Set(allUsers.filter(u => u.groupIds?.includes(Number.parseInt(id, 10))).map(u => u.id));
                     }
                     
-                    container.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; max-height: 200px; overflow-y: auto; padding-right: 8px;">` + allUsers.map(u => `
+                    container.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; max-height: 200px; overflow-y: auto; padding-inline-end: 8px;">` + allUsers.map(u => `
                         <div style="display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
                             <input type="checkbox" id="gUser_${u.id}" class="guser-checkbox" value="${u.id}" ${groupUsersSet.has(u.id) ? 'checked' : ''} style="margin-top: 2px;">
                             <label for="gUser_${u.id}" style="margin: 0; font-size: 13px; cursor: pointer; display: flex; flex-direction: column;">
@@ -279,7 +279,7 @@ export const adminConfigs = {
                 container.innerHTML = `<div style="font-size: 13px; color: var(--text-muted);">${t('admin_role_loading')}</div>`;
                 try {
                     const perms = (await window.api.request('/Permissions')) || [];
-                    container.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; max-height: 200px; overflow-y: auto; padding-right: 8px;">` + perms.map(p => `
+                    container.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; max-height: 200px; overflow-y: auto; padding-inline-end: 8px;">` + perms.map(p => `
                         <div style="display: flex; align-items: flex-start; gap: 8px; padding: 4px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
                             <input type="checkbox" id="perm_${window.ui?.escapeHtml(p.key)}" class="perm-checkbox" value="${window.ui?.escapeHtml(p.key)}" style="margin-top: 2px;" onchange="updateHiddenPerms()">
                             <label for="perm_${window.ui?.escapeHtml(p.key)}" style="margin: 0; font-size: 13px; cursor: pointer; display: flex; flex-direction: column;">

@@ -96,7 +96,7 @@ export function initCrudPage(cfg) {
             let html = columns.map((col, index) => {
                 if (index === 0 && hasExpand) {
                     return `<td style="white-space: nowrap;">
-                        <button type="button" class="btn btn-ghost expand-btn" style="padding: 2px 4px; margin-right: 8px; vertical-align: middle;" aria-expanded="false">
+                        <button type="button" class="btn btn-ghost expand-btn" style="padding: 2px 4px; margin-inline-end: 8px; vertical-align: middle;" aria-expanded="false">
                             <svg viewBox="0 0 24 24" width="18" height="18" style="transition: transform 0.2s;"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
                         </button>
                         ${buildCellHtml(item, col).replaceAll('<td>', '').replaceAll('</td>', '')}
@@ -259,7 +259,7 @@ export function initCrudPage(cfg) {
             const expandTr = document.createElement('tr');
             expandTr.className = 'expandable-content';
             expandTr.innerHTML = `<td colspan="100" style="padding: 0; background: rgba(0,0,0,0.02); border-bottom: 2px solid var(--border);">
-                <div style="padding: var(--spacing-lg) var(--spacing-xl); padding-left: 48px;" class="expand-container">
+                <div style="padding: var(--spacing-lg) var(--spacing-xl); padding-inline-start: 48px;" class="expand-container">
                     <div style="text-align: center; color: var(--text-muted);"><span class="spinner" style="width: 20px; height: 20px; display: inline-block;"></span> Yükleniyor...</div>
                 </div>
             </td>`;

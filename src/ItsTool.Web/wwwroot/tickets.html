@@ -67,10 +67,10 @@
                     <h2 data-i18n="t_title">Tickets</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -87,8 +87,8 @@
             <div class="content-area">
                 <div class="filter-bar">
                     <div style="position: relative; width: 300px;">
-                        <input type="text" id="searchInput" class="form-control search-input" style="width: 100%; padding-right: 32px;" aria-label="Search Tickets" placeholder="Search by Ticket Number, Title, or Description..." data-i18n="t_search_placeholder" data-i18n-target="placeholder">
-                        <kbd style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: monospace; font-size: 11px; color: var(--text-muted); font-weight: 600;" title="Klavye Kısayolu: /">/</kbd>
+                        <input type="text" id="searchInput" class="form-control search-input" style="width: 100%; padding-inline-end: 32px;" aria-label="Search Tickets" placeholder="Search by Ticket Number, Title, or Description..." data-i18n="t_search_placeholder" data-i18n-target="placeholder">
+                        <kbd style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: monospace; font-size: 11px; color: var(--text-muted); font-weight: 600;" title="Klavye Kısayolu: /">/</kbd>
                     </div>
                     <button type="button" id="btnSearch" class="btn btn-secondary" data-i18n="t_btn_search">Search</button>
                     <button type="button" id="btnSaveFilter" class="btn btn-secondary" data-i18n="t_btn_save_filter">Save Filter</button>
@@ -112,7 +112,7 @@
                         <span data-i18n="recent_tickets_title">Son İnceledikleriniz:</span>
                     </span>
                     <div id="recentTicketsList" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"></div>
-                    <button type="button" class="btn btn-ghost btn-sm" id="btnClearRecentTickets" onclick="window.clearRecentTickets()" style="margin-left: auto; font-size: 11px; padding: 2px 6px; color: var(--text-muted);" title="Geçmişi Temizle" data-i18n="recent_tickets_clear">Temizle</button>
+                    <button type="button" class="btn btn-ghost btn-sm" id="btnClearRecentTickets" onclick="window.clearRecentTickets()" style="margin-inline-start: auto; font-size: 11px; padding: 2px 6px; color: var(--text-muted);" title="Geçmişi Temizle" data-i18n="recent_tickets_clear">Temizle</button>
                 </div>
 
                 <div class="table-container" style="overflow-x: auto;">
@@ -132,7 +132,7 @@
                                 <th data-i18n="t_col_priority">Priority</th>
                                 <th data-i18n="t_col_assignee">Assignee</th>
                                 <th data-i18n="t_col_sla" style="min-width: 140px;">SLA Süresi</th>
-                                <th style="min-width: 160px; text-align: right;"></th>
+                                <th style="min-width: 160px; text-align: end;"></th>
                             </tr>
                         </thead>
                         <tbody id="ticketList">
@@ -316,16 +316,16 @@
                             <a href="/ticket-detail.html?id=${ticketItem.id}" class="ticket-title" style="display: block;">
                                 <div>
                                     <span class="ticket-number" style="display:inline-block; font-size: 14px; font-weight: 600; color: var(--primary);">${escapeHtml(ticketItem.ticketNumber)}</span>
-                                    <span style="font-size: 11px; color: var(--text-muted); margin-left: 4px;">#${ticketItem.id}</span>
+                                    <span style="font-size: 11px; color: var(--text-muted); margin-inline-start: 4px;">#${ticketItem.id}</span>
                                 </div>
                                 <div style="margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;">${escapeHtml(ticketItem.title)}</div>
                             </a>
                         </td>
                         <td>${getStatusBadge(statusName)}</td>
                         <td>${getPriorityBadge(prioName)}</td>
-                        <td><button type="button" style="cursor:pointer; border:none; background:none; padding:0; text-align:left; font:inherit; color:inherit; max-width:100%; display:flex; align-items:center; gap:var(--spacing-sm);" title="Tüm atananları gör" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees)">${getAvatar(assigneeInitialId, assigneeName)} <span style="pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(assigneeName)}</span></button></td>
+                        <td><button type="button" style="cursor:pointer; border:none; background:none; padding:0; text-align:start; font:inherit; color:inherit; max-width:100%; display:flex; align-items:center; gap:var(--spacing-sm);" title="Tüm atananları gör" data-assignees="${escapeHtml(encodedAssignees)}" onclick="window.showAssigneesModal(this.dataset.assignees)">${getAvatar(assigneeInitialId, assigneeName)} <span style="pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(assigneeName)}</span></button></td>
                         <td>${renderSlaCell(ticketItem.sla, isClosed)}</td>
-                        <td style="text-align: right; white-space: nowrap;">
+                        <td style="text-align: end; white-space: nowrap;">
                             <div class="row-actions">
                                 <a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost">${t('t_btn_view', 'Görüntüle')}</a>
                                 ${editBtnHtml}

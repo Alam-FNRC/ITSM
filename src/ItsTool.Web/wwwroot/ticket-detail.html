@@ -44,9 +44,9 @@
             color: var(--text-main) !important;
         }
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); font-size: 12px; color: var(--text-muted); }
-        .comment-reply-connector { position: absolute; left: -24px; top: 16px; width: 16px; border-top: 2px solid var(--border); z-index: 1; }
-        .reply-container { position: relative; margin-left: 40px; margin-top: 16px; }
-        .reply-container::before { content: ''; position: absolute; left: -24px; top: -16px; bottom: 0; border-left: 2px solid var(--border); z-index: 1; }
+        .comment-reply-connector { position: absolute; inset-inline-start: -24px; top: 16px; width: 16px; border-top: 2px solid var(--border); z-index: 1; }
+        .reply-container { position: relative; margin-inline-start: 40px; margin-top: 16px; }
+        .reply-container::before { content: ''; position: absolute; inset-inline-start: -24px; top: -16px; bottom: 0; border-inline-start: 2px solid var(--border); z-index: 1; }
         .reply-container:last-child::before { bottom: auto; height: 32px; }
         .replies-list { position: relative; padding-top: 8px; margin-top: 8px; border-top: 1px dashed var(--border); }
         .replies-list:empty { display: none; }
@@ -61,7 +61,7 @@
         .history-event { padding: 8px 12px; background: var(--bg-hover); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-muted); }
         .history-event strong { color: var(--text-main); }
         .comment-attachment-img-container { position: relative; display: inline-block; }
-        .comment-attachment-img-container .download-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+        .comment-attachment-img-container .download-btn { position: absolute; top: 4px; inset-inline-end: 4px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: background 0.2s; }
         .comment-attachment-img-container .download-btn:hover { background: rgba(0,0,0,0.8); }
         .comment-attachment-img-container:hover .download-btn { display: flex; }
 
@@ -281,13 +281,13 @@
                     <div style="display:flex; align-items:center; gap: 8px;">
                         <a href="/tickets.html" class="btn btn-ghost" style="padding: 4px;"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></a>
                         <h2 data-i18n="ticket_detail_title">Ticket Detail</h2>
-                        <button class="btn btn-secondary" id="btnEditInline" onclick="toggleEditMode()" style="margin-left: 8px;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-right: 4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="ticket_btn_edit">Düzenle</span>
+                        <button class="btn btn-secondary" id="btnEditInline" onclick="toggleEditMode()" style="margin-inline-start: 8px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="ticket_btn_edit">Düzenle</span>
                         </button>
-                        <button class="btn btn-secondary" id="btnTransfer" onclick="window.openTransferModal()" style="margin-left: 8px;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-right: 4px;"><path d="M16 1l-3 3h2v2c0 2.21-1.79 4-4 4s-4-1.79-4-4V4H5v2c0 3.31 2.69 6 6 6s6-2.69 6-6V4h2l-3-3zM9 23l3-3h-2v-2c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2v-2c0-3.31-2.69-6-6-6s-6 2.69-6 6v2H7l-3 3z"/></svg><span data-i18n="ticket_btn_transfer">Transfer</span>
+                        <button class="btn btn-secondary" id="btnTransfer" onclick="window.openTransferModal()" style="margin-inline-start: 8px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M16 1l-3 3h2v2c0 2.21-1.79 4-4 4s-4-1.79-4-4V4H5v2c0 3.31 2.69 6 6 6s6-2.69 6-6V4h2l-3-3zM9 23l3-3h-2v-2c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2v-2c0-3.31-2.69-6-6-6s-6 2.69-6 6v2H7l-3 3z"/></svg><span data-i18n="ticket_btn_transfer">Transfer</span>
                         </button>
-                        <div id="editActions" style="display:none; margin-left: 8px;">
+                        <div id="editActions" style="display:none; margin-inline-start: 8px;">
                             <button class="btn btn-ghost" onclick="cancelEditMode()" data-i18n="users_btn_cancel">İptal</button>
                             <button class="btn btn-primary" onclick="saveEditMode()" data-i18n="users_btn_save">Kaydet</button>
                         </div>
@@ -298,10 +298,10 @@
                 // Global store for attachments to distinguish images from files
                 window.ticketAttachments = [];
             </script>      <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -341,7 +341,7 @@
                         <div id="mainTicketAttachments" class="d-flex gap-sm flex-wrap" style="margin-bottom: var(--spacing-xl); display:none;"></div>
 
                         <div class="collapsible-section" style="margin-bottom: var(--spacing-xl);">
-                            <button type="button" class="property-label mb-md" style="cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: left; font-size: inherit; font-family: inherit; color: inherit; width: 100%;" onclick="toggleSection('activitySection', this)">
+                            <button type="button" class="property-label mb-md" style="cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: start; font-size: inherit; font-family: inherit; color: inherit; width: 100%;" onclick="toggleSection('activitySection', this)">
                                 <svg viewBox="0 0 24 24" width="16" height="16" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
                                 <span data-i18n="ticket_tab_history">Activity</span>
                             </button>
@@ -353,7 +353,7 @@
                         <hr class="panel-divider" style="margin: var(--spacing-xl) 0;">
 
                         <div class="collapsible-section">
-                            <button type="button" class="property-label mb-md" style="font-size: 16px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: left; font-family: inherit; width: 100%;" onclick="toggleSection('commentsSection', this)">
+                            <button type="button" class="property-label mb-md" style="font-size: 16px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; text-align: start; font-family: inherit; width: 100%;" onclick="toggleSection('commentsSection', this)">
                                 <svg viewBox="0 0 24 24" width="20" height="20" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
                                 <span data-i18n="ticket_tab_comments">Comments & History</span>
                             </button>
@@ -466,12 +466,12 @@
 
                             <!-- Loading indicator -->
                             <div id="aiLoadingIndicator" style="display: none; text-align: center; padding: 14px 0;">
-                                <output class="spinner-border spinner-border-sm text-primary" style="width: 18px; height: 18px; margin-right: 6px;"></output>
+                                <output class="spinner-border spinner-border-sm text-primary" style="width: 18px; height: 18px; margin-inline-end: 6px;"></output>
                                 <span style="font-size: 12px; font-weight: 500; color: var(--primary, #0052CC);" data-i18n="ai_thinking">Yapay zeka analiz ediyor...</span>
                             </div>
 
                             <!-- Result / Output Area -->
-                            <div id="aiResultArea" style="display: none; background: var(--bg-surface, #FFFFFF); border: 1px solid var(--border, #CBD5E1); border-left: 4px solid var(--primary, #0052CC); border-radius: 6px; padding: 10px; margin-top: 8px; box-shadow: var(--shadow-md);">
+                            <div id="aiResultArea" style="display: none; background: var(--bg-surface, #FFFFFF); border: 1px solid var(--border, #CBD5E1); border-inline-start: 4px solid var(--primary, #0052CC); border-radius: 6px; padding: 10px; margin-top: 8px; box-shadow: var(--shadow-md);">
                                 <div class="d-flex justify-content-between align-items-center mb-xs" style="border-bottom: 1px solid var(--border, #E2E8F0); padding-bottom: 6px;">
                                     <strong id="aiResultTitle" style="font-size: 12px; color: var(--primary, #0052CC); font-weight: 700;">AI Çıktısı</strong>
                                     <span id="aiResultSource" style="font-size: 9.5px; font-weight: 600; padding: 2px 6px; border-radius: 4px;"></span>
@@ -533,7 +533,7 @@
                                 </div>
                                 <div class="property-value" id="tAssigned" style="margin-bottom: var(--spacing-sm); display:flex; flex-direction:column; gap:4px;"></div>
                                 <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 8px;" onclick="window.openAssignmentTree()">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-right: 4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                                    <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; vertical-align: middle; margin-inline-end: 4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
                                     <span data-i18n="td_modal_assign_history">View Assignment Tree</span>
                                 </button>
                             </div>
@@ -645,7 +645,7 @@
         </div>
     </div>
 
-    <div id="toastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 8px;"></div>
+    <div id="toastContainer" style="position: fixed; bottom: 24px; inset-inline-end: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 8px;"></div>
     
     <!-- Manage Assignees Modal -->
     <div id="manageAssigneesModal" class="modal-overlay">
@@ -769,8 +769,8 @@
                 <div class="form-group mb-sm">
                     <label class="form-label" for="llmApiKey" style="font-weight: 600; font-size: 12px;">API Anahtarı (API Key):</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="llmApiKey" class="form-control" placeholder="Yerel LLM için boş bırakabilirsiniz veya sk-..." style="font-size: 12px; padding-right: 36px; font-family: monospace;">
-                        <button type="button" id="btnToggleApiKey" onclick="window.toggleApiKeyVisibility()" style="position: absolute; right: 6px; background: none; border: none; cursor: pointer; color: var(--text-muted, #64748B); padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: color 0.15s;" title="API Anahtarını Göster/Gizle" aria-label="API Anahtarını Göster veya Gizle">
+                        <input type="password" id="llmApiKey" class="form-control" placeholder="Yerel LLM için boş bırakabilirsiniz veya sk-..." style="font-size: 12px; padding-inline-end: 36px; font-family: monospace;">
+                        <button type="button" id="btnToggleApiKey" onclick="window.toggleApiKeyVisibility()" style="position: absolute; inset-inline-end: 6px; background: none; border: none; cursor: pointer; color: var(--text-muted, #64748B); padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: color 0.15s;" title="API Anahtarını Göster/Gizle" aria-label="API Anahtarını Göster veya Gizle">
                             <svg id="iconEyeShow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -816,7 +816,7 @@
                         <input type="checkbox" id="llmFallback" checked style="width:16px; height:16px; accent-color: var(--primary, #0052CC);">
                         <span>LLM ulaşılamazsa Akıllı Kural Motoru yedek olarak çalışsın</span>
                     </label>
-                    <small style="color: var(--text-muted, #64748B); font-size: 11px; margin-left: 24px; display: block; margin-top: 3px;">İşaret kaldırılırsa, LLM bağlantısı koptuğunda arayüzde doğrudan net hata uyarısı verilir.</small>
+                    <small style="color: var(--text-muted, #64748B); font-size: 11px; margin-inline-start: 24px; display: block; margin-top: 3px;">İşaret kaldırılırsa, LLM bağlantısı koptuğunda arayüzde doğrudan net hata uyarısı verilir.</small>
                 </div>
 
                 <!-- Test Connection Status Box -->
@@ -1108,7 +1108,7 @@
                 
                 visibleAttachments.forEach(att => {
                     const isImage = att.contentType.startsWith('image/');
-                    let delBtn = isEdit ? `<button type="button" class="btn-icon" style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); z-index:10; border:2px solid white;" onclick="deleteMainAttachment(${att.id})"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>` : '';
+                    let delBtn = isEdit ? `<button type="button" class="btn-icon" style="position:absolute; top:-8px; inset-inline-end:-8px; background:var(--danger); color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); z-index:10; border:2px solid white;" onclick="deleteMainAttachment(${att.id})"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>` : '';
 
                     if (isImage) {
                         html += `
@@ -1199,7 +1199,7 @@
                 if (p.url) {
                     item.innerHTML = `
                         <img src="${escapeHtml(p.url)}" style="width:100%; height:100%; object-fit: cover;" alt="${escapeHtml(p.file.name)}">
-                        <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; font-size:11px; padding:4px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${escapeHtml(p.file.name)}">${escapeHtml(p.file.name)}</div>
+                        <div style="position:absolute; bottom:0; inset-inline-start:0; inset-inline-end:0; background:rgba(0,0,0,0.6); color:white; font-size:11px; padding:4px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${escapeHtml(p.file.name)}">${escapeHtml(p.file.name)}</div>
                     `;
                 } else {
                     item.innerHTML = `
@@ -1211,7 +1211,7 @@
                 }
 
                 item.innerHTML += `
-                    <button type="button" class="btn btn-ghost" style="position:absolute; top:4px; right:4px; width:24px; height:24px; padding:0; border-radius:50%; background:var(--danger); color:white;" onclick="window.removePendingUpload(${p.id})" title="Remove">
+                    <button type="button" class="btn btn-ghost" style="position:absolute; top:4px; inset-inline-end:4px; width:24px; height:24px; padding:0; border-radius:50%; background:var(--danger); color:white;" onclick="window.removePendingUpload(${p.id})" title="Remove">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                     </button>
                 `;
@@ -1323,12 +1323,12 @@
                 }
 
                 let blockHtml = '';
-                blockHtml += `<div class="assignee-dept-block" style="margin-bottom: 8px; margin-left: 0 !important; padding-left: 0 !important; border: none;">`;
+                blockHtml += `<div class="assignee-dept-block" style="margin-bottom: 8px; margin-inline-start: 0 !important; padding-inline-start: 0 !important; border: none;">`;
                 blockHtml += `  <div class="d-flex align-items-center gap-sm" style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">`;
                 blockHtml += `      <svg viewBox="0 0 24 24" width="14" height="14" style="fill:currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`;
                 blockHtml += `      ${escapeHtml(deptName)}`;
                 blockHtml += `  </div>`;
-                blockHtml += `  <div style="padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">`;
+                blockHtml += `  <div style="padding-inline-start: 16px; display: flex; flex-direction: column; gap: 4px;">`;
 
                 for (const [, gData] of Object.entries(deptData.groups)) {
                     if (!gData.groupData) {
@@ -1339,11 +1339,11 @@
                     blockHtml += `      <div class="d-flex align-items-center gap-sm" style="font-size: 13px;"><svg viewBox="0 0 24 24" width="20" height="20" style="fill:var(--text-muted)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> <span style="font-weight:500; color:var(--text-main);">${escapeHtml(gName)}</span></button>`;
                     
                     if (gData.users.length > 0) {
-                        blockHtml += `<div style="padding-left: 20px; display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">`;
+                        blockHtml += `<div style="padding-inline-start: 20px; display: flex; flex-direction: column; gap: 4px; margin-top: 2px;">`;
                         gData.users.forEach(u => {
                             const uName = u ? (u.firstName + ' ' + u.lastName) : 'Unknown User';
                             const uId = u ? u.id : 0;
-                            blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:left;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
+                            blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:start;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
                         });
                         blockHtml += `</div>`;
                     }
@@ -1352,7 +1352,7 @@
                 deptData.usersWithoutGroup.forEach(u => {
                     const uName = u ? (u.firstName + ' ' + u.lastName) : 'Unknown User';
                     const uId = u ? u.id : 0;
-                    blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:left;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
+                    blockHtml += `      <button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${uId}" style="border:none; text-align:start;" onclick="openUserDetails(${uId})">${getAvatar(uId, uName, u?.profilePhoto, 20)} <span style="color:var(--primary); font-weight:500; font-size: 13px;">${escapeHtml(uName)}</span></button>`;
                 });
 
                 blockHtml += `  </div>`;
@@ -1436,7 +1436,7 @@
                 const getReqName = reqUser ? (reqUser.firstName ? `${reqUser.firstName} ${reqUser.lastName}` : reqUser.username) : (ticketData.requesterName || `User ${ticketData.requesterUserId}`);
                 const reqEl = document.getElementById('tReq');
                 if (reqEl) {
-                    reqEl.innerHTML = `<button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${ticketData.requesterUserId}" style="border:none; text-align:left;" onclick="openUserDetails(${ticketData.requesterUserId})">${getAvatar(ticketData.requesterUserId, getReqName, reqUser?.profilePhoto)} ${escapeHtml(getReqName)}</button>`;
+                    reqEl.innerHTML = `<button type="button" class="btn btn-ghost d-flex align-items-center gap-sm p-0 m-0 user-hover-link" data-user-id="${ticketData.requesterUserId}" style="border:none; text-align:start;" onclick="openUserDetails(${ticketData.requesterUserId})">${getAvatar(ticketData.requesterUserId, getReqName, reqUser?.profilePhoto)} ${escapeHtml(getReqName)}</button>`;
                 }
 
                 let assignHTML = '';
@@ -1674,12 +1674,12 @@
 
                     html += `
                         <li style="margin-bottom: 8px;">
-                            <button type="button" style="display:flex; align-items:center; gap:8px; font-weight:600; padding:6px; background:var(--bg-hover); border-radius:4px; cursor:pointer; width:100%; border:none; text-align:left;" onclick="const ul = this.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.dept-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.dept-chevron').style.transform = ''; }">
+                            <button type="button" style="display:flex; align-items:center; gap:8px; font-weight:600; padding:6px; background:var(--bg-hover); border-radius:4px; cursor:pointer; width:100%; border:none; text-align:start;" onclick="const ul = this.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.dept-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.dept-chevron').style.transform = ''; }">
                                 <svg class="dept-chevron" viewBox="0 0 24 24" width="16" height="16" style="transition: transform 0.2s; transform: ${deptExpanded ? 'rotate(90deg)' : 'none'};"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
                                 <svg viewBox="0 0 24 24" width="16" height="16" style="fill:${escapeHtml(d.color || 'currentColor')};"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
                                 ${escapeHtml(d.name)}
                             </button>
-                            <ul style="list-style:none; padding-left:24px; margin-top:8px; display:${deptExpanded ? 'block' : 'none'};">
+                            <ul style="list-style:none; padding-inline-start:24px; margin-top:8px; display:${deptExpanded ? 'block' : 'none'};">
                     `;
                     
                     if (dGroups.length === 0) {
@@ -1695,13 +1695,13 @@
                                 <li style="margin-bottom: 4px;">
                                     <div style="display:flex; align-items:center; gap:8px; padding:4px;">
                                         <input type="checkbox" class="group-checkbox" value="${g.id}" ${isGrpSelected ? 'checked' : ''}>
-                                        <button type="button" style="font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; background:none; border:none; padding:0; text-align:left;" onclick="const ul = this.parentElement.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.grp-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.grp-chevron').style.transform = ''; }">
+                                        <button type="button" style="font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; background:none; border:none; padding:0; text-align:start;" onclick="const ul = this.parentElement.nextElementSibling; if (ul.style.display === 'none') { ul.style.display = 'block'; this.querySelector('.grp-chevron').style.transform = 'rotate(90deg)'; } else { ul.style.display = 'none'; this.querySelector('.grp-chevron').style.transform = ''; }">
                                             <svg class="grp-chevron" viewBox="0 0 24 24" width="16" height="16" style="transition: transform 0.2s; transform: ${grpExpanded ? 'rotate(90deg)' : 'none'};"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
                                             <svg viewBox="0 0 24 24" width="14" height="14" style="fill:var(--text-muted)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                                             ${escapeHtml(g.name)}
                                         </button>
                                     </div>
-                                    <ul style="list-style:none; padding-left:24px; margin-top:4px; display:${grpExpanded ? 'block' : 'none'};">
+                                    <ul style="list-style:none; padding-inline-start:24px; margin-top:4px; display:${grpExpanded ? 'block' : 'none'};">
                             `;
                             
                             if (gUsers.length === 0) {
@@ -1772,11 +1772,11 @@
                             if (node.userId) {
                                 const u = window.globalUsers.find(x => x.id === node.userId);
                                 assigneeName = u ? (u.firstName + ' ' + u.lastName) : (node.assigneeName || 'Unknown User');
-                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--primary); margin-right:4px; vertical-align:middle;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--primary); margin-inline-end:4px; vertical-align:middle;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
                             } else if (node.groupId) {
                                 const g = window.globalGroups.find(x => x.id === node.groupId);
                                 assigneeName = g ? g.name : (node.assigneeName || 'Unknown Group');
-                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--text-muted); margin-right:4px; vertical-align:middle;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`;
+                                icon = `<svg viewBox="0 0 24 24" width="16" height="16" style="fill:var(--text-muted); margin-inline-end:4px; vertical-align:middle;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`;
                             }
                             
                             const assigner = window.globalUsers.find(x => x.id === node.assignedByUserId);
@@ -1785,12 +1785,12 @@
                             
                             let status = '';
                             if (node.isAssigneeDeleted) {
-                                status += '<span class="badge badge-danger" style="font-size:10px; margin-right:4px;">Deleted</span>';
+                                status += '<span class="badge badge-danger" style="font-size:10px; margin-inline-end:4px;">Deleted</span>';
                             }
                             status += node.isActive ? '<span class="badge badge-success" style="font-size:10px;">Active</span>' : '<span class="badge badge-default" style="font-size:10px;">Inactive</span>';
                             
-                            let html = `<div style="border-left: 2px solid var(--border); padding-left: 16px; margin-left: 8px; margin-top: 8px; position:relative;">
-                                <div style="position:absolute; left:0; top: 12px; width:16px; border-top: 2px solid var(--border);"></div>
+                            let html = `<div style="border-inline-start: 2px solid var(--border); padding-inline-start: 16px; margin-inline-start: 8px; margin-top: 8px; position:relative;">
+                                <div style="position:absolute; inset-inline-start:0; top: 12px; width:16px; border-top: 2px solid var(--border);"></div>
                                 <div style="background: var(--bg-surface); border: 1px solid var(--border); padding: 8px; border-radius: var(--radius-sm); margin-bottom: 8px; display:inline-block;">
                                     <div style="font-size: 14px; font-weight: 500;">${icon}${escapeHtml(assigneeName)} ${status}</div>
                                     <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Assigned by: ${escapeHtml(assignerName)} on ${date}</div>
@@ -1798,7 +1798,7 @@
                             `;
                             
                             if (node.children && node.children.length > 0) {
-                                html += `<div style="margin-left: 16px;">`;
+                                html += `<div style="margin-inline-start: 16px;">`;
                                 node.children.forEach(child => {
                                     html += renderNode(child);
                                 });
@@ -2384,7 +2384,7 @@
                 const logDiv = document.createElement('div');
                 logDiv.className = 'history-event comment-log-item';
                 logDiv.id = `history-${h.id}`;
-                logDiv.style.borderLeft = '2px solid var(--primary)';
+                logDiv.style.borderInlineStart = '2px solid var(--primary)';
                 logDiv.style.backgroundColor = 'transparent';
                 logDiv.style.padding = '4px 0 4px 8px';
                 logDiv.dataset.searchText = `${window.resolveTimelineUser(h.createdBy)} ${text} ${h.oldValue||''} ${h.newValue||''}`.toLowerCase();
@@ -2540,8 +2540,8 @@
             const box = document.createElement('div');
             box.id = 'inline-reply-box';
             box.className = 'reply-container';
-            box.style.borderLeft = '3px solid var(--primary)';
-            box.style.paddingLeft = '16px';
+            box.style.borderInlineStart = '3px solid var(--primary)';
+            box.style.paddingInlineStart = '16px';
             box.style.marginBottom = '12px';
             
             box.innerHTML = `
@@ -2638,9 +2638,9 @@
                 const isImage = att && att.contentType && att.contentType.startsWith('image/');
                 
                 const wrapper = document.createElement('div');
-                wrapper.style.cssText = 'position: relative; display: inline-block; margin-right: 8px; margin-top: 6px;';
+                wrapper.style.cssText = 'position: relative; display: inline-block; margin-inline-end: 8px; margin-top: 6px;';
                 
-                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, '${textareaId}')" title="Remove" style="position: absolute; top: -8px; right: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
+                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, '${textareaId}')" title="Remove" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
@@ -2848,7 +2848,7 @@
                             <span>Comment deleted.</span>
                             <button class="btn btn-ghost" style="padding: 2px 8px; font-size: 12px; color: white; border: 1px solid white;" onclick="restoreComment(${id}, this)">Undo</button>
                         </div>
-                        <div style="position:absolute; bottom:0; left:0; height:3px; background:var(--primary); width:100%; transition: width ${duration}ms linear;" id="undoProgress-${id}"></div>
+                        <div style="position:absolute; bottom:0; inset-inline-start:0; height:3px; background:var(--primary); width:100%; transition: width ${duration}ms linear;" id="undoProgress-${id}"></div>
                     </div>
                 `;
                 
@@ -3282,9 +3282,9 @@
                 const isImage = att && att.contentType && att.contentType.startsWith('image/');
                 
                 const wrapper = document.createElement('div');
-                wrapper.style.cssText = 'position: relative; display: inline-block; margin-right: 8px; margin-top: 8px;';
+                wrapper.style.cssText = 'position: relative; display: inline-block; margin-inline-end: 8px; margin-top: 8px;';
                 
-                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, 'commentText')" title="Remove" style="position: absolute; top: -8px; right: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
+                const delBtn = `<button type="button" onclick="window.removeAttachmentFromEditor(${id}, 'commentText')" title="Remove" style="position: absolute; top: -8px; inset-inline-end: -8px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 50%; width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">&times;</button>`;
                 
                 if (isImage) {
                     const imgPreview = document.createElement('img');
@@ -3363,7 +3363,7 @@
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.id = 'lightbox-overlay';
-                overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100000; display:flex; align-items:center; justify-content:center; cursor:zoom-out;';
+                overlay.style.cssText = 'position:fixed; top:0; inset-inline-start:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100000; display:flex; align-items:center; justify-content:center; cursor:zoom-out;';
                 overlay.onclick = function() { this.style.display = 'none'; };
                 
                 const img = document.createElement('img');
@@ -3413,7 +3413,7 @@
 
             if (resultContent) {
                 resultContent.innerHTML = `
-                    <div style="background: var(--danger-light, #FEF2F2); border: 1px solid var(--border-danger-light, #FECACA); border-left: 4px solid var(--danger, #EF4444); border-radius: 6px; padding: 12px; margin: 4px 0;">
+                    <div style="background: var(--danger-light, #FEF2F2); border: 1px solid var(--border-danger-light, #FECACA); border-inline-start: 4px solid var(--danger, #EF4444); border-radius: 6px; padding: 12px; margin: 4px 0;">
                         <div style="color: var(--danger, #991B1B); font-weight: 700; font-size: 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                             <span>LLM Bağlantısı Kurulamadı</span>
@@ -3479,15 +3479,15 @@
                     badge.style.border = '';
                     if (res.isAvailable || res.isEndpointReachable) {
                         badge.className = 'badge ai-status-active';
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981; animation: pulse-dot 2s infinite; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">LLM: ${escapeHtml(res.model || 'Aktif')}</span>`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981; animation: pulse-dot 2s infinite; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">LLM: ${escapeHtml(res.model || 'Aktif')}</span>`;
                         badge.title = `Sağlayıcı: ${res.provider || 'LLM'} | Model: ${res.model} | Endpoint: ${res.endpoint}\n(Ayarları değiştirmek için tıklayın)`;
                     } else if (res.fallbackToHeuristic) {
                         badge.className = 'badge ai-status-fallback';
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#F59E0B; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM (Rule Engine)' : 'LLM Bağlı Değil (Kural Motoru)'}</span>`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#F59E0B; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM (Rule Engine)' : 'LLM Bağlı Değil (Kural Motoru)'}</span>`;
                         badge.title = `LLM sunucusuna ulaşılamadı (${res.endpoint}). Akıllı yerel kurallar aktif.\n(Model ayarlarını açmak için tıklayın)`;
                     } else {
                         badge.className = 'badge ai-status-disconnected';
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
                         badge.title = `LLM bağlantısı kapalı (${res.endpoint}).\n(Ayarları düzenlemek için tıklayın)`;
                     }
                 }
@@ -3498,7 +3498,7 @@
                 badge.style.background = '';
                 badge.style.color = '';
                 badge.style.border = '';
-                badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-right: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
+                badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#EF4444; margin-inline-end: 4px; vertical-align: middle; flex-shrink:0;"></span><span style="overflow:hidden; text-overflow:ellipsis;">${isEn ? 'No LLM Connection' : 'LLM Bağlantısı Yok'}</span>`;
             }
         };
 
@@ -3769,7 +3769,7 @@
                     if (!activeBtn.dataset.origHtml) {
                         activeBtn.dataset.origHtml = activeBtn.innerHTML;
                     }
-                    activeBtn.innerHTML = `<span class="spinner-border spinner-border-sm" style="width:10px;height:10px;margin-right:3px;" role="status"></span> ${activeLabel || 'İşleniyor...'}`;
+                    activeBtn.innerHTML = `<span class="spinner-border spinner-border-sm" style="width:10px;height:10px;margin-inline-end:3px;" role="status"></span> ${activeLabel || 'İşleniyor...'}`;
                     activeBtn.style.opacity = '0.85';
                 }
             } else if (!busy) {
@@ -3862,7 +3862,7 @@
                             resultSource.style.background = '#FEF3C7';
                             resultSource.style.color = '#92400E';
                             resultSource.style.border = '1px solid #FCD34D';
-                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
+                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-inline-end: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
                         }
                     }
 
@@ -3959,7 +3959,7 @@
                             resultSource.style.background = '#FEF3C7';
                             resultSource.style.color = '#92400E';
                             resultSource.style.border = '1px solid #FCD34D';
-                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
+                            resultSource.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-inline-end: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${isEn ? 'Rule Engine (No LLM)' : 'Kural Motoru (LLM Bağlı Değil)'}`;
                         }
                     }
 

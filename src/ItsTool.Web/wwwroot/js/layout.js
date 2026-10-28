@@ -19,7 +19,7 @@ function injectDropdownStyle() {
         const style = document.createElement('style');
         style.id = 'bell-dropdown-style';
         style.innerHTML = `
-            .dropdown-menu { display: none; position: absolute; right: 0; top: 100%; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; list-style: none; padding: 0; margin: 8px 0 0 0; }
+            .dropdown-menu { display: none; position: absolute; inset-inline-end: 0; top: 100%; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; list-style: none; padding: 0; margin: 8px 0 0 0; }
             .dropdown-menu.show { display: block; }
             .dropdown-item { display: block; padding: 8px 16px; color: var(--text-main); text-decoration: none; cursor: pointer; }
             .dropdown-item:hover, .dropdown-item.active { background: var(--bg-hover); }
@@ -104,7 +104,7 @@ const shellHtml = `
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <svg viewBox="0 0 24 24" width="24" height="24" style="fill: var(--primary); margin-right: 8px;"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z"/></svg> ITSM Tool
+                <svg viewBox="0 0 24 24" width="24" height="24" style="fill: var(--primary); margin-inline-end: 8px;"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z"/></svg> ITSM Tool
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard.html?v=2" class="sidebar-nav-item">
@@ -229,28 +229,28 @@ function showMandatoryPasswordModal() {
                 </div>
             </div>
             <div style="padding: 20px 24px;">
-                <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-left: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-main, #1E40AF); line-height: 1.45;">
+                <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-inline-start: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-main, #1E40AF); line-height: 1.45;">
                     Güvenliğiniz için lütfen yeni ve kalıcı bir şifre belirleyiniz. Bu işlem tamamlanmadan sisteme devam edilemez.
                 </div>
                 <form id="modalForcePasswordForm">
-                    <div class="form-group" style="margin-bottom: 14px; text-align: left;">
+                    <div class="form-group" style="margin-bottom: 14px; text-align: start;">
                         <label class="form-label" for="mForceCurrentPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Mevcut (Geçici) Şifre</label>
                         <input type="password" id="mForceCurrentPass" class="form-control" autocomplete="current-password" required style="font-size: 13.5px;">
                     </div>
-                    <div class="form-group" style="margin-bottom: 14px; text-align: left;">
+                    <div class="form-group" style="margin-bottom: 14px; text-align: start;">
                         <label class="form-label" for="mForceNewPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Yeni Şifre</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="En az 12 karakter" style="padding-right: 40px; font-size: 13.5px;">
-                            <button type="button" id="mToggleNewPass" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
+                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="En az 12 karakter" style="padding-inline-end: 40px; font-size: 13.5px;">
+                            <button type="button" id="mToggleNewPass" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 16px; text-align: left;">
+                    <div class="form-group" style="margin-bottom: 16px; text-align: start;">
                         <label class="form-label" for="mForceConfirmPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Yeni Şifre (Tekrar)</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Şifrenizi tekrar girin" style="padding-right: 40px; font-size: 13.5px;">
-                            <button type="button" id="mToggleConfirmPass" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
+                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Şifrenizi tekrar girin" style="padding-inline-end: 40px; font-size: 13.5px;">
+                            <button type="button" id="mToggleConfirmPass" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Göster/Gizle">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
                         </div>

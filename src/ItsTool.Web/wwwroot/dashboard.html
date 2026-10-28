@@ -19,10 +19,10 @@
                     <h2 data-i18n="dash_title">Dashboard</h2>
                 </div>
                 <div class="topbar-right">
-                    <div class="notification-bell-container dropdown" style="position:relative; margin-right: 16px;">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
                         <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; right:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
                             <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
@@ -100,7 +100,7 @@
             </div>
             <div class="modal-body">
                 <div id="drillDownCount" style="margin-bottom: 12px; font-weight: 500; color: var(--text-muted);"></div>
-                <div id="drillDownList" style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-right: 8px;">
+                <div id="drillDownList" style="display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; padding-inline-end: 8px;">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -249,7 +249,7 @@
                         <div style="font-weight: 600;">${w.openTicketCount}</div>
                     </div>
                     ${w.members && w.members.length > 0 ? `
-                        <div style="padding-left: 44px; display: flex; flex-direction: column; gap: 4px;">
+                        <div style="padding-inline-start: 44px; display: flex; flex-direction: column; gap: 4px;">
                             ${w.members.map(m => `
                                 <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);">
                                     <span>${escapeHtml(m.userName)}</span>
@@ -306,7 +306,7 @@
             
             if (recentTickets.length === 0) return `<div style="color:var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">${t('dash_no_data')}</div>`;
             return recentTickets.map(tData => `
-                <button type="button" style="width: 100%; border: none; text-align: left; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-hover); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg-hover)'">
+                <button type="button" style="width: 100%; border: none; text-align: start; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-hover); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--bg-hover)'">
                     <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${escapeHtml(tData.ticketNumber)}</div>
                     <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
                     ${getStatusBadge(getStatusName(tData.statusId))}
@@ -417,7 +417,7 @@
             };
 
             document.getElementById('drillDownList').innerHTML = items.map(tData => `
-                <button type="button" style="width: 100%; border: 1px solid var(--border); text-align: left; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-surface); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-surface)'">
+                <button type="button" style="width: 100%; border: 1px solid var(--border); text-align: start; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-surface); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s;" onclick="window.openTicketPreviewWrapper(${tData.id})" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-surface)'">
                     <div style="font-family: monospace; font-weight: 600; color: var(--primary);">${escapeHtml(tData.ticketNumber)}</div>
                     <div style="flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(tData.title)}</div>
                     ${getStatusBadge(getStatusName(tData.statusId))}
