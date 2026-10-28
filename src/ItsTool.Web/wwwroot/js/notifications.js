@@ -55,6 +55,8 @@ export async function initNotifications() {
             accessTokenFactory: () => token
         })
         .withAutomaticReconnect()
+        // The client logs the connection URL, which carries the token, at Information level
+        .configureLogging(signalR.LogLevel.Warning)
         .build();
 
     hubConnection.on("ReceiveNotification", (payload) => {
