@@ -181,6 +181,7 @@
         </div>
     </div>
 
+    <script src="js/purify.min.js"></script>
     <script src="js/quill.min.js"></script>
     <script type="module">
         import './js/api.js?v=999';
@@ -521,8 +522,10 @@
                 document.getElementById('articleId').value = article.id;
                 document.getElementById('articleTitle').value = article.title;
                 initQuill();
-                quill.root.innerHTML = article.content || '';
-                document.getElementById('articleContent').value = article.content || '';
+                // Anyone can suggest an article, and its HTML opens here in a reviewer's browser
+                const safeContent = DOMPurify.sanitize(article.content || '');
+                quill.root.innerHTML = safeContent;
+                document.getElementById('articleContent').value = safeContent;
                 document.getElementById('articleVisibility').value = article.visibility;
                 
                 const statusSelect = document.getElementById('articleStatus');

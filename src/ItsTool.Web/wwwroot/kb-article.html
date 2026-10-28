@@ -337,7 +337,7 @@
                 const isAuthor = currentUserId > 0 && a.authorUserId === currentUserId;
                 renderArticleFeedbackAlerts(a, isAuthor);
 
-                document.getElementById('articleContent').innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(a.content) : escapeHtml(a.content);
+                document.getElementById('articleContent').innerHTML = DOMPurify.sanitize(a.content || '');
                 loadedArticle = a;
 
                 await setupManagerControls(a, isAuthor);
@@ -441,8 +441,9 @@
             }
 
             initQuill();
-            quill.root.innerHTML = loadedArticle.content || '';
-            document.getElementById('editArticleContent').value = loadedArticle.content || '';
+            const safeContent = DOMPurify.sanitize(loadedArticle.content || '');
+            quill.root.innerHTML = safeContent;
+            document.getElementById('editArticleContent').value = safeContent;
 
             if (loadedArticle.status === 3 && loadedArticle.managerFeedback) {
                 document.getElementById('authorFeedbackAlert').style.display = 'block';
