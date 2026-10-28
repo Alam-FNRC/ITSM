@@ -839,7 +839,7 @@
     <script type="module">
         import './js/api.js?v=1008';
         import { injectShell } from './js/layout.js?v=1008';
-        import { bindShellActions, showToast, openModal, closeModal, showConfirmModal, showUndoToast } from './js/ui.js?v=1008';
+        import { bindShellActions, showToast, openModal, closeModal, showConfirmModal, showUndoToast, downloadCsv } from './js/ui.js?v=1008';
         import { initMentions } from './js/mentions.js?v=1008';
         import { t, getCurrentLanguage, getLocale } from './js/i18n.js?v=1008';
         import { initAuthorizedAttachments } from './js/attachments.js?v=1008';
@@ -1859,27 +1859,16 @@
             // Filter only history items (type 1)
             const historyItems = window.ticketTimeline.filter(e => e.type === 1).map(e => e.data);
             
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-            csvContent += "Date,User,Action,Field,OldValue,NewValue\n";
-            
-            historyItems.forEach(h => {
-                const date = `"${new Date(h.createdAt).toLocaleString().replaceAll('"', '""')}"`;
-                const user = `"${(window.globalUsers.find(x => x.id == h.createdBy)?.username || h.createdBy || '').replaceAll('"', '""')}"`;
-                const action = `"${(h.action || '').replaceAll('"', '""')}"`;
-                const field = `"${(h.fieldName || '').replaceAll('"', '""')}"`;
-                const oldVal = `"${(h.oldValue || '').replaceAll('"', '""')}"`;
-                const newVal = `"${(h.newValue || '').replaceAll('"', '""')}"`;
-                
-                csvContent += `${date},${user},${action},${field},${oldVal},${newVal}\n`;
-            });
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `ticket_${ticketId}_history.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+            const header = ['audit_col_time', 'audit_col_user', 'audit_col_action', 'audit_col_field', 'audit_col_old', 'audit_col_new'].map(key => t(key));
+            const rows = historyItems.map(h => [
+                new Date(h.createdAt).toLocaleString(getLocale()),
+                window.globalUsers.find(x => x.id == h.createdBy)?.username || h.createdBy || '',
+                h.action || '',
+                h.fieldName || '',
+                h.oldValue || '',
+                h.newValue || ''
+            ]);
+            downloadCsv(`ticket_${ticketId}_history.csv`, header, rows);
         };
 
         window.toggleEditMode = function() {
@@ -2385,7 +2374,8 @@
                 logDiv.style.backgroundColor = 'transparent';
                 logDiv.style.padding = '4px 0 4px 8px';
                 logDiv.dataset.searchText = `${window.resolveTimelineUser(h.createdBy)} ${text} ${h.oldValue||''} ${h.newValue||''}`.toLowerCase();
-                logDiv.dataset.csvRow = `"${new Date(e.timestamp).toISOString()}","${window.resolveTimelineUser(h.createdBy)}","${text}","${(h.oldValue||'').replaceAll('"', '""')}","${(h.newValue||'').replaceAll('"', '""')}"`;
+                const plainText = (html) => new DOMParser().parseFromString(html, 'text/html').body.textContent;
+                logDiv.dataset.csvRow = JSON.stringify([new Date(e.timestamp).toISOString(), plainText(window.resolveTimelineUser(h.createdBy)), plainText(text), h.oldValue || '', h.newValue || '']);
                 logDiv.innerHTML = `<div style="font-size:11px; color:var(--text-main);"><strong>${window.resolveTimelineUser(h.createdBy)}</strong> ${text}</div><div style="font-size:10px; color:var(--text-muted);">${new Date(e.timestamp).toLocaleString()}</div>${detailsHtml}`;
                 commentLogsList.appendChild(logDiv);
                 
@@ -3137,22 +3127,9 @@
                 return;
             }
             
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += String.raw`Timestamp,User,Action,OldValue,NewValue\n`; // Header
-            
-            items.forEach(item => {
-                if (item.dataset.csvRow) {
-                    csvContent += item.dataset.csvRow + "\\n";
-                }
-            });
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `ticket_${ticketId}_comment_logs.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+            const header = ['audit_col_time', 'audit_col_user', 'audit_col_action', 'audit_col_old', 'audit_col_new'].map(key => t(key));
+            const rows = Array.from(items).filter(item => item.dataset.csvRow).map(item => JSON.parse(item.dataset.csvRow));
+            downloadCsv(`ticket_${ticketId}_comment_logs.csv`, header, rows);
         };
         // --- User Tooltip Logic ---
         const userTooltip = document.createElement('div');

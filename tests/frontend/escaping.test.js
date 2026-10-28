@@ -35,7 +35,7 @@ global.document = {
 };
 global.window = {};
 
-const { getAvatar, showToast } = await import('../../src/ItsTool.Web/wwwroot/js/ui.js');
+const { getAvatar, showToast, csvCell } = await import('../../src/ItsTool.Web/wwwroot/js/ui.js');
 
 const hostile = 'Sara" onmouseover="alert(1)';
 
@@ -77,4 +77,13 @@ test('inline handlers only put fixed values inside JS strings', () => {
         }
     }
     assert.deepEqual(found, []);
+});
+
+test('CSV cells stay text in spreadsheets', () => {
+    assert.equal(csvCell('=HYPERLINK("https://evil.example","Open")'), `"'=HYPERLINK(""https://evil.example"",""Open"")"`);
+    assert.equal(csvCell('+1 555'), `"'+1 555"`);
+    assert.equal(csvCell('@SUM(A1)'), `"'@SUM(A1)"`);
+    assert.equal(csvCell('Printer offline'), '"Printer offline"');
+    assert.equal(csvCell('-'), '"-"');
+    assert.equal(csvCell(null), '""');
 });

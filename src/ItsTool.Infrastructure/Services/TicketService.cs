@@ -162,15 +162,15 @@ public class TicketService : ITicketService
         var prio = await _context.Priorities.FindAsync(t.PriorityId);
         var prioName = prio?.Name ?? $"Priority #{t.PriorityId}";
         var cat = await _context.Categories.FindAsync(t.CategoryId);
-        var catName = cat?.Name ?? "Genel";
+        var catName = cat?.Name ?? "General";
         var proj = await _context.Projects.FindAsync(t.ProjectId);
-        var projName = proj != null ? $"{proj.Name} ({proj.ProjectKey})" : "Proje";
+        var projName = proj != null ? $"{proj.Name} ({proj.ProjectKey})" : "No project";
 
         _context.TicketHistories.Add(new TicketHistory
         {
             TicketId = t.Id,
             Action = "Created",
-            FieldName = "Yeni Bilet",
+            FieldName = "Ticket",
             OldValue = "-",
             NewValue = $"{t.TicketNumber} — {t.Title} (Priority: {prioName}, Category: {catName}, Project: {projName})",
             CreatedBy = dto.RequesterUserId.ToString()

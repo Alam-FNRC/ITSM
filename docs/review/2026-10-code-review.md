@@ -28,6 +28,8 @@ Each fix has integration tests in `tests/ItsTool.IntegrationTests/Api/` that run
 | — | Fixed | Found during the fixes: deny permission overrides were ignored, so a role's permission could not be taken away from one user (`5380920`) |
 | — | Fixed | Found during the fixes: stored script injection. Pages inserted user text (ticket titles, survey comments, names, KB article HTML, notification text) as HTML or inside inline handlers, so any user could run script in an administrator's browser and take the login token. The pages now escape or sanitize it (`8978c67`, `cfed0a6`..`64c94c0`), DOMPurify is updated to 3.4.17 (`eac6682`), ticket colours must be #RRGGBB (`d2f4445`) and notification e-mails encode user text (`da056fe`) |
 | — | Fixed | Found during the fixes: the survey and knowledge-base article pages put `?id=` from the address into API paths, so a crafted link sent their request to another endpoint (verified: rating a ticket through `survey.html?id=../users/2/roles/1?x=` gave user 2 SuperAdmin). Only numeric ids are accepted (`ca3eee9`) |
+| — | Fixed | Found during the fixes: CSV exports (tickets, audit log, ticket logs) wrote user text as it was, so a value starting with `=`, `+`, `-` or `@` ran as a spreadsheet formula; such cells now start with an apostrophe (`40328e1`) |
+| — | Fixed | Found during the fixes: the ticket CSV export read the user id from a claim the token does not have and returned no rows for anyone (`a89a785`) |
 
 # Part 1: Security and data layer
 

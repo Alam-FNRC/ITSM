@@ -25,7 +25,7 @@ public class ReportsControllerTests
 
         var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            new Claim("UserId", "1")
+            new Claim(ClaimTypes.NameIdentifier, "1")
         }, "mock"));
 
         controller.ControllerContext = new ControllerContext

@@ -83,9 +83,12 @@ public class ReportService : IReportService
         return ms;
     }
 
-    private static string EscapeCsv(string? field)
+    // Spreadsheet programs run a cell that starts with = + - @ (or a tab or carriage return) as a formula;
+    // a leading ' keeps it text. Titles and names in the export are typed by users.
+    internal static string EscapeCsv(string? field)
     {
         if (string.IsNullOrEmpty(field)) return "";
+        if (field != "-" && "=+-@\t\r".Contains(field[0])) field = "'" + field;
         return field.Replace("\"", "\"\"");
     }
 }

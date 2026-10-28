@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
@@ -18,7 +19,8 @@ public class ReportsController : ControllerBase
         _reportService = reportService;
     }
 
-    private int GetCurrentUserId() => int.Parse(User.FindFirst("UserId")?.Value ?? "0");
+    // The token carries the user id as NameIdentifier; there is no "UserId" claim
+    private int GetCurrentUserId() => int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var id) ? id : 0;
 
     [HttpGet("tickets/csv")]
     public async Task<IActionResult> ExportTicketsCsv([FromQuery] TicketSearchFilterDto filter)

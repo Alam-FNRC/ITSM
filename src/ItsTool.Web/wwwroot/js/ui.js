@@ -6,6 +6,26 @@ import { setLanguage, t, getCurrentLanguage, getLocale, LANGUAGES } from './i18n
     } catch(e) { console.error('Theme init failed', e); }
 })();
 
+// Spreadsheet programs run a cell that starts with = + - @ (or a tab or carriage return) as a formula;
+// a leading ' keeps it text. Exports contain user text such as ticket titles.
+export const csvCell = (value) => {
+    let text = (value ?? '').toString();
+    if (/^[=+\-@\t\r]/.test(text) && text !== '-') text = `'${text}`;
+    return `"${text.replaceAll('"', '""')}"`;
+};
+
+export function downloadCsv(fileName, header, rows) {
+    const content = '\uFEFF' + [header, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8;' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
 export const escapeHtml = (unsafe) => (unsafe || '').toString().replaceAll('&', "&amp;").replaceAll('<', "&lt;").replaceAll('>', "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 
 export const getAvatar = (id, fallback, profilePhoto, size = 32) => {
