@@ -41,14 +41,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "ITSM Tool API",
+        Title = "FNRC ITSM API",
         Version = "v1",
-        Description = "Enterprise IT Service Management (ITSM) RESTful Web API with Clean Architecture, EAV Dynamic Forms, Multi-Agent AI Copilot, and Real-Time SignalR Notifications.",
-        Contact = new OpenApiContact
-        {
-            Name = "TEAM-SMS / Berkay Bayramoğlu",
-            Email = "berkaybbayramoglu@gmail.com"
-        },
+        Description = "FNRC IT service management API. Built on dotnet-enterprise-itsm by Berkay Bayramoğlu (MIT).",
         License = new OpenApiLicense
         {
             Name = "MIT License"
