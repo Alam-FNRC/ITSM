@@ -59,7 +59,7 @@
                                 <th data-i18n="fields_col_key">Key</th>
                                 <th data-i18n="fields_col_name">Label</th>
                                 <th data-i18n="fields_col_type">Type</th>
-                                <th>Regex</th>
+                                <th data-i18n="fields_col_regex">Regex</th>
                                 <th style="width: 100px;" data-i18n="fields_col_actions">Actions</th>
                             </tr>
                         </thead>
@@ -86,7 +86,7 @@
                     <div class="form-group">
                         <label class="form-label" for="fKey" data-i18n="fields_lbl_key">Field Key *</label>
                         <input id="fKey" class="form-control" required placeholder="e.g. server_name">
-                        <small class="text-muted" style="display:block; margin-top: 4px;">Must be unique and contain no spaces.</small>
+                        <small class="text-muted" style="display:block; margin-top: 4px;" data-i18n="fields_key_help">Must be unique and contain no spaces.</small>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="fLabel" data-i18n="fields_lbl_name">Field Label *</label>
@@ -95,11 +95,11 @@
                     <div class="form-group">
                         <label class="form-label" for="fType" data-i18n="fields_lbl_type">Field Type *</label>
                         <select id="fType" class="form-control" required>
-                            <option value="0">Text</option>
-                            <option value="1">Number</option>
-                            <option value="2">Date</option>
-                            <option value="3">Dropdown</option>
-                            <option value="4">MultiSelect</option>
+                            <option value="0" data-i18n="fields_type_text">Text</option>
+                            <option value="1" data-i18n="fields_type_number">Number</option>
+                            <option value="2" data-i18n="fields_type_date">Date</option>
+                            <option value="3" data-i18n="fields_type_dropdown">Dropdown</option>
+                            <option value="4" data-i18n="fields_type_multiselect">MultiSelect</option>
                         </select>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                     <div class="form-group">
                         <label class="form-label" for="eKey" data-i18n="fields_lbl_key">Field Key *</label>
                         <input id="eKey" class="form-control" disabled>
-                        <small class="text-muted" style="display:block; margin-top: 4px;">Key cannot be changed after creation.</small>
+                        <small class="text-muted" style="display:block; margin-top: 4px;" data-i18n="fields_key_locked">Key cannot be changed after creation.</small>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="eLabel" data-i18n="fields_lbl_name">Field Label *</label>
@@ -135,15 +135,15 @@
                     <div class="form-group">
                         <label class="form-label" for="eType" data-i18n="fields_lbl_type">Field Type *</label>
                         <select id="eType" class="form-control" required>
-                            <option value="0">Text</option>
-                            <option value="1">Number</option>
-                            <option value="2">Date</option>
-                            <option value="3">Dropdown</option>
-                            <option value="4">MultiSelect</option>
+                            <option value="0" data-i18n="fields_type_text">Text</option>
+                            <option value="1" data-i18n="fields_type_number">Number</option>
+                            <option value="2" data-i18n="fields_type_date">Date</option>
+                            <option value="3" data-i18n="fields_type_dropdown">Dropdown</option>
+                            <option value="4" data-i18n="fields_type_multiselect">MultiSelect</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="eRegex">Validation Regex</label>
+                        <label class="form-label" for="eRegex" data-i18n="fields_lbl_regex">Validation Regex</label>
                         <input id="eRegex" class="form-control">
                     </div>
                 </div>
@@ -159,17 +159,17 @@
     <div id="confirmModal" class="modal-overlay">
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
-                <h2>Confirm Delete</h2>
+                <h2 data-i18n="common_confirm_delete_title">Confirm Delete</h2>
                 <button type="button" class="close-btn" onclick="closeModal('confirmModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
                     <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this field? This action cannot be undone.</p>
+                <p data-i18n="fields_confirm_delete">Are you sure you want to delete this field? This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
-                <button type="button" class="btn btn-danger" id="btnConfirmDelete">Delete</button>
+                <button type="button" class="btn btn-ghost" onclick="closeModal('confirmModal')" data-i18n="btn_cancel">Cancel</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmDelete" data-i18n="btn_delete">Delete</button>
             </div>
         </div>
     </div>
@@ -197,7 +197,8 @@
                 const tbody = document.querySelector('#fieldsTable tbody');
                 tbody.innerHTML = '';
                 
-                const typeNameMap = { '0': 'Text', '1': 'Number', '2': 'Date', '3': 'Dropdown', '4': 'MultiSelect', 'Text': 'Text', 'Number': 'Number', 'Date': 'Date', 'Dropdown': 'Dropdown', 'MultiSelect': 'MultiSelect' };
+                const typeKeys = { '0': 'fields_type_text', '1': 'fields_type_number', '2': 'fields_type_date', '3': 'fields_type_dropdown', '4': 'fields_type_multiselect', 'Text': 'fields_type_text', 'Number': 'fields_type_number', 'Date': 'fields_type_date', 'Dropdown': 'fields_type_dropdown', 'MultiSelect': 'fields_type_multiselect' };
+                const typeNameMap = Object.fromEntries(Object.entries(typeKeys).map(([type, key]) => [type, t(key)]));
                 const typeColorsMap = { '0': 'info', '1': 'warning', '2': 'success', '3': 'primary', '4': 'default', 'Text': 'info', 'Number': 'warning', 'Date': 'success', 'Dropdown': 'primary', 'MultiSelect': 'default' };
 
                 if (fields.length === 0) {
@@ -250,7 +251,7 @@
                 }
 
                 console.error(err);
-                showToast('Error loading fields', 'error');
+                showToast(t('fields_load_failed'), 'error');
             }
         }
 
@@ -300,11 +301,11 @@
                     })
                 });
                 closeModal('editModal');
-                showToast('Field updated successfully');
+                showToast(t('fields_updated'));
         await loadFields();
             } catch (err) {
                 console.error(err);
-                showToast('Failed to update field', 'error');
+                showToast(t('fields_update_failed'), 'error');
             }
         });
 
@@ -313,11 +314,11 @@
             try {
                 await window.api.request(`/DynamicForm/definitions/${fieldToDelete}`, { method: 'DELETE' });
                 closeModal('confirmModal');
-                showToast('Field deleted successfully');
+                showToast(t('fields_deleted'));
         await loadFields();
             } catch (e) {
                 console.error(e);
-                showToast('Failed to delete field', 'error');
+                showToast(t('fields_delete_failed'), 'error');
             } finally {
                 fieldToDelete = null;
             }
@@ -346,11 +347,11 @@
                     })
                 });
                 closeModal('createModal');
-                showToast('Field created successfully');
+                showToast(t('fields_created'));
         await loadFields();
             } catch (e) {
                 console.error(e);
-                showToast('Failed to create field', 'error');
+                showToast(t('fields_create_failed'), 'error');
             }
         });
 
