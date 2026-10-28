@@ -70,26 +70,26 @@ public class ComprehensiveBranchCoverageTests : TestBase
     [Fact]
     public void NotificationDispatcher_GetHumanReadableEventName_AllCases()
     {
-        Assert.Equal("Bilet Oluşturuldu", NotificationDispatcher.GetHumanReadableEventName("ticket.created"));
-        Assert.Equal("Bilet Atandı", NotificationDispatcher.GetHumanReadableEventName("ticket.assigned"));
-        Assert.Equal("Bilet Aktarıldı", NotificationDispatcher.GetHumanReadableEventName("ticket.transferred"));
-        Assert.Equal("Yeni Yorum", NotificationDispatcher.GetHumanReadableEventName("comment.added"));
-        Assert.Equal("Yeni Yorum", NotificationDispatcher.GetHumanReadableEventName("ticket.comment.added"));
-        Assert.Equal("Etiketlendiniz", NotificationDispatcher.GetHumanReadableEventName("comment.mention"));
-        Assert.Equal("Bilet Durumu Değişti", NotificationDispatcher.GetHumanReadableEventName("status.changed"));
-        Assert.Equal("Bilet Yeniden Açıldı", NotificationDispatcher.GetHumanReadableEventName("ticket.reopened"));
-        Assert.Equal("Bilet Çözüldü", NotificationDispatcher.GetHumanReadableEventName("ticket.resolved"));
-        Assert.Equal("Bilet Kapatıldı", NotificationDispatcher.GetHumanReadableEventName("ticket.closed"));
-        Assert.Equal("Memnuniyet Anketi", NotificationDispatcher.GetHumanReadableEventName("ticket.closed.survey"));
-        Assert.Equal("SLA Riski", NotificationDispatcher.GetHumanReadableEventName("sla.risk"));
-        Assert.Equal("SLA İhlali", NotificationDispatcher.GetHumanReadableEventName("sla.breached"));
-        Assert.Equal("SLA İhlali", NotificationDispatcher.GetHumanReadableEventName("sla.breach"));
-        Assert.Equal("SLA Uyarısı", NotificationDispatcher.GetHumanReadableEventName("sla.warning"));
-        Assert.Equal("Kritik Bilet Atanmadı", NotificationDispatcher.GetHumanReadableEventName("critical.unassigned"));
-        Assert.Equal("Düşük Anket Puanı", NotificationDispatcher.GetHumanReadableEventName("survey.low"));
-        Assert.Equal("Yeni Makale Önerisi", NotificationDispatcher.GetHumanReadableEventName("kb.suggested"));
-        Assert.Equal("Makale İncelendi", NotificationDispatcher.GetHumanReadableEventName("kb.reviewed"));
-        Assert.Equal("Sistem Bildirimi", NotificationDispatcher.GetHumanReadableEventName("unknown.event"));
+        Assert.Equal("Ticket Created", NotificationDispatcher.GetHumanReadableEventName("ticket.created"));
+        Assert.Equal("Ticket Assigned", NotificationDispatcher.GetHumanReadableEventName("ticket.assigned"));
+        Assert.Equal("Ticket Transferred", NotificationDispatcher.GetHumanReadableEventName("ticket.transferred"));
+        Assert.Equal("New Comment", NotificationDispatcher.GetHumanReadableEventName("comment.added"));
+        Assert.Equal("New Comment", NotificationDispatcher.GetHumanReadableEventName("ticket.comment.added"));
+        Assert.Equal("You Were Mentioned", NotificationDispatcher.GetHumanReadableEventName("comment.mention"));
+        Assert.Equal("Ticket Status Changed", NotificationDispatcher.GetHumanReadableEventName("status.changed"));
+        Assert.Equal("Ticket Reopened", NotificationDispatcher.GetHumanReadableEventName("ticket.reopened"));
+        Assert.Equal("Ticket Resolved", NotificationDispatcher.GetHumanReadableEventName("ticket.resolved"));
+        Assert.Equal("Ticket Closed", NotificationDispatcher.GetHumanReadableEventName("ticket.closed"));
+        Assert.Equal("Satisfaction Survey", NotificationDispatcher.GetHumanReadableEventName("ticket.closed.survey"));
+        Assert.Equal("SLA Risk", NotificationDispatcher.GetHumanReadableEventName("sla.risk"));
+        Assert.Equal("SLA Breached", NotificationDispatcher.GetHumanReadableEventName("sla.breached"));
+        Assert.Equal("SLA Breached", NotificationDispatcher.GetHumanReadableEventName("sla.breach"));
+        Assert.Equal("SLA Warning", NotificationDispatcher.GetHumanReadableEventName("sla.warning"));
+        Assert.Equal("Critical Ticket Unassigned", NotificationDispatcher.GetHumanReadableEventName("critical.unassigned"));
+        Assert.Equal("Low Survey Score", NotificationDispatcher.GetHumanReadableEventName("survey.low"));
+        Assert.Equal("New Article Suggestion", NotificationDispatcher.GetHumanReadableEventName("kb.suggested"));
+        Assert.Equal("Article Reviewed", NotificationDispatcher.GetHumanReadableEventName("kb.reviewed"));
+        Assert.Equal("System Notification", NotificationDispatcher.GetHumanReadableEventName("unknown.event"));
     }
 
     [Fact]

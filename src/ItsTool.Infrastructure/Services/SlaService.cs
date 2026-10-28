@@ -66,7 +66,7 @@ public class SlaService : ISlaService
                         t.Id,
                         t.SlaPolicyId,
                         t.PriorityId,
-                        prio?.Name ?? $"Öncelik #{t.PriorityId}",
+                        prio?.Name ?? $"Priority #{t.PriorityId}",
                         prio?.ColorHex ?? "#8c8c8c",
                         prio?.SeverityLevel ?? 99,
                         t.TicketTypeId,
@@ -186,7 +186,7 @@ public class SlaService : ISlaService
             // Prevent deleting the global default policy
             if (policy.ProjectId == null)
             {
-                throw new InvalidOperationException("Genel Sistem SLA Politikası silinemez.");
+                throw new InvalidOperationException("The global SLA policy cannot be deleted.");
             }
 
             policy.IsDeleted = true;
@@ -256,7 +256,7 @@ public class SlaService : ISlaService
                         t.Id,
                         t.SlaPolicyId,
                         t.PriorityId,
-                        prio?.Name ?? $"Öncelik #{t.PriorityId}",
+                        prio?.Name ?? $"Priority #{t.PriorityId}",
                         prio?.ColorHex ?? "#8c8c8c",
                         prio?.SeverityLevel ?? 99,
                         t.TicketTypeId,
