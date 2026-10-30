@@ -2098,6 +2098,8 @@
         // --- SONARQUBE R15 & R21 REFACTORING HELPERS ---
         window.resolveTimelineUser = function(id) {
             if (!id || id === 'none' || id === 'null') return t('td_none');
+            // Rule-based assignments and SLA escalations are recorded as done by the system
+            if (id === 'System') return t('td_system');
             const u = window.globalUsers ? window.globalUsers.find(x => x.id == id) : null;
             return u ? escapeHtml(u.firstName + ' ' + u.lastName) : `User ${escapeHtml(String(id))}`;
         };
