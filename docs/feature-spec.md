@@ -22,7 +22,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Ticket templates (mandatory, hidden, preset fields) | GLPI | Partial via custom fields | P2 | 4 |
 | Parent / child tickets with cascade resolve | iTop | No | P2 | 4 |
 | Major incidents (one outage, many reporters, status updates) | iTop | No | P2 | 4 |
-| Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned, reports from federal entities (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | No: a security issue is an ordinary ticket, visible to every `report.view` holder | P1 | 4 |
+| Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned, reports from federal entities (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | Stage 1 done 30 Oct: reporting, restricted access, triage, phases, action and access logs, affected items, members, review. Evidence, federal reports and moving tickets in are next | P1 | 4 |
 | Business rules engine (routing, auto-assign) | GLPI | Partial: assignment rules | P2 | 4 |
 | SLA matching by service and priority; OLAs; escalation levels | iTop, GLPI | Partial: SLA per priority/project | P2 | 4 |
 | Risk register (replaces FNRC's Excel ISMS risk register; decided 30 Oct) | Neither (ISO 27001 6.1.2, 6.1.3, 8.2, 8.3) | No: kept in Excel | P1 | 4 |
