@@ -142,6 +142,7 @@ builder.Services.AddScoped<ISignalRPusher, ItsTool.API.Services.SignalRPusher>()
     builder.Services.AddHostedService<SlaCheckerService>();
     builder.Services.AddScoped<ITicketTimeMeasureService, TicketTimeMeasureService>();
     builder.Services.AddHostedService<TicketTimeBackfillService>();
+    builder.Services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
 
     // Dashboard, Reporting & KB (Phase 8)
     builder.Services.AddScoped<IDashboardService, DashboardService>();
