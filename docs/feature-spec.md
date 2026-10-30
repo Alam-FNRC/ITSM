@@ -91,7 +91,7 @@ Proposed 28 Oct 2026; William to confirm. Neither iTop nor GLPI has a security i
 
 A security incident (phishing, malware, account compromise, data leak, lost laptop) is kept apart from ordinary incidents because its details are sensitive and auditors check how it was handled.
 
-- **Restricted access.** Only the security team (new permission, e.g. `security.incident.view`) and people they add to an incident can see it. Security incidents never appear in general ticket lists, search, dashboards, Kanban, calendar, exports, reports or notifications for anyone else, including `report.view` holders. The reporter sees only that the report was received and its current status. Every time someone opens one, the system records who and when.
+- **Restricted access.** Only the security team and the IT manager (new permission, e.g. `security.incident.view`) can see security incidents (confirmed 30 Oct). People they add to one incident, such as the server admin who must apply a fix, see that incident only. Security incidents never appear in general ticket lists, search, dashboards, Kanban, calendar, exports, reports or notifications for anyone else, including `report.view` holders. The reporter sees only that the report was received and its current status. Every time someone opens one, the system records who and when.
 - **Reporting (A.6.8).** Any staff member can report a suspected security issue from a "Report a security issue" button with only a few required fields. Suspicious emails can later be forwarded to a dedicated mailbox (with email-to-ticket). An agent can move an ordinary ticket into the security area. From then on the restricted rules apply to it.
 - **Triage (A.5.25).** The security team decides whether the report is not a security issue (it goes back to the service desk as a normal ticket), a security event (logged, no response needed) or a security incident. The decision, the reason and who made it are recorded.
 - **Classification.** Category (phishing, malware, unauthorised access, account compromise, data leak or loss, lost or stolen device, denial of service, policy violation, other). Severity 1–4 is set from the impact on confidentiality, integrity and availability and the classification of the affected data. A flag marks incidents where personal data is involved.
@@ -104,9 +104,11 @@ A security incident (phishing, malware, account compromise, data leak, lost lapt
 
 **Reports from federal entities** (confirmed 30 Oct). FNRC does not report incidents to outside bodies. Instead, federal entities send FNRC reports when their scans or monitoring find something that affects FNRC. The security team logs each report and works through the issues in it.
 
-- **Report record.** Sending entity (from a list kept by an admin), date received, the sender's reference number, and the original document attached as evidence (hashed, cannot be deleted). It also holds a reply deadline if the sender sets one. Same restricted access as security incidents.
-- **One incident per issue.** Each issue in the report becomes a security incident linked to the report. What the sender said (their severity, the affected address or system, any reference such as a CVE number) is kept next to FNRC's own triage and severity.
-- **Progress.** The report shows how many of its issues are open, in progress and closed. It is complete when every issue is closed, or marked a false positive with a reason.
+- **Report record.** Sending entity (from a list kept by an admin), date received, the sender's reference number, and the original document attached as evidence (hashed, cannot be deleted). Same restricted access as security incidents.
+- **Entering the issues.** Formats differ by entity (PDF, spreadsheet, portal; confirmed 30 Oct), so the issues are typed in on one screen that adds several at a time. A spreadsheet import can come later for an entity whose layout stays the same.
+- **One incident per issue.** Each issue in the report becomes a security incident linked to the report. When the same issue affects several servers (e.g. one missing patch on 10 servers), it is one incident with a line per affected server or address (confirmed 30 Oct). Each line is ticked off as fixed, or marked a false positive or accepted risk with a reason. The incident can be solved once every line is done. What the sender said (their severity, any reference such as a CVE number) is kept next to FNRC's own triage and severity.
+- **Progress.** The report shows how many of its issues are open, in progress and closed. It is complete when every issue is closed.
+- **Reply to the sender.** FNRC replies to the sending entity once the issues are handled, with no fixed deadline (confirmed 30 Oct). The report produces a status summary (PDF) listing each issue, its affected servers and what was done. The report also records when the reply was sent and to whom.
 - **Repeat findings.** If a later report lists an issue already logged, the issue is linked to the earlier incident and reopens it if it was closed, so repeats are visible.
 - **KPIs.** Reports per entity, time from receipt until all issues are closed, issues per report, and repeat findings.
 
@@ -217,9 +219,9 @@ iTop is AGPL and GLPI is GPL. This spec and the reference notes were written by 
 - [ ] Does FNRC already have an asset inventory tool (Intune, SCCM, spreadsheet)?
 - [ ] Who sits on the CAB, and how often does it meet?
 - [ ] Does the service desk serve only internal staff, or also other entities?
-- [ ] Who handles security incidents (CISO, security team), and who else may see them?
+- [x] Who may see security incidents? The security team and the IT manager, plus people added to a single incident (30 Oct).
 - [x] Must FNRC report security incidents to an outside authority? No. It receives reports from federal entities and logs their issues as incidents (30 Oct).
-- [ ] How do federal reports arrive (PDF by email, Excel/CSV, a portal)? A fixed spreadsheet layout would let us import the issues instead of typing them.
-- [ ] Does FNRC have to reply to the sending entity (status, fix confirmation), and by when?
-- [ ] One incident per issue, or one incident per vulnerability covering all affected servers?
+- [x] How do federal reports arrive? It varies by entity, so issues are entered by hand at first (30 Oct).
+- [x] Does FNRC reply to the sending entity? Yes, with a status summary; no fixed deadline (30 Oct).
+- [x] One incident per issue or per server? Per issue, with the affected servers listed inside it (30 Oct).
 - [ ] Does FNRC already have an incident response procedure or severity scale to follow?
