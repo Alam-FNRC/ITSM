@@ -28,8 +28,9 @@ public class TicketService : ITicketService
     private readonly ISlaEngine _slaEngine;
     private readonly IAssignmentEngine _assignmentEngine;
     private readonly INotificationDispatcher _notificationDispatcher;
+    private readonly ITicketTimeMeasureService? _timeMeasures;
 
-    public TicketService(ItsToolDbContext context, IFileStorageService fileStorage, IPermissionCalculator permissionCalculator, ISlaEngine slaEngine, IAssignmentEngine assignmentEngine, INotificationDispatcher notificationDispatcher)
+    public TicketService(ItsToolDbContext context, IFileStorageService fileStorage, IPermissionCalculator permissionCalculator, ISlaEngine slaEngine, IAssignmentEngine assignmentEngine, INotificationDispatcher notificationDispatcher, ITicketTimeMeasureService? timeMeasures = null)
     {
         _context = context;
         _fileStorage = fileStorage;
@@ -37,7 +38,11 @@ public class TicketService : ITicketService
         _slaEngine = slaEngine;
         _assignmentEngine = assignmentEngine;
         _notificationDispatcher = notificationDispatcher;
+        _timeMeasures = timeMeasures;
     }
+
+    // Called after each change that can move a time measure, once the change itself is saved
+    private Task RecordTimesAsync(int ticketId) => _timeMeasures?.RecalculateAsync(ticketId) ?? Task.CompletedTask;
 
     private async Task<string> GenerateTicketNumberAsync(int? projectId)
     {
@@ -182,6 +187,7 @@ public class TicketService : ITicketService
         await _context.SaveChangesAsync();
 
         await _slaEngine.AttachSlaToTicketAsync(t.Id);
+        await RecordTimesAsync(t.Id);
         await _notificationDispatcher.DispatchEventAsync("ticket.created", t.Id, dto.RequesterUserId, $"Ticket #{t.TicketNumber} was created.");
 
         return new TicketDto(t.Id, t.TicketNumber, t.Title, t.Description, t.ProjectId, t.CategoryId, t.TypeId, t.StatusId, t.PriorityId, t.RequesterUserId, new List<TicketAssigneeDto>(), null, t.EstimatedStartDate, t.EstimatedEndDate,
@@ -357,6 +363,7 @@ public class TicketService : ITicketService
             _context.TicketHistories.AddRange(historyEntries);
         }
         await _context.SaveChangesAsync();
+        if (historyEntries.Count > 0) await RecordTimesAsync(id);
     }
 
     
@@ -434,6 +441,7 @@ public class TicketService : ITicketService
         await _context.SaveChangesAsync();
 
         await _slaEngine.ProcessTicketStatusChangeAsync(t.Id, oldStatus, dto.NewStatusId);
+        await RecordTimesAsync(t.Id);
 
         // Notify for CSAT if status changes to Closed (Assuming 5 is Closed)
         if (dto.NewStatusId == 5 && oldStatus != 5)
@@ -520,6 +528,7 @@ public class TicketService : ITicketService
         });
 
         await _context.SaveChangesAsync();
+        await RecordTimesAsync(t.Id);
         await _notificationDispatcher.DispatchEventAsync("ticket.assigned", t.Id, dto.AssignerUserId, $"Ticket #{t.TicketNumber} was assigned to you or your team.");
     }
 
@@ -579,6 +588,7 @@ public class TicketService : ITicketService
         });
 
         await _context.SaveChangesAsync();
+        await RecordTimesAsync(t.Id);
     }
 
     public async Task<IEnumerable<TicketAssigneeDto>> GetAssignmentTreeAsync(int ticketId)
@@ -632,6 +642,7 @@ public class TicketService : ITicketService
         await _context.SaveChangesAsync();
         
         await _slaEngine.ProcessTicketCommentAsync(ticketId, dto.IsInternal);
+        await RecordTimesAsync(ticketId);
         await _notificationDispatcher.DispatchEventAsync("ticket.comment.added", ticketId, dto.AuthorUserId, $"A new comment was added to ticket #{ticket?.TicketNumber}.");
         
         if (dto.MentionedUserIds != null && dto.MentionedUserIds.Length > 0)
@@ -787,6 +798,7 @@ public class TicketService : ITicketService
         });
 
         await _context.SaveChangesAsync();
+        await RecordTimesAsync(ticketId);
         return ToAttachmentDto(a);
     }
 

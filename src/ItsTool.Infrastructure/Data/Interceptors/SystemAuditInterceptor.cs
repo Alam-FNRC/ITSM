@@ -113,6 +113,8 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
 
         if (name == "Ticket" ||
             name == "TicketSla" ||
+            // Worked out from the ticket history, which is already the record
+            name == "TicketTimeMeasure" ||
             name == "ProjectSequence" ||
             // Access changes are audited by UserService and RoleService, with readable names instead of ids
             name == "RolePermission" ||
