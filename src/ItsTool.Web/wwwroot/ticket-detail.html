@@ -572,7 +572,7 @@
                                     <span data-i18n="ticket_prop_sla">SLA Targets &amp; Timers</span>
                                     <span id="tSlaOverallBadge"></span>
                                 </div>
-                                <div class="property-value" id="tSlaContainer" style="background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; display: flex; flex-direction: column; gap: 8px;">
+                                <div class="property-value" id="tSlaContainer" style="background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; display: flex; flex-direction: column; align-items: stretch; gap: 8px;">
                                     <div>
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                                             <span style="color: var(--text-muted); font-size: 11px;" data-i18n="sla_first_response">First Response Target:</span>
@@ -1577,7 +1577,9 @@
                 return;
             }
 
-            const isClosed = statusId === 5;
+            // Resolved counts as closed too: every status flagged closed stops the SLA clock on the server
+            const status = (window.globalLookup?.statuses || []).find(s => s.id === statusId);
+            const isClosed = status ? !!status.isClosedStatus : statusId === 5;
             const now = new Date();
 
             // First Response Target
