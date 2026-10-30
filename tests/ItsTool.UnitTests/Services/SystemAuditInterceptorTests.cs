@@ -8,6 +8,7 @@ using ItsTool.Domain.Entities.Config;
 using ItsTool.Domain.Entities.Organization;
 using ItsTool.Domain.Entities.Project;
 using ItsTool.Domain.Entities.SLA;
+using ItsTool.Domain.Entities.Security;
 using ItsTool.Domain.Entities.Ticket;
 using ItsTool.Infrastructure.Data;
 using ItsTool.Infrastructure.Data.Interceptors;
@@ -293,6 +294,40 @@ public class SystemAuditInterceptorTests : IDisposable
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
         Assert.False(await _context.Departments.AnyAsync());
+    }
+
+    [Fact]
+    public async Task Security_incident_history_and_access_records_are_append_only()
+    {
+        var incident = new SecurityIncident { Reference = "SEC-1", Title = "Phishing", Description = "Mail" };
+        _context.SecurityIncidents.Add(incident);
+        await _context.SaveChangesAsync();
+        var action = new SecurityIncidentAction { IncidentId = incident.Id, UserId = 1, Kind = "Note", Note = "Blocked sender" };
+        var access = new SecurityIncidentAccess { IncidentId = incident.Id, UserId = 1 };
+        _context.AddRange(action, access);
+        await _context.SaveChangesAsync();
+
+        action.Note = "Nothing happened";
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
+        _context.Entry(action).State = EntityState.Unchanged;
+
+        _context.SecurityIncidentAccesses.Remove(access);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
+    }
+
+    [Fact]
+    public async Task Security_incidents_stay_out_of_the_system_audit_log()
+    {
+        // Every audit.view holder can read the system audit log; incidents keep their own history
+        var incident = new SecurityIncident { Reference = "SEC-2", Title = "Account takeover", Description = "Director's mailbox" };
+        _context.SecurityIncidents.Add(incident);
+        await _context.SaveChangesAsync();
+        incident.Severity = 1;
+        _context.SecurityAffectedItems.Add(new SecurityAffectedItem { IncidentId = incident.Id, Name = "mail01" });
+        _context.SecurityIncidentMembers.Add(new SecurityIncidentMember { IncidentId = incident.Id, UserId = 7 });
+        await _context.SaveChangesAsync();
+
+        Assert.False(await _context.SystemAuditLogs.AnyAsync());
     }
 
     public void Dispose()

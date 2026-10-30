@@ -1540,6 +1540,337 @@ namespace ItsTool.Infrastructure.Migrations
                     b.ToTable("TicketSlas");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityAffectedItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StatusChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("StatusChangedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StatusReason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncidentId");
+
+                    b.ToTable("SecurityAffectedItems");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncident", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ContainedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EradicatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("HandlerUserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("OccurredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("PersonalDataInvolved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("RecoveredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("ReporterUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReviewCompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReviewCompletedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewFollowUps")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReviewImprovements")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReviewRootCause")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReviewWhatWorked")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Severity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("TriageOutcome")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TriageReason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("TriagedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TriagedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Reference")
+                        .IsUnique();
+
+                    b.HasIndex("ReporterUserId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("SecurityIncidents");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncidentAccess", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncidentId");
+
+                    b.ToTable("SecurityIncidentAccesses");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncidentAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Field")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncidentId");
+
+                    b.ToTable("SecurityIncidentActions");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncidentMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AddedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("IncidentId", "UserId");
+
+                    b.ToTable("SecurityIncidentMembers");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.SystemAuditLog", b =>
                 {
                     b.Property<int>("Id")
@@ -2706,6 +3037,48 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("Ticket");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityAffectedItem", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Security.SecurityIncident", "Incident")
+                        .WithMany("AffectedItems")
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Incident");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncidentAccess", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Security.SecurityIncident", null)
+                        .WithMany()
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncidentAction", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Security.SecurityIncident", "Incident")
+                        .WithMany("Actions")
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Incident");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncidentMember", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Security.SecurityIncident", "Incident")
+                        .WithMany("Members")
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Incident");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.Ticket", b =>
                 {
                     b.HasOne("ItsTool.Domain.Entities.Ticket.Category", "Category")
@@ -2942,6 +3315,15 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("PermissionOverrides");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncident", b =>
+                {
+                    b.Navigation("Actions");
+
+                    b.Navigation("AffectedItems");
+
+                    b.Navigation("Members");
                 });
 
             modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.Ticket", b =>

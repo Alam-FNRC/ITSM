@@ -69,6 +69,13 @@ public class ItsToolDbContext : DbContext
     public DbSet<TicketSla> TicketSlas => Set<TicketSla>();
     public DbSet<TicketTimeMeasure> TicketTimeMeasures => Set<TicketTimeMeasure>();
 
+    // Security incidents (restricted; see IRestrictedRecord)
+    public DbSet<ItsTool.Domain.Entities.Security.SecurityIncident> SecurityIncidents => Set<ItsTool.Domain.Entities.Security.SecurityIncident>();
+    public DbSet<ItsTool.Domain.Entities.Security.SecurityIncidentAction> SecurityIncidentActions => Set<ItsTool.Domain.Entities.Security.SecurityIncidentAction>();
+    public DbSet<ItsTool.Domain.Entities.Security.SecurityIncidentMember> SecurityIncidentMembers => Set<ItsTool.Domain.Entities.Security.SecurityIncidentMember>();
+    public DbSet<ItsTool.Domain.Entities.Security.SecurityIncidentAccess> SecurityIncidentAccesses => Set<ItsTool.Domain.Entities.Security.SecurityIncidentAccess>();
+    public DbSet<ItsTool.Domain.Entities.Security.SecurityAffectedItem> SecurityAffectedItems => Set<ItsTool.Domain.Entities.Security.SecurityAffectedItem>();
+
     // Notification
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
     public DbSet<Notification> Notifications => Set<Notification>();
