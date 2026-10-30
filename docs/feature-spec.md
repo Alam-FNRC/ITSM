@@ -25,6 +25,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned, reports from federal entities (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | No: a security issue is an ordinary ticket, visible to every `report.view` holder | P1 | 4 |
 | Business rules engine (routing, auto-assign) | GLPI | Partial: assignment rules | P2 | 4 |
 | SLA matching by service and priority; OLAs; escalation levels | iTop, GLPI | Partial: SLA per priority/project | P2 | 4 |
+| Risk register (replaces FNRC's Excel ISMS risk register; decided 30 Oct) | Neither (ISO 27001 6.1.2, 6.1.3, 8.2, 8.3) | No: kept in Excel | P1 | 4 |
 | Problem management | iTop, GLPI | No | P1 | 4 |
 | Known Error records | iTop | No | P2 | 4 |
 | Change management (standard, normal, emergency) with CAB approval | iTop, GLPI | No | P1 | 4 |
@@ -111,6 +112,23 @@ A security incident (phishing, malware, account compromise, data leak, lost lapt
 - **Reply to the sender.** FNRC replies to the sending entity once the issues are handled, with no fixed deadline (confirmed 30 Oct). The report produces a status summary (PDF) listing each issue, its affected servers and what was done. The report also records when the reply was sent and to whom.
 - **Repeat findings.** If a later report lists an issue already logged, the issue is linked to the earlier incident and reopens it if it was closed, so repeats are visible.
 - **KPIs.** Reports per entity, time from receipt until all issues are closed, issues per report, and repeat findings.
+
+## Risk register
+
+Decided 30 Oct 2026: the service desk replaces FNRC's Excel register ("FNRC ISMS Risk Assessment register", v.12), which is never committed to the repository because it names vulnerable systems. Built from ISO 27001:2022 clauses 6.1.2 and 8.2 (assessment) and 6.1.3 and 8.3 (treatment).
+
+- **Risk record.** Reference, risk scenario, threat, cause or vulnerability, existing controls (the Excel's "Risk Analysis & Assessment" columns).
+- **Evaluation.** Impact on confidentiality, integrity and availability (1–5 each) and likelihood (1–5), with the "Assessment Criteria" descriptions shown as help. Score = average of the three impacts × likelihood, 1–25, as in the Excel (decided 30 Oct). Levels: Low up to 4, Medium up to 12, High above 12. The Excel's own bands leave gaps for fractional scores (a score of 12.67 shows "0"); these bands close them (to confirm).
+- **Treatment.** Option (Mitigate, Avoid, Accept, Transfer), recommended controls, ISO 27001 Annex A controls (picked from the 2022 list, not typed), risk owner (a user), target date, status. The IT manager approves each treatment plan and every decision to accept a risk; who approved and when is recorded (decided 30 Oct).
+- **Residual risk.** Impacts and likelihood after treatment, scored the same way, next to the original score.
+- **History and reviews.** Every change to scores, treatment, owner and status goes to an append-only history. A periodic review records its date, reviewer and the scores at that time, so auditors can see how each risk changed.
+- **Access.** The security team and the IT manager see every risk; a risk owner also sees the risks they own (decided 30 Oct). Same explicit-only permission rules as security incidents.
+- **Links.** Security incidents (an incident can show that a risk happened, or reveal a new one), federal report findings, and later changes and CMDB assets.
+- **Reminders.** Owners are reminded before the target date; overdue treatments are listed.
+- **Import.** The 14 risks in the Excel are imported, with its typos corrected ("Medum Risk", "Q432025", "A5.30" written as "A.5.30").
+- **KPIs.** Risks by level and status, overdue treatments, original against residual level, accepted risks.
+
+Points found in the Excel (30 Oct): scores and levels of risks 3–6 and 10–13 are typed rather than calculated; the treatment list says "Mitigate" where the criteria sheet says "Reduce"; the status drop-down sits on the Recommended Controls column, so Status is free text; the residual "Status" column is empty; risk 14 (IDOR) is mapped to A.5.30 (ICT readiness for business continuity) where A.8.28 or A.8.29 may fit better.
 
 ## Problem and Known Error
 
@@ -225,3 +243,8 @@ iTop is AGPL and GLPI is GPL. This spec and the reference notes were written by 
 - [x] Does FNRC reply to the sending entity? Yes, with a status summary; no fixed deadline (30 Oct).
 - [x] One incident per issue or per server? Per issue, with the affected servers listed inside it (30 Oct).
 - [ ] Does FNRC already have an incident response procedure or severity scale to follow?
+- [ ] Risk register: should risks link to an asset list? The impact criteria are per asset, but the Excel has no asset column.
+- [ ] Risk register: statuses beyond Planned and Closed (e.g. Open, In progress, Accepted, Overdue)? What is the residual "Status" column for?
+- [ ] Risk register: target dates as quarters or exact dates (exact dates allow reminders)? How often is the register reviewed?
+- [ ] Is there a Statement of Applicability to pick Annex A controls from?
+- [ ] Risk levels for fractional scores: is Low up to 4, Medium up to 12, High above 12 right?
