@@ -10,9 +10,9 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 
 | Feature | Best reference | In our tool today | Priority | Phase |
 | --- | --- | --- | --- | --- |
-| Stored time measures (time to own, waiting, solve, close, effort) | GLPI | Partial: first response stored, no waiting or effort totals | P1 | 3 |
+| Stored time measures (time to own, waiting, solve, close, effort) | GLPI | Done 30 Oct for own, waiting and solve, plus reopen and assignment counts; close and effort wait for solution acceptance and tasks | P1 | 3 |
 | KPI statistics by period and dimension | GLPI | No | P1 | 3 |
-| Monthly PDF/CSV audit reports | Neither (we build) | CSV only, and broken | P1 | 3 |
+| Monthly PDF/CSV audit reports | Neither (we build) | CSV ticket export only (fixed 28 Oct) | P1 | 3 |
 | Tamper-proof audit log incl. permissions and logins | Neither (we build) | Partial, with gaps | P1 | 3 |
 | Priority from impact × urgency matrix | iTop, GLPI | No: priority set by hand | P1 | 4 |
 | Ticket approvals with steps and thresholds | GLPI | No | P2 | 4 |
