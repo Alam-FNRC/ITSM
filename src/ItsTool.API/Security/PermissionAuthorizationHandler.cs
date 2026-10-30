@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using ItsTool.Application.Constants;
 using Microsoft.AspNetCore.Authorization;
 
 namespace ItsTool.API.Security;
@@ -16,7 +17,9 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         var isSuperAdmin = context.User.IsInRole("SuperAdmin") || 
                            context.User.HasClaim(c => (c.Type == ClaimTypes.Role || c.Type == "role" || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") && c.Value.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase));
 
-        var hasPermission = isSuperAdmin || context.User.HasClaim(c => 
+        // The explicit-only permissions need a real grant, even for SuperAdmin
+        var superAdminPasses = isSuperAdmin && !PermissionConstants.ExplicitOnly.Contains(requirement.Permission);
+        var hasPermission = superAdminPasses || context.User.HasClaim(c => 
             c.Type == "permission" && c.Value == requirement.Permission);
 
         if (hasPermission)
