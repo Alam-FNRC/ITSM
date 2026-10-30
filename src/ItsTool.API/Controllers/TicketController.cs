@@ -331,6 +331,16 @@ public class TicketController : ControllerBase
         }
     }
 
+    [HttpGet("{id}/times")]
+    [Authorize(Policy = "RequirePermission:ticket.view")]
+    [ProducesResponseType(typeof(TicketTimesDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetTimes(int id, [FromServices] ITicketTimeMeasureService times)
+    {
+        var result = await times.GetAsync(id);
+        return result == null ? NotFound() : Ok(result);
+    }
+
     [HttpGet("{id}/timeline")]
     [ProducesResponseType(typeof(IEnumerable<TimelineEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTimeline(int id)

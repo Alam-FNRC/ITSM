@@ -52,7 +52,20 @@ public class AssignmentEngine : IAssignmentEngine
                 ticket.Assignments.Add(userAssignment);
                 _context.Set<TicketAssignment>().Add(userAssignment);
             }
-            // Mark the ticket as assigned in the system implicitly
+
+            // A rule changes ticket data like a manual assignment does, so it is recorded the same way
+            if (rule.TargetGroupId.HasValue || rule.TargetUserId.HasValue)
+            {
+                _context.TicketHistories.Add(new TicketHistory
+                {
+                    TicketId = ticket.Id,
+                    Action = "Assigned",
+                    FieldName = "Assignments",
+                    OldValue = "-",
+                    NewValue = $"Users:{rule.TargetUserId},Groups:{rule.TargetGroupId}",
+                    CreatedBy = "System"
+                });
+            }
             return;
         }
     }

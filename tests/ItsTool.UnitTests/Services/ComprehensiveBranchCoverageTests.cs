@@ -536,41 +536,9 @@ public class ComprehensiveBranchCoverageTests : TestBase
     [Fact]
     public async Task SlaEngine_AllBranchesCoverage()
     {
-        // 1. IsWorkingDay
-        var hol = new List<Holiday> { new Holiday { Date = new DateTime(2026, 1, 1) } };
-        var bh = new List<BusinessHour>
-        {
-            new BusinessHour { DayOfWeek = DayOfWeek.Monday, IsWorkingDay = true },
-            new BusinessHour { DayOfWeek = DayOfWeek.Sunday, IsWorkingDay = false }
-        };
+        // Working-time arithmetic is covered by BusinessCalendarTests
 
-        Assert.False(SlaEngine.IsWorkingDay(new DateTime(2026, 1, 1), hol, bh));
-        Assert.True(SlaEngine.IsWorkingDay(new DateTime(2026, 1, 5), hol, bh)); // Monday
-        Assert.False(SlaEngine.IsWorkingDay(new DateTime(2026, 1, 4), hol, bh)); // Sunday
-        Assert.False(SlaEngine.IsWorkingDay(new DateTime(2026, 1, 6), hol, bh)); // Tuesday (missing in bh)
-
-        // 2. ConsumeMinutesWithinDay
-        var start = new TimeSpan(9, 0, 0);
-        var end = new TimeSpan(17, 0, 0);
-        var earlyTime = new DateTime(2026, 1, 5, 8, 0, 0);
-        var (tEarly, remEarly) = SlaEngine.ConsumeMinutesWithinDay(earlyTime, 60, start, end);
-        Assert.Equal(9, tEarly.Hour);
-        Assert.Equal(60, remEarly);
-
-        var lateTime = new DateTime(2026, 1, 5, 18, 0, 0);
-        var (tLate, remLate) = SlaEngine.ConsumeMinutesWithinDay(lateTime, 60, start, end);
-        Assert.Equal(6, tLate.Day);
-        Assert.Equal(60, remLate);
-
-        var midTime = new DateTime(2026, 1, 5, 10, 0, 0);
-        var (tMid, remMid) = SlaEngine.ConsumeMinutesWithinDay(midTime, 30, start, end);
-        Assert.Equal(30, tMid.Minute);
-        Assert.Equal(0, remMid);
-
-        var (tOver, remOver) = SlaEngine.ConsumeMinutesWithinDay(midTime, 600, start, end);
-        Assert.True(remOver > 0);
-
-        // 3. EvaluateMetric
+        // EvaluateMetric
         var now = DateTime.UtcNow;
         // Breached, not yet marked
         var res1 = SlaEngine.EvaluateMetric(now.AddMinutes(-5), false, false, now);

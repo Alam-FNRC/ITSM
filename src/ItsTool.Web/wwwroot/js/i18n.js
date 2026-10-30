@@ -1103,7 +1103,15 @@ export const translations = {
         "tc_lookup_failed": "Could not load the form options.",
         "tc_fields_failed": "Could not load the custom fields.",
         "admin_unknown_module": "Unknown Administration Module",
-        "admin_unknown_module_desc": "Please select a module from the sidebar."
+        "admin_unknown_module_desc": "Please select a module from the sidebar.",
+        "td_times_title": "Working time",
+        "td_times_hint": "Working hours only",
+        "td_times_owned": "Picked up after",
+        "td_times_waiting": "Waiting",
+        "td_times_waiting_now": "{0} (still waiting)",
+        "td_times_resolved": "Resolved after",
+        "td_times_reopened": "Reopened",
+        "td_times_not_yet": "Not yet"
     },
     "tr": {
         // Sidebar Navigation
@@ -2208,7 +2216,15 @@ export const translations = {
         "tc_lookup_failed": "Form seçenekleri yüklenemedi.",
         "tc_fields_failed": "Özel alanlar yüklenemedi.",
         "admin_unknown_module": "Bilinmeyen Yönetim Modülü",
-        "admin_unknown_module_desc": "Lütfen kenar çubuğundan bir modül seçin."
+        "admin_unknown_module_desc": "Lütfen kenar çubuğundan bir modül seçin.",
+        "td_times_title": "Çalışma süresi",
+        "td_times_hint": "Yalnızca mesai saatleri",
+        "td_times_owned": "Üstlenilme süresi",
+        "td_times_waiting": "Bekleme",
+        "td_times_waiting_now": "{0} (hâlâ bekliyor)",
+        "td_times_resolved": "Çözülme süresi",
+        "td_times_reopened": "Yeniden açılma",
+        "td_times_not_yet": "Henüz değil"
     },
     "ar": ar
 };

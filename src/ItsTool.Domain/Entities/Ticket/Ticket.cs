@@ -24,4 +24,5 @@ public class Ticket : BaseEntity {
     public virtual Priority? Priority { get; set; }
     public virtual User? RequesterUser { get; set; }
     public virtual SLA.TicketSla? TicketSla { get; set; }
+    public virtual TicketTimeMeasure? TimeMeasure { get; set; }
 }

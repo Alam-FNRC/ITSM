@@ -30,6 +30,20 @@ public class AssignmentEngineTests : TestBase
     }
 
     [Fact]
+    public async Task A_rule_assignment_is_recorded_in_the_ticket_history()
+    {
+        _context.AssignmentRules.Add(new AssignmentRule { Name = "Network", SortOrder = 1, TargetUserId = 99, TargetGroupId = 7, IsActive = true });
+        await _context.SaveChangesAsync();
+        var ticket = new Ticket { Id = 42, TicketNumber = "T-42" };
+
+        await _engine.AssignTicketAsync(ticket);
+        await _context.SaveChangesAsync();
+
+        var history = Assert.Single(_context.TicketHistories);
+        Assert.Equal((42, "Assigned", "Users:99,Groups:7", "System"), (history.TicketId, history.Action, history.NewValue, history.CreatedBy));
+    }
+
+    [Fact]
     public async Task AssignTicketAsync_ShouldSkipInactiveRules()
     {
         var rule1 = new AssignmentRule { Name = "R1", SortOrder = 10, ProjectId = 1, TargetUserId = 99, IsActive = false };

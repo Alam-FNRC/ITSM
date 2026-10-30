@@ -2128,6 +2128,78 @@ namespace ItsTool.Infrastructure.Migrations
                     b.ToTable("TicketSurveys");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.TicketTimeMeasure", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssignmentCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CalculatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("OwnedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OwnedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReopenCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TimeToOwnMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TimeToResolveMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WaitingMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("WaitingSince")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResolvedAt");
+
+                    b.HasIndex("TicketId")
+                        .IsUnique();
+
+                    b.ToTable("TicketTimeMeasures");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.TicketType", b =>
                 {
                     b.Property<int>("Id")
@@ -2789,6 +2861,17 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("Ticket");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.TicketTimeMeasure", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Ticket.Ticket", "Ticket")
+                        .WithOne("TimeMeasure")
+                        .HasForeignKey("ItsTool.Domain.Entities.Ticket.TicketTimeMeasure", "TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.TicketWatcher", b =>
                 {
                     b.HasOne("ItsTool.Domain.Entities.Ticket.Ticket", "Ticket")
@@ -2866,6 +2949,8 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("Assignments");
 
                     b.Navigation("TicketSla");
+
+                    b.Navigation("TimeMeasure");
                 });
 #pragma warning restore 612, 618
         }

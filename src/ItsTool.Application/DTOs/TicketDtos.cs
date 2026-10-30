@@ -31,3 +31,15 @@ public record TimelineEventDto(string EventType, DateTime Timestamp, object Data
 public record AssignTicketDto(List<int> UserIds, List<int> GroupIds, int AssignerUserId, int? ParentAssignmentId = null);
 public record TransferTicketDto(int? ProjectId, int? GroupId, int TransferrerUserId);
 public record ChangeStatusDto(int NewStatusId, int UserId);
+
+/// <summary>A ticket's working-time measures; WaitingMinutes includes a wait that is still going on.</summary>
+public record TicketTimesDto(
+    DateTime? OwnedAt,
+    int? OwnedByUserId,
+    int? TimeToOwnMinutes,
+    int WaitingMinutes,
+    bool IsWaiting,
+    DateTime? ResolvedAt,
+    int? TimeToResolveMinutes,
+    int ReopenCount,
+    int AssignmentCount);

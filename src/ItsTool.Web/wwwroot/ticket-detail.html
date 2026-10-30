@@ -572,7 +572,7 @@
                                     <span data-i18n="ticket_prop_sla">SLA Targets &amp; Timers</span>
                                     <span id="tSlaOverallBadge"></span>
                                 </div>
-                                <div class="property-value" id="tSlaContainer" style="background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; display: flex; flex-direction: column; gap: 8px;">
+                                <div class="property-value" id="tSlaContainer" style="background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; display: flex; flex-direction: column; align-items: stretch; gap: 8px;">
                                     <div>
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                                             <span style="color: var(--text-muted); font-size: 11px;" data-i18n="sla_first_response">First Response Target:</span>
@@ -586,6 +586,31 @@
                                             <span id="tSlaResolutionBadge"></span>
                                         </div>
                                         <div id="tSlaResolutionDate" style="font-weight: 600; font-size: 12px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="property-group" id="tTimesGroup" style="margin-top: 10px;">
+                                <div class="property-label" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span data-i18n="td_times_title">Working time</span>
+                                    <span style="color: var(--text-muted); font-size: 10px; font-weight: 400;" data-i18n="td_times_hint">Working hours only</span>
+                                </div>
+                                <div class="property-value" style="background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; display: flex; flex-direction: column; align-items: stretch; gap: 6px;">
+                                    <div style="display: flex; justify-content: space-between; gap: 8px;">
+                                        <span style="color: var(--text-muted); font-size: 11px;" data-i18n="td_times_owned">Picked up after</span>
+                                        <span id="tTimeToOwn" style="font-weight: 600;">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; gap: 8px;">
+                                        <span style="color: var(--text-muted); font-size: 11px;" data-i18n="td_times_waiting">Waiting</span>
+                                        <span id="tTimeWaiting" style="font-weight: 600;">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; gap: 8px;">
+                                        <span style="color: var(--text-muted); font-size: 11px;" data-i18n="td_times_resolved">Resolved after</span>
+                                        <span id="tTimeToResolve" style="font-weight: 600;">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; gap: 8px;">
+                                        <span style="color: var(--text-muted); font-size: 11px;" data-i18n="td_times_reopened">Reopened</span>
+                                        <span id="tTimeReopened" style="font-weight: 600;">—</span>
                                     </div>
                                 </div>
                             </div>
@@ -1486,6 +1511,7 @@
                 }
 
                 renderDetailSla(ticketData.sla, ticketData.statusId);
+                loadTicketTimes();
 
                 const contentEl = document.getElementById('content');
                 if (contentEl) contentEl.style.display = 'grid';
@@ -1551,7 +1577,9 @@
                 return;
             }
 
-            const isClosed = statusId === 5;
+            // Resolved counts as closed too: every status flagged closed stops the SLA clock on the server
+            const status = (window.globalLookup?.statuses || []).find(s => s.id === statusId);
+            const isClosed = status ? !!status.isClosedStatus : statusId === 5;
             const now = new Date();
 
             // First Response Target
@@ -1622,6 +1650,31 @@
 
         // Intl gives each language its own units and plural forms
         const formatUnit = (value, unit, unitDisplay) => new Intl.NumberFormat(getLocale(), { style: 'unit', unit, unitDisplay }).format(value);
+
+        // Working minutes as hours and minutes; days are left out because a working day is not 24 hours
+        function formatWorkingTime(minutes) {
+            if (minutes < 60) return formatUnit(minutes, 'minute', 'short');
+            const hours = formatUnit(Math.floor(minutes / 60), 'hour', 'short');
+            return minutes % 60 === 0 ? hours : `${hours} ${formatUnit(minutes % 60, 'minute', 'short')}`;
+        }
+
+        // Time measures the server keeps for the KPI reports (GET /ticket/{id}/times)
+        async function loadTicketTimes() {
+            const group = document.getElementById('tTimesGroup');
+            if (!group) return;
+            try {
+                const times = await window.api.request(`/Ticket/${ticketId}/times`);
+                const orNotYet = (minutes) => minutes == null ? t('td_times_not_yet') : formatWorkingTime(minutes);
+                document.getElementById('tTimeToOwn').textContent = orNotYet(times.timeToOwnMinutes);
+                document.getElementById('tTimeWaiting').textContent = times.isWaiting
+                    ? t('td_times_waiting_now').replaceAll('{0}', formatWorkingTime(times.waitingMinutes))
+                    : formatWorkingTime(times.waitingMinutes);
+                document.getElementById('tTimeToResolve').textContent = orNotYet(times.timeToResolveMinutes);
+                document.getElementById('tTimeReopened').textContent = new Intl.NumberFormat(getLocale()).format(times.reopenCount);
+            } catch (e) {
+                group.style.display = 'none';
+            }
+        }
 
         function formatRemainingTime(diffMs) {
             if (diffMs <= 0) return t('sla_expired');
@@ -2098,6 +2151,8 @@
         // --- SONARQUBE R15 & R21 REFACTORING HELPERS ---
         window.resolveTimelineUser = function(id) {
             if (!id || id === 'none' || id === 'null') return t('td_none');
+            // Rule-based assignments and SLA escalations are recorded as done by the system
+            if (id === 'System') return t('td_system');
             const u = window.globalUsers ? window.globalUsers.find(x => x.id == id) : null;
             return u ? escapeHtml(u.firstName + ' ' + u.lastName) : `User ${escapeHtml(String(id))}`;
         };
