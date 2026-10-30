@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav_security_incidents" data-i18n-target="document-title">ITSM Tool - Security incidents</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .admin-header { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; }
+        .filters { display: flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap; margin-bottom: var(--spacing-md); }
+        .filters .form-control { width: auto; min-width: 180px; }
+        .table-container { background: var(--bg-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow-x: auto; }
+        .incident-row { cursor: pointer; }
+        .incident-row:hover { background: var(--bg-hover); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+    </style>
+</head>
+<body>
+    <div class="app-shell" data-shell>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <h2 data-i18n="seci_title">Security incidents</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
+                        <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
+                            <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
+                            <div id="notificationItems"></div>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item text-center text-muted" onclick="markAllAsRead(event)" data-i18n="topbar_mark_all_read" style="width: 100%; border: none; background: none;">Mark all as read</button></li>
+                        </ul>
+                    </div>
+                    <div class="avatar">U</div>
+                    <button class="btn btn-ghost" id="shellLogoutBtn" data-i18n="topbar_logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="admin-header">
+                    <div>
+                        <h3 style="margin:0; font-size: 18px;" data-i18n="seci_title">Security incidents</h3>
+                        <p class="text-muted" style="margin: 4px 0 0 0; font-size: 13px;" data-i18n="seci_desc">Visible only to the security team, the IT manager and the people added to an incident.</p>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btnNewIncident" style="display: none;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-inline-end: 4px; vertical-align: middle;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="seci_btn_new">New incident</span>
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <select id="filterStatus" class="form-control" aria-label="Status" data-i18n="seci_filter_status" data-i18n-target="aria-label"></select>
+                    <input id="filterSearch" class="form-control" type="search" dir="auto" data-i18n="seci_search_ph" data-i18n-target="placeholder" placeholder="Search reference or title">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                        <input type="checkbox" id="filterOpen" checked> <span data-i18n="seci_filter_open">Open only</span>
+                    </label>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="seci_col_reference">Reference</th>
+                                <th data-i18n="seci_col_title">Title</th>
+                                <th data-i18n="seci_col_status">Status</th>
+                                <th data-i18n="seci_col_category">Category</th>
+                                <th data-i18n="seci_col_severity">Severity</th>
+                                <th data-i18n="seci_col_handler">Handler</th>
+                                <th data-i18n="seci_col_reported">Reported</th>
+                                <th data-i18n="seci_col_affected">Affected (open / total)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incidentsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="newIncidentModal" class="modal-overlay">
+        <div class="modal">
+            <form id="newIncidentForm">
+                <div class="modal-header">
+                    <h2 data-i18n="seci_modal_new">New security incident</h2>
+                    <button type="button" class="close-btn" onclick="closeModal('newIncidentModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="newTitle" data-i18n="seci_lbl_title">Title *</label>
+                        <input id="newTitle" class="form-control" required maxlength="200" dir="auto">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="newDescription" data-i18n="seci_lbl_description">Description *</label>
+                        <textarea id="newDescription" class="form-control" required maxlength="4000" rows="5" dir="auto"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="newCategory" data-i18n="seci_lbl_category">Category</label>
+                            <select id="newCategory" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="newSeverity" data-i18n="seci_lbl_severity">Severity</label>
+                            <select id="newSeverity" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="newOccurred" data-i18n="seci_lbl_occurred">When it happened</label>
+                        <input id="newOccurred" type="datetime-local" class="form-control">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="newPersonal">
+                        <label for="newPersonal" style="font-weight: 500; font-size: 14px; cursor: pointer;" data-i18n="seci_lbl_personal">Personal data involved</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('newIncidentModal')" data-i18n="btn_cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="sec_btn_save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { injectShell } from './js/layout.js?v=999';
+        import './js/api.js';
+        import { bindShellActions, showToast, openModal, closeModal, escapeHtml } from './js/ui.js';
+        import { t } from './js/i18n.js';
+        import { STATUSES, CATEGORIES, statusLabel, statusBadge, severityBadge, severityLabel, categoryLabel, optionsHtml, formatDateTime } from './js/security.js';
+        injectShell();
+
+        if (!window.api.token) window.location.href = '/login.html';
+        bindShellActions();
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        const filterStatus = document.getElementById('filterStatus');
+        filterStatus.innerHTML = `<option value="">${escapeHtml(t('seci_filter_all'))}</option>` + optionsHtml(STATUSES, statusLabel, null);
+        document.getElementById('newCategory').innerHTML = `<option value="">${escapeHtml(t('sec_cat_unclassified'))}</option>` + optionsHtml(CATEGORIES, categoryLabel, null);
+        document.getElementById('newSeverity').innerHTML = `<option value="">${escapeHtml(t('sec_sev_none'))}</option>` + optionsHtml(['1', '2', '3', '4'], v => severityLabel(Number(v)), null);
+
+        // The button is a convenience; the API refuses the create for anyone without the manage permission
+        window.api.getMe().then(me => {
+            if ((me.permissions || []).includes('security.incident.manage')) document.getElementById('btnNewIncident').style.display = '';
+        }).catch(() => {});
+
+        async function loadIncidents() {
+            const body = document.getElementById('incidentsBody');
+            const params = new URLSearchParams();
+            if (filterStatus.value) params.set('status', filterStatus.value);
+            if (document.getElementById('filterOpen').checked) params.set('openOnly', 'true');
+            const search = document.getElementById('filterSearch').value.trim();
+            if (search) params.set('search', search);
+            try {
+                const incidents = await window.api.request(`/security/incidents?${params.toString()}`);
+                if (incidents.length === 0) {
+                    body.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: var(--spacing-xl); color: var(--text-muted);">${escapeHtml(t('seci_empty'))}</td></tr>`;
+                    return;
+                }
+                body.innerHTML = incidents.map(i => `
+                    <tr class="incident-row" data-id="${Number(i.id)}" tabindex="0">
+                        <td style="font-family: monospace; white-space: nowrap;">${escapeHtml(i.reference)}</td>
+                        <td dir="auto">${escapeHtml(i.title)}</td>
+                        <td style="white-space: nowrap;">${statusBadge(i.status)}</td>
+                        <td>${escapeHtml(categoryLabel(i.category))}</td>
+                        <td style="white-space: nowrap;">${severityBadge(i.severity)}</td>
+                        <td dir="auto">${escapeHtml(i.handlerName || '—')}</td>
+                        <td style="white-space: nowrap;">${escapeHtml(formatDateTime(i.reportedAt))}</td>
+                        <td>${i.affectedItems ? `${Number(i.openAffectedItems)} / ${Number(i.affectedItems)}` : '—'}</td>
+                    </tr>`).join('');
+            } catch (e) {
+                console.error(e);
+                body.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${escapeHtml(t('seci_load_failed'))}</td></tr>`;
+            }
+        }
+
+        const openIncident = (row) => { if (row) window.location.href = `/security-incident.html?id=${Number(row.dataset.id)}`; };
+        document.getElementById('incidentsBody').addEventListener('click', (e) => openIncident(e.target.closest('.incident-row')));
+        document.getElementById('incidentsBody').addEventListener('keydown', (e) => { if (e.key === 'Enter') openIncident(e.target.closest('.incident-row')); });
+
+        let searchTimer = null;
+        document.getElementById('filterSearch').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(loadIncidents, 300); });
+        filterStatus.addEventListener('change', loadIncidents);
+        document.getElementById('filterOpen').addEventListener('change', loadIncidents);
+
+        document.getElementById('btnNewIncident').addEventListener('click', () => {
+            document.getElementById('newIncidentForm').reset();
+            openModal('newIncidentModal');
+        });
+
+        document.getElementById('newIncidentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const occurred = document.getElementById('newOccurred').value;
+            const severity = document.getElementById('newSeverity').value;
+            try {
+                const created = await window.api.request('/security/incidents', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: document.getElementById('newTitle').value,
+                        description: document.getElementById('newDescription').value,
+                        occurredAt: occurred ? new Date(occurred).toISOString() : null,
+                        category: document.getElementById('newCategory').value || null,
+                        severity: severity ? Number(severity) : null,
+                        personalDataInvolved: document.getElementById('newPersonal').checked
+                    }),
+                    silent: true
+                });
+                showToast(t('seci_created').replaceAll('{0}', created.reference));
+                window.location.href = `/security-incident.html?id=${Number(created.id)}`;
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('seci_save_failed')), 'error');
+            }
+        });
+
+        loadIncidents();
+    </script>
+</body>
+</html>

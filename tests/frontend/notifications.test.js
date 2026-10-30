@@ -60,3 +60,15 @@ test('an unknown message is shown as stored, and a title with "$&" stays as type
     assert.equal(formatNotificationBody('You were mentioned on ticket #GEN-1 (cost $& tax).'), 'You were mentioned on ticket #GEN-1 (cost $& tax).');
     assert.equal(getNotificationTitle('some.new.event', ''), 'Notification');
 });
+
+test('security notifications are translated and name the reference only', () => {
+    stored.set('itsm_lang', 'ar');
+    try {
+        assert.notEqual(getNotificationTitle('security.reported', 'New security report'), 'New security report');
+        const body = formatNotificationBody('You were added to security incident SEC-2026-0007.');
+        assert.ok(body.includes('SEC-2026-0007'));
+        assert.notEqual(body, 'You were added to security incident SEC-2026-0007.');
+    } finally {
+        stored.delete('itsm_lang');
+    }
+});
