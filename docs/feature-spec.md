@@ -22,7 +22,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Ticket templates (mandatory, hidden, preset fields) | GLPI | Partial via custom fields | P2 | 4 |
 | Parent / child tickets with cascade resolve | iTop | No | P2 | 4 |
 | Major incidents (one outage, many reporters, status updates) | iTop | No | P2 | 4 |
-| Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | No: a security issue is an ordinary ticket, visible to every `report.view` holder | P1 | 4 |
+| Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned, reports from federal entities (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | No: a security issue is an ordinary ticket, visible to every `report.view` holder | P1 | 4 |
 | Business rules engine (routing, auto-assign) | GLPI | Partial: assignment rules | P2 | 4 |
 | SLA matching by service and priority; OLAs; escalation levels | iTop, GLPI | Partial: SLA per priority/project | P2 | 4 |
 | Problem management | iTop, GLPI | No | P1 | 4 |
@@ -100,8 +100,15 @@ A security incident (phishing, malware, account compromise, data leak, lost lapt
 - **Evidence (A.5.28).** Each evidence item (log export, screenshot, email, device) records a description, who collected it and when, and where it is kept. Files also get a SHA-256 hash. Every hand-over is recorded (chain of custody). Evidence files cannot be deleted or replaced.
 - **Affected items.** Affected users, devices, systems and services. These are linked to CMDB items once the CMDB exists.
 - **Lessons learned (A.5.27).** Closing a severity 1 or 2 incident requires a post-incident review: root cause, what worked, what to improve, and follow-up actions. Each follow-up action can raise a Problem or a Change. The review is optional for severity 3 and 4.
-- **External reporting.** If FNRC must report incidents to an outside body (e.g. a national CERT or regulator), the incident records whether it was reported, when, by whom, and the reference number.
 - **KPIs.** Counts by category and severity, mean time to triage, contain and resolve, the share of incidents with a completed review, and open incidents by age.
+
+**Reports from federal entities** (confirmed 30 Oct). FNRC does not report incidents to outside bodies. Instead, federal entities send FNRC reports when their scans or monitoring find something that affects FNRC. The security team logs each report and works through the issues in it.
+
+- **Report record.** Sending entity (from a list kept by an admin), date received, the sender's reference number, and the original document attached as evidence (hashed, cannot be deleted). It also holds a reply deadline if the sender sets one. Same restricted access as security incidents.
+- **One incident per issue.** Each issue in the report becomes a security incident linked to the report. What the sender said (their severity, the affected address or system, any reference such as a CVE number) is kept next to FNRC's own triage and severity.
+- **Progress.** The report shows how many of its issues are open, in progress and closed. It is complete when every issue is closed, or marked a false positive with a reason.
+- **Repeat findings.** If a later report lists an issue already logged, the issue is linked to the earlier incident and reopens it if it was closed, so repeats are visible.
+- **KPIs.** Reports per entity, time from receipt until all issues are closed, issues per report, and repeat findings.
 
 ## Problem and Known Error
 
@@ -181,6 +188,7 @@ Every KPI filters by date range, department, category, priority, team and agent,
 | Access changes | Role/permission grants and revocations, by whom | ISO 27001 A.5.18 |
 | User access review | Users, roles, last login, inactive accounts | ISO 27001 A.5.18 |
 | Security incidents | Count by category and severity; time to triage, contain and resolve; share with a completed review | ISO 27001 A.5.24–A.5.28 |
+| Federal entity reports | Reports received, issues still open, time until all issues are closed, repeat findings | ISO 27001 A.5.26, A.8.8 |
 | Asset register, warranty and contract expiries | Current list, upcoming 90 days | ISO 27001 A.5.9 |
 
 ISO 27001 control numbers refer to the 2022 edition and are a guide; the final list follows what FNRC's auditors asked for.
@@ -210,5 +218,8 @@ iTop is AGPL and GLPI is GPL. This spec and the reference notes were written by 
 - [ ] Who sits on the CAB, and how often does it meet?
 - [ ] Does the service desk serve only internal staff, or also other entities?
 - [ ] Who handles security incidents (CISO, security team), and who else may see them?
-- [ ] Must FNRC report security incidents to an outside authority, and within what time?
+- [x] Must FNRC report security incidents to an outside authority? No. It receives reports from federal entities and logs their issues as incidents (30 Oct).
+- [ ] How do federal reports arrive (PDF by email, Excel/CSV, a portal)? A fixed spreadsheet layout would let us import the issues instead of typing them.
+- [ ] Does FNRC have to reply to the sending entity (status, fix confirmation), and by when?
+- [ ] One incident per issue, or one incident per vulnerability covering all affected servers?
 - [ ] Does FNRC already have an incident response procedure or severity scale to follow?
