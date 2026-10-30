@@ -1059,5 +1059,13 @@ export const ar = {
     "tc_lookup_failed": "تعذر تحميل خيارات النموذج.",
     "tc_fields_failed": "تعذر تحميل الحقول المخصصة.",
     "admin_unknown_module": "وحدة إدارة غير معروفة",
-    "admin_unknown_module_desc": "يرجى اختيار وحدة من الشريط الجانبي."
+    "admin_unknown_module_desc": "يرجى اختيار وحدة من الشريط الجانبي.",
+    "td_times_title": "وقت العمل",
+    "td_times_hint": "ساعات العمل فقط",
+    "td_times_owned": "استُلمت بعد",
+    "td_times_waiting": "الانتظار",
+    "td_times_waiting_now": "{0} (لا يزال في الانتظار)",
+    "td_times_resolved": "حُلّت بعد",
+    "td_times_reopened": "مرات إعادة الفتح",
+    "td_times_not_yet": "ليس بعد"
 };
