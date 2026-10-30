@@ -121,29 +121,19 @@ public class SlaEngineTests : TestBase
     }
 
     [Fact]
-    public void ConsumeMinutesWithinDay_ShouldReturnZeroRemaining_IfFitsInDay()
+    public void Resuming_gives_back_only_the_working_time_left_at_the_pause()
     {
-        var startTime = new TimeSpan(9, 0, 0);
-        var endTime = new TimeSpan(18, 0, 0);
-        var current = new DateTime(2023, 1, 1, 10, 0, 0); // 10:00 AM
+        var hours = Enumerable.Range(1, 5).Select(d => new BusinessHour { DayOfWeek = (DayOfWeek)d, StartTime = new TimeSpan(7, 30, 0), EndTime = new TimeSpan(15, 30, 0), IsWorkingDay = true });
+        var calendar = new BusinessCalendar(hours, Array.Empty<Holiday>(), BusinessCalendar.ResolveTimeZone(null));
+        var pausedFriday = new DateTime(2026, 11, 6, 11, 0, 0, DateTimeKind.Utc);   // 15:00 UAE
+        var dueMonday = new DateTime(2026, 11, 9, 5, 0, 0, DateTimeKind.Utc);       // 09:00 UAE: 30 + 90 working minutes left
+        var resumedMonday = new DateTime(2026, 11, 9, 4, 0, 0, DateTimeKind.Utc);   // 08:00 UAE
 
-        var (newTime, remaining) = SlaEngine.ConsumeMinutesWithinDay(current, 120, startTime, endTime);
-        
-        Assert.Equal(0, remaining);
-        Assert.Equal(new DateTime(2023, 1, 1, 12, 0, 0), newTime);
-    }
-
-    [Fact]
-    public void ConsumeMinutesWithinDay_ShouldSpillOver_IfNotFits()
-    {
-        var startTime = new TimeSpan(9, 0, 0);
-        var endTime = new TimeSpan(18, 0, 0);
-        var current = new DateTime(2023, 1, 1, 17, 0, 0); // 17:00 PM (1 hour left)
-
-        var (newTime, remaining) = SlaEngine.ConsumeMinutesWithinDay(current, 120, startTime, endTime);
-        
-        Assert.Equal(60, remaining);
-        Assert.Equal(new DateTime(2023, 1, 2, 9, 0, 0), newTime); // Jumps to next day start
+        // Giving back the clock time (the whole weekend) would have pushed the deadline more than a week out
+        Assert.Equal(new DateTime(2026, 11, 9, 6, 0, 0, DateTimeKind.Utc), SlaEngine.MoveDeadline(calendar, dueMonday, pausedFriday, resumedMonday));
+        // A deadline that had already passed when the ticket was paused stays where it was
+        Assert.Equal(pausedFriday.AddHours(-1), SlaEngine.MoveDeadline(calendar, pausedFriday.AddHours(-1), pausedFriday, resumedMonday));
+        Assert.Null(SlaEngine.MoveDeadline(calendar, null, pausedFriday, resumedMonday));
     }
 
     [Fact]

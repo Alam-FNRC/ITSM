@@ -19,6 +19,7 @@ public class SlaEngine : ISlaEngine
     private readonly IEmailService _emailService;
     private readonly INotificationDispatcher _notificationDispatcher;
     private readonly IConfiguration? _config;
+    private BusinessCalendar? _calendar;
 
     public SlaEngine(ItsToolDbContext context, IEmailService emailService, INotificationDispatcher notificationDispatcher, IConfiguration? config = null)
     {
@@ -28,67 +29,11 @@ public class SlaEngine : ISlaEngine
         _config = config;
     }
 
-    private async Task<DateTime> CalculateDueTimeAsync(DateTime startTimeUtc, int minutesToAdd)
-    {
-        var holidays = await _context.Holidays.ToListAsync();
-        var businessHours = await _context.BusinessHours.ToListAsync();
+    private async Task<BusinessCalendar> GetCalendarAsync() =>
+        _calendar ??= await BusinessCalendar.LoadAsync(_context, _config?[BusinessCalendar.TimeZoneSetting]);
 
-        var currentTime = startTimeUtc;
-        var minutesRemaining = minutesToAdd;
-
-        while (minutesRemaining > 0)
-        {
-            if (!IsWorkingDay(currentTime, holidays, businessHours))
-            {
-                currentTime = currentTime.Date.AddDays(1);
-                continue;
-            }
-
-            var bh = GetWorkingWindow(currentTime, businessHours);
-            var (newTime, remaining) = ConsumeMinutesWithinDay(currentTime, minutesRemaining, bh.StartTime, bh.EndTime);
-            
-            currentTime = newTime;
-            minutesRemaining = remaining;
-        }
-
-        return currentTime;
-    }
-
-    public static bool IsWorkingDay(DateTime date, List<Holiday> holidays, List<BusinessHour> businessHours)
-    {
-        if (holidays.Any(h => h.Date.Date == date.Date)) return false;
-        var bh = businessHours.FirstOrDefault(b => b.DayOfWeek == date.DayOfWeek);
-        return bh != null && bh.IsWorkingDay;
-    }
-
-    public static BusinessHour GetWorkingWindow(DateTime date, List<BusinessHour> businessHours)
-    {
-        return businessHours.First(b => b.DayOfWeek == date.DayOfWeek);
-    }
-
-    public static (DateTime newTime, int minutesRemaining) ConsumeMinutesWithinDay(DateTime currentTime, int minutesRemaining, TimeSpan startTime, TimeSpan endTime)
-    {
-        var currentDayTime = currentTime.TimeOfDay;
-
-        if (currentDayTime < startTime)
-        {
-            return (currentTime.Date.Add(startTime), minutesRemaining);
-        }
-        
-        if (currentDayTime >= endTime)
-        {
-            return (currentTime.Date.AddDays(1), minutesRemaining);
-        }
-
-        var minutesToEoD = (int)(endTime - currentDayTime).TotalMinutes;
-
-        if (minutesRemaining <= minutesToEoD)
-        {
-            return (currentTime.AddMinutes(minutesRemaining), 0);
-        }
-        
-        return (currentTime.Date.AddDays(1).Add(startTime), minutesRemaining - minutesToEoD);
-    }
+    private async Task<DateTime> CalculateDueTimeAsync(DateTime startTimeUtc, int minutesToAdd) =>
+        (await GetCalendarAsync()).AddWorkingMinutes(startTimeUtc, minutesToAdd);
 
     public async Task AttachSlaToTicketAsync(int ticketId)
     {
@@ -165,14 +110,20 @@ public class SlaEngine : ISlaEngine
 
         var pausedDuration = now - sla.PausedAt.Value;
         sla.TotalPausedMinutes += (int)pausedDuration.TotalMinutes;
-        
-        if (sla.FirstResponseDueAt.HasValue)
-            sla.FirstResponseDueAt = await CalculateDueTimeAsync(now, (int)(sla.FirstResponseDueAt.Value - sla.PausedAt.Value).TotalMinutes);
 
-        if (sla.ResolutionDueAt.HasValue)
-            sla.ResolutionDueAt = await CalculateDueTimeAsync(now, (int)(sla.ResolutionDueAt.Value - sla.PausedAt.Value).TotalMinutes);
-        
+        var calendar = await GetCalendarAsync();
+        sla.FirstResponseDueAt = MoveDeadline(calendar, sla.FirstResponseDueAt, sla.PausedAt.Value, now);
+        sla.ResolutionDueAt = MoveDeadline(calendar, sla.ResolutionDueAt, sla.PausedAt.Value, now);
+
         sla.PausedAt = null;
+    }
+
+    // The working time that was left when the ticket was paused is given back from now. The old code gave back
+    // the clock time instead, so a pause over a weekend added the whole weekend as working time.
+    internal static DateTime? MoveDeadline(BusinessCalendar calendar, DateTime? dueAt, DateTime pausedAt, DateTime now)
+    {
+        if (!dueAt.HasValue || dueAt.Value <= pausedAt) return dueAt;
+        return calendar.AddWorkingMinutes(now, calendar.WorkingMinutesBetween(pausedAt, dueAt.Value));
     }
 
     public async Task ProcessTicketCommentAsync(int ticketId, bool isInternal)

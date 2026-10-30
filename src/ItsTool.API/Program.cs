@@ -147,8 +147,12 @@ builder.Services.AddScoped<ISignalRPusher, ItsTool.API.Services.SignalRPusher>()
     builder.Services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();
     builder.Services.AddScoped<ISystemAuditService, SystemAuditService>();
 
+// SLA deadlines and ticket times read business hours in this zone; a wrong name stops startup here
+// instead of failing on the first ticket
+BusinessCalendar.ResolveTimeZone(builder.Configuration[BusinessCalendar.TimeZoneSetting]);
+
 // Auth Setup
-var jwtSecret = JwtSecret.Resolve(builder.Configuration["Jwt:Secret"], builder.Environment.IsDevelopment());
+var jwtSecret =JwtSecret.Resolve(builder.Configuration["Jwt:Secret"], builder.Environment.IsDevelopment());
 // TokenService signs with the same value, including the random one generated for Development
 builder.Configuration["Jwt:Secret"] = jwtSecret;
 
