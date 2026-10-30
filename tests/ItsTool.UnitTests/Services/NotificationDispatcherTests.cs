@@ -87,6 +87,15 @@ public class NotificationDispatcherTests : TestBase
     }
 
     [Fact]
+    public async Task Pushed_notifications_say_they_are_about_a_ticket()
+    {
+        await _dispatcher.DispatchEventAsync("ticket.assigned", ticketId: 1, triggerUserId: 1);
+
+        _signalRPusherMock.Verify(p => p.PushNotificationAsync(2, It.Is<object>(payload =>
+            (string?)payload.GetType().GetProperty("entityType")!.GetValue(payload) == "Ticket")), Times.AtLeastOnce);
+    }
+
+    [Fact]
     public async Task DispatchEventAsync_CommentMention_CreatesMentionNotification()
     {
         await _dispatcher.DispatchEventAsync("comment.mention", ticketId: 1, triggerUserId: 1, additionalContext: "3|comment123");
