@@ -178,7 +178,9 @@ const EVENT_TITLE_KEYS = {
     'critical.unassigned': 'notif_title_critical_unassigned',
     'survey.low': 'notif_title_survey_low',
     'kb.suggested': 'notif_title_kb_suggested',
-    'kb.reviewed': 'notif_title_kb_reviewed'
+    'kb.reviewed': 'notif_title_kb_reviewed',
+    'security.reported': 'notif_title_security_reported',
+    'security.member.added': 'notif_title_security_member'
 };
 
 // The messages the server writes (in English) for known events; anything else is shown as stored
@@ -196,7 +198,9 @@ const BODY_PATTERNS = [
     [/^A new article '([\s\S]*)' requires your review\.$/, 'notif_body_kb_suggested'],
     [/^Your article '([\s\S]*)' has been published\.$/, 'notif_body_kb_published'],
     [/^Your article '([\s\S]*)' has been marked for revision\.$/, 'notif_body_kb_revision'],
-    [/^Your article '([\s\S]*)' has been rejected\.$/, 'notif_body_kb_rejected']
+    [/^Your article '([\s\S]*)' has been rejected\.$/, 'notif_body_kb_rejected'],
+    [/^Security report (SEC-\d+-\d+) was received\.$/, 'notif_body_security_reported'],
+    [/^You were added to security incident (SEC-\d+-\d+)\.$/, 'notif_body_security_member']
 ];
 
 export function getNotificationTitle(type, defaultTitle) {
@@ -250,6 +254,8 @@ function showToastNotification(payload) {
             if (commentId) linkUrl += `&highlight=true&commentId=${commentId}`;
         } else if (payload.entityType === 'KnowledgeArticle') {
             linkUrl = `/kb-article.html?id=${payload.entityId}`;
+        } else if (payload.entityType === 'SecurityIncident') {
+            linkUrl = `/security-incident.html?id=${Number(payload.entityId)}`;
         }
     }
 
@@ -265,7 +271,7 @@ function showToastNotification(payload) {
             <div style="padding: 4px 12px 12px 12px; font-size: 12px; color: var(--text-muted); line-height: 1.4;">
                 <div style="margin-bottom: 8px;">${escapeHtml(bodyText)}</div>
                 <div style="text-align: end;">
-                    <a href="${escapeHtml(linkUrl)}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">${escapeHtml(t('notif_go_ticket'))}</a>
+                    <a href="${escapeHtml(linkUrl)}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">${escapeHtml(t(payload.entityType === 'SecurityIncident' ? 'notif_go_security' : 'notif_go_ticket'))}</a>
                 </div>
             </div>
         </div>
@@ -288,6 +294,9 @@ function getNotificationLink(n, commentId) {
     }
     if (n.entityType === 'KnowledgeArticle' && n.entityId) {
         return `/kb-article.html?id=${n.entityId}`;
+    }
+    if (n.entityType === 'SecurityIncident' && n.entityId) {
+        return `/security-incident.html?id=${Number(n.entityId)}`;
     }
     return '#';
 }

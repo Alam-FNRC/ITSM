@@ -272,6 +272,8 @@ public class NotificationDispatcher : INotificationDispatcher
                 type = eventKey,
                 title = humanReadableEvent,
                 body = finalBody,
+                // The pop-up builds its "Go to ticket" link from the entity type; without it the link went nowhere
+                entityType = "Ticket",
                 entityId = ticket.Id,
                 priority = recipient.Priority,
                 createdAt = DateTime.UtcNow

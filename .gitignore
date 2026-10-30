@@ -33,3 +33,8 @@ extracted_media/
 src/ItsTool.API/uploads/
 *.pptx
 scripts/generate_presentation.py
+
+# FNRC working documents (risk register and other ISMS records hold sensitive details) and Excel lock files
+docs/*.xlsx
+docs/*.xls
+~$*

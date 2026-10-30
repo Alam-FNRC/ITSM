@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="page_security_incident" data-i18n-target="document-title">ITSM Tool - Security incident</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 13px; margin-bottom: var(--spacing-md); }
+        .back-link:hover { color: var(--primary); }
+        .incident-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--spacing-lg); align-items: start; }
+        .card { border: 1px solid var(--border); padding: var(--spacing-lg); }
+        .card h3 { margin: 0 0 var(--spacing-sm) 0; font-size: 15px; }
+        .card-hint { color: var(--text-muted); font-size: 12px; margin: -4px 0 var(--spacing-md) 0; }
+        .incident-ref { font-family: monospace; color: var(--text-muted); font-size: 13px; }
+        .incident-title { margin: 4px 0 8px 0; font-size: 22px; }
+        .incident-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+        .incident-description { white-space: pre-wrap; line-height: 1.5; margin-top: var(--spacing-md); }
+        .notice { background: var(--bg-hover); border-inline-start: 3px solid var(--primary); padding: 8px 12px; border-radius: 4px; font-size: 13px; margin-top: var(--spacing-md); }
+        .prop { display: flex; justify-content: space-between; gap: var(--spacing-sm); padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+        .prop:last-child { border-bottom: none; }
+        .prop-label { color: var(--text-muted); }
+        .prop-value { font-weight: 600; text-align: end; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+        .history-entry { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .history-entry:last-child { border-bottom: none; }
+        .history-when { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+        .history-note { white-space: pre-wrap; background: var(--bg-hover); border-radius: 4px; padding: 6px 10px; margin-top: 6px; }
+        .member { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; font-size: 13px; }
+        .inline-add { display: flex; gap: 8px; margin-top: var(--spacing-sm); }
+        .inline-add .form-control { flex: 1; min-width: 0; }
+        .table-container { overflow-x: auto; }
+        @media (max-width: 1000px) { .incident-layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="app-shell" data-shell>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <h2 data-i18n="page_security_incident">Security incident</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
+                        <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
+                            <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
+                            <div id="notificationItems"></div>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item text-center text-muted" onclick="markAllAsRead(event)" data-i18n="topbar_mark_all_read" style="width: 100%; border: none; background: none;">Mark all as read</button></li>
+                        </ul>
+                    </div>
+                    <div class="avatar">U</div>
+                    <button class="btn btn-ghost" id="shellLogoutBtn" data-i18n="topbar_logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <a href="/security-incidents.html" class="back-link">
+                    <svg class="flip-rtl" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    <span data-i18n="secd_back">Back to security incidents</span>
+                </a>
+
+                <div id="notFound" class="card" style="display: none; color: var(--text-muted);" data-i18n="secd_not_found">This incident does not exist, or you do not have access to it.</div>
+
+                <div class="incident-layout" id="incidentLayout" style="display: none;">
+                    <div>
+                        <section class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: start; gap: var(--spacing-md);">
+                                <div style="min-width: 0;">
+                                    <div class="incident-ref" id="incRef"></div>
+                                    <h1 class="incident-title" id="incTitle" dir="auto"></h1>
+                                    <div class="incident-badges" id="incBadges"></div>
+                                </div>
+                                <button type="button" class="btn btn-ghost manage-only" id="btnEdit" data-i18n="secd_edit">Edit details</button>
+                            </div>
+                            <div class="incident-description" id="incDescription" dir="auto"></div>
+                            <div class="notice" id="incNotice" style="display: none;"></div>
+                        </section>
+
+                        <section class="card manage-only" id="triageCard">
+                            <h3 data-i18n="secd_triage_title">Triage</h3>
+                            <p class="card-hint" data-i18n="secd_triage_hint">Decide what this report is. The reason is kept in the history.</p>
+                            <form id="triageForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="triageOutcome" data-i18n="secd_lbl_outcome">Decision *</label>
+                                        <select id="triageOutcome" class="form-control" required></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="triageCategory" data-i18n="seci_lbl_category">Category</label>
+                                        <select id="triageCategory" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="triageSeverity" data-i18n="seci_lbl_severity">Severity</label>
+                                        <select id="triageSeverity" class="form-control"></select>
+                                    </div>
+                                    <div></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="triageReason" data-i18n="secd_lbl_reason">Reason *</label>
+                                    <textarea id="triageReason" class="form-control" required maxlength="2000" rows="2" dir="auto"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" data-i18n="secd_btn_triage">Save decision</button>
+                            </form>
+                        </section>
+
+                        <section class="card manage-only" id="statusCard">
+                            <h3 data-i18n="secd_status_title">Move to</h3>
+                            <form id="statusForm">
+                                <div class="form-group">
+                                    <label class="form-label" for="nextStatus" data-i18n="secd_lbl_status">Next step</label>
+                                    <select id="nextStatus" class="form-control"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="statusNote" data-i18n="secd_lbl_note">Note (required when moving back or reopening)</label>
+                                    <textarea id="statusNote" class="form-control" maxlength="4000" rows="2" dir="auto"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" data-i18n="secd_btn_status">Move</button>
+                            </form>
+                        </section>
+
+                        <section class="card">
+                            <h3 data-i18n="secd_items_title">Affected items</h3>
+                            <p class="card-hint" data-i18n="secd_items_hint">Servers, addresses, devices, accounts or services. Tick each one off when it is done.</p>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th data-i18n="secd_col_kind">Type</th>
+                                            <th data-i18n="secd_col_name">Name</th>
+                                            <th data-i18n="secd_col_status">Status</th>
+                                            <th data-i18n="secd_col_reason">Reason</th>
+                                            <th class="act-only"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemsBody"></tbody>
+                                </table>
+                            </div>
+                            <form id="itemsForm" class="manage-only" style="margin-top: var(--spacing-md);">
+                                <h4 style="margin: 0 0 4px 0; font-size: 13px;" data-i18n="secd_items_add_title">Add affected items</h4>
+                                <p class="card-hint" style="margin: 0 0 8px 0;" data-i18n="secd_items_add_hint">One per line, e.g. a server name or IP address.</p>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="itemKind" data-i18n="secd_lbl_kind">Type</label>
+                                        <select id="itemKind" class="form-control"></select>
+                                    </div>
+                                    <div></div>
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="itemNames" class="form-control" rows="3" required dir="ltr" aria-label="Names" data-i18n="secd_col_name" data-i18n-target="aria-label"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-ghost" data-i18n="secd_btn_add_items">Add</button>
+                            </form>
+                        </section>
+
+                        <section class="card" id="reviewCard" style="display: none;">
+                            <h3 data-i18n="secd_review_title">Post-incident review</h3>
+                            <p class="card-hint" id="reviewHint"></p>
+                            <form id="reviewForm">
+                                <div class="form-group">
+                                    <label class="form-label" for="reviewRootCause" data-i18n="secd_lbl_root_cause">Root cause</label>
+                                    <textarea id="reviewRootCause" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="reviewWhatWorked" data-i18n="secd_lbl_what_worked">What worked</label>
+                                    <textarea id="reviewWhatWorked" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="reviewImprovements" data-i18n="secd_lbl_improvements">What to improve</label>
+                                    <textarea id="reviewImprovements" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="reviewFollowUps" data-i18n="secd_lbl_follow_ups">Follow-up actions</label>
+                                    <textarea id="reviewFollowUps" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <button type="submit" class="btn btn-primary manage-only" data-i18n="secd_btn_review">Save review</button>
+                                    <span id="reviewState" style="font-size: 12px;"></span>
+                                </div>
+                            </form>
+                        </section>
+
+                        <section class="card">
+                            <h3 data-i18n="secd_history_title">History</h3>
+                            <div id="historyList"></div>
+                            <form id="noteForm" class="act-only" style="margin-top: var(--spacing-md);">
+                                <textarea id="noteText" class="form-control" required maxlength="4000" rows="3" dir="auto" aria-label="Note" data-i18n="secd_note_ph" data-i18n-target="placeholder"></textarea>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 8px;" data-i18n="secd_btn_note">Add note</button>
+                            </form>
+                        </section>
+                    </div>
+
+                    <aside>
+                        <section class="card" id="propsCard"></section>
+                        <section class="card">
+                            <h3 data-i18n="secd_phases">Response times</h3>
+                            <div id="phasesList"></div>
+                        </section>
+                        <section class="card">
+                            <h3 data-i18n="secd_members_title">People on this incident</h3>
+                            <p class="card-hint" data-i18n="secd_members_hint">They see this incident only.</p>
+                            <div id="membersList"></div>
+                            <form class="inline-add manage-only" id="memberForm">
+                                <select id="memberSelect" class="form-control" required aria-label="Person" data-i18n="secd_member_ph" data-i18n-target="aria-label"></select>
+                                <button type="submit" class="btn btn-ghost" data-i18n="secd_btn_add_member">Add</button>
+                            </form>
+                        </section>
+                        <section class="card" id="accessCard" style="display: none;">
+                            <button type="button" class="btn btn-ghost" id="btnAccessLog" style="width: 100%;" data-i18n="secd_btn_access">Who opened it</button>
+                        </section>
+                    </aside>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="editModal" class="modal-overlay">
+        <div class="modal">
+            <form id="editForm">
+                <div class="modal-header">
+                    <h2 data-i18n="secd_modal_edit">Edit incident</h2>
+                    <button type="button" class="close-btn" onclick="closeModal('editModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="editTitle" data-i18n="seci_lbl_title">Title *</label>
+                        <input id="editTitle" class="form-control" required maxlength="200" dir="auto">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editDescription" data-i18n="seci_lbl_description">Description *</label>
+                        <textarea id="editDescription" class="form-control" required maxlength="4000" rows="5" dir="auto"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="editCategory" data-i18n="seci_lbl_category">Category</label>
+                            <select id="editCategory" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editSeverity" data-i18n="seci_lbl_severity">Severity</label>
+                            <select id="editSeverity" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="editHandler" data-i18n="secd_handler">Handler</label>
+                            <select id="editHandler" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editOccurred" data-i18n="seci_lbl_occurred">When it happened</label>
+                            <input id="editOccurred" type="datetime-local" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="editPersonal">
+                        <label for="editPersonal" style="font-weight: 500; font-size: 14px; cursor: pointer;" data-i18n="seci_lbl_personal">Personal data involved</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('editModal')" data-i18n="btn_cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="sec_btn_save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="itemModal" class="modal-overlay">
+        <div class="modal" style="max-width: 440px;">
+            <form id="itemForm">
+                <div class="modal-header">
+                    <h2 id="itemModalTitle" dir="auto"></h2>
+                    <button type="button" class="close-btn" onclick="closeModal('itemModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="itemStatus" data-i18n="secd_col_status">Status</label>
+                        <select id="itemStatus" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="itemReason" data-i18n="secd_item_reason">Reason (required for a false positive or an accepted risk)</label>
+                        <textarea id="itemReason" class="form-control" maxlength="2000" rows="3" dir="auto"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('itemModal')" data-i18n="btn_cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="sec_btn_save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="accessModal" class="modal-overlay">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-header">
+                <h2 data-i18n="secd_access_title">Who opened this incident</h2>
+                <button type="button" class="close-btn" onclick="closeModal('accessModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="accessList" style="max-height: 60vh; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { injectShell } from './js/layout.js?v=999';
+        import './js/api.js';
+        import { bindShellActions, showToast, openModal, closeModal, escapeHtml } from './js/ui.js';
+        import { t } from './js/i18n.js';
+        import {
+            STATUSES, OUTCOMES, CATEGORIES, ITEM_KINDS, ITEM_STATUSES,
+            statusLabel, statusBadge, outcomeLabel, categoryLabel, severityLabel, severityBadge, kindLabel, itemStatusLabel, itemStatusBadge,
+            describeAction, formatDateTime, incidentIdFromUrl, optionsHtml
+        } from './js/security.js';
+        injectShell();
+
+        if (!window.api.token) window.location.href = '/login.html';
+        bindShellActions();
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        const incidentId = incidentIdFromUrl(window.location.search);
+        const base = `/security/incidents/${incidentId}`;
+        const severityOptions = (selected) => `<option value="">${escapeHtml(t('sec_sev_none'))}</option>` +
+            optionsHtml(['1', '2', '3', '4'], v => severityLabel(Number(v)), selected == null ? null : String(selected));
+        const categoryOptions = (selected) => `<option value="Unclassified">${escapeHtml(t('sec_cat_unclassified'))}</option>` + optionsHtml(CATEGORIES, categoryLabel, selected);
+        // datetime-local wants local time without a zone
+        const toLocalInput = (value) => {
+            if (!value) return '';
+            const d = new Date(value);
+            return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        };
+
+        let incident = null;
+        let users = null;
+        let selectedItemId = null;
+
+        // Requests are silent so the page shows the API's reason instead of a generic failure
+        async function send(path, method, body, done) {
+            try {
+                await window.api.request(`${base}${path}`, { method, body: body ? JSON.stringify(body) : undefined, silent: true });
+                if (done) showToast(t(done));
+                await load();
+                return true;
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('secd_action_failed')), 'error');
+                return false;
+            }
+        }
+
+        async function load() {
+            if (incidentId == null) return showNotFound();
+            try {
+                incident = await window.api.request(base, { silent: true });
+            } catch (e) {
+                console.error(e);
+                return showNotFound();
+            }
+            if (incident.canManage && users == null) {
+                users = (await window.api.getUsers().catch(() => [])).filter(u => u.isActive);
+            }
+            render();
+        }
+
+        function showNotFound() {
+            document.getElementById('incidentLayout').style.display = 'none';
+            document.getElementById('notFound').style.display = '';
+        }
+
+        const name = (id) => id == null ? '—' : (incident.userNames[id] ?? `#${id}`);
+        const prop = (label, value) => `<div class="prop"><span class="prop-label">${escapeHtml(label)}</span><span class="prop-value" dir="auto">${escapeHtml(value)}</span></div>`;
+
+        function render() {
+            const me = window.api.decodedToken?.userId;
+            const isMember = incident.members.some(m => m.userId === me);
+            const canAct = incident.canManage || isMember;
+            document.getElementById('notFound').style.display = 'none';
+            document.getElementById('incidentLayout').style.display = '';
+            document.querySelectorAll('.manage-only').forEach(el => { el.style.display = incident.canManage ? '' : 'none'; });
+            document.querySelectorAll('.act-only').forEach(el => { el.style.display = canAct ? '' : 'none'; });
+
+            document.getElementById('incRef').textContent = incident.reference;
+            document.getElementById('incTitle').textContent = incident.title;
+            document.getElementById('incDescription').textContent = incident.description;
+            document.getElementById('incBadges').innerHTML = statusBadge(incident.status) + severityBadge(incident.severity) +
+                (incident.personalDataInvolved ? `<span class="badge badge-danger">${escapeHtml(t('seci_lbl_personal'))}</span>` : '');
+            const notice = document.getElementById('incNotice');
+            notice.style.display = incident.canManage ? 'none' : '';
+            notice.textContent = isMember ? t('secd_member_notice') : t('secd_readonly');
+
+            renderProperties();
+            renderTriage();
+            renderStatus();
+            renderItems(canAct);
+            renderReview();
+            renderHistory();
+            renderMembers();
+            document.getElementById('accessCard').style.display = incident.canSeeAccessLog ? '' : 'none';
+        }
+
+        function renderProperties() {
+            document.getElementById('propsCard').innerHTML =
+                prop(t('secd_outcome'), outcomeLabel(incident.triageOutcome)) +
+                prop(t('seci_lbl_category'), categoryLabel(incident.category)) +
+                prop(t('seci_lbl_severity'), severityLabel(incident.severity)) +
+                prop(t('seci_lbl_personal'), incident.personalDataInvolved ? t('secd_yes') : t('secd_no')) +
+                prop(t('secd_handler'), name(incident.handlerUserId)) +
+                prop(t('secd_reported_by'), name(incident.reporterUserId)) +
+                prop(t('secd_reported_at'), formatDateTime(incident.reportedAt)) +
+                prop(t('secd_occurred'), formatDateTime(incident.occurredAt));
+            document.getElementById('phasesList').innerHTML =
+                prop(t('secd_triaged'), formatDateTime(incident.triagedAt)) +
+                prop(t('secd_contained'), formatDateTime(incident.containedAt)) +
+                prop(t('secd_eradicated'), formatDateTime(incident.eradicatedAt)) +
+                prop(t('secd_recovered'), formatDateTime(incident.recoveredAt)) +
+                prop(t('secd_closed'), formatDateTime(incident.closedAt));
+        }
+
+        function renderTriage() {
+            if (!incident.canManage) return;
+            const decided = incident.triageOutcome !== 'Pending' ? incident.triageOutcome : null;
+            document.getElementById('triageOutcome').innerHTML = `<option value="">${escapeHtml(t('sec_outcome_pending'))}</option>` + optionsHtml(OUTCOMES, outcomeLabel, decided);
+            document.getElementById('triageCategory').innerHTML = categoryOptions(incident.category);
+            document.getElementById('triageSeverity').innerHTML = severityOptions(incident.severity);
+            document.getElementById('triageReason').value = '';
+        }
+
+        function renderStatus() {
+            if (!incident.canManage) return;
+            const targets = STATUSES.filter(s => s !== 'New' && s !== incident.status);
+            // Offer the next step forward first; going back stays possible with a reason
+            const next = STATUSES[STATUSES.indexOf(incident.status) + 1];
+            document.getElementById('nextStatus').innerHTML = optionsHtml(targets, statusLabel, targets.includes(next) ? next : null);
+            document.getElementById('statusNote').value = '';
+        }
+
+        function renderItems(canAct) {
+            const body = document.getElementById('itemsBody');
+            body.innerHTML = incident.affectedItems.length === 0
+                ? `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">${escapeHtml(t('secd_items_empty'))}</td></tr>`
+                : incident.affectedItems.map(i => `
+                    <tr>
+                        <td>${escapeHtml(kindLabel(i.kind))}</td>
+                        <td dir="ltr" style="font-family: monospace;">${escapeHtml(i.name)}</td>
+                        <td>${itemStatusBadge(i.status)}</td>
+                        <td dir="auto" style="font-size: 12px;">${escapeHtml(i.statusReason || '')}</td>
+                        <td>${canAct ? `<button type="button" class="btn btn-ghost btn-item" data-id="${Number(i.id)}" style="padding: 2px 8px;">${escapeHtml(t('secd_item_update'))}</button>` : ''}</td>
+                    </tr>`).join('');
+            document.getElementById('itemKind').innerHTML = optionsHtml(ITEM_KINDS, kindLabel, 'Server');
+        }
+
+        function renderReview() {
+            const card = document.getElementById('reviewCard');
+            card.style.display = incident.triageOutcome === 'Incident' ? '' : 'none';
+            document.getElementById('reviewHint').textContent = incident.reviewRequired ? t('secd_review_required') : t('secd_review_optional');
+            const fields = { reviewRootCause: incident.reviewRootCause, reviewWhatWorked: incident.reviewWhatWorked, reviewImprovements: incident.reviewImprovements, reviewFollowUps: incident.reviewFollowUps };
+            for (const [id, value] of Object.entries(fields)) {
+                const el = document.getElementById(id);
+                el.value = value || '';
+                el.readOnly = !incident.canManage;
+            }
+            const state = document.getElementById('reviewState');
+            state.textContent = incident.reviewCompletedAt ? t('secd_review_complete') : t('secd_review_incomplete');
+            state.style.color = incident.reviewCompletedAt ? 'var(--success)' : 'var(--text-muted)';
+        }
+
+        function renderHistory() {
+            document.getElementById('historyList').innerHTML = incident.actions.map(a => {
+                const { html, note } = describeAction(a, incident.userNames);
+                return `<div class="history-entry"><div>${html}</div><div class="history-when">${escapeHtml(formatDateTime(a.createdAt))}</div>${note ? `<div class="history-note" dir="auto">${escapeHtml(note)}</div>` : ''}</div>`;
+            }).join('');
+        }
+
+        function renderMembers() {
+            document.getElementById('membersList').innerHTML = incident.members.length === 0
+                ? `<div style="color: var(--text-muted); font-size: 13px;">${escapeHtml(t('secd_members_empty'))}</div>`
+                : incident.members.map(m => `
+                    <div class="member">
+                        <span dir="auto">${escapeHtml(name(m.userId))}</span>
+                        ${incident.canManage ? `<button type="button" class="btn btn-ghost btn-remove-member" data-id="${Number(m.userId)}" style="padding: 2px 8px; color: var(--danger);">${escapeHtml(t('secd_remove'))}</button>` : ''}
+                    </div>`).join('');
+            if (incident.canManage) {
+                const taken = new Set(incident.members.map(m => m.userId));
+                document.getElementById('memberSelect').innerHTML = `<option value="">${escapeHtml(t('secd_member_ph'))}</option>` +
+                    (users || []).filter(u => !taken.has(u.id))
+                        .map(u => `<option value="${Number(u.id)}">${escapeHtml(`${u.firstName} ${u.lastName} (${u.username})`)}</option>`).join('');
+            }
+        }
+
+        document.getElementById('triageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const severity = document.getElementById('triageSeverity').value;
+            await send('/triage', 'POST', {
+                outcome: document.getElementById('triageOutcome').value,
+                reason: document.getElementById('triageReason').value,
+                category: document.getElementById('triageCategory').value,
+                severity: severity ? Number(severity) : null
+            }, 'secd_triaged_saved');
+        });
+
+        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await send('/status', 'POST', { status: document.getElementById('nextStatus').value, note: document.getElementById('statusNote').value || null }, 'secd_status_changed');
+        });
+
+        document.getElementById('itemsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const kind = document.getElementById('itemKind').value;
+            const items = document.getElementById('itemNames').value.split('\n').map(n => n.trim()).filter(Boolean).map(name => ({ kind, name }));
+            if (items.length === 0) return;
+            if (await send('/affected-items', 'POST', { items }, 'secd_items_added')) document.getElementById('itemNames').value = '';
+        });
+
+        document.getElementById('itemsBody').addEventListener('click', (e) => {
+            const button = e.target.closest('.btn-item');
+            if (!button) return;
+            const item = incident.affectedItems.find(i => i.id === Number(button.dataset.id));
+            if (!item) return;
+            selectedItemId = item.id;
+            document.getElementById('itemModalTitle').textContent = item.name;
+            document.getElementById('itemStatus').innerHTML = optionsHtml(ITEM_STATUSES, itemStatusLabel, item.status);
+            document.getElementById('itemReason').value = item.statusReason || '';
+            openModal('itemModal');
+        });
+
+        document.getElementById('itemForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const ok = await send(`/affected-items/${selectedItemId}`, 'PUT', {
+                status: document.getElementById('itemStatus').value,
+                reason: document.getElementById('itemReason').value || null
+            }, 'secd_item_updated');
+            if (ok) closeModal('itemModal');
+        });
+
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await send('/review', 'PUT', {
+                rootCause: document.getElementById('reviewRootCause').value,
+                whatWorked: document.getElementById('reviewWhatWorked').value,
+                improvements: document.getElementById('reviewImprovements').value,
+                followUps: document.getElementById('reviewFollowUps').value
+            }, 'secd_review_saved');
+        });
+
+        document.getElementById('noteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (await send('/notes', 'POST', { text: document.getElementById('noteText').value }, 'secd_note_added')) document.getElementById('noteText').value = '';
+        });
+
+        document.getElementById('memberForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = Number(document.getElementById('memberSelect').value);
+            if (userId) await send('/members', 'POST', { userId }, 'secd_member_added');
+        });
+
+        document.getElementById('membersList').addEventListener('click', async (e) => {
+            const button = e.target.closest('.btn-remove-member');
+            if (button) await send(`/members/${Number(button.dataset.id)}`, 'DELETE', null, 'secd_member_removed');
+        });
+
+        document.getElementById('btnEdit').addEventListener('click', () => {
+            document.getElementById('editTitle').value = incident.title;
+            document.getElementById('editDescription').value = incident.description;
+            document.getElementById('editCategory').innerHTML = categoryOptions(incident.category);
+            document.getElementById('editSeverity').innerHTML = severityOptions(incident.severity);
+            document.getElementById('editHandler').innerHTML = `<option value="">—</option>` + (users || [])
+                .map(u => `<option value="${Number(u.id)}"${u.id === incident.handlerUserId ? ' selected' : ''}>${escapeHtml(`${u.firstName} ${u.lastName}`)}</option>`).join('');
+            document.getElementById('editOccurred').value = toLocalInput(incident.occurredAt);
+            document.getElementById('editPersonal').checked = incident.personalDataInvolved;
+            openModal('editModal');
+        });
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const severity = document.getElementById('editSeverity').value;
+            const handler = document.getElementById('editHandler').value;
+            const occurred = document.getElementById('editOccurred').value;
+            const ok = await send('', 'PUT', {
+                title: document.getElementById('editTitle').value,
+                description: document.getElementById('editDescription').value,
+                occurredAt: occurred ? new Date(occurred).toISOString() : null,
+                category: document.getElementById('editCategory').value,
+                severity: severity ? Number(severity) : null,
+                personalDataInvolved: document.getElementById('editPersonal').checked,
+                handlerUserId: handler ? Number(handler) : null
+            }, 'secd_saved');
+            if (ok) closeModal('editModal');
+        });
+
+        document.getElementById('btnAccessLog').addEventListener('click', async () => {
+            const list = document.getElementById('accessList');
+            list.innerHTML = `<div style="color: var(--text-muted);">${escapeHtml(t('common_loading'))}</div>`;
+            openModal('accessModal');
+            try {
+                const rows = await window.api.request(`${base}/access-log`, { silent: true });
+                list.innerHTML = rows.length === 0
+                    ? `<div style="color: var(--text-muted);">${escapeHtml(t('secd_access_empty'))}</div>`
+                    : rows.map(r => prop(r.userName || `#${r.userId}`, formatDateTime(r.openedAt))).join('');
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = `<div style="color: var(--danger);">${escapeHtml(t('common_err_load_data'))}</div>`;
+            }
+        });
+
+        load();
+    </script>
+</body>
+</html>

@@ -46,13 +46,14 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
     }
 
     /// <summary>
-    /// Audit records are append-only: the system audit log, ticket history and login events can be added but
-    /// never changed or deleted, so a save that tries is refused as a whole.
+    /// Audit records are append-only: the system audit log, ticket history, login events and every IAppendOnly
+    /// record (such as a security incident's history) can be added but never changed or deleted, so a save that
+    /// tries is refused as a whole.
     /// </summary>
     internal static void RejectAuditRecordChanges(DbContext? context)
     {
         var changed = context?.ChangeTracker.Entries()
-            .FirstOrDefault(e => e.Entity is SystemAuditLog or TicketHistory or AuthEvent &&
+            .FirstOrDefault(e => e.Entity is SystemAuditLog or TicketHistory or AuthEvent or IAppendOnly &&
                                  e.State is EntityState.Modified or EntityState.Deleted);
         if (changed != null)
         {
@@ -108,7 +109,8 @@ public class SystemAuditInterceptor : SaveChangesInterceptor
 
     internal static bool ShouldSkipAudit(object entity)
     {
-        if (entity is SystemAuditLog) return true;
+        // Restricted records keep their own history; the system audit log is open to every audit.view holder
+        if (entity is SystemAuditLog or IRestrictedRecord) return true;
         var name = entity.GetType().Name;
 
         if (name == "Ticket" ||

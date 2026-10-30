@@ -36,6 +36,13 @@ public class DataSeeder
     private const string RoleManager = "Manager";
     private const string RoleAgent = "Agent";
     private const string RoleEndUser = "EndUser";
+    private const string RoleSecurityTeam = "Security Team";
+
+    private static readonly Dictionary<string, string> NewPermissionDescriptions = new()
+    {
+        { PermissionConstants.SecurityIncidentView, "See all security incidents and federal reports." },
+        { PermissionConstants.SecurityIncidentManage, "Triage, work on and close security incidents." }
+    };
 
     private const string TicketView = PermissionConstants.TicketView;
     private static readonly string[] ManagerPermissions = new[] { "report.view", "audit.view", TicketView, "ticket.assign", "ticket.transfer", "kb.manage" };
@@ -139,7 +146,7 @@ public class DataSeeder
         var allPermissions = ItsTool.Application.Constants.PermissionConstants.AllPermissions;
         var existingPermissions = await _context.Permissions.ToListAsync();
         
-        var missingPermissions = allPermissions.Where(pKey => !existingPermissions.Any(p => p.Key == pKey)).Select(pKey => new Permission { Name = pKey, Key = pKey, Description = "Sistem tarafından otomatik oluşturuldu." }).ToList();
+        var missingPermissions = allPermissions.Where(pKey => !existingPermissions.Any(p => p.Key == pKey)).Select(pKey => new Permission { Name = pKey, Key = pKey, Description = NewPermissionDescriptions.GetValueOrDefault(pKey, "Sistem tarafından otomatik oluşturuldu.") }).ToList();
         if (missingPermissions.Count > 0)
         {
             _context.Permissions.AddRange(missingPermissions);
@@ -186,7 +193,9 @@ public class DataSeeder
 
         var rolesToSeed = new Dictionary<string, string[]>
         {
-            { RoleSuperAdmin, allPermissions.ToArray() },
+            // SuperAdmin gets every permission except the explicit-only ones; those go to the security team
+            { RoleSuperAdmin, allPermissions.Except(PermissionConstants.ExplicitOnly).ToArray() },
+            { RoleSecurityTeam, PermissionConstants.ExplicitOnly.ToArray() },
             { RoleManager, ManagerPermissions },
             { RoleAgent, AgentPermissions },
             { RoleEndUser, EndUserPermissions }

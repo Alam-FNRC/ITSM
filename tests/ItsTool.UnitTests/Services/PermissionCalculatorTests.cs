@@ -183,4 +183,57 @@ public class PermissionCalculatorTests : TestBase
         Assert.Contains("active.perm", result);
         Assert.DoesNotContain("deleted.perm", result);
     }
+
+    private async Task<User> SuperAdminAsync()
+    {
+        var user = new User { Username = "root", Email = "root@fnrc.test", PasswordHash = "hash" };
+        var superAdmin = new Role { Name = "SuperAdmin" };
+        _context.Users.Add(user);
+        _context.Roles.Add(superAdmin);
+        _context.Permissions.AddRange(
+            new Permission { Name = PermissionConstants.TicketView, Key = PermissionConstants.TicketView },
+            new Permission { Name = PermissionConstants.SecurityIncidentView, Key = PermissionConstants.SecurityIncidentView },
+            new Permission { Name = PermissionConstants.SecurityIncidentManage, Key = PermissionConstants.SecurityIncidentManage });
+        await _context.SaveChangesAsync();
+        _context.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = superAdmin.Id });
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
+    [Fact]
+    public async Task SuperAdmin_does_not_get_the_security_permissions_by_default()
+    {
+        var admin = await SuperAdminAsync();
+
+        var perms = await _calculator.CalculateEffectivePermissionsAsync(admin.Id);
+
+        Assert.Contains(PermissionConstants.TicketView, perms);
+        Assert.DoesNotContain(PermissionConstants.SecurityIncidentView, perms);
+        Assert.DoesNotContain(PermissionConstants.SecurityIncidentManage, perms);
+    }
+
+    [Fact]
+    public async Task SuperAdmin_gets_a_security_permission_only_through_a_grant()
+    {
+        var admin = await SuperAdminAsync();
+        var view = await _context.Permissions.SingleAsync(p => p.Key == PermissionConstants.SecurityIncidentView);
+        _context.UserPermissionOverrides.Add(new UserPermissionOverride { UserId = admin.Id, PermissionId = view.Id, IsGranted = true });
+        await _context.SaveChangesAsync();
+
+        var perms = await _calculator.CalculateEffectivePermissionsAsync(admin.Id);
+
+        Assert.Contains(PermissionConstants.SecurityIncidentView, perms);
+        Assert.DoesNotContain(PermissionConstants.SecurityIncidentManage, perms);
+    }
+
+    [Fact]
+    public async Task A_deny_override_still_does_not_remove_ordinary_permissions_from_SuperAdmin()
+    {
+        var admin = await SuperAdminAsync();
+        var ticketView = await _context.Permissions.SingleAsync(p => p.Key == PermissionConstants.TicketView);
+        _context.UserPermissionOverrides.Add(new UserPermissionOverride { UserId = admin.Id, PermissionId = ticketView.Id, IsGranted = false });
+        await _context.SaveChangesAsync();
+
+        Assert.Contains(PermissionConstants.TicketView, await _calculator.CalculateEffectivePermissionsAsync(admin.Id));
+    }
 }

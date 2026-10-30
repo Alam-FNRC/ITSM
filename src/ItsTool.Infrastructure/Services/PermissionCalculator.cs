@@ -1,3 +1,4 @@
+using ItsTool.Application.Constants;
 using ItsTool.Application.Interfaces;
 using ItsTool.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -22,14 +23,6 @@ public class PermissionCalculator : IPermissionCalculator
             .Include(ur => ur.Role)
             .AnyAsync(ur => ur.UserId == userId && ur.Role != null && ur.Role.Name == "SuperAdmin" && ur.Role.IsActive && !ur.Role.IsDeleted && !ur.IsDeleted);
 
-        if (isSuperAdmin)
-        {
-            var allPerms = await _context.Permissions
-                .Where(p => p.IsActive && !p.IsDeleted)
-                .Select(p => p.Key)
-                .ToListAsync();
-            return new HashSet<string>(allPerms);
-        }
 
         // 1. Kullanıcının doğrudan rollerinden gelen yetkiler
         var userRolePerms = await _context.UserRoles
@@ -79,6 +72,18 @@ public class PermissionCalculator : IPermissionCalculator
         {
             if (o.IsGranted) permissions.Add(o.Key);
             else permissions.Remove(o.Key);
+        }
+
+        // SuperAdmin holds every other permission whatever the overrides say; the explicit-only ones it holds
+        // only when granted above, like anyone else
+        if (isSuperAdmin)
+        {
+            var explicitOnly = PermissionConstants.ExplicitOnly;
+            var allPerms = await _context.Permissions
+                .Where(p => p.IsActive && !p.IsDeleted && !explicitOnly.Contains(p.Key))
+                .Select(p => p.Key)
+                .ToListAsync();
+            permissions.UnionWith(allPerms);
         }
 
         return permissions;

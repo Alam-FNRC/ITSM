@@ -66,6 +66,10 @@ function applyRbacToSidebar() {
         }
     } catch (e) { console.error("Error decoding token in layout", e); }
     
+    // Security incidents need a security permission; SuperAdmin does not get one automatically
+    const securityTeam = perms.includes('security.incident.view') || perms.includes('security.incident.manage');
+    document.querySelectorAll('[data-security-only]').forEach(el => { el.style.display = securityTeam ? '' : 'none'; });
+
     if (!perms.includes('admin.manage') && !isSuperAdmin) {
         document.querySelectorAll('.sidebar-nav-title, .sidebar-nav-title ~ a').forEach(el => {
             if (el) el.style.display = 'none';
@@ -124,6 +128,12 @@ const shellHtml = `
                 </a>
                 <a href="/kb.html" class="sidebar-nav-item">
                     <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> <span data-i18n="nav_kb">Knowledge Base</span>
+                </a>
+                <a href="/security-report.html" class="sidebar-nav-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v6h-2V7zm0 8h2v2h-2v-2z"/></svg> <span data-i18n="nav_security_report">Report a security issue</span>
+                </a>
+                <a href="/security-incidents.html" class="sidebar-nav-item" data-security-only style="display: none;">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg> <span data-i18n="nav_security_incidents">Security incidents</span>
                 </a>
                 
                 <div class="sidebar-nav-title" style="padding: 16px 20px 8px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;" data-i18n="nav_admin_title">Administration</div>
