@@ -22,7 +22,7 @@ public class SecurityIncidentServiceTests : TestBase
             .ReturnsAsync((int userId) => userId == Team
                 ? new HashSet<string> { PermissionConstants.SecurityIncidentView, PermissionConstants.SecurityIncidentManage }
                 : new HashSet<string>());
-        _service = new SecurityIncidentService(_context, permissions.Object);
+        _service = new SecurityIncidentService(_context, permissions.Object, new Mock<IEvidenceStore>().Object);
     }
 
     private async Task<int> ReportAsync(string title = "Odd pop-up")

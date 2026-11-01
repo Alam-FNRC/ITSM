@@ -34,6 +34,43 @@ public record SecurityAffectedItemDto(int Id, string Kind, string Name, string S
 
 public record SecurityIncidentMemberDto(int UserId, int AddedByUserId, DateTime AddedAt);
 
+public record SecurityEvidenceCustodyDto(int Id, string Kind, int UserId, int? CustodianUserId, string? Location, string? Note, string? Sha256, DateTime CreatedAt);
+
+/// <summary>An evidence item; CustodianUserId and Location are where an item kept elsewhere is now.</summary>
+public record SecurityEvidenceDto(
+    int Id,
+    int Number,
+    string Kind,
+    string Description,
+    int CollectedByUserId,
+    DateTime CollectedAt,
+    int RecordedByUserId,
+    DateTime RecordedAt,
+    string? FileName,
+    long? FileSize,
+    string? Sha256,
+    int? CustodianUserId,
+    string? Location,
+    IReadOnlyList<SecurityEvidenceCustodyDto> Custody);
+
+/// <summary>Sent as form fields with an optional file. Without a file, Location says where the item is kept.</summary>
+public record AddSecurityEvidenceDto(
+    [Required] string Kind,
+    [Required, MaxLength(2000)] string Description,
+    int? CollectedByUserId,
+    DateTime? CollectedAt,
+    [MaxLength(300)] string? Location);
+
+public record HandOverSecurityEvidenceDto(
+    [Range(1, int.MaxValue)] int ToUserId,
+    [Required, MaxLength(300)] string Location,
+    [MaxLength(2000)] string? Note);
+
+public record SecurityEvidenceCheckDto(bool Intact, string Expected, string? Found, DateTime CheckedAt);
+
+/// <summary>An evidence file whose fingerprint was just checked, ready to send. The caller disposes the content.</summary>
+public record SecurityEvidenceFileDto(Stream Content, string FileName);
+
 public record SecurityIncidentDetailDto(
     int Id,
     string Reference,
@@ -65,6 +102,7 @@ public record SecurityIncidentDetailDto(
     IReadOnlyList<SecurityIncidentActionDto> Actions,
     IReadOnlyList<SecurityAffectedItemDto> AffectedItems,
     IReadOnlyList<SecurityIncidentMemberDto> Members,
+    IReadOnlyList<SecurityEvidenceDto> Evidence,
     // Display names of every user the incident mentions, so members need no access to the user list
     IReadOnlyDictionary<int, string> UserNames,
     bool CanManage,

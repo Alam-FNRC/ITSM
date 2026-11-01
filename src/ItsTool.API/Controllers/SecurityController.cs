@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
+using ItsTool.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,7 @@ public class SecurityController : ControllerBase
         catch (KeyNotFoundException) { return NotFound(); }
         catch (UnauthorizedAccessException) { return Forbid(); }
         catch (ArgumentException ex) { return BadRequest(new { error = ex.Message }); }
+        catch (InvalidDataException ex) { return Conflict(new { error = ex.Message }); }
     }
 
     [HttpPost("reports")]
@@ -101,4 +103,35 @@ public class SecurityController : ControllerBase
     [ProducesResponseType(typeof(IReadOnlyList<SecurityIncidentAccessDto>), StatusCodes.Status200OK)]
     public Task<IActionResult> AccessLog(int id) =>
         Run(async () => Ok(await _service.GetAccessLogAsync(CurrentUserId, id)));
+
+    // Evidence is never changed or deleted, so there are no PUT or DELETE routes for it
+
+    [HttpPost("incidents/{id:int}/evidence")]
+    [RequestSizeLimit(EvidencePolicy.MaxBytes + 1024 * 1024)]
+    [RequestFormLimits(MultipartBodyLengthLimit = EvidencePolicy.MaxBytes + 1024 * 1024)]
+    [ProducesResponseType(typeof(SecurityEvidenceDto), StatusCodes.Status200OK)]
+    public Task<IActionResult> AddEvidence(int id, [FromForm] AddSecurityEvidenceDto dto, IFormFile? file) =>
+        Run(async () => Ok(await _service.AddEvidenceAsync(CurrentUserId, id, dto, file)));
+
+    [HttpPost("incidents/{id:int}/evidence/{evidenceId:int}/hand-over")]
+    public Task<IActionResult> HandOverEvidence(int id, int evidenceId, [FromBody] HandOverSecurityEvidenceDto dto) =>
+        Run(async () => { await _service.HandOverEvidenceAsync(CurrentUserId, id, evidenceId, dto); return NoContent(); });
+
+    [HttpPost("incidents/{id:int}/evidence/{evidenceId:int}/check")]
+    [ProducesResponseType(typeof(SecurityEvidenceCheckDto), StatusCodes.Status200OK)]
+    public Task<IActionResult> CheckEvidence(int id, int evidenceId) =>
+        Run(async () => Ok(await _service.CheckEvidenceAsync(CurrentUserId, id, evidenceId)));
+
+    [HttpGet("incidents/{id:int}/evidence/{evidenceId:int}/download")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public Task<IActionResult> DownloadEvidence(int id, int evidenceId) =>
+        Run(async () =>
+        {
+            var file = await _service.OpenEvidenceAsync(CurrentUserId, id, evidenceId);
+            // Always a download, never shown in the browser, whatever the file holds
+            Response.Headers["X-Content-Type-Options"] = "nosniff";
+            Response.Headers.CacheControl = "no-store";
+            return File(file.Content, "application/octet-stream", file.FileName);
+        });
 }

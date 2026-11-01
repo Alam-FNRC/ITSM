@@ -1,9 +1,11 @@
+using System.Security.Cryptography;
 using ItsTool.Application.Constants;
 using ItsTool.Application.DTOs;
 using ItsTool.Application.Interfaces;
 using ItsTool.Domain.Entities.Notification;
 using ItsTool.Domain.Entities.Security;
 using ItsTool.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItsTool.Infrastructure.Services;
@@ -18,12 +20,14 @@ public class SecurityIncidentService : ISecurityIncidentService
     private const int ReferenceAttempts = 3;
     private readonly ItsToolDbContext _context;
     private readonly IPermissionCalculator _permissions;
+    private readonly IEvidenceStore _evidenceStore;
     private readonly ISignalRPusher? _pusher;
 
-    public SecurityIncidentService(ItsToolDbContext context, IPermissionCalculator permissions, ISignalRPusher? pusher = null)
+    public SecurityIncidentService(ItsToolDbContext context, IPermissionCalculator permissions, IEvidenceStore evidenceStore, ISignalRPusher? pusher = null)
     {
         _context = context;
         _permissions = permissions;
+        _evidenceStore = evidenceStore;
         _pusher = pusher;
     }
 
@@ -161,12 +165,16 @@ public class SecurityIncidentService : ISecurityIncidentService
             .Where(a => a.IncidentId == incidentId && !a.IsDeleted).OrderBy(a => a.Id).ToListAsync();
         var members = await _context.SecurityIncidentMembers.AsNoTracking()
             .Where(m => m.IncidentId == incidentId && !m.IsDeleted).OrderBy(m => m.CreatedAt).ToListAsync();
+        var evidence = await _context.SecurityEvidence.AsNoTracking().Include(e => e.Custody)
+            .Where(e => e.IncidentId == incidentId).OrderBy(e => e.Number).ToListAsync();
 
         var userIds = new List<int> { incident.ReporterUserId };
         userIds.AddRange(new[] { incident.HandlerUserId, incident.TriagedByUserId, incident.ReviewCompletedByUserId }.Where(id => id.HasValue).Select(id => id!.Value));
         userIds.AddRange(actions.Select(a => a.UserId));
         userIds.AddRange(members.SelectMany(m => new[] { m.UserId, m.AddedByUserId }));
         userIds.AddRange(items.Where(a => a.StatusChangedByUserId.HasValue).Select(a => a.StatusChangedByUserId!.Value));
+        userIds.AddRange(evidence.SelectMany(e => new[] { e.CollectedByUserId, e.RecordedByUserId }));
+        userIds.AddRange(evidence.SelectMany(e => e.Custody).SelectMany(c => new[] { (int?)c.UserId, c.CustodianUserId }).Where(id => id.HasValue).Select(id => id!.Value));
         var names = await UserNamesAsync(userIds);
 
         return new SecurityIncidentDetailDto(
@@ -180,6 +188,7 @@ public class SecurityIncidentService : ISecurityIncidentService
             actions.Select(a => new SecurityIncidentActionDto(a.Id, a.UserId, a.Kind, a.Field, a.OldValue, a.NewValue, a.Note, a.CreatedAt)).ToList(),
             items.Select(a => new SecurityAffectedItemDto(a.Id, a.Kind.ToString(), a.Name, a.Status.ToString(), a.StatusReason, a.StatusChangedAt, a.StatusChangedByUserId)).ToList(),
             members.Select(m => new SecurityIncidentMemberDto(m.UserId, m.AddedByUserId, m.CreatedAt)).ToList(),
+            evidence.Select(ToEvidenceDto).ToList(),
             names,
             access.Manage,
             access.ViewAll);
@@ -408,6 +417,198 @@ public class SecurityIncidentService : ISecurityIncidentService
         return rows.Select(r => new SecurityIncidentAccessDto(r.UserId, names.GetValueOrDefault(r.UserId), r.CreatedAt)).ToList();
     }
 
+    // ---- Evidence (A.5.28) ----
+
+    /// <summary>
+    /// The security team, or someone on the incident, records evidence: a file kept here, fingerprinted as it is
+    /// written, or an item kept elsewhere with who holds it and where.
+    /// </summary>
+    public async Task<SecurityEvidenceDto> AddEvidenceAsync(int userId, int incidentId, AddSecurityEvidenceDto dto, IFormFile? file)
+    {
+        var (incident, _) = await LoadAsync(userId, incidentId, requireManage: true, memberMayAct: true);
+        var kind = ParseEnum<SecurityEvidenceKind>(dto.Kind, "Kind");
+        var description = Required(dto.Description, "Description");
+        var location = Trimmed(dto.Location);
+        var collectedBy = dto.CollectedByUserId ?? userId;
+        if (collectedBy != userId && !await _context.Users.AnyAsync(u => u.Id == collectedBy && !u.IsDeleted))
+            throw new ArgumentException("Choose who collected the evidence.");
+        var collectedAt = dto.CollectedAt?.ToUniversalTime() ?? DateTime.UtcNow;
+        if (collectedAt > DateTime.UtcNow.AddMinutes(5))
+            throw new ArgumentException("Evidence cannot be collected in the future.");
+        if (file == null && location == null)
+            throw new ArgumentException("Attach the file, or say where the evidence is kept.");
+
+        string? fileName = null;
+        StoredEvidenceFile? stored = null;
+        if (file != null)
+        {
+            fileName = UploadPolicy.DisplayName(file.FileName);
+            var extension = Path.GetExtension(fileName);
+            if (file.Length == 0) throw new ArgumentException("The file is empty.");
+            if (file.Length > EvidencePolicy.MaxBytes) throw new ArgumentException("Evidence files can be up to 25 MB. Compress or split a larger one.");
+            if (fileName.Length is 0 or > 255) throw new ArgumentException("The file name must be 1 to 255 characters.");
+            if (!EvidencePolicy.IsAllowed(fileName)) throw new ArgumentException($"Files of type '{extension}' cannot be kept as evidence.");
+
+            await using var content = file.OpenReadStream();
+            var header = new byte[UploadPolicy.HeaderLength];
+            var read = await content.ReadAtLeastAsync(header, header.Length, throwOnEndOfStream: false);
+            if (!EvidencePolicy.HasExpectedSignature(fileName, header.AsSpan(0, read)))
+                throw new ArgumentException($"The file content is not a valid '{extension}' file.");
+            content.Position = 0;
+            stored = await _evidenceStore.SaveAsync(incidentId, content, extension);
+        }
+
+        var evidence = new SecurityEvidence
+        {
+            IncidentId = incidentId,
+            Kind = kind,
+            Description = description,
+            CollectedByUserId = collectedBy,
+            CollectedAt = collectedAt,
+            RecordedByUserId = userId,
+            FileName = fileName,
+            FilePath = stored?.Path,
+            FileSize = stored?.Size,
+            Sha256 = stored?.Sha256
+        };
+        // A file is held here; an item kept elsewhere is held by whoever collected it until it is handed over
+        evidence.Custody.Add(new SecurityEvidenceCustody
+        {
+            Kind = SecurityCustodyKind.Collected, UserId = userId, CustodianUserId = stored == null ? collectedBy : null,
+            Location = location, Sha256 = stored?.Sha256
+        });
+        _context.SecurityEvidence.Add(evidence);
+        var action = new SecurityIncidentAction { IncidentId = incidentId, UserId = userId, Kind = SecurityIncidentActions.EvidenceAdded, Field = "Evidence" };
+        incident.Actions.Add(action);
+
+        // Numbers run per incident; two uploads saved at once take the next number on retry
+        for (var attempt = 1; ; attempt++)
+        {
+            evidence.Number = (await _context.SecurityEvidence.Where(e => e.IncidentId == incidentId).MaxAsync(e => (int?)e.Number) ?? 0) + 1;
+            action.NewValue = evidence.Number.ToString();
+            try
+            {
+                await _context.SaveChangesAsync();
+                break;
+            }
+            catch (DbUpdateException) when (attempt < ReferenceAttempts)
+            {
+                // The number was taken in the meantime; try the next one
+            }
+        }
+        return ToEvidenceDto(evidence);
+    }
+
+    /// <summary>An item kept elsewhere, such as a seized laptop, passes to someone else or moves; the security team records it.</summary>
+    public async Task HandOverEvidenceAsync(int userId, int incidentId, int evidenceId, HandOverSecurityEvidenceDto dto)
+    {
+        var (incident, _) = await LoadAsync(userId, incidentId, requireManage: true);
+        var evidence = await FindEvidenceAsync(incidentId, evidenceId);
+        if (evidence.FilePath != null)
+            throw new ArgumentException("A file kept here is not handed over; every download of it is recorded instead.");
+        if (!await _context.Users.AnyAsync(u => u.Id == dto.ToUserId && u.IsActive && !u.IsDeleted))
+            throw new ArgumentException("Choose an active user.");
+        var location = Required(dto.Location, "Location");
+
+        _context.SecurityEvidenceCustody.Add(new SecurityEvidenceCustody
+        {
+            EvidenceId = evidence.Id, Kind = SecurityCustodyKind.HandedOver, UserId = userId,
+            CustodianUserId = dto.ToUserId, Location = location, Note = Trimmed(dto.Note)
+        });
+        Record(incident, userId, SecurityIncidentActions.EvidenceHandedOver, "Evidence", evidence.Number.ToString(), dto.ToUserId.ToString(), location);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>Anyone who can see the incident may check that a file still matches the fingerprint taken on upload.</summary>
+    public async Task<SecurityEvidenceCheckDto> CheckEvidenceAsync(int userId, int incidentId, int evidenceId)
+    {
+        var (incident, _) = await LoadAsync(userId, incidentId, requireManage: false);
+        var evidence = await FindFileEvidenceAsync(incidentId, evidenceId);
+        var (content, found) = await OpenAndHashAsync(evidence);
+        content?.Dispose();
+
+        var intact = found == evidence.Sha256;
+        if (intact)
+        {
+            _context.SecurityEvidenceCustody.Add(new SecurityEvidenceCustody { EvidenceId = evidence.Id, Kind = SecurityCustodyKind.Verified, UserId = userId, Sha256 = found });
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            await RecordIntegrityFailureAsync(incident, evidence, userId, found);
+        }
+        return new SecurityEvidenceCheckDto(intact, evidence.Sha256!, found, DateTime.UtcNow);
+    }
+
+    /// <summary>
+    /// A copy of an evidence file for anyone who can see the incident. The fingerprint is checked on the very
+    /// stream that is sent, and a file that no longer matches is refused rather than passed on.
+    /// </summary>
+    public async Task<SecurityEvidenceFileDto> OpenEvidenceAsync(int userId, int incidentId, int evidenceId)
+    {
+        var (incident, _) = await LoadAsync(userId, incidentId, requireManage: false);
+        var evidence = await FindFileEvidenceAsync(incidentId, evidenceId);
+        var (content, found) = await OpenAndHashAsync(evidence);
+        if (content == null || found != evidence.Sha256)
+        {
+            content?.Dispose();
+            await RecordIntegrityFailureAsync(incident, evidence, userId, found);
+            throw new InvalidDataException($"Evidence E{evidence.Number} is missing or no longer matches its fingerprint, so it was not sent. The security team has been told.");
+        }
+
+        try
+        {
+            _context.SecurityEvidenceCustody.Add(new SecurityEvidenceCustody { EvidenceId = evidence.Id, Kind = SecurityCustodyKind.Downloaded, UserId = userId, Sha256 = found });
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            // No copy leaves without its record
+            content.Dispose();
+            throw;
+        }
+        return new SecurityEvidenceFileDto(content, evidence.FileName!);
+    }
+
+    private async Task<SecurityEvidence> FindEvidenceAsync(int incidentId, int evidenceId) =>
+        await _context.SecurityEvidence.FirstOrDefaultAsync(e => e.Id == evidenceId && e.IncidentId == incidentId)
+            ?? throw new KeyNotFoundException();
+
+    private async Task<SecurityEvidence> FindFileEvidenceAsync(int incidentId, int evidenceId)
+    {
+        var evidence = await FindEvidenceAsync(incidentId, evidenceId);
+        return evidence.FilePath != null ? evidence : throw new ArgumentException("This evidence has no file kept here.");
+    }
+
+    /// <summary>The stored file, rewound, with its SHA-256; both null when the file is missing.</summary>
+    private async Task<(Stream? Content, string? Sha256)> OpenAndHashAsync(SecurityEvidence evidence)
+    {
+        var content = _evidenceStore.OpenRead(evidence.FilePath!);
+        if (content == null) return (null, null);
+        var hash = Convert.ToHexString(await SHA256.HashDataAsync(content)).ToLowerInvariant();
+        content.Position = 0;
+        return (content, hash);
+    }
+
+    private async Task RecordIntegrityFailureAsync(SecurityIncident incident, SecurityEvidence evidence, int userId, string? found)
+    {
+        _context.SecurityEvidenceCustody.Add(new SecurityEvidenceCustody { EvidenceId = evidence.Id, Kind = SecurityCustodyKind.IntegrityFailed, UserId = userId, Sha256 = found });
+        Record(incident, userId, SecurityIncidentActions.EvidenceIntegrityFailed, "Evidence", null, evidence.Number.ToString());
+        await _context.SaveChangesAsync();
+        await NotifyAsync(await UsersWithPermissionAsync(PermissionConstants.SecurityIncidentManage), incident, "security.evidence.failed",
+            "Evidence check failed", $"Evidence E{evidence.Number} on security incident {incident.Reference} failed its fingerprint check.");
+    }
+
+    private static SecurityEvidenceDto ToEvidenceDto(SecurityEvidence e)
+    {
+        var custody = e.Custody.OrderBy(c => c.CreatedAt).ThenBy(c => c.Id).ToList();
+        var holder = custody.LastOrDefault(c => c.Kind is SecurityCustodyKind.Collected or SecurityCustodyKind.HandedOver);
+        return new SecurityEvidenceDto(
+            e.Id, e.Number, e.Kind.ToString(), e.Description, e.CollectedByUserId, e.CollectedAt, e.RecordedByUserId, e.CreatedAt,
+            e.FileName, e.FileSize, e.Sha256, holder?.CustodianUserId, holder?.Location,
+            custody.Select(c => new SecurityEvidenceCustodyDto(c.Id, c.Kind.ToString(), c.UserId, c.CustodianUserId, c.Location, c.Note, c.Sha256, c.CreatedAt)).ToList());
+    }
+
     // ---- Helpers ----
 
     private static bool ReviewRequired(SecurityIncident incident) =>
@@ -522,4 +723,7 @@ public static class SecurityIncidentActions
     public const string AffectedItemAdded = "AffectedItemAdded";
     public const string AffectedItemUpdated = "AffectedItemUpdated";
     public const string ReviewSaved = "ReviewSaved";
+    public const string EvidenceAdded = "EvidenceAdded";
+    public const string EvidenceHandedOver = "EvidenceHandedOver";
+    public const string EvidenceIntegrityFailed = "EvidenceIntegrityFailed";
 }

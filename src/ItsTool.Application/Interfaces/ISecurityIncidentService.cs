@@ -1,11 +1,13 @@
 using ItsTool.Application.DTOs;
+using Microsoft.AspNetCore.Http;
 
 namespace ItsTool.Application.Interfaces;
 
 /// <summary>
 /// Security incidents. Every call takes the caller's user id and checks access itself:
 /// KeyNotFoundException when the caller may not see the incident (or it does not exist),
-/// UnauthorizedAccessException when they may see it but not do this, ArgumentException for invalid input.
+/// UnauthorizedAccessException when they may see it but not do this, ArgumentException for invalid input,
+/// InvalidDataException when an evidence file is missing or no longer matches its fingerprint.
 /// </summary>
 public interface ISecurityIncidentService
 {
@@ -25,4 +27,9 @@ public interface ISecurityIncidentService
     Task UpdateAffectedItemAsync(int userId, int incidentId, int itemId, UpdateSecurityAffectedItemDto dto);
     Task SaveReviewAsync(int userId, int incidentId, SaveSecurityReviewDto dto);
     Task<IReadOnlyList<SecurityIncidentAccessDto>> GetAccessLogAsync(int userId, int incidentId);
+
+    Task<SecurityEvidenceDto> AddEvidenceAsync(int userId, int incidentId, AddSecurityEvidenceDto dto, IFormFile? file);
+    Task HandOverEvidenceAsync(int userId, int incidentId, int evidenceId, HandOverSecurityEvidenceDto dto);
+    Task<SecurityEvidenceCheckDto> CheckEvidenceAsync(int userId, int incidentId, int evidenceId);
+    Task<SecurityEvidenceFileDto> OpenEvidenceAsync(int userId, int incidentId, int evidenceId);
 }
