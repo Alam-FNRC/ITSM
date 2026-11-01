@@ -75,6 +75,8 @@ public class ItsToolDbContext : DbContext
     public DbSet<ItsTool.Domain.Entities.Security.SecurityIncidentMember> SecurityIncidentMembers => Set<ItsTool.Domain.Entities.Security.SecurityIncidentMember>();
     public DbSet<ItsTool.Domain.Entities.Security.SecurityIncidentAccess> SecurityIncidentAccesses => Set<ItsTool.Domain.Entities.Security.SecurityIncidentAccess>();
     public DbSet<ItsTool.Domain.Entities.Security.SecurityAffectedItem> SecurityAffectedItems => Set<ItsTool.Domain.Entities.Security.SecurityAffectedItem>();
+    public DbSet<ItsTool.Domain.Entities.Security.SecurityEvidence> SecurityEvidence => Set<ItsTool.Domain.Entities.Security.SecurityEvidence>();
+    public DbSet<ItsTool.Domain.Entities.Security.SecurityEvidenceCustody> SecurityEvidenceCustody => Set<ItsTool.Domain.Entities.Security.SecurityEvidenceCustody>();
 
     // Notification
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();

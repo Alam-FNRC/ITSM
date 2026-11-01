@@ -1600,6 +1600,145 @@ namespace ItsTool.Infrastructure.Migrations
                     b.ToTable("SecurityAffectedItems");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityEvidence", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CollectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CollectedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long?>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecordedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Sha256")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("char(64)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncidentId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("SecurityEvidence");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityEvidenceCustody", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CustodianUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EvidenceId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Sha256")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("char(64)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvidenceId");
+
+                    b.ToTable("SecurityEvidenceCustody");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncident", b =>
                 {
                     b.Property<int>("Id")
@@ -3048,6 +3187,28 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("Incident");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityEvidence", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Security.SecurityIncident", "Incident")
+                        .WithMany("Evidence")
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Incident");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityEvidenceCustody", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Security.SecurityEvidence", "Evidence")
+                        .WithMany("Custody")
+                        .HasForeignKey("EvidenceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Evidence");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncidentAccess", b =>
                 {
                     b.HasOne("ItsTool.Domain.Entities.Security.SecurityIncident", null)
@@ -3317,11 +3478,18 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("UserRoles");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityEvidence", b =>
+                {
+                    b.Navigation("Custody");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityIncident", b =>
                 {
                     b.Navigation("Actions");
 
                     b.Navigation("AffectedItems");
+
+                    b.Navigation("Evidence");
 
                     b.Navigation("Members");
                 });

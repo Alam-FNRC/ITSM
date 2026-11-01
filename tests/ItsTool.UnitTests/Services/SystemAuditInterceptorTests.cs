@@ -330,6 +330,27 @@ public class SystemAuditInterceptorTests : IDisposable
         Assert.False(await _context.SystemAuditLogs.AnyAsync());
     }
 
+    [Fact]
+    public async Task Evidence_and_its_custody_cannot_be_changed_deleted_or_audited_openly()
+    {
+        var incident = new SecurityIncident { Reference = "SEC-3", Title = "Malware", Description = "Laptop" };
+        _context.SecurityIncidents.Add(incident);
+        await _context.SaveChangesAsync();
+        var evidence = new SecurityEvidence { IncidentId = incident.Id, Number = 1, Description = "Event log", FilePath = "a.evtx", Sha256 = new string('a', 64) };
+        evidence.Custody.Add(new SecurityEvidenceCustody { Kind = SecurityCustodyKind.Collected, UserId = 1 });
+        _context.SecurityEvidence.Add(evidence);
+        await _context.SaveChangesAsync();
+        Assert.False(await _context.SystemAuditLogs.AnyAsync());
+
+        // Swapping the stored file for another would need the fingerprint changed too
+        evidence.Sha256 = new string('b', 64);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
+        _context.Entry(evidence).State = EntityState.Unchanged;
+
+        _context.SecurityEvidenceCustody.Remove(evidence.Custody.Single());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _context.SaveChangesAsync());
+    }
+
     public void Dispose()
     {
         _context.Database.EnsureDeleted();

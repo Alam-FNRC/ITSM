@@ -44,7 +44,7 @@ COPY --from=publish /app/publish .
 COPY src/ItsTool.Web/wwwroot/ ./wwwroot/
 
 # Dosya yüklemeleri için uploads dizinini oluştur ve app kullanıcısına yetki ver
-RUN mkdir -p /app/uploads && chown -R app:app /app
+RUN mkdir -p /app/uploads /app/evidence && chown -R app:app /app
 
 # Güvenlik: Container içinde root olmayan 'app' kullanıcısı ile çalıştır
 USER app
