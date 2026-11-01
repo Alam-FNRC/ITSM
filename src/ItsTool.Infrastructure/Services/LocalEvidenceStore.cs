@@ -38,8 +38,9 @@ public class LocalEvidenceStore : IEvidenceStore
         }
         catch
         {
-            // A half-written file was never evidence
-            File.Delete(path);
+            // A half-written file was never evidence. The share may rightly refuse deletes; the write error matters more.
+            try { File.Delete(path); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
             throw;
         }
         return new StoredEvidenceFile(path, size, Convert.ToHexString(hash.GetHashAndReset()).ToLowerInvariant());

@@ -233,6 +233,15 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    foreach (var (setting, folder) in FileStoragePaths.NotFullyQualified(builder.Configuration))
+    {
+        app.Logger.LogWarning("{Setting} is not a full path, so files are kept in {Folder} under the application, where a " +
+                              "redeploy can overwrite them. Set it to a folder outside the site, such as a file share.", setting, folder);
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

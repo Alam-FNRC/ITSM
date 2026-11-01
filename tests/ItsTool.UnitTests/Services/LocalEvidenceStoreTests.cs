@@ -63,6 +63,28 @@ public class LocalEvidenceStoreTests : IDisposable
     }
 }
 
+public class FileStoragePathsTests
+{
+    private static IConfiguration Settings(string? uploads, string? evidence) => new ConfigurationBuilder()
+        .AddInMemoryCollection(new Dictionary<string, string?> { [FileStoragePaths.UploadsSetting] = uploads, [LocalEvidenceStore.PathSetting] = evidence })
+        .Build();
+
+    [Fact]
+    public void A_share_or_a_full_local_path_is_accepted()
+    {
+        Assert.Empty(FileStoragePaths.NotFullyQualified(Settings(@"\\fileserver\itsm\uploads", @"D:\ItsmData\evidence")));
+    }
+
+    [Fact]
+    public void Missing_or_relative_paths_are_reported_with_where_files_would_go()
+    {
+        var reported = FileStoragePaths.NotFullyQualified(Settings("data/uploads", null));
+
+        Assert.Equal(new[] { FileStoragePaths.UploadsSetting, LocalEvidenceStore.PathSetting }, reported.Select(r => r.Setting));
+        Assert.Equal(Path.GetFullPath("evidence"), reported[1].Folder);
+    }
+}
+
 public class EvidencePolicyTests
 {
     [Theory]
