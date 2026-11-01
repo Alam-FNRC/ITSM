@@ -88,4 +88,5 @@ public class SecurityIncident : BaseEntity, IRestrictedRecord
     public virtual ICollection<SecurityIncidentAction> Actions { get; set; } = new List<SecurityIncidentAction>();
     public virtual ICollection<SecurityIncidentMember> Members { get; set; } = new List<SecurityIncidentMember>();
     public virtual ICollection<SecurityAffectedItem> AffectedItems { get; set; } = new List<SecurityAffectedItem>();
+    public virtual ICollection<SecurityEvidence> Evidence { get; set; } = new List<SecurityEvidence>();
 }

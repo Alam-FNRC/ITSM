@@ -35,6 +35,9 @@ public sealed class ApiFixture : IAsyncLifetime
     /// <summary>Where this API instance stores uploaded attachments.</summary>
     public string UploadsPath => _factory?.UploadsPath ?? throw new InvalidOperationException("The fixture has not been initialized.");
 
+    /// <summary>Where this API instance keeps security incident evidence.</summary>
+    public string EvidencePath => _factory?.EvidencePath ?? throw new InvalidOperationException("The fixture has not been initialized.");
+
     public HttpClient CreateAnonymousClient() => Factory.CreateClient();
 
     public async Task InitializeAsync()
@@ -108,6 +111,8 @@ internal sealed class ItsmApiFactory : WebApplicationFactory<Program>
 
     public string UploadsPath { get; } = Path.Combine(Path.GetTempPath(), $"itsm-test-uploads-{Guid.NewGuid():N}");
 
+    public string EvidencePath => Path.Combine(UploadsPath, "evidence");
+
     public override async ValueTask DisposeAsync()
     {
         await base.DisposeAsync();
@@ -122,6 +127,7 @@ internal sealed class ItsmApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("ConnectionStrings:DefaultConnection", _connectionString);
         builder.UseSetting("Jwt:Secret", Convert.ToHexString(RandomNumberGenerator.GetBytes(32)));
         builder.UseSetting("FileStorage:BasePath", UploadsPath);
+        builder.UseSetting("FileStorage:EvidencePath", EvidencePath);
         // Every test request comes from the same address, so the per-IP login limit would trip across tests
         builder.UseSetting("Auth:LoginAttemptsPerMinute", "100000");
 

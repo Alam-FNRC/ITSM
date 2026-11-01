@@ -46,3 +46,24 @@ public class SecurityAffectedItemConfiguration : IEntityTypeConfiguration<Securi
         builder.HasOne(a => a.Incident).WithMany(i => i.AffectedItems).HasForeignKey(a => a.IncidentId).OnDelete(DeleteBehavior.Restrict);
     }
 }
+
+public class SecurityEvidenceConfiguration : IEntityTypeConfiguration<SecurityEvidence> {
+    public void Configure(EntityTypeBuilder<SecurityEvidence> builder) {
+        builder.Property(e => e.Description).IsRequired().HasMaxLength(2000);
+        builder.Property(e => e.FileName).HasMaxLength(255);
+        builder.Property(e => e.FilePath).HasMaxLength(500);
+        builder.Property(e => e.Sha256).HasMaxLength(64).IsFixedLength().IsUnicode(false);
+        builder.HasOne(e => e.Incident).WithMany(i => i.Evidence).HasForeignKey(e => e.IncidentId).OnDelete(DeleteBehavior.Restrict);
+        // Two uploads at once cannot both take the same number
+        builder.HasIndex(e => new { e.IncidentId, e.Number }).IsUnique();
+    }
+}
+
+public class SecurityEvidenceCustodyConfiguration : IEntityTypeConfiguration<SecurityEvidenceCustody> {
+    public void Configure(EntityTypeBuilder<SecurityEvidenceCustody> builder) {
+        builder.Property(c => c.Location).HasMaxLength(300);
+        builder.Property(c => c.Note).HasMaxLength(2000);
+        builder.Property(c => c.Sha256).HasMaxLength(64).IsFixedLength().IsUnicode(false);
+        builder.HasOne(c => c.Evidence).WithMany(e => e.Custody).HasForeignKey(c => c.EvidenceId).OnDelete(DeleteBehavior.Restrict);
+    }
+}

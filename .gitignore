@@ -29,8 +29,9 @@ coverage.opencover.xml
 node_modules/
 extracted_media/
 
-# Uploaded ticket attachments (runtime data, never commit)
+# Uploaded ticket attachments and security incident evidence (runtime data, never commit)
 src/ItsTool.API/uploads/
+src/ItsTool.API/evidence/
 *.pptx
 scripts/generate_presentation.py
 

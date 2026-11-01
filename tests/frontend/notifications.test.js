@@ -68,6 +68,11 @@ test('security notifications are translated and name the reference only', () => 
         const body = formatNotificationBody('You were added to security incident SEC-2026-0007.');
         assert.ok(body.includes('SEC-2026-0007'));
         assert.notEqual(body, 'You were added to security incident SEC-2026-0007.');
+
+        assert.equal(getNotificationTitle('security.evidence.failed', 'Evidence check failed'), 'فشل فحص الدليل');
+        const failed = formatNotificationBody('Evidence E3 on security incident SEC-2026-0007 failed its fingerprint check.');
+        assert.ok(failed.includes('E3') && failed.includes('SEC-2026-0007'));
+        assert.notEqual(failed, 'Evidence E3 on security incident SEC-2026-0007 failed its fingerprint check.');
     } finally {
         stored.delete('itsm_lang');
     }
