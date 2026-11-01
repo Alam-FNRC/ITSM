@@ -180,7 +180,8 @@ const EVENT_TITLE_KEYS = {
     'kb.suggested': 'notif_title_kb_suggested',
     'kb.reviewed': 'notif_title_kb_reviewed',
     'security.reported': 'notif_title_security_reported',
-    'security.member.added': 'notif_title_security_member'
+    'security.member.added': 'notif_title_security_member',
+    'security.evidence.failed': 'notif_title_security_evidence'
 };
 
 // The messages the server writes (in English) for known events; anything else is shown as stored
@@ -200,7 +201,8 @@ const BODY_PATTERNS = [
     [/^Your article '([\s\S]*)' has been marked for revision\.$/, 'notif_body_kb_revision'],
     [/^Your article '([\s\S]*)' has been rejected\.$/, 'notif_body_kb_rejected'],
     [/^Security report (SEC-\d+-\d+) was received\.$/, 'notif_body_security_reported'],
-    [/^You were added to security incident (SEC-\d+-\d+)\.$/, 'notif_body_security_member']
+    [/^You were added to security incident (SEC-\d+-\d+)\.$/, 'notif_body_security_member'],
+    [/^Evidence (E\d+) on security incident (SEC-\d+-\d+) failed its fingerprint check\.$/, 'notif_body_security_evidence']
 ];
 
 export function getNotificationTitle(type, defaultTitle) {

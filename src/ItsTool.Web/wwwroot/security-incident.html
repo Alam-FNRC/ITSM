@@ -30,6 +30,21 @@
         .inline-add { display: flex; gap: 8px; margin-top: var(--spacing-sm); }
         .inline-add .form-control { flex: 1; min-width: 0; }
         .table-container { overflow-x: auto; }
+        .evidence { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .evidence:first-child { padding-top: 0; }
+        .evidence-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .evidence-num { font-family: monospace; font-weight: 700; }
+        .evidence-file { color: var(--text-muted); overflow-wrap: anywhere; }
+        .evidence-desc { white-space: pre-wrap; margin-top: 4px; }
+        .evidence-meta { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+        .evidence-hash { font-size: 12px; margin-top: 4px; display: flex; gap: 6px; align-items: baseline; }
+        .evidence-hash code { font-family: monospace; overflow-wrap: anywhere; color: var(--text-muted); }
+        .evidence-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+        .evidence-actions .btn { padding: 2px 8px; }
+        .evidence details { margin-top: 6px; }
+        .evidence summary { cursor: pointer; color: var(--text-muted); font-size: 12px; }
+        .custody-entry { padding-block: 6px; padding-inline: 12px 0; border-inline-start: 2px solid var(--border); margin-inline-start: 4px; font-size: 12px; }
+        .custody-entry.failed { border-inline-start-color: var(--danger); color: var(--danger); }
         @media (max-width: 1000px) { .incident-layout { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -159,6 +174,45 @@
                                     <textarea id="itemNames" class="form-control" rows="3" required dir="ltr" aria-label="Names" data-i18n="secd_col_name" data-i18n-target="aria-label"></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-ghost" data-i18n="secd_btn_add_items">Add</button>
+                            </form>
+                        </section>
+
+                        <section class="card">
+                            <h3 data-i18n="secd_ev_title">Evidence</h3>
+                            <p class="card-hint" data-i18n="secd_ev_hint">Files are fingerprinted (SHA-256) when added and checked again before every download. Evidence cannot be changed or deleted.</p>
+                            <div id="evidenceList"></div>
+                            <form id="evidenceForm" class="act-only" style="margin-top: var(--spacing-md);">
+                                <h4 style="margin: 0 0 8px 0; font-size: 13px;" data-i18n="secd_ev_add_title">Add evidence</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="evKind" data-i18n="secd_lbl_kind">Type</label>
+                                        <select id="evKind" class="form-control"></select>
+                                    </div>
+                                    <div class="form-group manage-only">
+                                        <label class="form-label" for="evCollectedBy" data-i18n="secd_ev_lbl_collected_by">Collected by</label>
+                                        <select id="evCollectedBy" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="evDescription" data-i18n="secd_ev_lbl_description">What it is *</label>
+                                    <textarea id="evDescription" class="form-control" required maxlength="2000" rows="2" dir="auto"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="evCollectedAt" data-i18n="secd_ev_lbl_collected_at">When it was collected</label>
+                                        <input id="evCollectedAt" type="datetime-local" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="evLocation" data-i18n="secd_ev_lbl_location">Where it is kept</label>
+                                        <input id="evLocation" class="form-control" maxlength="300" dir="auto">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="evFile" data-i18n="secd_ev_lbl_file">File</label>
+                                    <input id="evFile" type="file" class="form-control">
+                                    <p class="card-hint" style="margin: 4px 0 0 0;" data-i18n="secd_ev_file_hint">Up to 25 MB. For an item kept elsewhere, such as a laptop, leave this empty and say where it is kept.</p>
+                                </div>
+                                <button type="submit" class="btn btn-ghost" id="evSubmit" data-i18n="secd_ev_btn_add">Add evidence</button>
                             </form>
                         </section>
 
@@ -301,6 +355,37 @@
         </div>
     </div>
 
+    <div id="handOverModal" class="modal-overlay">
+        <div class="modal" style="max-width: 440px;">
+            <form id="handOverForm">
+                <div class="modal-header">
+                    <h2 id="handOverTitle" dir="auto"></h2>
+                    <button type="button" class="close-btn" onclick="closeModal('handOverModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="handOverTo" data-i18n="secd_ev_lbl_to">Handed to *</label>
+                        <select id="handOverTo" class="form-control" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="handOverLocation" data-i18n="secd_ev_lbl_now_kept">Where it is kept now *</label>
+                        <input id="handOverLocation" class="form-control" required maxlength="300" dir="auto">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="handOverNote" data-i18n="secd_ev_lbl_note">Note, e.g. seal number</label>
+                        <textarea id="handOverNote" class="form-control" maxlength="2000" rows="2" dir="auto"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('handOverModal')" data-i18n="btn_cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="sec_btn_save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="accessModal" class="modal-overlay">
         <div class="modal" style="max-width: 480px;">
             <div class="modal-header">
@@ -319,9 +404,9 @@
         import { bindShellActions, showToast, openModal, closeModal, escapeHtml } from './js/ui.js';
         import { t } from './js/i18n.js';
         import {
-            STATUSES, OUTCOMES, CATEGORIES, ITEM_KINDS, ITEM_STATUSES,
+            STATUSES, OUTCOMES, CATEGORIES, ITEM_KINDS, ITEM_STATUSES, EVIDENCE_KINDS, EVIDENCE_MAX_BYTES, EVIDENCE_ACCEPT,
             statusLabel, statusBadge, outcomeLabel, categoryLabel, severityLabel, severityBadge, kindLabel, itemStatusLabel, itemStatusBadge,
-            describeAction, formatDateTime, incidentIdFromUrl, optionsHtml
+            evidenceKindLabel, evidenceLabel, formatFileSize, describeAction, describeCustody, formatDateTime, incidentIdFromUrl, optionsHtml
         } from './js/security.js';
         injectShell();
 
@@ -345,6 +430,8 @@
         let incident = null;
         let users = null;
         let selectedItemId = null;
+        let selectedEvidenceId = null;
+        document.getElementById('evFile').accept = EVIDENCE_ACCEPT;
 
         // Requests are silent so the page shows the API's reason instead of a generic failure
         async function send(path, method, body, done) {
@@ -404,6 +491,7 @@
             renderTriage();
             renderStatus();
             renderItems(canAct);
+            renderEvidence(me);
             renderReview();
             renderHistory();
             renderMembers();
@@ -459,6 +547,49 @@
                         <td>${canAct ? `<button type="button" class="btn btn-ghost btn-item" data-id="${Number(i.id)}" style="padding: 2px 8px;">${escapeHtml(t('secd_item_update'))}</button>` : ''}</td>
                     </tr>`).join('');
             document.getElementById('itemKind').innerHTML = optionsHtml(ITEM_KINDS, kindLabel, 'Server');
+        }
+
+        function renderEvidence(me) {
+            const list = document.getElementById('evidenceList');
+            list.innerHTML = incident.evidence.length === 0
+                ? `<div style="color: var(--text-muted); font-size: 13px;">${escapeHtml(t('secd_ev_empty'))}</div>`
+                : incident.evidence.map(e => {
+                    const hasFile = e.fileName != null;
+                    const custody = e.custody.map(c => {
+                        const { html, note } = describeCustody(c, incident.userNames, hasFile);
+                        return `<div class="custody-entry${c.kind === 'IntegrityFailed' ? ' failed' : ''}"><div>${html}</div>` +
+                            `<div class="history-when">${escapeHtml(formatDateTime(c.createdAt))}</div>` +
+                            `${note ? `<div class="history-note" dir="auto">${escapeHtml(note)}</div>` : ''}</div>`;
+                    }).join('');
+                    const actions = hasFile
+                        ? `<button type="button" class="btn btn-ghost btn-ev-download" data-id="${Number(e.id)}">${escapeHtml(t('secd_ev_download'))}</button>
+                           <button type="button" class="btn btn-ghost btn-ev-check" data-id="${Number(e.id)}">${escapeHtml(t('secd_ev_check'))}</button>`
+                        : (incident.canManage ? `<button type="button" class="btn btn-ghost btn-ev-hand-over" data-id="${Number(e.id)}">${escapeHtml(t('secd_ev_hand_over'))}</button>` : '');
+                    return `
+                        <div class="evidence">
+                            <div class="evidence-head">
+                                <span class="evidence-num">${escapeHtml(evidenceLabel(e.number))}</span>
+                                <span class="badge badge-default">${escapeHtml(evidenceKindLabel(e.kind))}</span>
+                                ${hasFile ? `<span class="evidence-file" dir="auto">${escapeHtml(e.fileName)} · ${escapeHtml(formatFileSize(e.fileSize))}</span>` : ''}
+                            </div>
+                            <div class="evidence-desc" dir="auto">${escapeHtml(e.description)}</div>
+                            <div class="evidence-meta">${escapeHtml(t('secd_ev_collected').replaceAll('{0}', () => name(e.collectedByUserId)).replaceAll('{1}', () => formatDateTime(e.collectedAt)))}</div>
+                            ${hasFile
+                                ? `<div class="evidence-hash"><span>SHA-256</span><code dir="ltr">${escapeHtml(e.sha256)}</code></div>`
+                                : `<div class="evidence-meta">${escapeHtml(t('secd_ev_held').replaceAll('{0}', () => name(e.custodianUserId)).replaceAll('{1}', () => e.location || '—'))}</div>`}
+                            <div class="evidence-actions">${actions}</div>
+                            <details><summary>${escapeHtml(t('secd_ev_custody').replaceAll('{0}', () => String(e.custody.length)))}</summary>${custody}</details>
+                        </div>`;
+                }).join('');
+
+            // Filled once, so a half-written entry keeps its choices when the page refreshes after another action
+            const kind = document.getElementById('evKind');
+            if (kind.options.length === 0) kind.innerHTML = optionsHtml(EVIDENCE_KINDS, evidenceKindLabel, 'LogExport');
+            const collectedBy = document.getElementById('evCollectedBy');
+            if (incident.canManage && collectedBy.options.length === 0) {
+                collectedBy.innerHTML = (users || [])
+                    .map(u => `<option value="${Number(u.id)}"${u.id === me ? ' selected' : ''}>${escapeHtml(`${u.firstName} ${u.lastName}`)}</option>`).join('');
+            }
         }
 
         function renderReview() {
@@ -542,6 +673,93 @@
                 reason: document.getElementById('itemReason').value || null
             }, 'secd_item_updated');
             if (ok) closeModal('itemModal');
+        });
+
+        document.getElementById('evidenceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = document.getElementById('evFile').files[0];
+            const location = document.getElementById('evLocation').value.trim();
+            if (file && file.size > EVIDENCE_MAX_BYTES) return showToast(t('secd_ev_too_big'), 'error');
+            if (!file && !location) return showToast(t('secd_ev_need_file_or_place'), 'error');
+
+            const form = new FormData();
+            form.append('kind', document.getElementById('evKind').value);
+            form.append('description', document.getElementById('evDescription').value);
+            if (location) form.append('location', location);
+            const collectedAt = document.getElementById('evCollectedAt').value;
+            if (collectedAt) form.append('collectedAt', new Date(collectedAt).toISOString());
+            const collectedBy = incident.canManage ? document.getElementById('evCollectedBy').value : '';
+            if (collectedBy) form.append('collectedByUserId', collectedBy);
+            if (file) form.append('file', file);
+
+            const submit = document.getElementById('evSubmit');
+            submit.disabled = true;
+            try {
+                await window.api.request(`${base}/evidence`, { method: 'POST', body: form, silent: true });
+                showToast(t('secd_ev_added'));
+                for (const id of ['evDescription', 'evLocation', 'evCollectedAt', 'evFile']) document.getElementById(id).value = '';
+                await load();
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('secd_action_failed')), 'error');
+            } finally {
+                submit.disabled = false;
+            }
+        });
+
+        document.getElementById('evidenceList').addEventListener('click', async (e) => {
+            const button = e.target.closest('button[data-id]');
+            if (!button) return;
+            const evidence = incident.evidence.find(x => x.id === Number(button.dataset.id));
+            if (!evidence) return;
+            const path = `${base}/evidence/${Number(evidence.id)}`;
+
+            if (button.classList.contains('btn-ev-hand-over')) {
+                selectedEvidenceId = evidence.id;
+                document.getElementById('handOverTitle').textContent = `${evidenceLabel(evidence.number)} · ${evidence.description}`;
+                document.getElementById('handOverTo').innerHTML = `<option value="">—</option>` + (users || [])
+                    .filter(u => u.id !== evidence.custodianUserId)
+                    .map(u => `<option value="${Number(u.id)}">${escapeHtml(`${u.firstName} ${u.lastName} (${u.username})`)}</option>`).join('');
+                document.getElementById('handOverLocation').value = evidence.location || '';
+                document.getElementById('handOverNote').value = '';
+                return openModal('handOverModal');
+            }
+
+            button.disabled = true;
+            try {
+                if (button.classList.contains('btn-ev-download')) {
+                    // The server checks the fingerprint before sending and refuses a changed file
+                    const blob = await window.api.request(`${path}/download`, { responseType: 'blob', silent: true });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = evidence.fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                } else if (button.classList.contains('btn-ev-check')) {
+                    const result = await window.api.request(`${path}/check`, { method: 'POST', silent: true });
+                    showToast(t(result.intact ? 'secd_ev_intact' : 'secd_ev_not_intact'), result.intact ? 'success' : 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('secd_action_failed')), 'error');
+            } finally {
+                button.disabled = false;
+            }
+            // Downloads and checks are part of the chain of custody
+            await load();
+        });
+
+        document.getElementById('handOverForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const ok = await send(`/evidence/${Number(selectedEvidenceId)}/hand-over`, 'POST', {
+                toUserId: Number(document.getElementById('handOverTo').value),
+                location: document.getElementById('handOverLocation').value,
+                note: document.getElementById('handOverNote').value || null
+            }, 'secd_ev_handed_over');
+            if (ok) closeModal('handOverModal');
         });
 
         document.getElementById('reviewForm').addEventListener('submit', async (e) => {

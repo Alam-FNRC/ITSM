@@ -8,6 +8,11 @@ export const OUTCOMES = ['NotSecurity', 'Event', 'Incident'];
 export const CATEGORIES = ['Phishing', 'Malware', 'UnauthorisedAccess', 'AccountCompromise', 'DataLeak', 'LostDevice', 'DenialOfService', 'PolicyViolation', 'Vulnerability', 'Other'];
 export const ITEM_KINDS = ['Server', 'Workstation', 'NetworkDevice', 'Address', 'Application', 'Service', 'UserAccount', 'Other'];
 export const ITEM_STATUSES = ['Open', 'Fixed', 'FalsePositive', 'AcceptedRisk'];
+export const EVIDENCE_KINDS = ['LogExport', 'Screenshot', 'Email', 'Document', 'Device', 'Other'];
+export const CUSTODY_KINDS = ['Collected', 'HandedOver', 'Downloaded', 'Verified', 'IntegrityFailed'];
+// The server's limit (EvidencePolicy) and the types it takes, so the picker offers only those
+export const EVIDENCE_MAX_BYTES = 25 * 1024 * 1024;
+export const EVIDENCE_ACCEPT = '.jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.xls,.docx,.xlsx,.txt,.md,.csv,.json,.xml,.log,.tex,.sql,.py,.zip,.rar,.7z,.tar,.gz,.eml,.msg,.evtx,.pcap,.pcapng';
 
 // "UnauthorisedAccess" -> "sec_cat_unauthorised_access"; the value itself is the fallback for an unknown name
 const keyOf = (prefix, value) => `${prefix}_${String(value).replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()}`;
@@ -19,6 +24,16 @@ export const kindLabel = (value) => t(keyOf('sec_kind', value), value);
 export const itemStatusLabel = (value) => t(keyOf('sec_item', value), value);
 export const progressLabel = (value) => t(keyOf('sec_progress', value), value);
 export const severityLabel = (severity) => severity ? t(`sec_sev_${severity}`, String(severity)) : t('sec_sev_none');
+export const evidenceKindLabel = (value) => t(keyOf('sec_ev_kind', value), value);
+// Evidence is numbered per incident and shown as E1, E2... in every language
+export const evidenceLabel = (number) => `E${Number(number)}`;
+
+export function formatFileSize(bytes) {
+    if (bytes == null) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 const STATUS_BADGES = { New: 'badge-info', Triage: 'badge-warning', Containment: 'badge-danger', Eradication: 'badge-danger', Recovery: 'badge-warning', Review: 'badge-info', Closed: 'badge-success' };
 const SEVERITY_BADGES = { 1: 'badge-danger', 2: 'badge-warning', 3: 'badge-info', 4: 'badge-default' };
@@ -85,8 +100,39 @@ export function describeAction(action, names) {
             return { html: fill('sec_act_item_updated', who, action.note, itemStatusLabel(action.newValue)), note: null };
         case 'ReviewSaved':
             return { html: fill('sec_act_review', who), note: null };
+        case 'EvidenceAdded':
+            return { html: fill('sec_act_evidence_added', who, evidenceLabel(action.newValue)), note: null };
+        case 'EvidenceHandedOver':
+            return { html: fill('sec_act_evidence_handed_over', who, evidenceLabel(action.oldValue), names[action.newValue] ?? `#${action.newValue}`, action.note), note: null };
+        case 'EvidenceIntegrityFailed':
+            return { html: fill('sec_act_evidence_failed', who, evidenceLabel(action.newValue)), note: null };
         default:
             return { html: fill('sec_act_unknown', who, action.kind), note: action.note };
+    }
+}
+
+/**
+ * One step in an evidence item's chain of custody as HTML (every value escaped) plus its note, shown separately.
+ * hasFile tells a stored file from an item kept elsewhere.
+ */
+export function describeCustody(entry, names, hasFile) {
+    const who = names[entry.userId] ?? `#${entry.userId}`;
+    const holder = entry.custodianUserId == null ? '' : (names[entry.custodianUserId] ?? `#${entry.custodianUserId}`);
+    switch (entry.kind) {
+        case 'Collected':
+            return hasFile
+                ? { html: fill('sec_cust_collected_file', who), note: null }
+                : { html: fill('sec_cust_collected_item', who, holder, entry.location), note: null };
+        case 'HandedOver':
+            return { html: fill('sec_cust_handed_over', who, holder, entry.location), note: entry.note };
+        case 'Downloaded':
+            return { html: fill('sec_cust_downloaded', who), note: null };
+        case 'Verified':
+            return { html: fill('sec_cust_verified', who), note: null };
+        case 'IntegrityFailed':
+            return { html: fill(entry.sha256 ? 'sec_cust_failed' : 'sec_cust_missing', who), note: null };
+        default:
+            return { html: fill('sec_act_unknown', who, entry.kind), note: entry.note };
     }
 }
 
