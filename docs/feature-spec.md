@@ -27,7 +27,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned, reports from federal entities (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | Stage 1 done 30 Oct: reporting, restricted access, triage, phases, action and access logs, affected items, members, review. Evidence done 1 Nov. Cut to four steps 2 Nov. Federal reports and moving tickets in are next | P1 | 4 |
 | Business rules engine (routing, auto-assign) | GLPI | Partial: assignment rules | P2 | 4 |
 | SLA matching by service and priority; OLAs; escalation levels | iTop, GLPI | Partial: SLA per priority/project | P2 | 4 |
-| Risk register (replaces FNRC's Excel ISMS risk register; decided 30 Oct) | Neither (ISO 27001 6.1.2, 6.1.3, 8.2, 8.3) | No: kept in Excel | P1 | 4 |
+| Risk register (replaces FNRC's Excel ISMS risk register; decided 30 Oct) | Neither (ISO 27001 6.1.2, 6.1.3, 8.2, 8.3) | Done 2 Nov: register, one approval, yearly review, reminders, Excel import. Links to incidents and assets later | P1 | 4 |
 | Problem management | iTop, GLPI | No | P1 | 4 |
 | Known errors (a problem status, not a separate record; 2 Nov) | iTop | No | P2 | 4 |
 | Change management (standard, normal, emergency) with one approver, no CAB (decided 2 Nov) | iTop, GLPI | No | P1 | 4 |
@@ -131,6 +131,8 @@ Decided 30 Oct 2026: the service desk replaces FNRC's Excel register ("FNRC ISMS
 - **Reminders.** Owners are reminded before the target date; overdue treatments are listed.
 - **Import.** The 14 risks in the Excel are imported, with its typos corrected ("Medum Risk", "Q432025", "A5.30" written as "A.5.30").
 - **KPIs.** Risks by level and status, overdue treatments, original against residual level, accepted risks.
+
+**Built 2 Nov 2026.** The register page shows counts that double as filters (high, medium and low not done, overdue, waiting for approval, due for review). The approver can approve all waiting risks at once, and the security team records the yearly review for the whole register in one step; each risk keeps the date, the reviewer and its scores of the day. Reminders go to the owner 14 days before the target date and when it passes (the security team too), and to the security team once a month while a review is due. The Excel import shows a preview with anything it could not read (such as the target date "Q432025"), asks which user each owner name in the file is, and skips rows already in the register. Not built yet: links to security incidents, federal findings and assets.
 
 Points found in the Excel (30 Oct): scores and levels of risks 3–6 and 10–13 are typed rather than calculated; the treatment list says "Mitigate" where the criteria sheet says "Reduce"; the status drop-down sits on the Recommended Controls column, so Status is free text; the residual "Status" column is empty; risk 14 (IDOR) is mapped to A.5.30 (ICT readiness for business continuity) where A.8.28 or A.8.29 may fit better.
 
