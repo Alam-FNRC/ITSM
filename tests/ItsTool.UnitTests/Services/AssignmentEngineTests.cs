@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using ItsTool.Domain.Entities.Catalog;
 using ItsTool.Domain.Entities.Organization;
 using ItsTool.Domain.Entities.Ticket;
 using ItsTool.Infrastructure.Services;
@@ -70,5 +71,64 @@ public class AssignmentEngineTests : TestBase
         await _engine.AssignTicketAsync(ticket);
         
         Assert.Equal(88, ticket.Assignments.FirstOrDefault()?.AssignedUserId); // 10 comes before 20
+    }
+
+    private async Task<(Group Network, Group Desk, Category Category)> CatalogueAsync(bool categoryTeam)
+    {
+        var network = new Group { Name = "Network" };
+        var desk = new Group { Name = "Service desk" };
+        var service = new ItService { Name = "Network and internet", OwnerGroup = network };
+        var category = new Category { Name = "Wi-Fi", Service = service };
+        _context.AddRange(network, desk, service, category);
+        await _context.SaveChangesAsync();
+        if (categoryTeam)
+        {
+            category.DefaultAssigneeGroupId = desk.Id;
+            await _context.SaveChangesAsync();
+        }
+        return (network, desk, category);
+    }
+
+    [Fact]
+    public async Task Without_a_matching_rule_the_service_owner_team_gets_the_ticket()
+    {
+        var (network, _, category) = await CatalogueAsync(categoryTeam: false);
+        var ticket = new Ticket { Id = 5, CategoryId = category.Id };
+
+        await _engine.AssignTicketAsync(ticket);
+        await _context.SaveChangesAsync();
+
+        Assert.Equal(network.Id, Assert.Single(ticket.Assignments).AssignedGroupId);
+        Assert.Equal($"Users:,Groups:{network.Id}", Assert.Single(_context.TicketHistories).NewValue);
+    }
+
+    [Fact]
+    public async Task The_category_team_comes_before_the_service_owner()
+    {
+        var (_, desk, category) = await CatalogueAsync(categoryTeam: true);
+        var ticket = new Ticket { CategoryId = category.Id };
+
+        await _engine.AssignTicketAsync(ticket);
+
+        Assert.Equal(desk.Id, Assert.Single(ticket.Assignments).AssignedGroupId);
+    }
+
+    [Fact]
+    public async Task A_matching_rule_comes_before_the_catalogue_and_a_removed_team_gets_nothing()
+    {
+        var (network, _, category) = await CatalogueAsync(categoryTeam: false);
+        _context.AssignmentRules.Add(new AssignmentRule { Name = "VIP", SortOrder = 1, CategoryId = category.Id, TargetUserId = 77, IsActive = true });
+        await _context.SaveChangesAsync();
+
+        var ticket = new Ticket { CategoryId = category.Id };
+        await _engine.AssignTicketAsync(ticket);
+        Assert.Equal(77, Assert.Single(ticket.Assignments).AssignedUserId);
+
+        _context.AssignmentRules.RemoveRange(_context.AssignmentRules);
+        network.IsDeleted = true;
+        await _context.SaveChangesAsync();
+        var another = new Ticket { CategoryId = category.Id };
+        await _engine.AssignTicketAsync(another);
+        Assert.Empty(another.Assignments);
     }
 }
