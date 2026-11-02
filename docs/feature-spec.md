@@ -4,6 +4,8 @@
 
 What we will add to the .NET service desk, taken from how iTop and GLPI work, described in our own words. Priorities are provisional until the ISO audit report and the current help desk screenshots arrive. Detailed reference notes: `reference/itop-model-notes.md`, `reference/glpi-feature-notes.md`. Known defects in the original code: `review/2026-10-code-review.md`.
 
+**Keep it small (decided 1–2 Nov 2026).** FNRC's IT team is small. Each flow has only the steps and approvals that ISO 27001 or ITIL require. Where something needs approval, one person approves it: the IT manager, or a deputy given the same permission. There are no multi-step or percentage approvals and no CAB votes. Fields are optional unless an auditor needs them, dates are filled in automatically, and lists are imported from Excel rather than typed.
+
 ## Feature map
 
 Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, **P3** = later. Phases follow the roadmap in CLAUDE.md (1 security, 2 platform, 3 audit and reports, 4 ITIL modules, 5 pilot).
@@ -15,20 +17,20 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Monthly PDF/CSV audit reports | Neither (we build) | CSV ticket export only (fixed 28 Oct) | P1 | 3 |
 | Tamper-proof audit log incl. permissions and logins | Neither (we build) | Partial, with gaps | P1 | 3 |
 | Priority from impact × urgency matrix | iTop, GLPI | No: priority set by hand | P1 | 4 |
-| Ticket approvals with steps and thresholds | GLPI | No | P2 | 4 |
+| Ticket approvals (one approver per request type; decided 2 Nov) | GLPI | No | P2 | 4 |
 | Pending reasons with auto-reminders and auto-resolve | GLPI | No | P2 | 4 |
 | Solution accept / refuse, auto-close after N days | GLPI | Partial | P2 | 4 |
 | Satisfaction surveys (sampled, scored) | GLPI | Basic survey exists | P3 | 4 |
 | Ticket templates (mandatory, hidden, preset fields) | GLPI | Partial via custom fields | P2 | 4 |
 | Parent / child tickets with cascade resolve | iTop | No | P2 | 4 |
 | Major incidents (one outage, many reporters, status updates) | iTop | No | P2 | 4 |
-| Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned, reports from federal entities (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | Stage 1 done 30 Oct: reporting, restricted access, triage, phases, action and access logs, affected items, members, review. Evidence done 1 Nov. Federal reports and moving tickets in are next | P1 | 4 |
+| Security incidents: restricted access, triage, severity, response phases, evidence, lessons learned, reports from federal entities (proposed 28 Oct) | Neither (ISO 27001 A.5.24–A.5.28, A.6.8) | Stage 1 done 30 Oct: reporting, restricted access, triage, phases, action and access logs, affected items, members, review. Evidence done 1 Nov. Cut to four steps 2 Nov. Federal reports and moving tickets in are next | P1 | 4 |
 | Business rules engine (routing, auto-assign) | GLPI | Partial: assignment rules | P2 | 4 |
 | SLA matching by service and priority; OLAs; escalation levels | iTop, GLPI | Partial: SLA per priority/project | P2 | 4 |
 | Risk register (replaces FNRC's Excel ISMS risk register; decided 30 Oct) | Neither (ISO 27001 6.1.2, 6.1.3, 8.2, 8.3) | No: kept in Excel | P1 | 4 |
 | Problem management | iTop, GLPI | No | P1 | 4 |
-| Known Error records | iTop | No | P2 | 4 |
-| Change management (standard, normal, emergency) with CAB approval | iTop, GLPI | No | P1 | 4 |
+| Known errors (a problem status, not a separate record; 2 Nov) | iTop | No | P2 | 4 |
+| Change management (standard, normal, emergency) with one approver, no CAB (decided 2 Nov) | iTop, GLPI | No | P1 | 4 |
 | CMDB: configuration items and relationships | iTop | No | P2 | 4 |
 | Impact analysis (affected services and contacts) | iTop | No | P3 | 4 |
 | Assets with financial info and warranty | GLPI | No | P2 | 4 |
@@ -59,7 +61,7 @@ Keep the existing ticket, workflow and custom-field engine; add the following.
 
 **Statuses.** New, Waiting for approval, Assigned, Pending, Solved, Closed, plus Rejected for requests. A per-role matrix controls who may move a ticket between statuses (extends today's `WorkflowTransitions`).
 
-**Approvals for service requests.** An approval has one or more named steps (e.g. Line manager, IT Security). Each step goes to a user or a group and has a minimum approval percentage; 0% means the first answer decides. Any refused step refuses the request. Pending approvers get reminder emails.
+**Approvals for service requests.** A request type can need one approval, from a named user or from anyone holding the approver permission (for example the IT manager). The approver approves, or refuses with a reason, and a refused request is closed. Pending approvers get a reminder email. There are no multi-step or percentage approvals (decided 2 Nov 2026).
 
 **Pending reasons.** Each reason (e.g. "Waiting for user") can post an automatic reminder every N days and auto-solve the ticket after N unanswered reminders.
 
@@ -67,7 +69,7 @@ Keep the existing ticket, workflow and custom-field engine; add the following.
 
 **Parent and child tickets.** Solving a parent incident solves all open children, copying the solution. Tickets can also be linked as duplicates or as related.
 
-**Major incidents.** An agent can mark an incident as major when it stops a service for many users (e.g. email down). A major incident gets a named incident manager and the highest priority, and IT management is notified at once. Reports from other users about the same outage are linked as its children, and status updates posted on it go to every child's requester. Closing it requires a short review and usually raises a Problem.
+**Major incidents.** An agent can mark an incident as major when it stops a service for many users (e.g. email down). A major incident gets a named incident manager and the highest priority, and IT management is notified at once. Reports from other users about the same outage are linked as its children, and status updates posted on it go to every child's requester. Closing it needs a short note on the cause and can raise a Problem.
 
 **Ticket templates per category.** Fields can be mandatory, preset, hidden or read-only; required fields can also be set per status (e.g. resolution code required to solve).
 
@@ -96,12 +98,12 @@ A security incident (phishing, malware, account compromise, data leak, lost lapt
 - **Reporting (A.6.8).** Any staff member can report a suspected security issue from a "Report a security issue" button with only a few required fields. Suspicious emails can later be forwarded to a dedicated mailbox (with email-to-ticket). An agent can move an ordinary ticket into the security area. From then on the restricted rules apply to it.
 - **Triage (A.5.25).** The security team decides whether the report is not a security issue (it goes back to the service desk as a normal ticket), a security event (logged, no response needed) or a security incident. The decision, the reason and who made it are recorded.
 - **Classification.** Category (phishing, malware, unauthorised access, account compromise, data leak or loss, lost or stolen device, denial of service, policy violation, other). Severity 1–4 is set from the impact on confidentiality, integrity and availability and the classification of the affected data. A flag marks incidents where personal data is involved.
-- **Response phases (A.5.26).** New → Triage → Containment → Eradication → Recovery → Post-incident review → Closed. Each phase change is timestamped, and the times to triage, contain and resolve are stored for the KPIs. Severity sets the SLA targets and escalation, e.g. severity 1 notifies the security lead and IT manager at once.
+- **Response steps (A.5.26).** New → Triage → Responding → Closed. Containment, eradication and recovery are work done while Responding and are written in the action log, not separate steps (cut from seven steps on 2 Nov 2026). Each step change is timestamped, and the times to triage, respond and close are stored for the KPIs. Severity sets the SLA targets and escalation, e.g. severity 1 notifies the security lead and IT manager at once.
 - **Action log.** A dated, append-only record of every action taken (who, what, when), kept separate from comments. It cannot be edited or deleted.
 - **Evidence (A.5.28).** Each evidence item (log export, screenshot, email, device) records a description, who collected it and when, and where it is kept. Files also get a SHA-256 hash. Every hand-over is recorded (chain of custody). Evidence files cannot be deleted or replaced. Built 1 Nov: files up to 25 MB (attachment types plus e-mails, Windows event logs and packet captures); items kept elsewhere, such as a laptop, record who holds them and where. The security team and people on the incident add evidence; only the security team records hand-overs. Every download and check re-computes the hash and is recorded; a file that no longer matches is refused and the security team is notified.
 - **Affected items.** Affected users, devices, systems and services. These are linked to CMDB items once the CMDB exists.
-- **Lessons learned (A.5.27).** Closing a severity 1 or 2 incident requires a post-incident review: root cause, what worked, what to improve, and follow-up actions. Each follow-up action can raise a Problem or a Change. The review is optional for severity 3 and 4.
-- **KPIs.** Counts by category and severity, mean time to triage, contain and resolve, the share of incidents with a completed review, and open incidents by age.
+- **Lessons learned (A.5.27).** Closing a severity 1 or 2 incident needs a short lessons-learned note; the other review fields (root cause, what worked, follow-up actions) are optional. Not needed for severity 3 and 4. Later, a follow-up action can raise a Problem or a Change.
+- **KPIs.** Counts by category and severity, mean time to triage, respond and close, the share of incidents with lessons learned, and open incidents by age.
 
 **Reports from federal entities** (confirmed 30 Oct). FNRC does not report incidents to outside bodies. Instead, federal entities send FNRC reports when their scans or monitoring find something that affects FNRC. The security team logs each report and works through the issues in it.
 
@@ -118,12 +120,14 @@ A security incident (phishing, malware, account compromise, data leak, lost lapt
 Decided 30 Oct 2026: the service desk replaces FNRC's Excel register ("FNRC ISMS Risk Assessment register", v.12), which is never committed to the repository because it names vulnerable systems. Built from ISO 27001:2022 clauses 6.1.2 and 8.2 (assessment) and 6.1.3 and 8.3 (treatment).
 
 - **Risk record.** Reference, risk scenario, threat, cause or vulnerability, existing controls (the Excel's "Risk Analysis & Assessment" columns).
-- **Evaluation.** Impact on confidentiality, integrity and availability (1–5 each) and likelihood (1–5), with the "Assessment Criteria" descriptions shown as help. Score = average of the three impacts × likelihood, 1–25, as in the Excel (decided 30 Oct). Levels: Low up to 4, Medium up to 12, High above 12. The Excel's own bands leave gaps for fractional scores (a score of 12.67 shows "0"); these bands close them (to confirm).
-- **Treatment.** Option (Mitigate, Avoid, Accept, Transfer), recommended controls, ISO 27001 Annex A controls (picked from the 2022 list, not typed), risk owner (a user), target date, status. The IT manager approves each treatment plan and every decision to accept a risk; who approved and when is recorded (decided 30 Oct).
+- **Evaluation.** Impact on confidentiality, integrity and availability (1–5 each) and likelihood (1–5), with the "Assessment Criteria" descriptions shown as help. Score = average of the three impacts × likelihood, 1–25, as in the Excel (decided 30 Oct). Levels: Low up to 4, Medium up to 12, High above 12 (confirmed 2 Nov). The Excel's own bands leave gaps for fractional scores (a score of 12.67 shows "0"); these bands close them.
+- **Treatment.** Option (Mitigate, Avoid, Accept, Transfer), recommended controls, ISO 27001 Annex A controls (picked from the 2022 list, not typed; FNRC has no separate Statement of Applicability), risk owner (a user), and an exact target date so reminders work.
+- **Status.** Open → Treating → Done (decided 2 Nov). Overdue is shown automatically from the target date. The Excel's residual "Status" column is dropped.
+- **One approval (6.1.3 f).** The IT manager approves the treatment plan, or the decision to accept the risk, with one click; who approved and when is recorded (decided 30 Oct). Changing the plan afterwards clears the approval.
 - **Residual risk.** Impacts and likelihood after treatment, scored the same way, next to the original score.
-- **History and reviews.** Every change to scores, treatment, owner and status goes to an append-only history. A periodic review records its date, reviewer and the scores at that time, so auditors can see how each risk changed.
+- **History and reviews.** Every change to scores, treatment, owner and status goes to an append-only history. The register is reviewed once a year (decided 2 Nov): a reminder is sent, and marking a risk as reviewed records the date, reviewer and the scores at that time, so auditors can see how each risk changed.
 - **Access.** The security team and the IT manager see every risk; a risk owner also sees the risks they own (decided 30 Oct). Same explicit-only permission rules as security incidents.
-- **Links.** Security incidents (an incident can show that a risk happened, or reveal a new one), federal report findings, and later changes and CMDB assets.
+- **Links.** Security incidents (an incident can show that a risk happened, or reveal a new one), federal report findings, and later changes and assets (an optional link once the asset register exists; decided 2 Nov).
 - **Reminders.** Owners are reminded before the target date; overdue treatments are listed.
 - **Import.** The 14 risks in the Excel are imported, with its typos corrected ("Medum Risk", "Q432025", "A5.30" written as "A.5.30").
 - **KPIs.** Risks by level and status, overdue treatments, original against residual level, accepted risks.
@@ -134,34 +138,34 @@ Points found in the Excel (30 Oct): scores and levels of risks 3–6 and 10–13
 
 A **Problem** is the root cause behind one or more incidents. It reuses the ticket base (assignee, team, category, impact × urgency priority, tasks, time measures).
 
-- **Statuses:** New, Assigned, Pending, Solved, Under observation, Closed. Closed problems are read-only.
+- **Statuses:** Open → Known error (cause and workaround written down) → Closed. Closed problems are read-only (kept short, 2 Nov).
 - **Analysis fields:** Symptoms, Causes, Impact.
 - **Links:** incidents and requests (many), the fixing Change, Known Errors.
 - **Bulk solve:** solving a problem can, optionally, solve all linked open incidents with one action.
-- **Roles:** Problem Manager assigns and closes.
 
-A **Known Error** is a knowledge record, not a ticket: symptom (required), root cause, workaround, permanent solution, error code, domain (application, network, server, desktop), affected configuration items, originating problem. Agents see matching known errors on new incidents; the AI copilot can use them as a source.
+A **known error** is a problem whose cause and workaround are written down, not a separate record: symptom, root cause, workaround, permanent solution and affected items. Agents see matching known errors on new incidents; the AI copilot can use them as a source.
 
-## Change management and CAB
+## Change management
 
-| Type | Validation (acceptance) | CAB approval | Example |
-| --- | --- | --- | --- |
-| Standard (routine) | No | No, pre-approved | Password policy reset, monthly patching |
-| Normal | Yes | Yes | New firewall rule, server upgrade |
-| Emergency | No | Yes, by emergency approvers | Fix for a live outage |
+Kept to what ITIL and ISO 27001 A.8.32 require (decided 2 Nov 2026): one approver, no CAB.
 
-**Normal change flow:** New → Validated (or Rejected) → Assigned → Planned → Approved (or Not approved → back to Planned) → Implemented → Under review → Closed. Cancelled is possible from any open state. Standard changes skip validation and approval; emergency changes skip validation only.
+| Type | Approval | Example |
+| --- | --- | --- |
+| Standard (routine) | None: pre-approved | Password policy reset, monthly patching |
+| Normal | One approval by the IT manager, or a deputy with the same permission | New firewall rule, server upgrade |
+| Emergency | Done first, approved afterwards by the IT manager | Fix for a live outage |
 
-**Required per step**
+**Flow:** New → Approved (or Rejected) → Done. Standard changes go straight from New to Done; Cancelled is possible from any open state.
 
-- To validate: supervisor group, manager group, acceptance comment.
-- To plan: start and end dates, impact description, outage yes/no, implementation plan, **rollback plan**, test plan, checklist.
-- To approve: CAB decision and comment.
-- To close: outcome (successful, partially successful, failed, rolled back) and post-implementation review notes.
+**What each step asks for**
 
-**CAB.** Neither iTop nor GLPI has a real CAB object, so we build one: a CAB group, approval steps with a minimum percentage (reusing ticket approvals), and a "waiting for CAB" list for the meeting. Meeting minutes are optional, later.
+- To raise: what, why, planned date, and a rollback plan (one text box each).
+- To approve: approve or reject, with an optional comment.
+- To finish: the result (successful, failed, rolled back) and an optional note.
 
-**Links:** related incidents, problems, requests, affected configuration items, child changes. **Roles:** Change Supervisor (validate, assign, close), Change Implementer (plan, implement), Change Approver (CAB).
+**No CAB.** The IT manager is the change authority and may consult others before approving.
+
+**Links:** related incidents, problems and requests, and affected assets. **Permissions:** one to raise and carry out changes, one to approve them.
 
 Audit value: change success rate, emergency change ratio and changes without approval are standard ISO 27001 A.8.32 evidence.
 
@@ -239,7 +243,7 @@ iTop is AGPL and GLPI is GPL. This spec and the reference notes were written by 
 - [ ] Which IT governance standard is being pursued: ISO/IEC 20000-1, ISO/IEC 38500 or another?
 - [ ] Fields, categories and statuses of the current help desk, incident and change screens (screenshots).
 - [ ] Does FNRC already have an asset inventory tool (Intune, SCCM, spreadsheet)?
-- [ ] Who sits on the CAB, and how often does it meet?
+- [x] Who sits on the CAB? No CAB: the IT manager approves changes alone (2 Nov).
 - [ ] Does the service desk serve only internal staff, or also other entities?
 - [x] Who may see security incidents? The security team and the IT manager, plus people added to a single incident (30 Oct).
 - [x] Must FNRC report security incidents to an outside authority? No. It receives reports from federal entities and logs their issues as incidents (30 Oct).
@@ -247,8 +251,4 @@ iTop is AGPL and GLPI is GPL. This spec and the reference notes were written by 
 - [x] Does FNRC reply to the sending entity? Yes, with a status summary; no fixed deadline (30 Oct).
 - [x] One incident per issue or per server? Per issue, with the affected servers listed inside it (30 Oct).
 - [ ] Does FNRC already have an incident response procedure or severity scale to follow?
-- [ ] Risk register: should risks link to an asset list? The impact criteria are per asset, but the Excel has no asset column.
-- [ ] Risk register: statuses beyond Planned and Closed (e.g. Open, In progress, Accepted, Overdue)? What is the residual "Status" column for?
-- [ ] Risk register: target dates as quarters or exact dates (exact dates allow reminders)? How often is the register reviewed?
-- [ ] Is there a Statement of Applicability to pick Annex A controls from?
-- [ ] Risk levels for fractional scores: is Low up to 4, Medium up to 12, High above 12 right?
+- [x] Risk register (2 Nov): optional link to assets later; status Open → Treating → Done, overdue shown automatically; the residual "Status" column is dropped; exact target dates; reviewed yearly; Annex A controls picked from the 2022 list (no separate SoA); Low up to 4, Medium up to 12, High above 12.
