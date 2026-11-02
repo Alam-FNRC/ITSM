@@ -145,6 +145,9 @@ const shellHtml = `
                 <a href="/admin-crud.html?type=projects" class="sidebar-nav-item" data-type="projects">
                     <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v2H8V8zm0 4h8v2H8v-2z"/></svg> <span data-i18n="nav_projects">Projects</span>
                 </a>
+                <a href="/admin-crud.html?type=services" class="sidebar-nav-item" data-type="services">
+                    <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h10v2H4v-2zm0 5h16v2H4v-2zm14-6l4 2-4 2v-4z"/></svg> <span data-i18n="nav_services">Service catalogue</span>
+                </a>
                 <a href="/admin-crud.html?type=categories" class="sidebar-nav-item" data-type="categories">
                     <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm15 0h-2v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg> <span data-i18n="nav_categories">Categories</span>
                 </a>

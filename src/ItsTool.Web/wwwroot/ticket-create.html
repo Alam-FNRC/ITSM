@@ -79,6 +79,7 @@
                                 <div class="form-group">
                                     <label class="form-label" for="categoryId" data-i18n="tc_lbl_category">Category *</label>
                                     <select class="form-control" id="categoryId" required><option value="" data-i18n="tc_opt_cat">Select Category</option></select>
+                                    <div id="serviceHint" class="text-muted" style="font-size: 12px; margin-top: 4px;" dir="auto"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="typeId" data-i18n="tc_lbl_type">Ticket Type *</label>
@@ -129,16 +130,19 @@
         import './js/api.js?v=9999';
         import { bindShellActions, showToast } from './js/ui.js';
         import { t } from './js/i18n.js';
+        import { categoryOptionsHtml, defaultTypeFor, serviceOf } from './js/catalogue.js';
         injectShell();
         
         if (!window.api.token) window.location.href = '/login.html';
         bindShellActions();
         
         let currentPlacements = [];
+        let lookupData = {};
 
         async function loadLookups() {
             try {
                 const lookup = await window.api.request('/lookup');
+                lookupData = lookup;
 
                 const populate = (id, data) => {
                     const sel = document.getElementById(id);
@@ -151,7 +155,8 @@
                 };
 
                 populate('projectId', lookup.projects);
-                populate('categoryId', lookup.categories);
+                // Categories grouped by service, so one choice says what the ticket is about
+                document.getElementById('categoryId').insertAdjacentHTML('beforeend', categoryOptionsHtml(lookup.categories, lookup.services));
                 populate('typeId', lookup.ticketTypes);
                 populate('priorityId', lookup.priorities);
             } catch (err) {
@@ -238,6 +243,15 @@
                 container.innerHTML = `<span class="text-danger">${t('tc_fields_failed')}</span>`;
             }
         };
+
+        // A category can bring its ticket type (e.g. Service Request for "New laptop"); the user can still change it
+        document.getElementById('categoryId').addEventListener('change', (e) => {
+            const typeId = defaultTypeFor(e.target.value, lookupData.categories);
+            const typeSelect = document.getElementById('typeId');
+            if (typeId && [...typeSelect.options].some(o => Number(o.value) === typeId)) typeSelect.value = String(typeId);
+            const service = serviceOf(e.target.value, lookupData.categories, lookupData.services);
+            document.getElementById('serviceHint').textContent = service?.description || '';
+        });
 
         ['projectId', 'categoryId', 'typeId'].forEach(id => {
             document.getElementById(id).addEventListener('change', window.loadDynamicFields);
