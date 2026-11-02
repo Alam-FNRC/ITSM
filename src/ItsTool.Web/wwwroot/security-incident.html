@@ -217,25 +217,28 @@
                         </section>
 
                         <section class="card" id="reviewCard" style="display: none;">
-                            <h3 data-i18n="secd_review_title">Post-incident review</h3>
+                            <h3 data-i18n="secd_review_title">Lessons learned</h3>
                             <p class="card-hint" id="reviewHint"></p>
                             <form id="reviewForm">
                                 <div class="form-group">
-                                    <label class="form-label" for="reviewRootCause" data-i18n="secd_lbl_root_cause">Root cause</label>
-                                    <textarea id="reviewRootCause" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                    <label class="form-label" for="reviewImprovements" data-i18n="secd_lbl_improvements">Lessons learned: what will we do differently?</label>
+                                    <textarea id="reviewImprovements" class="form-control review-field" maxlength="4000" rows="3" dir="auto"></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="reviewWhatWorked" data-i18n="secd_lbl_what_worked">What worked</label>
-                                    <textarea id="reviewWhatWorked" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="reviewImprovements" data-i18n="secd_lbl_improvements">What to improve</label>
-                                    <textarea id="reviewImprovements" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="reviewFollowUps" data-i18n="secd_lbl_follow_ups">Follow-up actions</label>
-                                    <textarea id="reviewFollowUps" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
-                                </div>
+                                <details id="reviewMore" style="margin-bottom: var(--spacing-md);">
+                                    <summary style="cursor: pointer; font-size: 13px;" data-i18n="secd_review_more">More detail (optional)</summary>
+                                    <div class="form-group" style="margin-top: var(--spacing-sm);">
+                                        <label class="form-label" for="reviewRootCause" data-i18n="secd_lbl_root_cause">Root cause</label>
+                                        <textarea id="reviewRootCause" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="reviewWhatWorked" data-i18n="secd_lbl_what_worked">What worked</label>
+                                        <textarea id="reviewWhatWorked" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="reviewFollowUps" data-i18n="secd_lbl_follow_ups">Follow-up actions</label>
+                                        <textarea id="reviewFollowUps" class="form-control review-field" maxlength="4000" rows="2" dir="auto"></textarea>
+                                    </div>
+                                </details>
                                 <div style="display: flex; align-items: center; gap: var(--spacing-md);">
                                     <button type="submit" class="btn btn-primary manage-only" data-i18n="secd_btn_review">Save review</button>
                                     <span id="reviewState" style="font-size: 12px;"></span>
@@ -510,9 +513,6 @@
                 prop(t('secd_occurred'), formatDateTime(incident.occurredAt));
             document.getElementById('phasesList').innerHTML =
                 prop(t('secd_triaged'), formatDateTime(incident.triagedAt)) +
-                prop(t('secd_contained'), formatDateTime(incident.containedAt)) +
-                prop(t('secd_eradicated'), formatDateTime(incident.eradicatedAt)) +
-                prop(t('secd_recovered'), formatDateTime(incident.recoveredAt)) +
                 prop(t('secd_closed'), formatDateTime(incident.closedAt));
         }
 
@@ -602,6 +602,8 @@
                 el.value = value || '';
                 el.readOnly = !incident.canManage;
             }
+            // The optional fields stay folded away unless something was written in them
+            document.getElementById('reviewMore').open = !!(incident.reviewRootCause || incident.reviewWhatWorked || incident.reviewFollowUps);
             const state = document.getElementById('reviewState');
             state.textContent = incident.reviewCompletedAt ? t('secd_review_complete') : t('secd_review_incomplete');
             state.style.color = incident.reviewCompletedAt ? 'var(--success)' : 'var(--text-muted)';

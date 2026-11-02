@@ -182,7 +182,7 @@ public class SecurityIncidentService : ISecurityIncidentService
             incident.ReporterUserId, incident.CreatedAt, incident.OccurredAt, incident.HandlerUserId,
             incident.TriageOutcome.ToString(), incident.TriageReason, incident.TriagedAt, incident.TriagedByUserId,
             incident.Category.ToString(), incident.Severity, incident.PersonalDataInvolved,
-            incident.ContainedAt, incident.EradicatedAt, incident.RecoveredAt, incident.ClosedAt,
+            incident.ClosedAt,
             incident.ReviewRootCause, incident.ReviewWhatWorked, incident.ReviewImprovements, incident.ReviewFollowUps, incident.ReviewCompletedAt,
             ReviewRequired(incident),
             actions.Select(a => new SecurityIncidentActionDto(a.Id, a.UserId, a.Kind, a.Field, a.OldValue, a.NewValue, a.Note, a.CreatedAt)).ToList(),
@@ -251,8 +251,8 @@ public class SecurityIncidentService : ISecurityIncidentService
         incident.TriagedByUserId = userId;
         incident.HandlerUserId ??= userId;
 
-        // Not a security issue, or an event that needs no response: the case is closed. An incident goes to containment.
-        var next = outcome == SecurityTriageOutcome.Incident ? SecurityIncidentStatus.Containment : SecurityIncidentStatus.Closed;
+        // Not a security issue, or an event that needs no response: the case is closed. An incident is responded to.
+        var next = outcome == SecurityTriageOutcome.Incident ? SecurityIncidentStatus.Responding : SecurityIncidentStatus.Closed;
         if (outcome != SecurityTriageOutcome.Incident || incident.Status is SecurityIncidentStatus.New or SecurityIncidentStatus.Triage or SecurityIncidentStatus.Closed)
         {
             MoveTo(incident, userId, next, null);
@@ -269,14 +269,14 @@ public class SecurityIncidentService : ISecurityIncidentService
 
         if (target == SecurityIncidentStatus.New)
             throw new ArgumentException("An incident cannot go back to New.");
-        if (target is >= SecurityIncidentStatus.Containment and <= SecurityIncidentStatus.Review && incident.TriageOutcome != SecurityTriageOutcome.Incident)
-            throw new ArgumentException("Only a report triaged as an incident goes through the response phases.");
+        if (target == SecurityIncidentStatus.Responding && incident.TriageOutcome != SecurityTriageOutcome.Incident)
+            throw new ArgumentException("Only a report triaged as an incident is responded to.");
         if (target == SecurityIncidentStatus.Closed)
         {
             if (incident.TriageOutcome == SecurityTriageOutcome.Pending)
                 throw new ArgumentException("Triage the report before closing it.");
             if (ReviewRequired(incident) && incident.ReviewCompletedAt == null)
-                throw new ArgumentException("A severity 1 or 2 incident needs a post-incident review before it is closed.");
+                throw new ArgumentException("A severity 1 or 2 incident needs its lessons learned before it is closed.");
         }
         // Going back, or reopening, must say why
         if ((target < incident.Status || incident.Status == SecurityIncidentStatus.Closed) && note == null)
@@ -291,15 +291,8 @@ public class SecurityIncidentService : ISecurityIncidentService
     {
         if (target == incident.Status) return;
         Record(incident, userId, SecurityIncidentActions.StatusChanged, "Status", incident.Status.ToString(), target.ToString(), note);
-        var now = DateTime.UtcNow;
-        switch (target)
-        {
-            case SecurityIncidentStatus.Containment: incident.ContainedAt ??= now; break;
-            case SecurityIncidentStatus.Eradication: incident.EradicatedAt ??= now; break;
-            case SecurityIncidentStatus.Recovery: incident.RecoveredAt ??= now; break;
-            case SecurityIncidentStatus.Closed: incident.ClosedAt = now; break;
-        }
-        if (incident.Status == SecurityIncidentStatus.Closed) incident.ClosedAt = null;
+        // Closing stamps the time; reopening clears it
+        incident.ClosedAt = target == SecurityIncidentStatus.Closed ? DateTime.UtcNow : null;
         incident.Status = target;
     }
 
@@ -380,7 +373,7 @@ public class SecurityIncidentService : ISecurityIncidentService
         await _context.SaveChangesAsync();
     }
 
-    /// <summary>A.5.27: the review counts as done once it names the root cause and what to improve.</summary>
+    /// <summary>A.5.27: the lessons learned (what to improve) are the one required part; the other fields are optional.</summary>
     public async Task SaveReviewAsync(int userId, int incidentId, SaveSecurityReviewDto dto)
     {
         var (incident, _) = await LoadAsync(userId, incidentId, requireManage: true);
@@ -389,7 +382,7 @@ public class SecurityIncidentService : ISecurityIncidentService
         incident.ReviewImprovements = Trimmed(dto.Improvements);
         incident.ReviewFollowUps = Trimmed(dto.FollowUps);
 
-        var complete = incident.ReviewRootCause != null && incident.ReviewImprovements != null;
+        var complete = incident.ReviewImprovements != null;
         if (complete)
         {
             incident.ReviewCompletedAt = DateTime.UtcNow;
