@@ -1297,5 +1297,6 @@ export const ar = {
     "secd_ev_intact": "لا يزال الملف مطابقاً لبصمته.",
     "secd_ev_not_intact": "لم يعد الملف مطابقاً لبصمته. تم إبلاغ فريق الأمن.",
     "notif_title_security_evidence": "فشل فحص الدليل",
-    "notif_body_security_evidence": "لم يجتز الدليل {0} في الحادث الأمني {1} فحص البصمة."
+    "notif_body_security_evidence": "لم يجتز الدليل {0} في الحادث الأمني {1} فحص البصمة.",
+    "td_times_closed": "أُغلقت بعد"
 };

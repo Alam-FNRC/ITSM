@@ -10,7 +10,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 
 | Feature | Best reference | In our tool today | Priority | Phase |
 | --- | --- | --- | --- | --- |
-| Stored time measures (time to own, waiting, solve, close, effort) | GLPI | Done 30 Oct for own, waiting and solve, plus reopen and assignment counts; close and effort wait for solution acceptance and tasks | P1 | 3 |
+| Stored time measures (time to own, waiting, solve, close, effort) | GLPI | Done: own, waiting, solve, reopen and assignment counts (30 Oct); close (2 Nov). Effort left out: the team does not log time (decided 2 Nov) | P1 | 3 |
 | KPI statistics by period and dimension | GLPI | No | P1 | 3 |
 | Monthly PDF/CSV audit reports | Neither (we build) | CSV ticket export only (fixed 28 Oct) | P1 | 3 |
 | Tamper-proof audit log incl. permissions and logins | Neither (we build) | Partial, with gaps | P1 | 3 |
@@ -55,7 +55,7 @@ Keep the existing ticket, workflow and custom-field engine; add the following.
 - Time to own: opening until the first update by an assigned agent or group member.
 - Waiting time: total time in Pending.
 - Time to solve and time to close: from opening, minus waiting time.
-- Effort: sum of task durations.
+- Effort: sum of task durations. Not built: the team does not log time (decided 2 Nov 2026).
 
 **Statuses.** New, Waiting for approval, Assigned, Pending, Solved, Closed, plus Rejected for requests. A per-role matrix controls who may move a ticket between statuses (extends today's `WorkflowTransitions`).
 

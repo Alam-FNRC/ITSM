@@ -609,6 +609,10 @@
                                         <span id="tTimeToResolve" style="font-weight: 600;">—</span>
                                     </div>
                                     <div style="display: flex; justify-content: space-between; gap: 8px;">
+                                        <span style="color: var(--text-muted); font-size: 11px;" data-i18n="td_times_closed">Closed after</span>
+                                        <span id="tTimeToClose" style="font-weight: 600;">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; gap: 8px;">
                                         <span style="color: var(--text-muted); font-size: 11px;" data-i18n="td_times_reopened">Reopened</span>
                                         <span id="tTimeReopened" style="font-weight: 600;">—</span>
                                     </div>
@@ -1670,6 +1674,7 @@
                     ? t('td_times_waiting_now').replaceAll('{0}', formatWorkingTime(times.waitingMinutes))
                     : formatWorkingTime(times.waitingMinutes);
                 document.getElementById('tTimeToResolve').textContent = orNotYet(times.timeToResolveMinutes);
+                document.getElementById('tTimeToClose').textContent = orNotYet(times.timeToCloseMinutes);
                 document.getElementById('tTimeReopened').textContent = new Intl.NumberFormat(getLocale()).format(times.reopenCount);
             } catch (e) {
                 group.style.display = 'none';

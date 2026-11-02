@@ -25,6 +25,11 @@ public class TicketTimeMeasure : BaseEntity
     /// <summary>From opening to ResolvedAt, minus the waiting time before it.</summary>
     public int? TimeToResolveMinutes { get; set; }
 
+    /// <summary>When the ticket last moved into a final status (Closed); cleared when it leaves it.</summary>
+    public DateTime? ClosedAt { get; set; }
+    /// <summary>From opening to ClosedAt, minus the waiting time before it.</summary>
+    public int? TimeToCloseMinutes { get; set; }
+
     public int ReopenCount { get; set; }
     /// <summary>Times the ticket was assigned or transferred to a group, including by assignment rules.</summary>
     public int AssignmentCount { get; set; }
