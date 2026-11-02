@@ -69,6 +69,9 @@ function applyRbacToSidebar() {
     // Security incidents need a security permission; SuperAdmin does not get one automatically
     const securityTeam = perms.includes('security.incident.view') || perms.includes('security.incident.manage');
     document.querySelectorAll('[data-security-only]').forEach(el => { el.style.display = securityTeam ? '' : 'none'; });
+    // The risk register likewise; a risk owner without either permission opens their risks from the reminders
+    const riskTeam = perms.includes('risk.manage') || perms.includes('risk.approve');
+    document.querySelectorAll('[data-risk-only]').forEach(el => { el.style.display = riskTeam ? '' : 'none'; });
     // Items for one permission; SuperAdmin holds every permission that is not explicit-only
     document.querySelectorAll('[data-permission]').forEach(el => { el.style.display = isSuperAdmin || perms.includes(el.dataset.permission) ? '' : 'none'; });
 
@@ -139,6 +142,9 @@ const shellHtml = `
                 </a>
                 <a href="/security-incidents.html" class="sidebar-nav-item" data-security-only style="display: none;">
                     <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg> <span data-i18n="nav_security_incidents">Security incidents</span>
+                </a>
+                <a href="/risks.html" class="sidebar-nav-item" data-risk-only style="display: none;">
+                    <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> <span data-i18n="nav_risks">Risk register</span>
                 </a>
                 
                 <div class="sidebar-nav-title" style="padding: 16px 20px 8px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;" data-i18n="nav_admin_title">Administration</div>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav_risks" data-i18n-target="document-title">ITSM Tool - Risk register</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .admin-header { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; }
+        .header-actions { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+        .summary-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; text-align: start; cursor: pointer; font: inherit; color: inherit; }
+        .summary-card:hover, .summary-card.active { border-color: var(--primary); }
+        .summary-card .num { font-size: 22px; font-weight: 700; }
+        .summary-card .lbl { font-size: 12px; color: var(--text-muted); }
+        .summary-card.high .num { color: var(--danger); }
+        .summary-card.medium .num { color: var(--warning); }
+        .summary-card.low .num { color: var(--success); }
+        .bulk { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; margin-bottom: var(--spacing-md); }
+        .filters { display: flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap; margin-bottom: var(--spacing-md); }
+        .filters .form-control { width: auto; min-width: 170px; }
+        .table-container { background: var(--bg-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow-x: auto; }
+        .risk-row { cursor: pointer; }
+        .risk-row:hover { background: var(--bg-hover); }
+        .nowrap { white-space: nowrap; }
+        .overdue { color: var(--danger); font-weight: 600; }
+        .modal.wide { max-width: 1000px; width: 95vw; }
+        .owner-map { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px var(--spacing-md); align-items: center; margin-bottom: var(--spacing-md); }
+        .import-notes { font-size: 12px; color: var(--warning); }
+        .import-skip { font-size: 12px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <div class="app-shell" data-shell>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <h2 data-i18n="risk_title">Risk register</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
+                        <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
+                            <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
+                            <div id="notificationItems"></div>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item text-center text-muted" onclick="markAllAsRead(event)" data-i18n="topbar_mark_all_read" style="width: 100%; border: none; background: none;">Mark all as read</button></li>
+                        </ul>
+                    </div>
+                    <div class="avatar">U</div>
+                    <button class="btn btn-ghost" id="shellLogoutBtn" data-i18n="topbar_logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="admin-header">
+                    <div>
+                        <h3 style="margin:0; font-size: 18px;" data-i18n="risk_title">Risk register</h3>
+                        <p class="text-muted" style="margin: 4px 0 0 0; font-size: 13px;" data-i18n="risk_desc">Seen only by the security team, the IT manager and each risk's owner.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-ghost manage-only" id="btnImport" style="display: none;" data-i18n="risk_btn_import">Import from Excel</button>
+                        <button type="button" class="btn btn-primary manage-only" id="btnNew" style="display: none;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-inline-end: 4px; vertical-align: middle;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="risk_btn_new">New risk</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="summary" id="summary"></div>
+                <div class="bulk">
+                    <button type="button" class="btn btn-primary" id="btnApproveAll" style="display: none;"></button>
+                    <button type="button" class="btn btn-ghost" id="btnReviewAll" style="display: none;" data-i18n="risk_btn_review_all">Record the yearly review</button>
+                </div>
+
+                <div class="filters">
+                    <input id="filterSearch" class="form-control" type="search" dir="auto" data-i18n="risk_search_ph" data-i18n-target="placeholder" placeholder="Search reference or risk">
+                    <select id="filterStatus" class="form-control" aria-label="Status" data-i18n="risk_col_status" data-i18n-target="aria-label"></select>
+                    <select id="filterLevel" class="form-control" aria-label="Level" data-i18n="risk_col_level" data-i18n-target="aria-label"></select>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="risk_col_ref">Ref</th>
+                                <th data-i18n="risk_col_risk">Risk</th>
+                                <th data-i18n="risk_col_level">Level</th>
+                                <th data-i18n="risk_col_residual">After treatment</th>
+                                <th data-i18n="risk_col_treatment">Treatment</th>
+                                <th data-i18n="risk_col_owner">Owner</th>
+                                <th data-i18n="risk_col_target">Target date</th>
+                                <th data-i18n="risk_col_status">Status</th>
+                                <th data-i18n="risk_col_approved">Approved</th>
+                            </tr>
+                        </thead>
+                        <tbody id="risksBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="importModal" class="modal-overlay">
+        <div class="modal wide">
+            <div class="modal-header">
+                <h2 data-i18n="risk_import_title">Import from the Excel register</h2>
+                <button type="button" class="close-btn" onclick="closeModal('importModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="card-hint" style="font-size: 13px;" data-i18n="risk_import_hint">Choose the register (.xlsx). Nothing is saved until you press Import. Scores are worked out again from the ratings; rows already in the register are skipped.</p>
+                <div class="form-group">
+                    <input id="importFile" type="file" class="form-control" accept=".xlsx">
+                </div>
+                <div id="importPreview" style="display: none;">
+                    <div id="ownerSection">
+                        <h4 style="margin: var(--spacing-md) 0 4px 0; font-size: 14px;" data-i18n="risk_import_owners">Who is each owner in the file?</h4>
+                        <p class="card-hint" style="font-size: 12px;" data-i18n="risk_import_owners_hint">Owners get reminders before target dates. You can leave one empty and set it later.</p>
+                        <div class="owner-map" id="ownerMap"></div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="risk_col_ref">Ref</th>
+                                    <th data-i18n="risk_col_risk">Risk</th>
+                                    <th data-i18n="risk_col_level">Level</th>
+                                    <th data-i18n="risk_col_status">Status</th>
+                                    <th data-i18n="risk_col_target">Target date</th>
+                                    <th data-i18n="risk_col_notes">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="importBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('importModal')" data-i18n="btn_cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnDoImport" disabled data-i18n="risk_btn_do_import">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { injectShell } from './js/layout.js?v=999';
+        import './js/api.js';
+        import { bindShellActions, showToast, openModal, closeModal, escapeHtml, showConfirmModal } from './js/ui.js';
+        import { t } from './js/i18n.js';
+        import {
+            STATUSES, LEVELS, reference, statusLabel, levelLabel, treatmentLabel, levelBadge, statusBadge, formatDate, optionsHtml, warningText, skipLabel
+        } from './js/risks.js';
+        injectShell();
+
+        if (!window.api.token) window.location.href = '/login.html';
+        bindShellActions();
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        let register = { risks: [], canManage: false, canApprove: false };
+        let quick = null; // a summary card used as a filter
+        const filterStatus = document.getElementById('filterStatus');
+        const filterLevel = document.getElementById('filterLevel');
+        filterStatus.innerHTML = `<option value="">${escapeHtml(t('risk_filter_all_status'))}</option>` + optionsHtml(STATUSES, statusLabel, null);
+        filterLevel.innerHTML = `<option value="">${escapeHtml(t('risk_filter_all_level'))}</option>` + optionsHtml(LEVELS, levelLabel, null);
+
+        const notDone = (r) => r.status !== 'Done';
+        const QUICK = {
+            High: { test: r => notDone(r) && r.level === 'High', cls: 'high', label: 'risk_sum_high' },
+            Medium: { test: r => notDone(r) && r.level === 'Medium', cls: 'medium', label: 'risk_sum_medium' },
+            Low: { test: r => notDone(r) && r.level === 'Low', cls: 'low', label: 'risk_sum_low' },
+            Overdue: { test: r => r.overdue, cls: 'high', label: 'risk_sum_overdue' },
+            Waiting: { test: r => !r.approved, cls: '', label: 'risk_sum_waiting' },
+            ReviewDue: { test: r => r.reviewDue, cls: '', label: 'risk_sum_review_due' }
+        };
+
+        function renderSummary() {
+            document.getElementById('summary').innerHTML = Object.entries(QUICK).map(([key, q]) => `
+                <button type="button" class="summary-card ${q.cls}${quick === key ? ' active' : ''}" data-quick="${key}">
+                    <div class="num">${register.risks.filter(q.test).length}</div>
+                    <div class="lbl">${escapeHtml(t(q.label))}</div>
+                </button>`).join('');
+
+            const waiting = register.risks.filter(r => !r.approved);
+            const approveAll = document.getElementById('btnApproveAll');
+            approveAll.style.display = register.canApprove && waiting.length ? '' : 'none';
+            approveAll.textContent = t('risk_btn_approve_all').replaceAll('{0}', String(waiting.length));
+            document.getElementById('btnReviewAll').style.display = register.canManage && register.risks.length ? '' : 'none';
+        }
+
+        function renderRows() {
+            const search = document.getElementById('filterSearch').value.trim().toLowerCase();
+            const rows = register.risks.filter(r =>
+                (!quick || QUICK[quick].test(r)) &&
+                (!filterStatus.value || r.status === filterStatus.value) &&
+                (!filterLevel.value || r.level === filterLevel.value) &&
+                (!search || reference(r.number).toLowerCase().includes(search) || r.title.toLowerCase().includes(search)));
+            const body = document.getElementById('risksBody');
+            if (rows.length === 0) {
+                body.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: var(--spacing-xl); color: var(--text-muted);">${escapeHtml(t(register.risks.length ? 'risk_empty_filter' : 'risk_empty'))}</td></tr>`;
+                return;
+            }
+            body.innerHTML = rows.map(r => `
+                <tr class="risk-row" data-id="${Number(r.id)}" tabindex="0">
+                    <td class="nowrap" style="font-family: monospace;">${escapeHtml(reference(r.number))}</td>
+                    <td dir="auto">${escapeHtml(r.title)}</td>
+                    <td class="nowrap">${levelBadge(r.level, r.score)}</td>
+                    <td class="nowrap">${levelBadge(r.residualLevel, r.residualScore)}</td>
+                    <td>${escapeHtml(treatmentLabel(r.treatment))}</td>
+                    <td dir="auto">${escapeHtml(r.ownerName || '—')}</td>
+                    <td class="nowrap${r.overdue ? ' overdue' : ''}">${escapeHtml(formatDate(r.targetDate))}${r.overdue ? ` · ${escapeHtml(t('risk_overdue'))}` : ''}</td>
+                    <td class="nowrap">${statusBadge(r.status)}</td>
+                    <td class="nowrap">${r.approved ? `<span class="badge badge-success">${escapeHtml(t('risk_approved'))}</span>` : `<span class="badge badge-warning">${escapeHtml(t('risk_waiting'))}</span>`}</td>
+                </tr>`).join('');
+        }
+
+        async function load() {
+            try {
+                register = await window.api.request('/risks');
+                document.querySelectorAll('.manage-only').forEach(el => { el.style.display = register.canManage ? '' : 'none'; });
+                renderSummary();
+                renderRows();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('risksBody').innerHTML = `<tr><td colspan="9" style="text-align: center; padding: var(--spacing-xl); color: var(--danger);">${escapeHtml(t('risk_load_failed'))}</td></tr>`;
+            }
+        }
+
+        document.getElementById('summary').addEventListener('click', (e) => {
+            const card = e.target.closest('[data-quick]');
+            if (!card) return;
+            quick = quick === card.dataset.quick ? null : card.dataset.quick;
+            renderSummary();
+            renderRows();
+        });
+        const openRisk = (row) => { if (row) window.location.href = `/risk.html?id=${Number(row.dataset.id)}`; };
+        document.getElementById('risksBody').addEventListener('click', (e) => openRisk(e.target.closest('.risk-row')));
+        document.getElementById('risksBody').addEventListener('keydown', (e) => { if (e.key === 'Enter') openRisk(e.target.closest('.risk-row')); });
+        document.getElementById('filterSearch').addEventListener('input', renderRows);
+        filterStatus.addEventListener('change', renderRows);
+        filterLevel.addEventListener('change', renderRows);
+        document.getElementById('btnNew').addEventListener('click', () => { window.location.href = '/risk.html'; });
+
+        async function bulk(path, ids, doneKey) {
+            try {
+                const result = await window.api.request(`/risks/${path}`, { method: 'POST', body: JSON.stringify({ ids }), silent: true });
+                showToast(t(doneKey).replaceAll('{0}', String(result.changed)));
+                await load();
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('risk_save_failed')), 'error');
+            }
+        }
+
+        document.getElementById('btnApproveAll').addEventListener('click', async () => {
+            const ids = register.risks.filter(r => !r.approved).map(r => r.id);
+            if (await showConfirmModal(t('risk_confirm_approve_title'), t('risk_confirm_approve').replaceAll('{0}', String(ids.length)))) {
+                await bulk('approve', ids, 'risk_approved_n');
+            }
+        });
+        document.getElementById('btnReviewAll').addEventListener('click', async () => {
+            const ids = register.risks.map(r => r.id);
+            if (await showConfirmModal(t('risk_confirm_review_title'), t('risk_confirm_review').replaceAll('{0}', String(ids.length)))) {
+                await bulk('review', ids, 'risk_reviewed_n');
+            }
+        });
+
+        // ---- Import: read the file, match the owners, then import ----
+        let users = null;
+        const importFile = document.getElementById('importFile');
+        const doImport = document.getElementById('btnDoImport');
+
+        document.getElementById('btnImport').addEventListener('click', () => {
+            importFile.value = '';
+            document.getElementById('importPreview').style.display = 'none';
+            doImport.disabled = true;
+            openModal('importModal');
+        });
+
+        const upload = (extra) => {
+            const form = new FormData();
+            form.append('file', importFile.files[0]);
+            for (const [key, value] of Object.entries(extra || {})) form.append(key, value);
+            return form;
+        };
+
+        importFile.addEventListener('change', async () => {
+            doImport.disabled = true;
+            document.getElementById('importPreview').style.display = 'none';
+            if (!importFile.files.length) return;
+            try {
+                const [preview, people] = await Promise.all([
+                    window.api.request('/risks/import/preview', { method: 'POST', body: upload(), silent: true }),
+                    users ? Promise.resolve(users) : window.api.getUsers().catch(() => [])
+                ]);
+                users = (people || []).filter(u => u.isActive);
+                const userOptions = `<option value="">${escapeHtml(t('risk_no_owner'))}</option>` +
+                    users.map(u => `<option value="${Number(u.id)}">${escapeHtml(`${u.firstName} ${u.lastName}`.trim())}</option>`).join('');
+                document.getElementById('ownerSection').style.display = preview.owners.length ? '' : 'none';
+                document.getElementById('ownerMap').innerHTML = preview.owners.map((name, i) => `
+                    <label for="owner${i}" dir="auto" style="font-size: 13px;">${escapeHtml(name)}</label>
+                    <select id="owner${i}" class="form-control owner-select" data-name="${escapeHtml(name)}">${userOptions}</select>`).join('');
+                document.getElementById('importBody').innerHTML = preview.rows.map(r => `
+                    <tr${r.skip ? ' style="opacity: 0.6;"' : ''}>
+                        <td class="nowrap" style="font-family: monospace;">${r.number ? escapeHtml(reference(r.number)) : escapeHtml(t('risk_new_number'))}</td>
+                        <td dir="auto">${escapeHtml(r.title)}</td>
+                        <td class="nowrap">${r.skip === 'NoRatings' ? '—' : levelBadge(r.level, r.score)}</td>
+                        <td class="nowrap">${statusBadge(r.status)}</td>
+                        <td class="nowrap">${escapeHtml(formatDate(r.targetDate))}</td>
+                        <td>
+                            ${r.skip ? `<div class="import-skip">${escapeHtml(skipLabel(r.skip))}</div>` : ''}
+                            ${r.warnings.map(w => `<div class="import-notes" dir="auto">${escapeHtml(warningText(w))}</div>`).join('')}
+                        </td>
+                    </tr>`).join('');
+                document.getElementById('importPreview').style.display = '';
+                const importable = preview.rows.filter(r => !r.skip).length;
+                doImport.disabled = importable === 0;
+                doImport.textContent = t('risk_btn_do_import_n').replaceAll('{0}', String(importable));
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('risk_import_failed')), 'error');
+            }
+        });
+
+        doImport.addEventListener('click', async () => {
+            const owners = {};
+            document.querySelectorAll('.owner-select').forEach(s => { if (s.value) owners[s.dataset.name] = Number(s.value); });
+            doImport.disabled = true;
+            try {
+                const result = await window.api.request('/risks/import', { method: 'POST', body: upload({ owners: JSON.stringify(owners) }), silent: true });
+                showToast(t('risk_imported').replaceAll('{0}', String(result.imported)));
+                closeModal('importModal');
+                await load();
+            } catch (err) {
+                console.error(err);
+                doImport.disabled = false;
+                showToast(window.api.errorMessage(err, t('risk_import_failed')), 'error');
+            }
+        });
+
+        load();
+    </script>
+</body>
+</html>
