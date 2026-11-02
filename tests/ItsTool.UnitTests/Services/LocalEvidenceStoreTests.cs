@@ -72,7 +72,12 @@ public class FileStoragePathsTests
     [Fact]
     public void A_share_or_a_full_local_path_is_accepted()
     {
-        Assert.Empty(FileStoragePaths.NotFullyQualified(Settings(@"\\fileserver\itsm\uploads", @"D:\ItsmData\evidence")));
+        // The servers run Windows; the CI agents run Linux, where only a path from the root is a full path
+        var (share, local) = OperatingSystem.IsWindows()
+            ? (@"\\fileserver\itsm\uploads", @"D:\ItsmData\evidence")
+            : ("/mnt/fileserver/itsm/uploads", "/srv/itsm/evidence");
+
+        Assert.Empty(FileStoragePaths.NotFullyQualified(Settings(share, local)));
     }
 
     [Fact]
