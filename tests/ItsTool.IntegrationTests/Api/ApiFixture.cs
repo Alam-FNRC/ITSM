@@ -133,10 +133,11 @@ internal sealed class ItsmApiFactory : WebApplicationFactory<Program>
 
         builder.ConfigureTestServices(services =>
         {
-            // The SLA checker and e-mail sender poll the database in the background; tests drive the API directly.
+            // The SLA checker, e-mail sender and risk reminders poll the database in the background; tests drive the API directly.
             var pollers = services
                 .Where(d => d.ServiceType == typeof(IHostedService) &&
-                            (d.ImplementationType == typeof(SlaCheckerService) || d.ImplementationType == typeof(EmailBackgroundService)))
+                            (d.ImplementationType == typeof(SlaCheckerService) || d.ImplementationType == typeof(EmailBackgroundService) ||
+                             d.ImplementationType == typeof(RiskReminderService)))
                 .ToList();
             foreach (var poller in pollers) services.Remove(poller);
         });

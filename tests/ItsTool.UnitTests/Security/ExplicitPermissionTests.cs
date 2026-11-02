@@ -33,6 +33,6 @@ public class ExplicitPermissionTests
     {
         Assert.Contains(PermissionConstants.SecurityIncidentView, PermissionConstants.AllPermissions);
         Assert.Contains(PermissionConstants.SecurityIncidentManage, PermissionConstants.AllPermissions);
-        Assert.Equal(new[] { PermissionConstants.SecurityIncidentView, PermissionConstants.SecurityIncidentManage }, PermissionConstants.ExplicitOnly);
+        Assert.Equal(new[] { PermissionConstants.SecurityIncidentView, PermissionConstants.SecurityIncidentManage, PermissionConstants.RiskManage, PermissionConstants.RiskApprove }, PermissionConstants.ExplicitOnly);
     }
 }

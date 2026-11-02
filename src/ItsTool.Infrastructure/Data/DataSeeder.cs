@@ -41,7 +41,9 @@ public class DataSeeder
     private static readonly Dictionary<string, string> NewPermissionDescriptions = new()
     {
         { PermissionConstants.SecurityIncidentView, "See all security incidents and federal reports." },
-        { PermissionConstants.SecurityIncidentManage, "Triage, work on and close security incidents." }
+        { PermissionConstants.SecurityIncidentManage, "Triage, work on and close security incidents." },
+        { PermissionConstants.RiskManage, "See and keep the risk register." },
+        { PermissionConstants.RiskApprove, "See every risk and approve treatment plans and risk acceptance (the IT manager or a deputy)." }
     };
 
     private const string TicketView = PermissionConstants.TicketView;
@@ -193,9 +195,10 @@ public class DataSeeder
 
         var rolesToSeed = new Dictionary<string, string[]>
         {
-            // SuperAdmin gets every permission except the explicit-only ones; those go to the security team
+            // SuperAdmin gets every permission except the explicit-only ones; those go to the security team,
+            // apart from approving risks, which an administrator grants to the IT manager
             { RoleSuperAdmin, allPermissions.Except(PermissionConstants.ExplicitOnly).ToArray() },
-            { RoleSecurityTeam, PermissionConstants.ExplicitOnly.ToArray() },
+            { RoleSecurityTeam, PermissionConstants.ExplicitOnly.Except(new[] { PermissionConstants.RiskApprove }).ToArray() },
             { RoleManager, ManagerPermissions },
             { RoleAgent, AgentPermissions },
             { RoleEndUser, EndUserPermissions }

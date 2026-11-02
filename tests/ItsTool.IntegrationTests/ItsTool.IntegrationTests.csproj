@@ -27,4 +27,9 @@
     <ProjectReference Include="..\..\src\ItsTool.Infrastructure\ItsTool.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Builds Excel workbooks for the import tests; kept with the unit tests -->
+    <Compile Include="..\ItsTool.UnitTests\Import\TestWorkbook.cs" Link="Shared\TestWorkbook.cs" />
+  </ItemGroup>
+
 </Project>
