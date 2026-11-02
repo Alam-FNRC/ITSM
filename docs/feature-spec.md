@@ -33,7 +33,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Impact analysis (affected services and contacts) | iTop | No | P3 | 4 |
 | Assets with financial info and warranty | GLPI | No | P2 | 4 |
 | Contracts, suppliers, software licences with expiry alerts | GLPI | No | P2 | 4 |
-| Service catalogue (families, services, subcategories) | iTop | No: only categories | P2 | 4 |
+| Service catalogue (families, services, subcategories) | iTop | Done 2 Nov: services (with family and owner team) above the categories; SLA per service waits for SLA matching | P2 | 4 |
 | Organisations, locations, teams | iTop | Departments and groups only | P3 | 4 |
 | Email-to-ticket from a Microsoft 365 mailbox | GLPI (behaviour) | Unauthenticated JSON endpoint only | P2 | 2 |
 | Recurrent tickets (e.g. monthly backup check) | GLPI | No | P3 | 4 |
@@ -182,6 +182,8 @@ One model serves both: an **asset** is a physical or licensed item with financia
 **Software licences.** Software, licence type, quantity (or unlimited), expiry, assigned devices or users; flags over-use.
 
 **Service catalogue.** Service family → service → subcategory; each subcategory says whether it raises an incident or a request, which template, which SLA. Feeds the self-service portal and SLA matching.
+
+Built 2 Nov 2026, kept short for a small team: a service has a name, an optional family (a label that groups services on the ticket form), a description shown to staff, and an owner team. The existing categories are the subcategories: each belongs to a service and can name a default ticket type and a default team. The ticket form lists categories grouped by service, so one choice sets the service, the type and the team. A new ticket with no matching assignment rule goes to the category's team, or else to the service's owner team. The KPI reports filter and break down by service. The template per category already exists as the custom fields placed per category. The SLA per service waits for SLA matching (not picked yet).
 
 **Integration later:** import from an inventory tool (e.g. Intune or SCCM) instead of manual entry; decide in phase 4.
 
