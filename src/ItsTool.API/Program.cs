@@ -148,6 +148,7 @@ builder.Services.AddScoped<ISignalRPusher, ItsTool.API.Services.SignalRPusher>()
     // Dashboard, Reporting & KB (Phase 8)
     builder.Services.AddScoped<IDashboardService, DashboardService>();
     builder.Services.AddScoped<IReportService, ReportService>();
+    builder.Services.AddScoped<IKpiService, KpiService>();
     builder.Services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();
     builder.Services.AddScoped<ISystemAuditService, SystemAuditService>();
 
