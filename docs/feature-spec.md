@@ -11,7 +11,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Feature | Best reference | In our tool today | Priority | Phase |
 | --- | --- | --- | --- | --- |
 | Stored time measures (time to own, waiting, solve, close, effort) | GLPI | Done: own, waiting, solve, reopen and assignment counts (30 Oct); close (2 Nov). Effort left out: the team does not log time (decided 2 Nov) | P1 | 3 |
-| KPI statistics by period and dimension | GLPI | No | P1 | 3 |
+| KPI statistics by period and dimension | GLPI | Done 2 Nov: KPI reports page with CSV and print-to-PDF; the monthly evidence pack is still to do | P1 | 3 |
 | Monthly PDF/CSV audit reports | Neither (we build) | CSV ticket export only (fixed 28 Oct) | P1 | 3 |
 | Tamper-proof audit log incl. permissions and logins | Neither (we build) | Partial, with gaps | P1 | 3 |
 | Priority from impact × urgency matrix | iTop, GLPI | No: priority set by hand | P1 | 4 |
@@ -188,6 +188,8 @@ One model serves both: an **asset** is a physical or licensed item with financia
 ## KPIs and reports for ISO audits
 
 Every KPI filters by date range, department, category, priority, team and agent, and exports to PDF and Excel. A monthly evidence pack is generated automatically and archived.
+
+Built 2 Nov 2026 (KPI reports page, `GET /api/reports/kpi`, report.view): opened, solved and closed; response and resolution SLA met; mean time to own, resolve and close; reopen and first-time-fix rates; satisfaction; opened against solved per month; open backlog by age; and a breakdown by team, agent, category, department and priority. CSV export, and PDF through the browser's print. The SLA figures cover the tickets opened in the period once their outcome is known; the times and counts follow the date of the event (owned, solved, closed). The change, problem, access and asset KPIs follow with those modules.
 
 | KPI | Definition | Audit use |
 | --- | --- | --- |
