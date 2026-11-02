@@ -1341,7 +1341,8 @@ export const translations = {
         "secd_ev_intact": "The file still matches its fingerprint.",
         "secd_ev_not_intact": "The file no longer matches its fingerprint. The security team has been told.",
         "notif_title_security_evidence": "Evidence check failed",
-        "notif_body_security_evidence": "Evidence {0} on security incident {1} failed its fingerprint check."
+        "notif_body_security_evidence": "Evidence {0} on security incident {1} failed its fingerprint check.",
+        "td_times_closed": "Closed after"
     },
     "tr": {
         // Sidebar Navigation
@@ -2684,7 +2685,8 @@ export const translations = {
         "secd_ev_intact": "Dosya hâlâ parmak iziyle eşleşiyor.",
         "secd_ev_not_intact": "Dosya artık parmak iziyle eşleşmiyor. Güvenlik ekibine bildirildi.",
         "notif_title_security_evidence": "Kanıt denetimi başarısız",
-        "notif_body_security_evidence": "{1} numaralı güvenlik olayındaki {0} kanıtı parmak izi denetiminden geçemedi."
+        "notif_body_security_evidence": "{1} numaralı güvenlik olayındaki {0} kanıtı parmak izi denetiminden geçemedi.",
+        "td_times_closed": "Kapanma süresi"
     },
     "ar": ar
 };
