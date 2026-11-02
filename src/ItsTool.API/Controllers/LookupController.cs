@@ -13,9 +13,11 @@ public class LookupController : ControllerBase
     private readonly IProjectService _projectService;
     private readonly IDepartmentService _departmentService;
     private readonly IServiceCatalogService _serviceCatalog;
+    private readonly IGroupService _groupService;
 
-    public LookupController(ICatalogService catalogService, IProjectService projectService, IDepartmentService departmentService, IServiceCatalogService serviceCatalog)
+    public LookupController(ICatalogService catalogService, IProjectService projectService, IDepartmentService departmentService, IServiceCatalogService serviceCatalog, IGroupService groupService)
     {
+        _groupService = groupService;
         _catalogService = catalogService;
         _projectService = projectService;
         _departmentService = departmentService;
@@ -33,6 +35,8 @@ public class LookupController : ControllerBase
         var departments = await _departmentService.GetAllAsync();
         // The ticket form groups the categories by service
         var services = await _serviceCatalog.GetAllAsync(activeOnly: true);
+        // Team names for the ticket lists and the board, which show who a ticket is assigned to; names only
+        var groups = (await _groupService.GetAllAsync()).Select(g => new { g.Id, g.Name, g.IsActive });
 
         return Ok(new
         {
@@ -42,7 +46,8 @@ public class LookupController : ControllerBase
             priorities,
             statuses,
             departments,
-            services
+            services,
+            groups
         });
     }
 }

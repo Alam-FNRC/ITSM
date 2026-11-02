@@ -52,6 +52,8 @@ public class ServiceCatalogueTests
         var requester = await _api.LoginAsNewUserAsync("ticket.create", "ticket.view");
         var lookup = await requester.GetFromJsonAsync<JsonElement>("/api/lookup");
         Assert.Contains(lookup.GetProperty("services").EnumerateArray(), s => s.GetProperty("id").GetInt32() == service.Id);
+        // The board and the ticket list name the team a ticket is assigned to
+        Assert.Contains(lookup.GetProperty("groups").EnumerateArray(), g => g.GetProperty("id").GetInt32() == teamId && g.GetProperty("name").GetString()!.StartsWith("Messaging"));
 
         var created = await requester.PostAsJsonAsync("/api/ticket", new
         {
