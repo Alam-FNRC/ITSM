@@ -186,7 +186,13 @@ export function initCrudPage(cfg) {
         e.preventDefault();
         const { id, payload } = getFormData();
         try {
-            await persistData(id, payload);
+            // A screen with its own save step (numbers, lists, members) sends the requests itself
+            if (cfg.onSave) {
+                await cfg.onSave(payload, id, currentData.find(x => String(x.id) === String(id)));
+                if (window.ui?.showToast) window.ui.showToast(t(id ? 'crud_updated' : 'crud_created'));
+            } else {
+                await persistData(id, payload);
+            }
             if (window.ui?.closeModal) window.ui.closeModal(modalId);
             await window.loadData();
         } catch (err) {

@@ -222,8 +222,10 @@ export const adminConfigs = {
                 }
             }
         },
-        onSave: async (payload, id) => {
+        onSave: async (payload, id, item) => {
             payload.departmentId = payload.departmentId ? Number.parseInt(payload.departmentId, 10) : null;
+            // The form has no active switch; an update must not switch the group off
+            payload.isActive = item?.isActive ?? true;
             let targetGroupId = id ? Number.parseInt(id, 10) : null;
             
             if (id) {
