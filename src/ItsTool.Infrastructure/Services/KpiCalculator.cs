@@ -17,6 +17,7 @@ namespace ItsTool.Infrastructure.Services;
 /// </summary>
 public static class KpiCalculator
 {
+    public const string ByService = "service";
     public const string ByTeam = "team";
     public const string ByAgent = "agent";
     public const string ByCategory = "category";
@@ -48,7 +49,8 @@ public static class KpiCalculator
         bool ResponseBreached = false,
         DateTime? ResolutionDueAt = null,
         bool ResolutionBreached = false,
-        bool SlaPaused = false);
+        bool SlaPaused = false,
+        int? ServiceId = null);
 
     /// <summary>A period of whole local days: FromUtc is the start of From, ToUtc the start of the day after To.</summary>
     public sealed record Period(DateOnly From, DateOnly To, DateTime FromUtc, DateTime ToUtc, TimeZoneInfo Zone)
@@ -62,11 +64,12 @@ public static class KpiCalculator
         IReadOnlyDictionary<int, string> Agents,
         IReadOnlyDictionary<int, string> Categories,
         IReadOnlyDictionary<int, string> Departments,
-        IReadOnlyDictionary<int, string> Priorities)
+        IReadOnlyDictionary<int, string> Priorities,
+        IReadOnlyDictionary<int, string> Services)
     {
         public static readonly Names None = new(
             new Dictionary<int, string>(), new Dictionary<int, string>(), new Dictionary<int, string>(),
-            new Dictionary<int, string>(), new Dictionary<int, string>());
+            new Dictionary<int, string>(), new Dictionary<int, string>(), new Dictionary<int, string>());
     }
 
     /// <summary>
@@ -118,6 +121,7 @@ public static class KpiCalculator
             Backlog(tickets, nowUtc),
             new Dictionary<string, List<KpiBreakdownRowDto>>
             {
+                [ByService] = Breakdown(tickets, t => new[] { t.ServiceId }, names.Services, period, nowUtc),
                 [ByTeam] = Breakdown(tickets, t => Ids(t.GroupIds), names.Teams, period, nowUtc),
                 [ByAgent] = Breakdown(tickets, t => Ids(t.AgentIds), names.Agents, period, nowUtc),
                 [ByCategory] = Breakdown(tickets, t => new int?[] { t.CategoryId }, names.Categories, period, nowUtc),

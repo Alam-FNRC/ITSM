@@ -40,6 +40,7 @@ public class KpiService : IKpiService
                 t.CreatedAt,
                 IsOpen = !t.Status!.IsClosedStatus,
                 DepartmentId = t.RequesterUser != null ? t.RequesterUser.DepartmentId : null,
+                ServiceId = t.Category != null ? t.Category.ServiceId : null,
                 t.CategoryId,
                 t.PriorityId,
                 GroupIds = t.Assignments.Where(a => a.IsActive && !a.IsDeleted && a.AssignedGroupId != null).Select(a => a.AssignedGroupId!.Value).ToList(),
@@ -57,7 +58,7 @@ public class KpiService : IKpiService
             t.Times?.ClosedAt, t.Times?.TimeToCloseMinutes,
             t.Times?.ReopenCount ?? 0, t.Times?.AssignmentCount ?? 0,
             t.Sla?.FirstResponseDueAt, t.Sla?.FirstResponseMetAt, t.Sla?.FirstResponseBreached ?? false,
-            t.Sla?.ResolutionDueAt, t.Sla?.ResolutionBreached ?? false, t.Sla?.PausedAt != null)).ToList();
+            t.Sla?.ResolutionDueAt, t.Sla?.ResolutionBreached ?? false, t.Sla?.PausedAt != null, t.ServiceId)).ToList();
 
         var ticketIds = tickets.Select(t => t.Id);
         var ratings = await _context.TicketSurveys.AsNoTracking()
@@ -73,6 +74,7 @@ public class KpiService : IKpiService
         static List<KpiOptionDto> Sorted(IEnumerable<KpiOptionDto> options) => options.OrderBy(o => o.Name, StringComparer.CurrentCulture).ToList();
 
         var departments = await _context.Departments.AsNoTracking().Where(d => !d.IsDeleted).Select(d => new KpiOptionDto(d.Id, d.Name)).ToListAsync();
+        var services = await _context.ItServices.AsNoTracking().Where(s => !s.IsDeleted).Select(s => new KpiOptionDto(s.Id, s.Name)).ToListAsync();
         var categories = await _context.Categories.AsNoTracking().Where(c => !c.IsDeleted).Select(c => new KpiOptionDto(c.Id, c.Name)).ToListAsync();
         var priorities = await _context.Priorities.AsNoTracking().Where(p => !p.IsDeleted)
             .OrderBy(p => p.SeverityLevel).ThenBy(p => p.SortOrder).Select(p => new KpiOptionDto(p.Id, p.Name)).ToListAsync();
@@ -83,12 +85,13 @@ public class KpiService : IKpiService
             .Select(u => new KpiOptionDto(u.Id, u.FirstName + " " + u.LastName))
             .ToListAsync();
 
-        return new KpiFilterOptionsDto(Sorted(departments), Sorted(categories), priorities, Sorted(teams), Sorted(agents));
+        return new KpiFilterOptionsDto(Sorted(departments), Sorted(services), Sorted(categories), priorities, Sorted(teams), Sorted(agents));
     }
 
     private static IQueryable<Ticket> Filter(IQueryable<Ticket> tickets, KpiFilterDto filter)
     {
         if (filter.DepartmentId.HasValue) tickets = tickets.Where(t => t.RequesterUser != null && t.RequesterUser.DepartmentId == filter.DepartmentId);
+        if (filter.ServiceId.HasValue) tickets = tickets.Where(t => t.Category != null && t.Category.ServiceId == filter.ServiceId);
         if (filter.CategoryId.HasValue) tickets = tickets.Where(t => t.CategoryId == filter.CategoryId);
         if (filter.PriorityId.HasValue) tickets = tickets.Where(t => t.PriorityId == filter.PriorityId);
         if (filter.GroupId.HasValue)
@@ -106,12 +109,14 @@ public class KpiService : IKpiService
         var categoryIds = rows.Select(r => r.CategoryId).Distinct().ToList();
         var departmentIds = rows.Where(r => r.DepartmentId.HasValue).Select(r => r.DepartmentId!.Value).Distinct().ToList();
         var priorityIds = rows.Select(r => r.PriorityId).Distinct().ToList();
+        var serviceIds = rows.Where(r => r.ServiceId.HasValue).Select(r => r.ServiceId!.Value).Distinct().ToList();
 
         return new KpiCalculator.Names(
             await _context.Groups.AsNoTracking().Where(g => groupIds.Contains(g.Id)).ToDictionaryAsync(g => g.Id, g => g.Name),
             await _context.Users.AsNoTracking().Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.FirstName + " " + u.LastName),
             await _context.Categories.AsNoTracking().Where(c => categoryIds.Contains(c.Id)).ToDictionaryAsync(c => c.Id, c => c.Name),
             await _context.Departments.AsNoTracking().Where(d => departmentIds.Contains(d.Id)).ToDictionaryAsync(d => d.Id, d => d.Name),
-            await _context.Priorities.AsNoTracking().Where(p => priorityIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, p => p.Name));
+            await _context.Priorities.AsNoTracking().Where(p => priorityIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, p => p.Name),
+            await _context.ItServices.AsNoTracking().Where(s => serviceIds.Contains(s.Id)).ToDictionaryAsync(s => s.Id, s => s.Name));
     }
 }

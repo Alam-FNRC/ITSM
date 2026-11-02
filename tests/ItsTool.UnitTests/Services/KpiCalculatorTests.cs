@@ -188,6 +188,21 @@ public class KpiCalculatorTests
     }
 
     [Fact]
+    public void Tickets_are_broken_down_by_the_service_of_their_category()
+    {
+        var names = Names.None with { Services = new Dictionary<int, string> { [3] = "Email" } };
+        var report = KpiCalculator.Calculate(new[]
+        {
+            Ticket(Utc(10, 5)) with { ServiceId = 3, ResolvedAt = Utc(10, 6) },
+            Ticket(Utc(10, 6)) with { ServiceId = 3 },
+            Ticket(Utc(10, 7))
+        }, Array.Empty<int>(), October, Now, names);
+
+        Assert.Equal(new[] { ((int?)3, "Email", 2, 1), (null, null, 1, 0) },
+            report.Breakdowns[ByService].Select(r => (r.Id, r.Name, r.Opened, r.Solved)));
+    }
+
+    [Fact]
     public void Rows_with_nothing_in_the_period_are_left_out()
     {
         var report = Calculate(new[] { Ticket(Utc(10, 5), category: 1), Ticket(Utc(8, 5), open: true, category: 2) });

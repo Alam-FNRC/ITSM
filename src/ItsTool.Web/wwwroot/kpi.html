@@ -108,6 +108,10 @@
                         <select id="filter-department" class="form-control" data-dimension="department"></select>
                     </div>
                     <div class="form-group">
+                        <label class="form-label" for="filter-service" data-i18n="kpi_filter_service">Service</label>
+                        <select id="filter-service" class="form-control" data-dimension="service"></select>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label" for="filter-category" data-i18n="kpi_filter_category">Category</label>
                         <select id="filter-category" class="form-control" data-dimension="category"></select>
                     </div>
@@ -171,13 +175,13 @@
         let report = null;
         let chart = null;
         let me = null;
-        let activeDimension = 'team';
+        let activeDimension = 'service';
 
         $('preset').innerHTML = [...PRESETS, 'custom']
             .map(p => `<option value="${p}">${escapeHtml(t(`kpi_preset_${p.replace(/([A-Z0-9])/g, '_$1').toLowerCase()}`))}</option>`).join('');
 
-        const allKey = { department: 'kpi_all_departments', category: 'kpi_all_categories', priority: 'kpi_all_priorities', team: 'kpi_all_teams', agent: 'kpi_all_agents' };
-        const optionKey = { department: 'departments', category: 'categories', priority: 'priorities', team: 'teams', agent: 'agents' };
+        const allKey = { department: 'kpi_all_departments', service: 'kpi_all_services', category: 'kpi_all_categories', priority: 'kpi_all_priorities', team: 'kpi_all_teams', agent: 'kpi_all_agents' };
+        const optionKey = { department: 'departments', service: 'services', category: 'categories', priority: 'priorities', team: 'teams', agent: 'agents' };
         const filterSelects = () => [...document.querySelectorAll('select[data-dimension]')];
 
         function fillFilters(options) {
@@ -201,7 +205,7 @@
             const params = new URLSearchParams();
             if ($('from').value) params.set('from', $('from').value);
             if ($('to').value) params.set('to', $('to').value);
-            const names = { department: 'departmentId', category: 'categoryId', priority: 'priorityId', team: 'groupId', agent: 'agentUserId' };
+            const names = { department: 'departmentId', service: 'serviceId', category: 'categoryId', priority: 'priorityId', team: 'groupId', agent: 'agentUserId' };
             for (const select of filterSelects()) if (select.value) params.set(names[select.dataset.dimension], select.value);
             return params.toString();
         }

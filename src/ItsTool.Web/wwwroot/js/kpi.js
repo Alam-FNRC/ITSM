@@ -2,7 +2,7 @@
 // The API sends counts (met and due) and working minutes; this turns them into percentages and hours.
 import { t, getLocale } from './i18n.js';
 
-export const DIMENSIONS = ['team', 'agent', 'category', 'department', 'priority'];
+export const DIMENSIONS = ['service', 'team', 'agent', 'category', 'department', 'priority'];
 export const PRESETS = ['lastMonth', 'thisMonth', 'last3Months', 'thisYear'];
 
 const pad = (n) => String(n).padStart(2, '0');

@@ -39,7 +39,7 @@ test('every KPI text exists in every language', () => {
     const keys = new Set([...source.matchAll(/['"`](kpi_[a-z0-9_]+)['"`]/g)].map(m => m[1]));
     for (const d of DIMENSIONS) keys.add(`kpi_by_${d}`).add(`kpi_filter_${d}`);
     for (const p of ['last_month', 'this_month', 'last_3_months', 'this_year', 'custom']) keys.add(`kpi_preset_${p}`);
-    for (const d of ['team', 'agent', 'department']) keys.add(`kpi_none_${d}`);
+    for (const d of ['service', 'team', 'agent', 'department']) keys.add(`kpi_none_${d}`);
     keys.add('nav_kpi');
     assert.ok(keys.size > 50);
     for (const lang of Object.keys(translations)) {
@@ -74,6 +74,7 @@ test('working minutes read as hours and minutes', () => {
 test('the row without an id is named for its dimension', () => {
     assert.equal(rowName('agent', { id: null }), 'Unassigned');
     assert.equal(rowName('team', { id: null }), 'No team');
+    assert.equal(rowName('service', { id: null }), 'No service');
     assert.equal(rowName('category', { id: null }), 'None');
     assert.equal(rowName('agent', { id: 3, name: 'Sara Ali' }), 'Sara Ali');
 });
