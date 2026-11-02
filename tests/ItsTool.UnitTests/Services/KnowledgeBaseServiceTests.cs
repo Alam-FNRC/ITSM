@@ -156,7 +156,7 @@ public class KnowledgeBaseServiceTests : TestBase
     }
 
     [Fact]
-    public async Task ReviewArticleAsync_WhenReviewerIsAuthor_ThrowsInvalidOperationException()
+    public async Task ReviewArticleAsync_ByAKbManagerWhoWroteIt_Publishes()
     {
         _permCalcMock.Setup(p => p.CalculateEffectivePermissionsAsync(1))
             .ReturnsAsync(new HashSet<string> { "kb.manage" });
@@ -173,19 +173,18 @@ public class KnowledgeBaseServiceTests : TestBase
         _context.KnowledgeArticles.Add(article);
         await _context.SaveChangesAsync();
 
-        var reviewDto = new ReviewKbArticleDto(ArticleStatus.Published, "Self approving");
+        var reviewDto = new ReviewKbArticleDto(ArticleStatus.Published, null);
 
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _kbService.ReviewArticleAsync(article.Id, reviewDto, reviewerId: 1));
+        await _kbService.ReviewArticleAsync(article.Id, reviewDto, reviewerId: 1);
 
-        Assert.Contains("article you suggested", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(ArticleStatus.Published, (await _context.KnowledgeArticles.FindAsync(article.Id))!.Status);
     }
 
     [Fact]
-    public async Task UpdateArticleAsync_WhenAuthorTriesToDirectPublish_ThrowsInvalidOperationException()
+    public async Task UpdateArticleAsync_WhenAStaffAuthorTriesToPublish_ThrowsInvalidOperationException()
     {
         _permCalcMock.Setup(p => p.CalculateEffectivePermissionsAsync(1))
-            .ReturnsAsync(new HashSet<string> { "kb.manage" });
+            .ReturnsAsync(new HashSet<string> { "kb.view" });
 
         var article = new KnowledgeArticle
         {
@@ -214,7 +213,32 @@ public class KnowledgeBaseServiceTests : TestBase
     }
 
     [Fact]
-    public async Task CreateArticleAsync_ByManager_WithPublishStatus_ForcesPendingReview()
+    public async Task UpdateArticleAsync_ByAKbManagerWhoWroteIt_Publishes()
+    {
+        _permCalcMock.Setup(p => p.CalculateEffectivePermissionsAsync(1))
+            .ReturnsAsync(new HashSet<string> { "kb.manage" });
+        var article = new KnowledgeArticle { Title = "VPN guide", Content = "Steps", CategoryId = 1, AuthorUserId = 1, Status = ArticleStatus.Draft, CreatedAt = DateTime.UtcNow };
+        _context.KnowledgeArticles.Add(article);
+        await _context.SaveChangesAsync();
+
+        await _kbService.UpdateArticleAsync(article.Id, new UpdateKbArticleDto(1, "VPN guide", "Steps", ArticleStatus.Published, ArticleVisibility.Public), currentUserId: 1);
+
+        Assert.Equal(ArticleStatus.Published, (await _context.KnowledgeArticles.FindAsync(article.Id))!.Status);
+    }
+
+    [Fact]
+    public async Task CreateArticleAsync_ByStaff_WithPublishStatus_GoesToReview()
+    {
+        _permCalcMock.Setup(p => p.CalculateEffectivePermissionsAsync(2))
+            .ReturnsAsync(new HashSet<string> { "kb.view" });
+
+        var article = await _kbService.CreateArticleAsync(new CreateKbArticleDto(1, "Printer guide", "Steps", ArticleStatus.Published, ArticleVisibility.Public), authorId: 2);
+
+        Assert.Equal(ArticleStatus.PendingReview, article.Status);
+    }
+
+    [Fact]
+    public async Task CreateArticleAsync_ByManager_WithPublishStatus_Publishes()
     {
         _permCalcMock.Setup(p => p.CalculateEffectivePermissionsAsync(1))
             .ReturnsAsync(new HashSet<string> { "kb.manage" });
@@ -230,7 +254,7 @@ public class KnowledgeBaseServiceTests : TestBase
         var article = await _kbService.CreateArticleAsync(dto, authorId: 1);
 
         Assert.NotNull(article);
-        Assert.Equal(ArticleStatus.PendingReview, article.Status);
+        Assert.Equal(ArticleStatus.Published, article.Status);
     }
 
     [Fact]

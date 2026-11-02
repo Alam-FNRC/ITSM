@@ -279,17 +279,11 @@
             const isPending = (a.status === 2 || a.status === 'PendingReview');
             const isDraftOrRevision = (a.status === 0 || a.status === 'Draft' || a.status === 3 || a.status === 'NeedsRevision');
 
-            if (isAuthor) {
-                // DÖRT GÖZ İLKESİ: Yazar kendi makalesini inceleyemez veya doğrudan yayınlayamaz.
+            if (isAuthor && !isManager) {
+                // Staff send their articles to a KB manager; KB managers publish their own
                 rBtn.style.display = 'none';
                 document.getElementById('managerTip').style.display = 'none';
-
-                if (isPublished && isManager) {
-                    tBtn.style.display = 'inline-flex';
-                    tBtn.textContent = t('kb_btn_unpub');
-                } else {
-                    tBtn.style.display = 'none';
-                }
+                tBtn.style.display = 'none';
 
                 if (isDraftOrRevision) {
                     sBtn.style.display = 'inline-flex';
@@ -298,7 +292,6 @@
                     sBtn.style.display = 'none';
                 }
             } else if (isManager) {
-                // FARKLI YÖNETİCİ
                 document.getElementById('managerTip').style.display = 'flex';
                 sBtn.style.display = 'none';
                 
@@ -416,7 +409,7 @@
             const isAuthor = currentUserId > 0 && loadedArticle.authorUserId === currentUserId;
             const isPublished = (loadedArticle.status === 1 || loadedArticle.status === 'Published');
             
-            if (isAuthor && !isPublished) {
+            if (isAuthor && !isManager && !isPublished) {
                 statusSel.innerHTML = `
                     <option value="0">${t('kb_opt_draft')}</option>
                     <option value="2">${t('kb_opt_submit_review')}</option>

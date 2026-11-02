@@ -163,9 +163,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         bool canManageKb = perms.Contains(KbManagePermission);
 
         var status = dto.Status;
-        // Dört Göz İlkesi: Yöneticiler dahil hiçbir yazar kendi önerdiği makaleyi doğrudan Published yapamaz.
-        // Taslak değilse, farklı bir yöneticinin onayına düşmek üzere PendingReview yapılır.
-        if (status == ArticleStatus.Published || (!canManageKb && status != ArticleStatus.Draft))
+        // KB managers publish their own articles; anyone else's article goes to a KB manager once (decided 2 Nov 2026)
+        if (!canManageKb && status != ArticleStatus.Draft)
         {
             status = ArticleStatus.PendingReview;
         }
@@ -260,10 +259,9 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             throw new UnauthorizedAccessException("You do not have permission to edit this article.");
         }
 
-        // Dört Göz İlkesi: Yazar kendi henüz yayınlanmamış makalesini doğrudan Published yapamaz.
-        if (isAuthor && dto.Status == ArticleStatus.Published && article.Status != ArticleStatus.Published)
+        if (!canManageKb && dto.Status == ArticleStatus.Published && article.Status != ArticleStatus.Published)
         {
-            throw new InvalidOperationException("You cannot publish an article you suggested. It goes to another manager for review.");
+            throw new InvalidOperationException("You cannot publish an article you suggested. It goes to a KB manager for review.");
         }
 
         await ApplyArticleStatusTransitionAsync(article, dto.Status, isAuthor, canManageKb, dto.Title);
@@ -279,7 +277,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     {
         var previousStatus = article.Status;
 
-        if (isAuthor)
+        if (canManageKb)
+        {
+            article.Status = targetStatus;
+        }
+        else if (isAuthor)
         {
             if (targetStatus == ArticleStatus.Draft)
             {
@@ -293,14 +295,6 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                     await NotifyManagersOfSuggestionAsync(article.Id, title);
                 }
             }
-            else if (previousStatus == ArticleStatus.Published && canManageKb)
-            {
-                article.Status = targetStatus;
-            }
-        }
-        else if (canManageKb)
-        {
-            article.Status = targetStatus;
         }
     }
 
@@ -311,12 +305,6 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
         var article = await _context.KnowledgeArticles.FirstOrDefaultAsync(a => a.Id == id && !a.IsDeleted);
         if (article == null) throw new KeyNotFoundException("Article not found.");
-
-        // Dört Göz İlkesi: Yöneticiler kendi önerdikleri makaleleri kendileri onaylayamaz veya yayınlayamaz.
-        if (article.AuthorUserId == reviewerId)
-        {
-            throw new InvalidOperationException("You cannot approve or publish an article you suggested. Another manager must review it.");
-        }
 
         var reviewer = await _context.Users.FirstOrDefaultAsync(u => u.Id == reviewerId);
         var reviewerName = reviewer != null ? $"{reviewer.FirstName} {reviewer.LastName}".Trim() : "Manager";

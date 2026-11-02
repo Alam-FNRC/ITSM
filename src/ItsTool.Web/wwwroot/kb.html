@@ -255,21 +255,18 @@
             if (hasManageKb || isAuthor) {
                 actionsHtml = `<div class="article-actions" style="display:flex; align-items:center; gap: 8px; margin-top: 12px; margin-inline-start: auto;" onclick="event.stopPropagation()">`;
                 
-                if (isAuthor) {
-                    // DÖRT GÖZ İLKESİ: Yazar ASLA kendi makalesini onaylayamaz veya doğrudan yayınlayamaz.
+                if (isAuthor && !hasManageKb) {
+                    // Staff send their articles to a KB manager; KB managers publish their own
                     actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="${t('common_edit')}" onclick="editArticle(event, ${a.id})">${t('kb_btn_edit')}</button>`;
                     
                     if (isDraft || isNeedsRevision) {
                         actionsHtml += `<button type="button" class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" title="${t('kb_btn_submit_approval')}" onclick="submitForApproval(event, ${a.id})">${t('kb_btn_submit_approval')}</button>`;
                     } else if (isPending) {
                         actionsHtml += `<span class="badge" style="background: rgba(59,130,246,0.12); color: var(--primary); font-size: 11px; padding: 4px 8px; border-radius: 4px;">${t('kb_waiting_other_manager')}</span>`;
-                    } else if (isPublished && hasManageKb) {
-                        actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="${t('kb_btn_unpub')}" onclick="togglePublish(event, ${a.id}, '${a.status}')">${t('kb_btn_unpub')}</button>`;
                     }
                     
                     actionsHtml += `<button type="button" class="btn btn-ghost text-danger" style="padding: 4px;" title="${t('btn_delete')}" onclick="deleteArticle(event, ${a.id})">${t('kb_btn_del')}</button>`;
                 } else if (hasManageKb) {
-                    // FARKLI BİR YÖNETİCİ: Başkasının önerdiği makaleyi inceleyebilir, onaylayabilir veya yayından kaldırabilir.
                     actionsHtml += `<button type="button" class="btn btn-ghost" style="padding: 4px;" title="${t('common_edit')}" onclick="editArticle(event, ${a.id})">${t('kb_btn_edit')}</button>`;
                     
                     if (isPending) {
@@ -370,8 +367,7 @@
                 if (currentTab === 'published') {
                     filteredArticles = articles.filter(a => a.status == 1 || a.status === 'Published');
                 } else if (currentTab === 'pending') {
-                    // Yöneticiler sadece başkalarının önerdiği onay bekleyen makaleleri görür. Kimse kendi makalesine bakamaz.
-                    filteredArticles = articles.filter(a => (a.status == 2 || a.status === 'PendingReview') && a.authorUserId !== currentUserId);
+                    filteredArticles = articles.filter(a => a.status == 2 || a.status === 'PendingReview');
                 } else if (currentTab === 'mine') {
                     filteredArticles = articles.filter(a => a.authorUserId === currentUserId);
                 }
@@ -460,9 +456,9 @@
             const statusSelect = document.getElementById('articleStatus');
             statusSelect.innerHTML = `
                 <option value="0">${t('kb_opt_draft')}</option>
-                <option value="2">${t('kb_opt_submit_review')}</option>
+                <option value="${hasManageKb ? 1 : 2}">${hasManageKb ? t('kb_opt_published') : t('kb_opt_submit_review')}</option>
             `;
-            statusSelect.value = '2';
+            statusSelect.value = hasManageKb ? '1' : '2';
             
             document.getElementById('authorFeedbackAlert').style.display = 'none';
             document.getElementById('btnSaveArticle').textContent = t('kb_btn_save');
@@ -535,6 +531,12 @@
                         <option value="0">${t('kb_btn_unpub')}</option>
                     `;
                     statusSelect.value = '1';
+                } else if (hasManageKb) {
+                    statusSelect.innerHTML = `
+                        <option value="0">${t('kb_opt_draft')}</option>
+                        <option value="1">${t('kb_opt_published')}</option>
+                    `;
+                    statusSelect.value = (article.status == 0 || article.status === 'Draft') ? '0' : '1';
                 } else {
                     statusSelect.innerHTML = `
                         <option value="0">${t('kb_opt_draft')}</option>

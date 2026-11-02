@@ -508,7 +508,7 @@ export const ar = {
     "kb_btn_pub": "نشر",
     "kb_btn_submit_approval": "إرسال للاعتماد",
     "kb_toast_submitted_approval": "تم إرسال المقالة للمراجعة. بانتظار اعتماد مدير آخر.",
-    "kb_waiting_other_manager": "بانتظار مراجعة مدير آخر",
+    "kb_waiting_other_manager": "بانتظار مراجعة مدير قاعدة المعرفة",
     "kb_self_publish_err": "لا يمكنك اعتماد أو نشر مقالتك الخاصة. يجب أن يراجعها مدير آخر.",
     "kb_opt_submit_review": "إرسال للاعتماد",
     "kb_btn_del": "حذف",
