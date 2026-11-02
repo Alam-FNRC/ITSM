@@ -44,6 +44,8 @@ test('every value the API sends has a label in every language', () => {
 
 test('labels follow the reader language and fall back to the value', () => {
     stored.set('itsm_lang', 'ar');
+    assert.equal(statusLabel('Responding'), translations.ar.sec_status_responding);
+    // History written before the four steps (2 Nov 2026) still names the old ones
     assert.equal(statusLabel('Containment'), translations.ar.sec_status_containment);
     assert.equal(categoryLabel('UnauthorisedAccess'), translations.ar.sec_cat_unauthorised_access);
     assert.equal(statusLabel('SomethingNew'), 'SomethingNew');
@@ -69,8 +71,8 @@ test('history entries escape names, values and notes', () => {
 
 test('history entries read naturally', () => {
     assert.equal(
-        describeAction({ kind: 'StatusChanged', userId: 2, oldValue: 'Triage', newValue: 'Containment', note: null }, names).html,
-        'Omar moved the incident from Triage to Containment');
+        describeAction({ kind: 'StatusChanged', userId: 2, oldValue: 'Triage', newValue: 'Responding', note: null }, names).html,
+        'Omar moved the incident from Triage to Responding');
     assert.equal(
         describeAction({ kind: 'Updated', userId: 2, field: 'Severity', oldValue: null, newValue: '1' }, names).html,
         'Omar changed the severity from (none) to 1 – Critical');

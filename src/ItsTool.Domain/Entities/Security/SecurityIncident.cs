@@ -2,15 +2,16 @@ using ItsTool.Domain.Common;
 
 namespace ItsTool.Domain.Entities.Security;
 
+/// <summary>
+/// Four steps (decided 2 Nov 2026). Containment, eradication and recovery are work done while Responding; until then
+/// they were steps of their own, so older history rows still name them.
+/// </summary>
 public enum SecurityIncidentStatus
 {
     New = 0,
     Triage = 1,
-    Containment = 2,
-    Eradication = 3,
-    Recovery = 4,
-    Review = 5,
-    Closed = 6
+    Responding = 2,
+    Closed = 3
 }
 
 /// <summary>The security team's decision on a report (ISO 27001 A.5.25).</summary>
@@ -71,13 +72,9 @@ public class SecurityIncident : BaseEntity, IRestrictedRecord
     public int? Severity { get; set; }
     public bool PersonalDataInvolved { get; set; }
 
-    // First time each phase was reached, for the KPIs
-    public DateTime? ContainedAt { get; set; }
-    public DateTime? EradicatedAt { get; set; }
-    public DateTime? RecoveredAt { get; set; }
     public DateTime? ClosedAt { get; set; }
 
-    // Post-incident review (A.5.27), required before closing a severity 1 or 2 incident
+    // Lessons learned (A.5.27): ReviewImprovements is required before closing a severity 1 or 2 incident; the rest is optional
     public string? ReviewRootCause { get; set; }
     public string? ReviewWhatWorked { get; set; }
     public string? ReviewImprovements { get; set; }

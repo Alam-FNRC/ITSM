@@ -1,9 +1,10 @@
 // Shared by the security pages: labels for the values the API sends, badges, and the incident history as text.
-// The API sends enum names (e.g. "Containment"); each has a key such as sec_status_containment in the dictionaries.
+// The API sends enum names (e.g. "Responding"); each has a key such as sec_status_responding in the dictionaries.
+// Older history rows name the steps used before 2 Nov 2026 (Containment, Eradication, Recovery, Review); their labels stay.
 import { t, getLocale } from './i18n.js';
 import { escapeHtml } from './ui.js';
 
-export const STATUSES = ['New', 'Triage', 'Containment', 'Eradication', 'Recovery', 'Review', 'Closed'];
+export const STATUSES = ['New', 'Triage', 'Responding', 'Closed'];
 export const OUTCOMES = ['NotSecurity', 'Event', 'Incident'];
 export const CATEGORIES = ['Phishing', 'Malware', 'UnauthorisedAccess', 'AccountCompromise', 'DataLeak', 'LostDevice', 'DenialOfService', 'PolicyViolation', 'Vulnerability', 'Other'];
 export const ITEM_KINDS = ['Server', 'Workstation', 'NetworkDevice', 'Address', 'Application', 'Service', 'UserAccount', 'Other'];
@@ -35,7 +36,7 @@ export function formatFileSize(bytes) {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const STATUS_BADGES = { New: 'badge-info', Triage: 'badge-warning', Containment: 'badge-danger', Eradication: 'badge-danger', Recovery: 'badge-warning', Review: 'badge-info', Closed: 'badge-success' };
+const STATUS_BADGES = { New: 'badge-info', Triage: 'badge-warning', Responding: 'badge-danger', Closed: 'badge-success' };
 const SEVERITY_BADGES = { 1: 'badge-danger', 2: 'badge-warning', 3: 'badge-info', 4: 'badge-default' };
 const ITEM_BADGES = { Open: 'badge-danger', Fixed: 'badge-success', FalsePositive: 'badge-default', AcceptedRisk: 'badge-warning' };
 const PROGRESS_BADGES = { Received: 'badge-info', InProgress: 'badge-warning', Closed: 'badge-success' };

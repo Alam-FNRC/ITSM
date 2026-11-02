@@ -101,7 +101,7 @@ public class SecurityIncidentAccessTests
         Assert.False(detail.CanManage);
         Assert.Equal(HttpStatusCode.NoContent, (await serverAdmin.PostAsJsonAsync($"/api/security/incidents/{id}/notes", new { text = "Patched and rebooted" })).StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, (await serverAdmin.PutAsJsonAsync($"/api/security/incidents/{id}/affected-items/{detail.AffectedItems[0].Id}", new { status = "Fixed" })).StatusCode);
-        Assert.Equal(HttpStatusCode.Forbidden, (await serverAdmin.PostAsJsonAsync($"/api/security/incidents/{id}/status", new { status = "Recovery" })).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await serverAdmin.PostAsJsonAsync($"/api/security/incidents/{id}/status", new { status = "Closed" })).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await serverAdmin.GetAsync($"/api/security/incidents/{id}/access-log")).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await serverAdmin.GetAsync($"/api/security/incidents/{otherId}")).StatusCode);
         Assert.Equal(new[] { id }, (await serverAdmin.GetFromJsonAsync<List<ListItem>>("/api/security/incidents"))!.Select(i => i.Id));
@@ -158,7 +158,7 @@ public class SecurityIncidentAccessTests
     }
 
     [Fact]
-    public async Task A_serious_incident_cannot_be_closed_without_a_review()
+    public async Task A_serious_incident_cannot_be_closed_without_lessons_learned()
     {
         var team = await _api.LoginAsNewUserAsync(Manage);
         var (id, _, _) = await ReportAsync(await _api.LoginAsNewUserAsync());
@@ -167,18 +167,17 @@ public class SecurityIncidentAccessTests
         var refused = await team.PostAsJsonAsync($"/api/security/incidents/{id}/status", new { status = "Closed" });
         Assert.Equal(HttpStatusCode.BadRequest, refused.StatusCode);
 
-        (await team.PutAsJsonAsync($"/api/security/incidents/{id}/review", new { rootCause = "No MFA on the account", improvements = "Enforce MFA for all staff" })).EnsureSuccessStatusCode();
+        (await team.PutAsJsonAsync($"/api/security/incidents/{id}/review", new { improvements = "Enforce MFA for all staff" })).EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.NoContent, (await team.PostAsJsonAsync($"/api/security/incidents/{id}/status", new { status = "Closed" })).StatusCode);
 
         var detail = (await team.GetFromJsonAsync<Detail>($"/api/security/incidents/{id}"))!;
         Assert.Equal("Closed", detail.Status);
-        Assert.NotNull(detail.ContainedAt);
         Assert.NotNull(detail.ClosedAt);
     }
 
     private sealed record MyReport(string Reference, string Title, string Progress);
     private sealed record ListItem(int Id, string Reference);
     private sealed record Item(int Id, string Name, string Status);
-    private sealed record Detail(int Id, string Status, bool CanManage, DateTime? ContainedAt, DateTime? ClosedAt, List<Item> AffectedItems);
+    private sealed record Detail(int Id, string Status, bool CanManage, DateTime? ClosedAt, List<Item> AffectedItems);
     private sealed record AccessRow(int UserId, DateTime OpenedAt);
 }

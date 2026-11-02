@@ -1808,9 +1808,6 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Property<DateTime?>("ClosedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ContainedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1823,9 +1820,6 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("EradicatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int?>("HandlerUserId")
                         .HasColumnType("int");
@@ -1841,9 +1835,6 @@ namespace ItsTool.Infrastructure.Migrations
 
                     b.Property<bool>("PersonalDataInvolved")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("RecoveredAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Reference")
                         .IsRequired()

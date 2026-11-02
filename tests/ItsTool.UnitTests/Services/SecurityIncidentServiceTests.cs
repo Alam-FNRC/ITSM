@@ -65,7 +65,7 @@ public class SecurityIncidentServiceTests : TestBase
     }
 
     [Fact]
-    public async Task An_incident_needs_a_category_and_severity_and_goes_to_containment()
+    public async Task An_incident_needs_a_category_and_severity_and_is_responded_to()
     {
         var id = await ReportAsync();
         await Assert.ThrowsAsync<ArgumentException>(() => _service.TriageAsync(Team, id, new TriageSecurityIncidentDto("Incident", "Real", null, null)));
@@ -73,28 +73,27 @@ public class SecurityIncidentServiceTests : TestBase
         await _service.TriageAsync(Team, id, new TriageSecurityIncidentDto("Incident", "Real", "Phishing", 2));
 
         var incident = await LoadAsync(id);
-        Assert.Equal((SecurityIncidentStatus.Containment, SecurityIncidentCategory.Phishing, (int?)2, (int?)Team), (incident.Status, incident.Category, incident.Severity, incident.HandlerUserId));
-        Assert.NotNull(incident.ContainedAt);
+        Assert.Equal((SecurityIncidentStatus.Responding, SecurityIncidentCategory.Phishing, (int?)2, (int?)Team), (incident.Status, incident.Category, incident.Severity, incident.HandlerUserId));
         Assert.Equal("InProgress", (await _service.GetMyReportsAsync(Reporter)).Single().Progress);
     }
 
     [Fact]
-    public async Task Only_incidents_go_through_the_response_phases()
+    public async Task Only_incidents_are_responded_to()
     {
         var id = await ReportAsync();
         await _service.TriageAsync(Team, id, new TriageSecurityIncidentDto("Event", "Blocked by the filter", null, null));
 
-        await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Eradication", "x")));
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Responding", "x")));
     }
 
     [Fact]
     public async Task Moving_back_or_reopening_needs_a_reason()
     {
         var id = await IncidentAsync();
-        await _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Recovery", null));
 
-        await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Containment", null)));
-        await _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Containment", "Malware came back"));
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Triage", null)));
+        await _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Triage", "Wrong category"));
+        await _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Responding", null));
         await _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Closed", null));
         Assert.NotNull((await LoadAsync(id)).ClosedAt);
 
@@ -103,11 +102,10 @@ public class SecurityIncidentServiceTests : TestBase
         var reopened = await LoadAsync(id);
         Assert.Equal(SecurityIncidentStatus.Triage, reopened.Status);
         Assert.Null(reopened.ClosedAt);
-        Assert.NotNull(reopened.RecoveredAt);
     }
 
     [Fact]
-    public async Task Severity_1_and_2_need_a_complete_review_to_close()
+    public async Task Severity_1_and_2_need_lessons_learned_to_close()
     {
         var id = await IncidentAsync(severity: 2);
         await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Closed", null)));
@@ -116,7 +114,9 @@ public class SecurityIncidentServiceTests : TestBase
         Assert.Null((await LoadAsync(id)).ReviewCompletedAt);
         await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Closed", null)));
 
-        await _service.SaveReviewAsync(Team, id, new SaveSecurityReviewDto("Unpatched VPN", "Fast isolation", "Monthly patch check", null));
+        // The lessons learned alone are enough; the other fields are optional
+        await _service.SaveReviewAsync(Team, id, new SaveSecurityReviewDto(null, null, "Monthly patch check", null));
+        Assert.NotNull((await LoadAsync(id)).ReviewCompletedAt);
         await _service.ChangeStatusAsync(Team, id, new ChangeSecurityStatusDto("Closed", null));
         Assert.Equal(SecurityIncidentStatus.Closed, (await LoadAsync(id)).Status);
     }
@@ -148,7 +148,8 @@ public class SecurityIncidentServiceTests : TestBase
     [Fact]
     public void Enum_values_are_taken_by_name_only()
     {
-        Assert.Equal(SecurityIncidentStatus.Eradication, SecurityIncidentService.ParseEnum<SecurityIncidentStatus>(" eradication ", "Status"));
+        Assert.Equal(SecurityIncidentStatus.Responding, SecurityIncidentService.ParseEnum<SecurityIncidentStatus>(" responding ", "Status"));
+        Assert.Throws<ArgumentException>(() => SecurityIncidentService.ParseEnum<SecurityIncidentStatus>("Containment", "Status"));
         Assert.Throws<ArgumentException>(() => SecurityIncidentService.ParseEnum<SecurityIncidentStatus>("3", "Status"));
         Assert.Throws<ArgumentException>(() => SecurityIncidentService.ParseEnum<SecurityIncidentStatus>("Deleted", "Status"));
         Assert.Throws<ArgumentException>(() => SecurityIncidentService.ParseEnum<SecurityIncidentStatus>(null, "Status"));
