@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="kpi_title" data-i18n-target="document-title">ITSM Tool - KPI reports</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <script src="js/lib/chart.js"></script>
+    <style>
+        .admin-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--spacing-md); margin-bottom: var(--spacing-md); flex-wrap: wrap; }
+        .kpi-actions { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; }
+        .kpi-filters { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: var(--spacing-sm) var(--spacing-md); }
+        .kpi-filters .form-group { margin: 0; }
+        .kpi-filters .form-label { font-size: 12px; }
+        .kpi-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+        .kpi-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; }
+        .kpi-card .label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+        .kpi-card .value { font-size: 26px; font-weight: 700; line-height: 1.3; margin-top: 4px; }
+        .kpi-card .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; min-height: 16px; }
+        .kpi-two-col { display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-md); }
+        .kpi-two-col .card, .kpi-breakdown { border: 1px solid var(--border); }
+        .card h4 { margin: 0 0 var(--spacing-sm); font-size: 15px; }
+        .backlog-row { display: grid; grid-template-columns: 110px 1fr 48px; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; }
+        .backlog-bar { height: 10px; border-radius: 5px; background: var(--bg-hover); overflow: hidden; }
+        .backlog-bar span { display: block; height: 100%; background: var(--primary); }
+        .backlog-row .count { text-align: end; font-weight: 600; }
+        .breakdown-head { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; margin-bottom: var(--spacing-sm); }
+        .breakdown-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+        .breakdown-tabs button[aria-selected="true"] { background: var(--primary); color: #fff; }
+        .breakdown h5 { display: none; margin: var(--spacing-md) 0 var(--spacing-sm); font-size: 14px; }
+        .breakdown[hidden] { display: none; }
+        .breakdown .table td.num, .breakdown .table th.num { text-align: end; white-space: nowrap; }
+        .kpi-notes { font-size: 12px; color: var(--text-muted); max-width: 900px; }
+        .print-header { display: none; }
+        .kpi-message { padding: var(--spacing-xl); text-align: center; color: var(--text-muted); }
+        @media (max-width: 900px) { .kpi-two-col { grid-template-columns: 1fr; } }
+        @media print {
+            .sidebar, .topbar, .admin-header, .kpi-filters, .breakdown-tabs, .sidebar-overlay { display: none !important; }
+            .app-shell, .main-content { display: block; height: auto; overflow: visible; }
+            .content-area { overflow: visible; padding: 0; }
+            .print-header { display: block; font-size: 12px; margin-bottom: 12px; }
+            .breakdown[hidden] { display: block; }
+            .breakdown h5 { display: block; break-after: avoid; }
+            .kpi-card, .kpi-two-col .card, .breakdown tr { break-inside: avoid; }
+            .table-container { overflow: visible; box-shadow: none; }
+            .breakdown .table th, .breakdown .table td { padding: 5px 6px; font-size: 10.5px; }
+            .kpi-two-col { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell" data-shell>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <h2 data-i18n="kpi_title">KPI reports</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
+                        <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
+                            <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
+                            <div id="notificationItems"></div>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item text-center text-muted" onclick="markAllAsRead(event)" data-i18n="topbar_mark_all_read" style="width: 100%; border: none; background: none;">Mark all as read</button></li>
+                        </ul>
+                    </div>
+                    <div class="avatar">U</div>
+                    <button class="btn btn-ghost" id="shellLogoutBtn" data-i18n="topbar_logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="admin-header">
+                    <div>
+                        <h3 style="margin: 0; font-size: 18px;" data-i18n="kpi_report_title">Service desk KPIs</h3>
+                        <p class="text-muted" style="margin: 4px 0 0 0; font-size: 13px;" data-i18n="kpi_desc">Service desk figures for a period. Times count working hours only.</p>
+                    </div>
+                    <div class="kpi-actions">
+                        <button type="button" class="btn btn-ghost" id="btnCsv" disabled data-i18n="kpi_btn_csv">Download CSV</button>
+                        <button type="button" class="btn btn-primary" id="btnPrint" disabled data-i18n="kpi_btn_print">Print or save as PDF</button>
+                    </div>
+                </div>
+
+                <div class="print-header" id="printHeader"></div>
+
+                <div class="card kpi-filters" style="border: 1px solid var(--border);">
+                    <div class="form-group">
+                        <label class="form-label" for="preset" data-i18n="kpi_period">Period</label>
+                        <select id="preset" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="from" data-i18n="kpi_from">From</label>
+                        <input id="from" type="date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="to" data-i18n="kpi_to">To</label>
+                        <input id="to" type="date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filter-department" data-i18n="kpi_filter_department">Department</label>
+                        <select id="filter-department" class="form-control" data-dimension="department"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filter-category" data-i18n="kpi_filter_category">Category</label>
+                        <select id="filter-category" class="form-control" data-dimension="category"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filter-priority" data-i18n="kpi_filter_priority">Priority</label>
+                        <select id="filter-priority" class="form-control" data-dimension="priority"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filter-team" data-i18n="kpi_filter_team">Team</label>
+                        <select id="filter-team" class="form-control" data-dimension="team"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filter-agent" data-i18n="kpi_filter_agent">Agent</label>
+                        <select id="filter-agent" class="form-control" data-dimension="agent"></select>
+                    </div>
+                </div>
+
+                <div id="kpiMessage" class="kpi-message" hidden></div>
+
+                <div id="kpiReport" hidden>
+                    <div class="kpi-cards" id="summaryCards"></div>
+
+                    <div class="kpi-two-col">
+                        <div class="card">
+                            <h4 data-i18n="kpi_months_title">Opened and solved by month</h4>
+                            <div style="height: 260px; position: relative;"><canvas id="monthsChart"></canvas></div>
+                        </div>
+                        <div class="card">
+                            <h4 data-i18n="kpi_backlog_title">Open now</h4>
+                            <div id="backlogSummary" style="font-size: 13px; color: var(--text-muted);"></div>
+                            <div id="backlogBars"></div>
+                        </div>
+                    </div>
+
+                    <div class="card kpi-breakdown">
+                        <div class="breakdown-head">
+                            <h4 style="margin: 0;" data-i18n="kpi_breakdown_title">Breakdown</h4>
+                            <div class="breakdown-tabs" role="tablist" id="breakdownTabs"></div>
+                        </div>
+                        <div id="breakdownTables"></div>
+                    </div>
+
+                    <p class="kpi-notes" data-i18n="kpi_notes">Opened, solved and closed count the tickets whose opening, solution or closing falls in the period.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { injectShell } from './js/layout.js?v=999';
+        import './js/api.js';
+        import { bindShellActions, escapeHtml, downloadCsv } from './js/ui.js';
+        import { t, getLocale } from './js/i18n.js';
+        import { DIMENSIONS, PRESETS, periodPreset, formatPercent, formatCount, nOfM, formatWorkingTime, formatMonth, dbLabel, rowName, kpiCsvRows } from './js/kpi.js';
+        injectShell();
+
+        if (!window.api.token) window.location.href = '/login.html';
+        bindShellActions();
+
+        const $ = (id) => document.getElementById(id);
+        let report = null;
+        let chart = null;
+        let me = null;
+        let activeDimension = 'team';
+
+        $('preset').innerHTML = [...PRESETS, 'custom']
+            .map(p => `<option value="${p}">${escapeHtml(t(`kpi_preset_${p.replace(/([A-Z0-9])/g, '_$1').toLowerCase()}`))}</option>`).join('');
+
+        const allKey = { department: 'kpi_all_departments', category: 'kpi_all_categories', priority: 'kpi_all_priorities', team: 'kpi_all_teams', agent: 'kpi_all_agents' };
+        const optionKey = { department: 'departments', category: 'categories', priority: 'priorities', team: 'teams', agent: 'agents' };
+        const filterSelects = () => [...document.querySelectorAll('select[data-dimension]')];
+
+        function fillFilters(options) {
+            for (const select of filterSelects()) {
+                const dimension = select.dataset.dimension;
+                const label = (o) => dimension === 'agent' ? o.name : dbLabel(o.name);
+                select.innerHTML = `<option value="">${escapeHtml(t(allKey[dimension]))}</option>` +
+                    (options[optionKey[dimension]] || []).map(o => `<option value="${Number(o.id)}">${escapeHtml(label(o))}</option>`).join('');
+            }
+        }
+
+        function applyPreset() {
+            const preset = $('preset').value;
+            if (preset === 'custom') return;
+            const { from, to } = periodPreset(preset);
+            $('from').value = from;
+            $('to').value = to;
+        }
+
+        function query() {
+            const params = new URLSearchParams();
+            if ($('from').value) params.set('from', $('from').value);
+            if ($('to').value) params.set('to', $('to').value);
+            const names = { department: 'departmentId', category: 'categoryId', priority: 'priorityId', team: 'groupId', agent: 'agentUserId' };
+            for (const select of filterSelects()) if (select.value) params.set(names[select.dataset.dimension], select.value);
+            return params.toString();
+        }
+
+        function showMessage(text, isError = false) {
+            $('kpiReport').hidden = true;
+            $('kpiMessage').hidden = false;
+            $('kpiMessage').style.color = isError ? 'var(--danger)' : '';
+            $('kpiMessage').textContent = text;
+            $('btnCsv').disabled = $('btnPrint').disabled = true;
+        }
+
+        const card = (label, value, sub = '') => `
+            <div class="kpi-card">
+                <div class="label">${escapeHtml(label)}</div>
+                <div class="value">${escapeHtml(value)}</div>
+                <div class="sub">${escapeHtml(sub)}</div>
+            </div>`;
+
+        function renderSummary(s) {
+            $('summaryCards').innerHTML = [
+                card(t('kpi_opened'), formatCount(s.opened)),
+                card(t('kpi_solved'), formatCount(s.solved)),
+                card(t('kpi_closed'), formatCount(s.closed)),
+                card(t('kpi_response_on_time'), formatPercent(s.responseMet, s.responseDue), s.responseDue ? nOfM(s.responseMet, s.responseDue) : ''),
+                card(t('kpi_resolution_on_time'), formatPercent(s.resolutionMet, s.resolutionDue), s.resolutionDue ? nOfM(s.resolutionMet, s.resolutionDue) : ''),
+                card(t('kpi_mean_own'), formatWorkingTime(s.meanTimeToOwnMinutes)),
+                card(t('kpi_mean_resolve'), formatWorkingTime(s.meanTimeToResolveMinutes)),
+                card(t('kpi_mean_close'), formatWorkingTime(s.meanTimeToCloseMinutes)),
+                card(t('kpi_reopen_rate'), formatPercent(s.reopened, s.solved), s.solved ? nOfM(s.reopened, s.solved) : ''),
+                card(t('kpi_first_time_fix'), formatPercent(s.firstTimeFixed, s.solved), s.solved ? nOfM(s.firstTimeFixed, s.solved) : ''),
+                card(t('kpi_satisfaction'),
+                    s.satisfactionAverage == null ? '—' : t('kpi_out_of_5').replaceAll('{0}', new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 }).format(s.satisfactionAverage)),
+                    t('kpi_surveys').replaceAll('{0}', formatCount(s.surveyCount)))
+            ].join('');
+        }
+
+        function renderMonths(months) {
+            if (chart) chart.destroy();
+            const styles = getComputedStyle(document.documentElement);
+            chart = new Chart($('monthsChart'), {
+                type: 'bar',
+                data: {
+                    labels: months.map(m => formatMonth(m.year, m.month)),
+                    datasets: [
+                        { label: t('kpi_opened'), data: months.map(m => m.opened), backgroundColor: styles.getPropertyValue('--primary').trim() || '#0052CC' },
+                        { label: t('kpi_solved'), data: months.map(m => m.solved), backgroundColor: styles.getPropertyValue('--success').trim() || '#00875A' }
+                    ]
+                },
+                options: { maintainAspectRatio: false, animation: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function renderBacklog(b) {
+            $('backlogSummary').textContent = t('kpi_backlog_summary').replaceAll('{0}', formatCount(b.open)).replaceAll('{1}', formatCount(b.late));
+            const buckets = [['kpi_age_0_3', b.days0To3], ['kpi_age_4_7', b.days4To7], ['kpi_age_8_30', b.days8To30], ['kpi_age_over_30', b.over30Days]];
+            const max = Math.max(1, ...buckets.map(([, n]) => n));
+            $('backlogBars').innerHTML = buckets.map(([key, n]) => `
+                <div class="backlog-row">
+                    <span>${escapeHtml(t(key))}</span>
+                    <div class="backlog-bar"><span style="width: ${Math.round((n / max) * 100)}%"></span></div>
+                    <span class="count">${escapeHtml(formatCount(n))}</span>
+                </div>`).join('');
+        }
+
+        function renderBreakdowns(breakdowns) {
+            $('breakdownTabs').innerHTML = DIMENSIONS.map(d =>
+                `<button type="button" class="btn btn-ghost btn-sm" role="tab" data-dimension="${d}" aria-selected="${d === activeDimension}">${escapeHtml(t(`kpi_by_${d}`))}</button>`).join('');
+            const num = (text) => `<td class="num">${escapeHtml(text)}</td>`;
+            $('breakdownTables').innerHTML = DIMENSIONS.map(d => {
+                const rows = breakdowns[d] || [];
+                const body = rows.length === 0
+                    ? `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">${escapeHtml(t('kpi_empty'))}</td></tr>`
+                    : rows.map(r => `<tr>
+                        <td dir="auto">${escapeHtml(rowName(d, r))}</td>
+                        ${num(formatCount(r.opened))}${num(formatCount(r.solved))}
+                        ${num(formatWorkingTime(r.meanTimeToOwnMinutes))}${num(formatWorkingTime(r.meanTimeToResolveMinutes))}
+                        ${num(r.responseDue ? `${formatPercent(r.responseMet, r.responseDue)} (${nOfM(r.responseMet, r.responseDue)})` : '—')}
+                        ${num(r.resolutionDue ? `${formatPercent(r.resolutionMet, r.resolutionDue)} (${nOfM(r.resolutionMet, r.resolutionDue)})` : '—')}
+                        ${num(formatCount(r.reopened))}
+                    </tr>`).join('');
+                return `<section class="breakdown" data-dimension="${d}" ${d === activeDimension ? '' : 'hidden'}>
+                    <h5>${escapeHtml(t(`kpi_by_${d}`))}</h5>
+                    <div class="table-container"><table class="table">
+                        <thead><tr>
+                            <th>${escapeHtml(t(`kpi_filter_${d}`))}</th>
+                            <th class="num">${escapeHtml(t('kpi_opened'))}</th><th class="num">${escapeHtml(t('kpi_solved'))}</th>
+                            <th class="num">${escapeHtml(t('kpi_mean_own'))}</th><th class="num">${escapeHtml(t('kpi_mean_resolve'))}</th>
+                            <th class="num">${escapeHtml(t('kpi_response_on_time'))}</th><th class="num">${escapeHtml(t('kpi_resolution_on_time'))}</th>
+                            <th class="num">${escapeHtml(t('kpi_reopen_rate'))}</th>
+                        </tr></thead>
+                        <tbody>${body}</tbody>
+                    </table></div>
+                </section>`;
+            }).join('');
+        }
+
+        $('breakdownTabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('button[data-dimension]');
+            if (!tab) return;
+            activeDimension = tab.dataset.dimension;
+            document.querySelectorAll('#breakdownTabs button').forEach(b => b.setAttribute('aria-selected', String(b === tab)));
+            document.querySelectorAll('.breakdown').forEach(s => { s.hidden = s.dataset.dimension !== activeDimension; });
+        });
+
+        const formatDay = (iso) => new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium' }).format(new Date(`${iso}T00:00:00`));
+        const periodText = () => t('kpi_period_label').replaceAll('{0}', formatDay(report.from)).replaceAll('{1}', formatDay(report.to));
+        function filtersText() {
+            const chosen = filterSelects().filter(s => s.value).map(s => `${t(`kpi_filter_${s.dataset.dimension}`)}: ${s.selectedOptions[0].textContent}`);
+            return t('kpi_print_filters').replaceAll('{0}', chosen.length ? chosen.join(', ') : t('kpi_no_filters'));
+        }
+        const generatedText = () => t('kpi_print_generated')
+            .replaceAll('{0}', new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(report.generatedAt)))
+            .replaceAll('{1}', me?.username || '');
+
+        async function load() {
+            try {
+                report = await window.api.request(`/reports/kpi?${query()}`, { silent: true });
+            } catch (e) {
+                console.error(e);
+                showMessage(e.message.startsWith('Forbidden') ? t('kpi_no_permission') : window.api.errorMessage(e, t('kpi_load_failed')), true);
+                return;
+            }
+            $('kpiMessage').hidden = true;
+            $('kpiReport').hidden = false;
+            $('btnCsv').disabled = $('btnPrint').disabled = false;
+            renderSummary(report.summary);
+            renderMonths(report.months);
+            renderBacklog(report.backlog);
+            renderBreakdowns(report.breakdowns);
+        }
+
+        // Printed pages say what they cover, when and by whom
+        function renderPrintHeader() {
+            if (!report) return;
+            $('printHeader').innerHTML = [t('kpi_report_title'), periodText(), filtersText(), generatedText()]
+                .map((line, i) => i === 0 ? `<h3 style="margin: 0 0 4px;">${escapeHtml(line)}</h3>` : `<div>${escapeHtml(line)}</div>`).join('');
+        }
+        window.addEventListener('beforeprint', renderPrintHeader);
+
+        $('preset').addEventListener('change', () => { applyPreset(); load(); });
+        for (const id of ['from', 'to']) {
+            $(id).addEventListener('change', () => { $('preset').value = 'custom'; if ($('from').value && $('to').value) load(); });
+        }
+        filterSelects().forEach(s => s.addEventListener('change', load));
+
+        $('btnCsv').addEventListener('click', () => {
+            if (!report) return;
+            const [header, ...rows] = kpiCsvRows(report, { periodText: periodText(), filtersText: filtersText(), generatedText: generatedText() });
+            downloadCsv(`kpi_${report.from}_${report.to}.csv`, header, rows);
+        });
+        $('btnPrint').addEventListener('click', () => window.print());
+
+        window.api.getMe().then(m => { me = m; }).catch(() => {});
+        $('preset').value = 'lastMonth';
+        applyPreset();
+        try {
+            fillFilters(await window.api.request('/reports/kpi/filters', { silent: true }));
+            await load();
+        } catch (e) {
+            console.error(e);
+            showMessage(e.message.startsWith('Forbidden') ? t('kpi_no_permission') : t('kpi_load_failed'), true);
+        }
+    </script>
+</body>
+</html>
