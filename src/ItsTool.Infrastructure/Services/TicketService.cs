@@ -394,7 +394,8 @@ public class TicketService : ITicketService
                 wt.ToStatus.SortOrder,
                 wt.ToStatus.IsClosedStatus,
                 wt.ToStatus.IsSystemDefault,
-                true // IsActive
+                true, // IsActive
+                wt.ToStatus.IsFinal
             ))
             .OrderBy(s => s.SortOrder)
             .ToList();
@@ -410,7 +411,8 @@ public class TicketService : ITicketService
                 currentStatus.SortOrder,
                 currentStatus.IsClosedStatus,
                 currentStatus.IsSystemDefault,
-                true
+                true,
+                currentStatus.IsFinal
             ));
         }
 

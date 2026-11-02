@@ -2201,6 +2201,9 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsFinal")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsSystemDefault")
                         .HasColumnType("bit");
 
@@ -2612,6 +2615,9 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Property<DateTime>("CalculatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -2640,6 +2646,9 @@ namespace ItsTool.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TimeToCloseMinutes")
                         .HasColumnType("int");
 
                     b.Property<int?>("TimeToOwnMinutes")

@@ -16,7 +16,7 @@ public class TicketTimeCalculatorTests
         [InProgress] = new(false, false),
         [OnHold] = new(false, true),
         [Resolved] = new(true, false),
-        [Closed] = new(true, false)
+        [Closed] = new(true, false, IsFinal: true)
     };
 
     // Monday to Friday 07:30-15:30 UAE time; the ticket is opened on Monday 2 November 2026 at 08:00 UAE time
@@ -141,6 +141,53 @@ public class TicketTimeCalculatorTests
         var times = Calculate(new[] { Status(Utc(2, 6), Open, Resolved), Status(Utc(4, 6), Resolved, Closed) });
 
         Assert.Equal((Utc(2, 6), 120, 0), (times.ResolvedAt, times.TimeToResolveMinutes, times.ReopenCount));
+    }
+
+    [Fact]
+    public void Resolving_is_not_closing()
+    {
+        var times = Calculate(new[] { Status(Utc(2, 6), Open, Resolved) });
+
+        Assert.Equal(Utc(2, 6), times.ResolvedAt);
+        Assert.Null(times.ClosedAt);
+        Assert.Null(times.TimeToCloseMinutes);
+    }
+
+    [Fact]
+    public void The_time_to_close_runs_to_the_final_status_without_the_waiting_time()
+    {
+        var times = Calculate(new[]
+        {
+            Status(Utc(2, 5), Open, OnHold),        // Monday 09:00 UAE
+            Status(Utc(3, 5), OnHold, InProgress),  // Tuesday 09:00 UAE: 480 working minutes on hold
+            Status(Utc(3, 7), InProgress, Resolved),
+            Status(Utc(4, 5), Resolved, Closed)     // Wednesday 09:00 UAE: 1020 working minutes since opening
+        });
+
+        Assert.Equal(180, times.TimeToResolveMinutes);
+        Assert.Equal(Utc(4, 5), times.ClosedAt);
+        Assert.Equal(540, times.TimeToCloseMinutes);
+    }
+
+    [Fact]
+    public void Closing_straight_away_resolves_and_closes_at_the_same_time()
+    {
+        var times = Calculate(new[] { Status(Utc(2, 6), Open, Closed) });
+
+        Assert.Equal((Utc(2, 6), 120), (times.ResolvedAt, times.TimeToResolveMinutes));
+        Assert.Equal((Utc(2, 6), 120), (times.ClosedAt, times.TimeToCloseMinutes));
+    }
+
+    [Fact]
+    public void Reopening_a_closed_ticket_clears_the_closing()
+    {
+        var times = Calculate(new[] { Status(Utc(2, 6), Open, Closed), Status(Utc(2, 7), Closed, Open) });
+
+        Assert.Null(times.ClosedAt);
+        Assert.Null(times.TimeToCloseMinutes);
+
+        times = Calculate(new[] { Status(Utc(2, 6), Open, Closed), Status(Utc(2, 7), Closed, Open), Status(Utc(2, 9), Open, Closed) });
+        Assert.Equal((Utc(2, 9), 300), (times.ClosedAt, times.TimeToCloseMinutes));
     }
 
     [Fact]

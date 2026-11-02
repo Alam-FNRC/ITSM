@@ -96,6 +96,19 @@ public class CatalogServiceTests : TestBase
     }
 
     [Fact]
+    public async Task A_final_status_is_always_a_closed_one()
+    {
+        var created = await _catalogService.CreateStatusAsync(new CreateStatusDto("Archived", null, 6, false, false, IsFinal: true));
+        Assert.True(created.IsFinal);
+        Assert.True(created.IsClosedStatus);
+
+        await _catalogService.UpdateStatusAsync(created.Id, new UpdateStatusDto("Archived", null, 6, false, false, true, IsFinal: false));
+        var updated = await _catalogService.GetStatusByIdAsync(created.Id);
+        Assert.False(updated!.IsFinal);
+        Assert.False(updated.IsClosedStatus);
+    }
+
+    [Fact]
     public async Task Priorities_CrudOperations_WorkCorrectly()
     {
         var createDto = new CreatePriorityDto("Urgent", "#FF0000", 1, 1);

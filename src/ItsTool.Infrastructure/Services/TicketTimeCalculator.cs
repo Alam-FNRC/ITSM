@@ -14,7 +14,11 @@ public static class TicketTimeCalculator
         "StatusChanged", "Reopened", "Updated", "Assigned", "Transferred", "CommentAdded", "CommentReplied", "InternalNoteAdded", "AttachmentAdded"
     };
 
-    public sealed record StatusFlags(bool IsClosed, bool PausesSla);
+    /// <summary>A final status (Closed) also counts as closed.</summary>
+    public sealed record StatusFlags(bool IsClosed, bool PausesSla, bool IsFinal = false)
+    {
+        public bool IsClosed { get; } = IsClosed || IsFinal;
+    }
 
     public sealed record Assignment(int? UserId, int? GroupId, DateTime CreatedAt);
 
@@ -58,6 +62,7 @@ public static class TicketTimeCalculator
         var since = ticket.CreatedAt;
         var waiting = 0;
         var waitingBeforeResolve = 0;
+        var waitingBeforeClose = 0;
 
         foreach (var change in changes)
         {
@@ -78,6 +83,16 @@ public static class TicketTimeCalculator
                 result.ResolvedAt = null;
             }
 
+            if (!from.IsFinal && to.IsFinal)
+            {
+                result.ClosedAt = at;
+                waitingBeforeClose = waiting;
+            }
+            else if (from.IsFinal && !to.IsFinal)
+            {
+                result.ClosedAt = null;
+            }
+
             current = next;
             since = at;
         }
@@ -89,6 +104,11 @@ public static class TicketTimeCalculator
         {
             var open = calendar.WorkingMinutesBetween(ticket.CreatedAt, result.ResolvedAt.Value);
             result.TimeToResolveMinutes = Math.Max(0, open - waitingBeforeResolve);
+        }
+        if (result.ClosedAt.HasValue)
+        {
+            var open = calendar.WorkingMinutesBetween(ticket.CreatedAt, result.ClosedAt.Value);
+            result.TimeToCloseMinutes = Math.Max(0, open - waitingBeforeClose);
         }
     }
 

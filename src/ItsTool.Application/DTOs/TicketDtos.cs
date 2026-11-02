@@ -41,5 +41,7 @@ public record TicketTimesDto(
     bool IsWaiting,
     DateTime? ResolvedAt,
     int? TimeToResolveMinutes,
+    DateTime? ClosedAt,
+    int? TimeToCloseMinutes,
     int ReopenCount,
     int AssignmentCount);

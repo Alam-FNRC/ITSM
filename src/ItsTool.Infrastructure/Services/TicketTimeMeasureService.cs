@@ -39,7 +39,7 @@ public class TicketTimeMeasureService : ITicketTimeMeasureService
 
             var history = await _context.TicketHistories.AsNoTracking().Where(h => h.TicketId == ticketId).ToListAsync();
             var statuses = await _context.Statuses.AsNoTracking()
-                .ToDictionaryAsync(s => s.Id, s => new TicketTimeCalculator.StatusFlags(s.IsClosedStatus, s.PausesSla));
+                .ToDictionaryAsync(s => s.Id, s => new TicketTimeCalculator.StatusFlags(s.IsClosedStatus, s.PausesSla, s.IsFinal));
             var assignments = await _context.TicketAssignments.AsNoTracking()
                 .Where(a => a.TicketId == ticketId && !a.IsDeleted)
                 .Select(a => new TicketTimeCalculator.Assignment(a.AssignedUserId, a.AssignedGroupId, a.CreatedAt))
@@ -109,6 +109,7 @@ public class TicketTimeMeasureService : ITicketTimeMeasureService
             measure.OwnedAt, measure.OwnedByUserId, measure.TimeToOwnMinutes,
             waiting, measure.WaitingSince.HasValue,
             measure.ResolvedAt, measure.TimeToResolveMinutes,
+            measure.ClosedAt, measure.TimeToCloseMinutes,
             measure.ReopenCount, measure.AssignmentCount);
     }
 
@@ -121,6 +122,8 @@ public class TicketTimeMeasureService : ITicketTimeMeasureService
         to.WaitingSince = from.WaitingSince;
         to.ResolvedAt = from.ResolvedAt;
         to.TimeToResolveMinutes = from.TimeToResolveMinutes;
+        to.ClosedAt = from.ClosedAt;
+        to.TimeToCloseMinutes = from.TimeToCloseMinutes;
         to.ReopenCount = from.ReopenCount;
         to.AssignmentCount = from.AssignmentCount;
         to.CalculatedAt = DateTime.UtcNow;

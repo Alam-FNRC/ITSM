@@ -94,28 +94,28 @@ public class CatalogService : ICatalogService
     public async Task<IEnumerable<StatusDto>> GetStatusesAsync()
     {
         var list = await _statusRepo.GetAllAsync();
-        return list.Select(s => new StatusDto(s.Id, s.Name, s.ColorHex, s.SortOrder, s.IsClosedStatus, s.IsSystemDefault, s.IsActive));
+        return list.Select(s => new StatusDto(s.Id, s.Name, s.ColorHex, s.SortOrder, s.IsClosedStatus, s.IsSystemDefault, s.IsActive, s.IsFinal));
     }
 
     public async Task<StatusDto?> GetStatusByIdAsync(int id)
     {
         var s = await _statusRepo.GetByIdAsync(id);
         if (s == null) return null;
-        return new StatusDto(s.Id, s.Name, s.ColorHex, s.SortOrder, s.IsClosedStatus, s.IsSystemDefault, s.IsActive);
+        return new StatusDto(s.Id, s.Name, s.ColorHex, s.SortOrder, s.IsClosedStatus, s.IsSystemDefault, s.IsActive, s.IsFinal);
     }
 
     public async Task<StatusDto> CreateStatusAsync(CreateStatusDto dto)
     {
-        var s = new Status { Name = dto.Name, ColorHex = dto.ColorHex, SortOrder = dto.SortOrder, IsClosedStatus = dto.IsClosedStatus, IsSystemDefault = dto.IsSystemDefault };
+        var s = new Status { Name = dto.Name, ColorHex = dto.ColorHex, SortOrder = dto.SortOrder, IsClosedStatus = dto.IsClosedStatus || dto.IsFinal, IsSystemDefault = dto.IsSystemDefault, IsFinal = dto.IsFinal };
         await _statusRepo.AddAsync(s);
-        return new StatusDto(s.Id, s.Name, s.ColorHex, s.SortOrder, s.IsClosedStatus, s.IsSystemDefault, s.IsActive);
+        return new StatusDto(s.Id, s.Name, s.ColorHex, s.SortOrder, s.IsClosedStatus, s.IsSystemDefault, s.IsActive, s.IsFinal);
     }
 
     public async Task UpdateStatusAsync(int id, UpdateStatusDto dto)
     {
         var s = await _statusRepo.GetByIdAsync(id);
         if (s == null) throw new KeyNotFoundException("Status not found");
-        s.Name = dto.Name; s.ColorHex = dto.ColorHex; s.SortOrder = dto.SortOrder; s.IsClosedStatus = dto.IsClosedStatus; s.IsSystemDefault = dto.IsSystemDefault; s.IsActive = dto.IsActive;
+        s.Name = dto.Name; s.ColorHex = dto.ColorHex; s.SortOrder = dto.SortOrder; s.IsClosedStatus = dto.IsClosedStatus || dto.IsFinal; s.IsSystemDefault = dto.IsSystemDefault; s.IsActive = dto.IsActive; s.IsFinal = dto.IsFinal;
         await _statusRepo.UpdateAsync(s);
     }
 

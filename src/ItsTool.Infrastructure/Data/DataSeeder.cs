@@ -95,7 +95,7 @@ public class DataSeeder
                 new Status { Name = StatusConstants.InProgress, SortOrder = 2 },
                 new Status { Name = StatusConstants.OnHold, SortOrder = 3, PausesSla = true },
                 new Status { Name = StatusConstants.Resolved, SortOrder = 4, IsClosedStatus = true },
-                new Status { Name = StatusConstants.Closed, SortOrder = 5, IsClosedStatus = true }
+                new Status { Name = StatusConstants.Closed, SortOrder = 5, IsClosedStatus = true, IsFinal = true }
             );
         }
     }
