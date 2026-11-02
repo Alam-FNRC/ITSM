@@ -32,28 +32,48 @@ public class CatalogService : ICatalogService
     public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync(int? projectId = null)
     {
         var list = await _categoryRepo.GetAllAsync(c => projectId == null || c.ProjectId == projectId);
-        return list.Select(c => new CategoryDto(c.Id, c.Name, c.ProjectId, c.ParentCategoryId, c.Description, c.DefaultAssigneeGroupId, c.IsActive));
+        return list.Select(ToDto);
+    }
+
+    private static CategoryDto ToDto(Category c) =>
+        new(c.Id, c.Name, c.ProjectId, c.ParentCategoryId, c.Description, c.DefaultAssigneeGroupId, c.IsActive, c.ServiceId, c.DefaultTypeId);
+
+    // A category points at a service, a ticket type and a team that must exist
+    private async Task CheckLinksAsync(int? serviceId, int? defaultTypeId, int? defaultGroupId)
+    {
+        if (serviceId.HasValue && !await _context.ItServices.AnyAsync(s => s.Id == serviceId && !s.IsDeleted))
+            throw new ArgumentException("The service does not exist.");
+        if (defaultTypeId.HasValue && !await _context.TicketTypes.AnyAsync(t => t.Id == defaultTypeId && !t.IsDeleted))
+            throw new ArgumentException("The ticket type does not exist.");
+        if (defaultGroupId.HasValue && !await _context.Groups.AnyAsync(g => g.Id == defaultGroupId && !g.IsDeleted))
+            throw new ArgumentException("The team does not exist.");
     }
 
     public async Task<CategoryDto?> GetCategoryByIdAsync(int id)
     {
         var c = await _categoryRepo.GetByIdAsync(id);
-        if (c == null) return null;
-        return new CategoryDto(c.Id, c.Name, c.ProjectId, c.ParentCategoryId, c.Description, c.DefaultAssigneeGroupId, c.IsActive);
+        return c == null ? null : ToDto(c);
     }
 
     public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto dto)
     {
-        var c = new Category { Name = dto.Name, ProjectId = dto.ProjectId, ParentCategoryId = dto.ParentCategoryId, Description = dto.Description, DefaultAssigneeGroupId = dto.DefaultAssigneeGroupId };
+        await CheckLinksAsync(dto.ServiceId, dto.DefaultTypeId, dto.DefaultAssigneeGroupId);
+        var c = new Category
+        {
+            Name = dto.Name, ProjectId = dto.ProjectId, ParentCategoryId = dto.ParentCategoryId, Description = dto.Description,
+            DefaultAssigneeGroupId = dto.DefaultAssigneeGroupId, ServiceId = dto.ServiceId, DefaultTypeId = dto.DefaultTypeId
+        };
         await _categoryRepo.AddAsync(c);
-        return new CategoryDto(c.Id, c.Name, c.ProjectId, c.ParentCategoryId, c.Description, c.DefaultAssigneeGroupId, c.IsActive);
+        return ToDto(c);
     }
 
     public async Task UpdateCategoryAsync(int id, UpdateCategoryDto dto)
     {
         var c = await _categoryRepo.GetByIdAsync(id);
         if (c == null) throw new KeyNotFoundException("Category not found");
+        await CheckLinksAsync(dto.ServiceId, dto.DefaultTypeId, dto.DefaultAssigneeGroupId);
         c.Name = dto.Name; c.ProjectId = dto.ProjectId; c.ParentCategoryId = dto.ParentCategoryId; c.Description = dto.Description; c.DefaultAssigneeGroupId = dto.DefaultAssigneeGroupId; c.IsActive = dto.IsActive;
+        c.ServiceId = dto.ServiceId; c.DefaultTypeId = dto.DefaultTypeId;
         await _categoryRepo.UpdateAsync(c);
     }
 

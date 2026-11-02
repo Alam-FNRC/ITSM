@@ -872,6 +872,7 @@
         import { initMentions } from './js/mentions.js?v=1008';
         import { t, getCurrentLanguage, getLocale } from './js/i18n.js?v=1008';
         import { initAuthorizedAttachments } from './js/attachments.js?v=1008';
+        import { categoryOptionsHtml, categoryPath } from './js/catalogue.js';
         injectShell();
 
         if (!window.api.token) window.location.href = '/login.html';
@@ -1457,9 +1458,8 @@
                 const projEl = document.getElementById('tProject');
                 if (projEl) projEl.textContent = t('db_' + projName.toLowerCase().replaceAll(' ', '_'), projName);
 
-                const catName = window.globalLookup?.categories?.find(x => x.id === ticketData.categoryId)?.name || '-';
                 const catEl = document.getElementById('tCategory');
-                if (catEl) catEl.textContent = t('db_' + catName.toLowerCase().replaceAll(' ', '_'), catName);
+                if (catEl) catEl.textContent = categoryPath(ticketData.categoryId, window.globalLookup?.categories, window.globalLookup?.services);
                 
                 const reqUser = (window.globalUsers || []).find(u => u.id === ticketData.requesterUserId);
                 const getReqName = reqUser ? (reqUser.firstName ? `${reqUser.firstName} ${reqUser.lastName}` : reqUser.username) : (ticketData.requesterName || `User ${ticketData.requesterUserId}`);
@@ -1950,11 +1950,7 @@
             tPriority.innerHTML = prioHtml;
 
             const tCategory = document.getElementById('tCategory');
-            let catHtml = '<select id="inlineEditCategory" class="form-control">';
-            (window.globalLookup.categories || []).forEach(c => {
-                catHtml += `<option value="${c.id}" ${c.id === currentTicket.categoryId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`;
-            });
-            catHtml += '</select>';
+            const catHtml = `<select id="inlineEditCategory" class="form-control">${categoryOptionsHtml(window.globalLookup.categories, window.globalLookup.services, currentTicket.categoryId)}</select>`;
             tCategory.innerHTML = catHtml;
 
             const tColorHex = document.getElementById('tColorHex');
@@ -1983,11 +1979,7 @@
             tPriority.innerHTML = prioHtml;
 
             const tCategory = document.getElementById('tCategory');
-            let catHtml = '<select id="sidebarEditCategory" class="form-control form-control-sm">';
-            (window.globalLookup.categories || []).forEach(c => {
-                catHtml += `<option value="${c.id}" ${c.id === currentTicket.categoryId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`;
-            });
-            catHtml += '</select>';
+            const catHtml = `<select id="sidebarEditCategory" class="form-control form-control-sm">${categoryOptionsHtml(window.globalLookup.categories, window.globalLookup.services, currentTicket.categoryId)}</select>`;
             tCategory.innerHTML = catHtml;
 
             const tColorHexS = document.getElementById('tColorHex');

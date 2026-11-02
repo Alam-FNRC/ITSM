@@ -1,9 +1,9 @@
 namespace ItsTool.Application.DTOs;
 
 // Category
-public record CategoryDto(int Id, string Name, int ProjectId, int? ParentCategoryId, string? Description, int? DefaultAssigneeGroupId, bool IsActive);
-public record CreateCategoryDto(string Name, int ProjectId, int? ParentCategoryId, string? Description, int? DefaultAssigneeGroupId);
-public record UpdateCategoryDto(string Name, int ProjectId, int? ParentCategoryId, string? Description, int? DefaultAssigneeGroupId, bool IsActive);
+public record CategoryDto(int Id, string Name, int ProjectId, int? ParentCategoryId, string? Description, int? DefaultAssigneeGroupId, bool IsActive, int? ServiceId = null, int? DefaultTypeId = null);
+public record CreateCategoryDto(string Name, int ProjectId, int? ParentCategoryId, string? Description, int? DefaultAssigneeGroupId, int? ServiceId = null, int? DefaultTypeId = null);
+public record UpdateCategoryDto(string Name, int ProjectId, int? ParentCategoryId, string? Description, int? DefaultAssigneeGroupId, bool IsActive, int? ServiceId = null, int? DefaultTypeId = null);
 
 // TicketType
 public record TicketTypeDto(int Id, string Name, bool IsActive);

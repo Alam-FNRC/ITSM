@@ -119,6 +119,8 @@ export function initCrudPage(cfg) {
         if (!window.api.token) return;
         try {
             tbody.innerHTML = `<tr><td colspan="100" style="text-align: center; padding: 20px;">${t('admin_role_loading')}</td></tr>`;
+            // A screen can load what its columns and form need, such as team names
+            if (cfg.beforeLoad) await cfg.beforeLoad();
             currentData = (await window.api.request(endpoint)) || [];
             window.currentData = currentData;
             renderTable(currentData);
@@ -174,10 +176,10 @@ export function initCrudPage(cfg) {
 
     const persistData = async (id, payload) => {
         if (id) {
-            await window.api.request(`${endpoint}/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+            await window.api.request(`${endpoint}/${id}`, { method: 'PUT', body: JSON.stringify(payload), silent: true });
             if (window.ui?.showToast) window.ui.showToast(t('crud_updated'));
         } else {
-            await window.api.request(endpoint, { method: 'POST', body: JSON.stringify(payload) });
+            await window.api.request(endpoint, { method: 'POST', body: JSON.stringify(payload), silent: true });
             if (window.ui?.showToast) window.ui.showToast(t('crud_created'));
         }
     };
@@ -197,7 +199,7 @@ export function initCrudPage(cfg) {
             await window.loadData();
         } catch (err) {
             console.error(err);
-            if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_save_failed'), 'error');
+            if (window.ui?.showToast) window.ui.showToast(window.api.errorMessage(err, t('crud_save_failed')), 'error');
         }
     };
 
@@ -216,11 +218,11 @@ export function initCrudPage(cfg) {
         
         if (confirmed) {
             try {
-                await window.api.request(`${endpoint}/${id}`, { method: 'DELETE' });
+                await window.api.request(`${endpoint}/${id}`, { method: 'DELETE', silent: true });
                 if (tr) tr.remove();
             } catch(err) {
                 console.error(err);
-                if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_delete_failed'), 'error');
+                if (window.ui?.showToast) window.ui.showToast(window.api.errorMessage(err, t('crud_delete_failed')), 'error');
                 if (tr) {
                     tr.style.opacity = '1';
                     tr.style.pointerEvents = 'auto';
@@ -234,13 +236,13 @@ export function initCrudPage(cfg) {
             if (auditSafeDelete && window.ui?.showUndoToast) {
                 await performUndoableDelete(id, currentData.find(x => x.id === id), tr);
             } else {
-                await window.api.request(`${endpoint}/${id}`, { method: 'DELETE' });
+                await window.api.request(`${endpoint}/${id}`, { method: 'DELETE', silent: true });
                 if (window.ui?.showToast) window.ui.showToast(t('crud_deleted'));
                 await window.loadData();
             }
         } catch (err) {
             console.error(err);
-            if (window.ui?.showToast) window.ui.showToast(err.message || t('crud_delete_failed'), 'error');
+            if (window.ui?.showToast) window.ui.showToast(window.api.errorMessage(err, t('crud_delete_failed')), 'error');
             await window.loadData();
         }
     };

@@ -3,13 +3,14 @@ namespace ItsTool.Application.DTOs;
 /// <summary>
 /// Which tickets a KPI report covers. From and To are dates in the service desk's time zone, both included;
 /// without them the report covers last month. The other filters narrow the tickets: the requester's department,
-/// the category, the priority, and a team or agent the ticket is assigned to.
+/// the service (through the category), the category, the priority, and a team or agent the ticket is assigned to.
 /// </summary>
 public record KpiFilterDto
 {
     public DateOnly? From { get; init; }
     public DateOnly? To { get; init; }
     public int? DepartmentId { get; init; }
+    public int? ServiceId { get; init; }
     public int? CategoryId { get; init; }
     public int? PriorityId { get; init; }
     public int? GroupId { get; init; }
@@ -51,7 +52,7 @@ public record KpiMonthDto(int Year, int Month, int Opened, int Solved);
 /// <summary>Tickets open now, whatever the period, by age in days; Late have passed their resolution deadline.</summary>
 public record KpiBacklogDto(int Open, int Late, int Days0To3, int Days4To7, int Days8To30, int Over30Days);
 
-/// <summary>One team, agent, category, department or priority. Id and Name are null for "none" (e.g. unassigned).</summary>
+/// <summary>One service, team, agent, category, department or priority. Id and Name are null for "none" (e.g. unassigned).</summary>
 public record KpiBreakdownRowDto(
     int? Id,
     string? Name,
@@ -70,6 +71,7 @@ public record KpiOptionDto(int Id, string Name);
 /// <summary>The values the KPI filters offer.</summary>
 public record KpiFilterOptionsDto(
     List<KpiOptionDto> Departments,
+    List<KpiOptionDto> Services,
     List<KpiOptionDto> Categories,
     List<KpiOptionDto> Priorities,
     List<KpiOptionDto> Teams,

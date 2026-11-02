@@ -41,6 +41,7 @@ public class ItsToolDbContext : DbContext
     // Ticket & Workflow
     public DbSet<TicketType> TicketTypes => Set<TicketType>();
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<ItsTool.Domain.Entities.Catalog.ItService> ItServices => Set<ItsTool.Domain.Entities.Catalog.ItService>();
     public DbSet<Status> Statuses => Set<Status>();
     public DbSet<Priority> Priorities => Set<Priority>();
     public DbSet<Ticket> Tickets => Set<Ticket>();

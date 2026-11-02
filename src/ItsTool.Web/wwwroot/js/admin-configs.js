@@ -1,5 +1,22 @@
 import { t, getLocale } from './i18n.js';
 
+// Services, ticket types and teams for the catalogue screens' columns and forms
+const catalogue = { services: [], types: [], groups: [] };
+async function loadCatalogue() {
+    const [services, lookup, groups] = await Promise.all([
+        window.api.request('/services'), window.api.request('/lookup'), window.api.request('/Groups')
+    ]);
+    catalogue.services = services || [];
+    catalogue.types = lookup?.ticketTypes || [];
+    catalogue.groups = groups || [];
+}
+const nameOf = (list, id) => list.find(x => x.id === id)?.name;
+const serviceName = (s) => s.family ? `${s.family} › ${s.name}` : s.name;
+const optionsHtml = (items, emptyKey) => `<option value="">${t(emptyKey)}</option>` +
+    items.map(x => `<option value="${x.id}">${window.ui?.escapeHtml(x.name)}</option>`).join('');
+const numberOrNull = (value) => value === '' || value == null ? null : Number.parseInt(value, 10);
+const cell = (text) => text ? window.ui?.escapeHtml(text) : '<span class="text-muted">-</span>';
+
 export const adminConfigs = {
     departments: {
         endpoint: '/Departments', pageTitle: t('admin_modal_dept'),
@@ -86,13 +103,91 @@ export const adminConfigs = {
                 <textarea id="dDesc" class="form-control" rows="3"></textarea>
             </div>`
     },
+    services: {
+        endpoint: '/services', pageTitle: t('nav_services'),
+        modalId: 'serviceModal', createTitle: t('admin_modal_service'), auditSafeDelete: true,
+        beforeLoad: loadCatalogue,
+        formFields: { id: 'svId', map: { 'name': 'svName', 'family': 'svFamily', 'description': 'svDesc', 'ownerGroupId': 'svOwner', 'sortOrder': 'svOrder', 'isActive': 'svActive' } },
+        onModalOpen: async () => {
+            document.getElementById('svOwner').innerHTML = optionsHtml(catalogue.groups, 'admin_service_no_owner');
+            const families = [...new Set(catalogue.services.map(s => s.family).filter(Boolean))];
+            document.getElementById('svFamilies').innerHTML = families.map(f => `<option value="${window.ui?.escapeHtml(f)}"></option>`).join('');
+        },
+        onSave: async (payload, id) => {
+            const body = { ...payload, ownerGroupId: numberOrNull(payload.ownerGroupId), sortOrder: Number.parseInt(payload.sortOrder, 10) || 0 };
+            await window.api.request(id ? `/services/${id}` : '/services', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body), silent: true });
+        },
+        columns: [
+            { key: 'family', label: t('admin_lbl_family'), render: (item) => cell(item.family) },
+            { key: 'name', label: t('admin_lbl_name'), render: (item) => `<span style="font-weight: 500;" dir="auto">${window.ui?.escapeHtml(item.name || '')}</span>` },
+            { key: 'ownerGroupId', label: t('admin_lbl_owner_team'), render: (item) => cell(nameOf(catalogue.groups, item.ownerGroupId)) },
+            { key: 'categoryCount', label: t('admin_lbl_categories'), render: (item) => new Intl.NumberFormat(getLocale()).format(item.categoryCount) },
+            { key: 'isActive', label: t('admin_lbl_status'), render: (item) => item.isActive ? `<span class="badge badge-success">${t('users_status_active')}</span>` : `<span class="badge badge-default">${t('users_status_inactive')}</span>` }
+        ],
+        formHtml: `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label" for="svName">${t('admin_lbl_name')} *</label>
+                    <input id="svName" class="form-control" required maxlength="200" dir="auto" placeholder="${t('admin_service_name_ph')}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="svFamily">${t('admin_lbl_family')}</label>
+                    <input id="svFamily" class="form-control" maxlength="100" dir="auto" list="svFamilies" placeholder="${t('admin_service_family_ph')}">
+                    <datalist id="svFamilies"></datalist>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="svDesc">${t('admin_lbl_desc')}</label>
+                <textarea id="svDesc" class="form-control" rows="2" maxlength="1000" dir="auto" placeholder="${t('admin_service_desc_ph')}"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label" for="svOwner">${t('admin_lbl_owner_team')}</label>
+                    <select id="svOwner" class="form-control"></select>
+                    <div class="text-muted" style="font-size: 12px; margin-top: 4px;">${t('admin_service_owner_hint')}</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="svOrder">${t('admin_lbl_sort_order')}</label>
+                    <input id="svOrder" type="number" class="form-control" value="0" step="1">
+                </div>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="svActive" checked>
+                <label for="svActive" style="margin: 0; cursor: pointer;">${t('admin_service_active')}</label>
+            </div>`
+    },
     categories: {
         endpoint: '/Categories', pageTitle: t('admin_modal_cat'),
         modalId: 'catModal', createTitle: t('admin_modal_cat'), auditSafeDelete: true,
-        formFields: { id: 'cId', map: { 'name': 'cName', 'description': 'cDesc' } },
+        beforeLoad: loadCatalogue,
+        formFields: { id: 'cId', map: { 'name': 'cName', 'description': 'cDesc', 'serviceId': 'cService', 'defaultTypeId': 'cType', 'defaultAssigneeGroupId': 'cTeam' } },
+        onModalOpen: async () => {
+            document.getElementById('cService').innerHTML = optionsHtml(catalogue.services.map(s => ({ id: s.id, name: serviceName(s) })), 'admin_cat_no_service');
+            document.getElementById('cType').innerHTML = optionsHtml(catalogue.types, 'admin_cat_any_type');
+            document.getElementById('cTeam').innerHTML = optionsHtml(catalogue.groups, 'admin_cat_no_team');
+        },
+        onSave: async (payload, id, item) => {
+            const body = {
+                ...payload,
+                serviceId: numberOrNull(payload.serviceId),
+                defaultTypeId: numberOrNull(payload.defaultTypeId),
+                defaultAssigneeGroupId: numberOrNull(payload.defaultAssigneeGroupId),
+                // Fields this form does not show keep their values; before, an edit reset them
+                projectId: item?.projectId ?? 0,
+                parentCategoryId: item?.parentCategoryId ?? null,
+                isActive: item?.isActive ?? true
+            };
+            await window.api.request(id ? `/Categories/${id}` : '/Categories', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body), silent: true });
+        },
         columns: [
             { key: 'id', label: t('admin_lbl_id'), render: (item) => `<span class="text-muted">#${item.id}</span>` },
             { key: 'name', label: t('admin_lbl_name'), render: (item) => `<span style="font-weight: 500;">${window.ui?.escapeHtml(item.name || '')}</span>` },
+            { key: 'serviceId', label: t('admin_cat_service'), render: (item) => {
+                const service = catalogue.services.find(s => s.id === item.serviceId);
+                return cell(service && serviceName(service));
+            } },
+            { key: 'defaultTypeId', label: t('admin_cat_type'), render: (item) => cell(nameOf(catalogue.types, item.defaultTypeId)) },
+            { key: 'defaultAssigneeGroupId', label: t('admin_cat_team'), render: (item) => cell(nameOf(catalogue.groups, item.defaultAssigneeGroupId)) },
             { key: 'description', label: t('admin_lbl_desc'), render: (item) => window.ui?.escapeHtml(item.description) || '-' }
         ],
         formHtml: `
@@ -100,6 +195,21 @@ export const adminConfigs = {
                 <label class="form-label" for="cName">${t('admin_lbl_name')} *</label>
                 <input id="cName" class="form-control" required placeholder="e.g. Hardware, Software">
             </div>
+            <div class="form-group">
+                <label class="form-label" for="cService">${t('admin_cat_service')}</label>
+                <select id="cService" class="form-control"></select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label" for="cType">${t('admin_cat_type')}</label>
+                    <select id="cType" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="cTeam">${t('admin_cat_team')}</label>
+                    <select id="cTeam" class="form-control"></select>
+                </div>
+            </div>
+            <div class="text-muted" style="font-size: 12px; margin: -8px 0 12px;">${t('admin_cat_team_hint')}</div>
             <div class="form-group">
                 <label class="form-label" for="cDesc">${t('admin_lbl_desc')}</label>
                 <textarea id="cDesc" class="form-control" rows="3"></textarea>
