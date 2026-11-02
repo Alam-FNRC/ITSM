@@ -79,6 +79,10 @@ public class ItsToolDbContext : DbContext
     public DbSet<ItsTool.Domain.Entities.Security.SecurityEvidence> SecurityEvidence => Set<ItsTool.Domain.Entities.Security.SecurityEvidence>();
     public DbSet<ItsTool.Domain.Entities.Security.SecurityEvidenceCustody> SecurityEvidenceCustody => Set<ItsTool.Domain.Entities.Security.SecurityEvidenceCustody>();
 
+    // Risk register (restricted; see IRestrictedRecord)
+    public DbSet<ItsTool.Domain.Entities.Risks.Risk> Risks => Set<ItsTool.Domain.Entities.Risks.Risk>();
+    public DbSet<ItsTool.Domain.Entities.Risks.RiskHistory> RiskHistory => Set<ItsTool.Domain.Entities.Risks.RiskHistory>();
+
     // Notification
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
     public DbSet<Notification> Notifications => Set<Notification>();

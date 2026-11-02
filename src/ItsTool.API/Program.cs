@@ -145,6 +145,8 @@ builder.Services.AddScoped<ISignalRPusher, ItsTool.API.Services.SignalRPusher>()
     builder.Services.AddHostedService<TicketTimeBackfillService>();
     builder.Services.AddSingleton<IEvidenceStore, LocalEvidenceStore>();
     builder.Services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
+    builder.Services.AddScoped<IRiskService, RiskService>();
+    builder.Services.AddHostedService<RiskReminderService>();
 
     // Dashboard, Reporting & KB (Phase 8)
     builder.Services.AddScoped<IDashboardService, DashboardService>();

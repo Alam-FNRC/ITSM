@@ -29,16 +29,20 @@ public static class PermissionConstants
     public const string SecurityIncidentView = "security.incident.view";
     public const string SecurityIncidentManage = "security.incident.manage";
 
+    // Risk register: the security team keeps it, the IT manager (or a deputy) approves treatment and acceptance
+    public const string RiskManage = "risk.manage";
+    public const string RiskApprove = "risk.approve";
+
     /// <summary>
     /// Held only through a role, group or override that grants them. SuperAdmin does not get them automatically,
     /// so a system administrator cannot read security incidents without a grant, which the audit log records.
     /// </summary>
-    public static IReadOnlyList<string> ExplicitOnly => new[] { SecurityIncidentView, SecurityIncidentManage };
+    public static IReadOnlyList<string> ExplicitOnly => new[] { SecurityIncidentView, SecurityIncidentManage, RiskManage, RiskApprove };
 
     public static IReadOnlyList<string> AllPermissions => new[]
     {
         TicketCreate, TicketView, TicketEdit, TicketAssign, TicketTransfer, 
         TicketResolve, TicketClose, TicketReopen, TicketCommentInternal, TicketCommentEdit, TicketCommentReply, TicketCommentDelete, ReportView, AdminManage, ConfigManage, SlaManage, AuditView,
-        KbManage, KbView, SurveySubmit, TicketComment, SecurityIncidentView, SecurityIncidentManage
+        KbManage, KbView, SurveySubmit, TicketComment, SecurityIncidentView, SecurityIncidentManage, RiskManage, RiskApprove
     };
 }

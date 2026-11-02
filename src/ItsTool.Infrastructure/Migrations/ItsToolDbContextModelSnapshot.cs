@@ -1334,6 +1334,190 @@ namespace ItsTool.Infrastructure.Migrations
                     b.ToTable("ProjectSequences");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Risks.Risk", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnnexAControls")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ApprovedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DueReminderSentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExistingControls")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("ImpactAvailability")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImpactConfidentiality")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImpactIntegrity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastReviewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LastReviewedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Likelihood")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("OverdueReminderSentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OwnerUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecommendedControls")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("ResidualAvailability")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ResidualConfidentiality")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ResidualIntegrity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ResidualLikelihood")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("TargetDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Threat")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Treatment")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Vulnerability")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Number")
+                        .IsUnique();
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.ToTable("Risks");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Risks.RiskHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Field")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("OldValue")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("RiskId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RiskId");
+
+                    b.ToTable("RiskHistory");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.SLA.BusinessHour", b =>
                 {
                     b.Property<int>("Id")
@@ -3229,6 +3413,17 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Risks.RiskHistory", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Risks.Risk", "Risk")
+                        .WithMany("History")
+                        .HasForeignKey("RiskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Risk");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.SLA.SlaTarget", b =>
                 {
                     b.HasOne("ItsTool.Domain.Entities.SLA.SlaPolicy", "SlaPolicy")
@@ -3573,6 +3768,11 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("PermissionOverrides");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Risks.Risk", b =>
+                {
+                    b.Navigation("History");
                 });
 
             modelBuilder.Entity("ItsTool.Domain.Entities.Security.SecurityEvidence", b =>
