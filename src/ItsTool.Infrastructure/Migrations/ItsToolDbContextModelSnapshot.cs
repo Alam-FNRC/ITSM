@@ -332,6 +332,61 @@ namespace ItsTool.Infrastructure.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Catalog.ItService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Family")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("OwnerGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerGroupId");
+
+                    b.ToTable("ItServices");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Config.FieldDefinition", b =>
                 {
                     b.Property<int>("Id")
@@ -2086,6 +2141,9 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Property<int?>("DefaultAssigneeGroupId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DefaultTypeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -2108,6 +2166,9 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -2115,6 +2176,10 @@ namespace ItsTool.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DefaultTypeId");
+
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("Categories");
                 });
@@ -2955,6 +3020,16 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Catalog.ItService", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Organization.Group", "OwnerGroup")
+                        .WithMany()
+                        .HasForeignKey("OwnerGroupId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("OwnerGroup");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Config.FieldOption", b =>
                 {
                     b.HasOne("ItsTool.Domain.Entities.Config.FieldDefinition", "FieldDefinition")
@@ -3249,6 +3324,23 @@ namespace ItsTool.Infrastructure.Migrations
                     b.Navigation("Incident");
                 });
 
+            modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.Category", b =>
+                {
+                    b.HasOne("ItsTool.Domain.Entities.Ticket.TicketType", "DefaultType")
+                        .WithMany()
+                        .HasForeignKey("DefaultTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ItsTool.Domain.Entities.Catalog.ItService", "Service")
+                        .WithMany("Categories")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DefaultType");
+
+                    b.Navigation("Service");
+                });
+
             modelBuilder.Entity("ItsTool.Domain.Entities.Ticket.Ticket", b =>
                 {
                     b.HasOne("ItsTool.Domain.Entities.Ticket.Category", "Category")
@@ -3464,6 +3556,11 @@ namespace ItsTool.Infrastructure.Migrations
             modelBuilder.Entity("ItsTool.Domain.Entities.Auth.Role", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("ItsTool.Domain.Entities.Catalog.ItService", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("ItsTool.Domain.Entities.Organization.Department", b =>

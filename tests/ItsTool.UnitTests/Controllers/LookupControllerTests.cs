@@ -24,8 +24,10 @@ public class LookupControllerTests
         catalogMock.Setup(s => s.GetStatusesAsync()).ReturnsAsync(new List<StatusDto>());
         projectMock.Setup(s => s.GetAllAsync()).ReturnsAsync(new List<ProjectDto>());
         deptMock.Setup(s => s.GetAllAsync()).ReturnsAsync(new List<DepartmentDto>());
+        var servicesMock = new Mock<IServiceCatalogService>();
+        servicesMock.Setup(s => s.GetAllAsync(true)).ReturnsAsync(new List<ItServiceDto>());
 
-        var controller = new LookupController(catalogMock.Object, projectMock.Object, deptMock.Object);
+        var controller = new LookupController(catalogMock.Object, projectMock.Object, deptMock.Object, servicesMock.Object);
 
         var result = await controller.GetLookups();
 

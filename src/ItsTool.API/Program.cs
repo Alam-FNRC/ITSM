@@ -106,6 +106,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 
 // Catalog & Workflow Services (Phase 5)
 builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<IServiceCatalogService, ServiceCatalogService>();
 builder.Services.AddScoped<IWorkflowService, WorkflowService>();
 builder.Services.AddScoped<IDynamicFormService, DynamicFormService>();
 
