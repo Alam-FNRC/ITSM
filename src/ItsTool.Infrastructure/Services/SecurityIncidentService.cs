@@ -628,27 +628,7 @@ public class SecurityIncidentService : ISecurityIncidentService
         }
     }
 
-    /// <summary>Users holding a permission through a role, a group's role or a grant, minus denies; mirrors PermissionCalculator.</summary>
-    private async Task<List<int>> UsersWithPermissionAsync(string key)
-    {
-        var permissionId = await _context.Permissions.Where(p => p.Key == key && p.IsActive && !p.IsDeleted).Select(p => (int?)p.Id).FirstOrDefaultAsync();
-        if (permissionId == null) return new List<int>();
-
-        var roleIds = await _context.RolePermissions
-            .Where(rp => rp.PermissionId == permissionId && !rp.IsDeleted && rp.Role != null && rp.Role.IsActive && !rp.Role.IsDeleted)
-            .Select(rp => rp.RoleId).ToListAsync();
-        var viaRoles = await _context.UserRoles.Where(ur => roleIds.Contains(ur.RoleId) && !ur.IsDeleted).Select(ur => ur.UserId).ToListAsync();
-        var groupIds = await _context.GroupRoles.Where(gr => roleIds.Contains(gr.RoleId) && !gr.IsDeleted).Select(gr => gr.GroupId).ToListAsync();
-        var viaGroups = await _context.GroupMembers
-            .Where(gm => groupIds.Contains(gm.GroupId) && !gm.IsDeleted && gm.Group != null && gm.Group.IsActive && !gm.Group.IsDeleted)
-            .Select(gm => gm.UserId).ToListAsync();
-        var overrides = await _context.UserPermissionOverrides.Where(o => o.PermissionId == permissionId && !o.IsDeleted)
-            .Select(o => new { o.UserId, o.IsGranted }).ToListAsync();
-
-        var holders = viaRoles.Concat(viaGroups).Concat(overrides.Where(o => o.IsGranted).Select(o => o.UserId)).ToHashSet();
-        holders.ExceptWith(overrides.Where(o => !o.IsGranted).Select(o => o.UserId));
-        return await _context.Users.Where(u => holders.Contains(u.Id) && u.IsActive && !u.IsDeleted).Select(u => u.Id).ToListAsync();
-    }
+    private Task<List<int>> UsersWithPermissionAsync(string key) => PermissionHolders.FindAsync(_context, key);
 
     // Notifications name the reference only; the details stay behind the incident's access check
     private async Task NotifyAsync(IEnumerable<int> userIds, SecurityIncident incident, string type, string title, string body)
@@ -690,17 +670,7 @@ public class SecurityIncidentService : ISecurityIncidentService
     private static int? ValidSeverity(int? severity) =>
         severity is null or (>= 1 and <= 4) ? severity : throw new ArgumentException("Severity runs from 1 (critical) to 4 (low).");
 
-    // Names only: Enum.TryParse would also take numbers, including ones no member has
-    internal static T ParseEnum<T>(string? value, string field) where T : struct, Enum
-    {
-        var text = value?.Trim();
-        if (string.IsNullOrEmpty(text) || char.IsDigit(text[0]) || text[0] == '-' ||
-            !Enum.TryParse<T>(text, ignoreCase: true, out var parsed) || !Enum.IsDefined(parsed))
-        {
-            throw new ArgumentException($"{field} '{value}' is not valid.");
-        }
-        return parsed;
-    }
+    internal static T ParseEnum<T>(string? value, string field) where T : struct, Enum => EnumNames.Parse<T>(value, field);
 }
 
 /// <summary>Kinds of entry in a security incident's history.</summary>
