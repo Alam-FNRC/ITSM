@@ -302,7 +302,7 @@
         function renderRecentTicketsList(recentTickets, lookup) {
             const getStatusName = (id) => lookup.statuses?.find(s => s.id === id)?.name || 'Unknown';
             const getStatusBadge = (status) => {
-                const map = { 'Open': 'info', 'In Progress': 'warning', 'Pending': 'warning', 'Resolved': 'success', 'Closed': 'default', 'Açık': 'info', 'Devam Ediyor': 'warning', 'Beklemede': 'warning', 'Çözüldü': 'success', 'Kapatıldı': 'default' };
+                const map = { 'Open': 'info', 'In Progress': 'warning', 'Pending': 'warning', 'Resolved': 'success', 'Closed': 'default' };
                 let translationKey = 'db_' + status.toLowerCase().replaceAll(' ', '_');
                 return `<span class="badge badge-${map[status] || 'default'}" style="font-size: 11px;">${escapeHtml(t(translationKey, status))}</span>`;
             };
@@ -408,13 +408,13 @@
             const getStatusName = (id) => window.__lookupCache?.statuses?.find(s => s.id === id)?.name || 'Unknown';
             const getPriorityName = (id) => window.__lookupCache?.priorities?.find(s => s.id === id)?.name || 'Normal';
             const getStatusBadge = (status) => {
-                const map = { 'Open': 'info', 'Açık': 'info', 'In Progress': 'warning', 'Devam Ediyor': 'warning', 'Pending': 'warning', 'Beklemede': 'warning', 'Resolved': 'success', 'Çözüldü': 'success', 'Closed': 'default', 'Kapatıldı': 'default' };
+                const map = { 'Open': 'info', 'In Progress': 'warning', 'Pending': 'warning', 'Resolved': 'success', 'Closed': 'default' };
                 const label = t('db_' + status.toLowerCase().replaceAll(' ', '_'), status);
                 return `<span class="badge badge-${map[status] || 'default'}" style="font-size: 11px;">${window.ui?.escapeHtml(label) || label}</span>`;
             };
 
             const getPriorityBadge = (priority) => {
-                const pMap = { 'Critical': 'danger', 'Kritik': 'danger', 'High': 'warning', 'Yüksek': 'warning', 'Medium': 'info', 'Orta': 'info', 'Low': 'default', 'Düşük': 'default' };
+                const pMap = { 'Critical': 'danger', 'High': 'warning', 'Medium': 'info', 'Low': 'default' };
                 const label = t('db_' + priority.toLowerCase().replaceAll(' ', '_'), priority);
                 return `<span class="badge badge-${pMap[priority] || 'default'}" style="font-size: 11px;">${window.ui?.escapeHtml(label) || label}</span>`;
             };
@@ -454,13 +454,13 @@
 
         function buildDrillDownFilter(type) {
             let filter = { pageSize: 50 };
-            const closedStatus = window.__lookupCache?.statuses?.find(s => s.name === 'Closed' || s.name === 'Kapatıldı');
+            const closedStatus = window.__lookupCache?.statuses?.find(s => s.name === 'Closed');
             const excludeClosed = () => { if (closedStatus) filter.excludeStatusId = closedStatus.id; };
             
             if (type === 'Open Tickets') {
                 excludeClosed();
             } else if (type === 'Critical') {
-                applyLookupFilter(filter, 'priorities', 'Critical,Kritik', 'priorityId');
+                applyLookupFilter(filter, 'priorities', 'Critical', 'priorityId');
                 excludeClosed();
             } else if (type === 'SLA Risk') {
                 filter.slaStatus = 'warning';
