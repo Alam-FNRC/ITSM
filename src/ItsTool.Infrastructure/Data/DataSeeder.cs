@@ -9,16 +9,17 @@ namespace ItsTool.Infrastructure.Data;
 
 public static class StatusConstants
 {
-    public const string Open = "Açık";
-    public const string InProgress = "Devam Ediyor";
-    public const string OnHold = "Beklemede";
-    public const string Resolved = "Çözüldü";
-    public const string Closed = "Kapatıldı";
+    public const string Open = "Open";
+    public const string InProgress = "In Progress";
+    public const string OnHold = "Pending";
+    public const string Resolved = "Resolved";
+    public const string Closed = "Closed";
 }
 
 public static class TransitionConstants
 {
     public const string StartProgress = "Start Progress";
+    public const string Close = "Close";
     public const string PutOnHold = "Put on Hold";
     public const string Resolve = "Resolve";
     public const string MoveToOpen = "Move to Open";
@@ -37,9 +38,34 @@ public class DataSeeder
     private const string RoleAgent = "Agent";
     private const string RoleEndUser = "EndUser";
     private const string RoleSecurityTeam = "Security Team";
+    private const string ItDepartment = "Information Technology";
+    private const string HardwareCategory = "Hardware Failure";
 
-    private static readonly Dictionary<string, string> NewPermissionDescriptions = new()
+    private const string DefaultPermissionDescription = "Added by the system.";
+
+    private static readonly Dictionary<string, string> PermissionDescriptions = new()
     {
+        { PermissionConstants.TicketCreate, "Create new tickets." },
+        { PermissionConstants.TicketView, "See tickets: all of them, or those the user is entitled to." },
+        { PermissionConstants.TicketEdit, "Edit ticket details." },
+        { PermissionConstants.TicketAssign, "Assign tickets to people or teams." },
+        { PermissionConstants.TicketTransfer, "Move tickets to another project or department." },
+        { PermissionConstants.TicketResolve, "Mark tickets as resolved." },
+        { PermissionConstants.TicketClose, "Close resolved tickets for good." },
+        { PermissionConstants.TicketReopen, "Reopen closed tickets." },
+        { PermissionConstants.TicketComment, "Add comments to tickets." },
+        { PermissionConstants.TicketCommentInternal, "Add internal notes that only staff can see." },
+        { PermissionConstants.TicketCommentEdit, "Edit comments on tickets." },
+        { PermissionConstants.TicketCommentReply, "Reply to comments on tickets." },
+        { PermissionConstants.TicketCommentDelete, "Delete comments on tickets." },
+        { PermissionConstants.ReportView, "See reports and statistics." },
+        { PermissionConstants.AdminManage, "Full administrator rights across the system (SuperAdmin)." },
+        { PermissionConstants.ConfigManage, "Manage system settings, rules and webhooks." },
+        { PermissionConstants.SlaManage, "Manage SLA (service level) policies." },
+        { PermissionConstants.AuditView, "See the system audit log." },
+        { PermissionConstants.KbManage, "Write, edit and publish knowledge base articles." },
+        { PermissionConstants.KbView, "Read knowledge base articles." },
+        { PermissionConstants.SurveySubmit, "Fill in satisfaction surveys." },
         { PermissionConstants.SecurityIncidentView, "See all security incidents and federal reports." },
         { PermissionConstants.SecurityIncidentManage, "Triage, work on and close security incidents." },
         { PermissionConstants.RiskManage, "See and keep the risk register." },
@@ -108,10 +134,10 @@ public class DataSeeder
         if (!await _context.Priorities.AnyAsync())
         {
             _context.Priorities.AddRange(
-                new Priority { Name = "Kritik", Weight = 100, SeverityLevel = 1 },
-                new Priority { Name = "Yüksek", Weight = 75, SeverityLevel = 2 },
-                new Priority { Name = "Orta", Weight = 50, SeverityLevel = 3 },
-                new Priority { Name = "Düşük", Weight = 25, SeverityLevel = 4 }
+                new Priority { Name = "Critical", Weight = 100, SeverityLevel = 1 },
+                new Priority { Name = "High", Weight = 75, SeverityLevel = 2 },
+                new Priority { Name = "Medium", Weight = 50, SeverityLevel = 3 },
+                new Priority { Name = "Low", Weight = 25, SeverityLevel = 4 }
             );
         }
     }
@@ -122,21 +148,21 @@ public class DataSeeder
         if (!await _context.Departments.AnyAsync())
         {
             _context.Departments.AddRange(
-                new Department { Name = "Bilgi Teknolojileri" },
-                new Department { Name = "İnsan Kaynakları" }
+                new Department { Name = ItDepartment },
+                new Department { Name = "Human Resources" }
             );
         }
         await _context.SaveChangesAsync();
 
-        var itDept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == "Bilgi Teknolojileri");
+        var itDept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == ItDepartment);
         // Groups
         if (!await _context.Groups.AnyAsync() && itDept != null)
         {
             _context.Groups.AddRange(
-                new Group { Name = "Helpdesk Ekibi", DepartmentId = itDept.Id },
-                new Group { Name = "Sistem & Network Ekibi", DepartmentId = itDept.Id },
-                new Group { Name = "Yazılım Destek Ekibi", DepartmentId = itDept.Id },
-                new Group { Name = "Güvenlik Ekibi", DepartmentId = itDept.Id }
+                new Group { Name = "Helpdesk Team", DepartmentId = itDept.Id },
+                new Group { Name = "Systems & Network Team", DepartmentId = itDept.Id },
+                new Group { Name = "Software Support Team", DepartmentId = itDept.Id },
+                new Group { Name = "Security Team", DepartmentId = itDept.Id }
             );
             await _context.SaveChangesAsync();
         }
@@ -148,7 +174,7 @@ public class DataSeeder
         var allPermissions = ItsTool.Application.Constants.PermissionConstants.AllPermissions;
         var existingPermissions = await _context.Permissions.ToListAsync();
         
-        var missingPermissions = allPermissions.Where(pKey => !existingPermissions.Any(p => p.Key == pKey)).Select(pKey => new Permission { Name = pKey, Key = pKey, Description = NewPermissionDescriptions.GetValueOrDefault(pKey, "Sistem tarafından otomatik oluşturuldu.") }).ToList();
+        var missingPermissions = allPermissions.Where(pKey => !existingPermissions.Any(p => p.Key == pKey)).Select(pKey => new Permission { Name = pKey, Key = pKey, Description = PermissionDescriptions.GetValueOrDefault(pKey, DefaultPermissionDescription) }).ToList();
         if (missingPermissions.Count > 0)
         {
             _context.Permissions.AddRange(missingPermissions);
@@ -156,37 +182,11 @@ public class DataSeeder
         }
         await _context.SaveChangesAsync();
         
-        // Add default descriptions to permissions if missing
-        var permDescriptions = new Dictionary<string, string>
-        {
-            { "ticket.create", "Yeni bilet oluşturma yetkisi sağlar." },
-            { TicketView, "Tüm biletleri veya yetkili olunan biletleri görüntüleme yetkisi sağlar." },
-            { "ticket.edit", "Bilet detaylarını düzenleme yetkisi sağlar." },
-            { "ticket.assign", "Biletleri kişilere veya gruplara atama yetkisi sağlar." },
-            { "ticket.transfer", "Biletleri farklı projelere veya departmanlara transfer etme yetkisi sağlar." },
-            { "ticket.resolve", "Biletleri çözüldü olarak işaretleme yetkisi sağlar." },
-            { "ticket.close", "Çözülmüş biletleri tamamen kapatma yetkisi sağlar." },
-            { "ticket.reopen", "Kapanmış biletleri yeniden açma yetkisi sağlar." },
-            { "ticket.comment", "Biletlere yorum ekleme yetkisi sağlar." },
-            { "ticket.comment.internal", "Biletlere sadece personelin görebileceği iç not (internal note) ekleme yetkisi sağlar." },
-            { "ticket.comment.edit", "Biletlerdeki yorumları düzenleme yetkisi sağlar." },
-            { "ticket.comment.reply", "Biletlerdeki yorumlara cevap verme yetkisi sağlar." },
-            { "ticket.comment.delete", "Biletlerdeki yorumları silme yetkisi sağlar." },
-            { "report.view", "Sistem raporlarını ve analitikleri görüntüleme yetkisi sağlar." },
-            { "admin.manage", "Sistem genelinde tam yetkili (SuperAdmin) yönetici hakları sağlar." },
-            { "config.manage", "Sistem yapılandırmalarını, kuralları ve webhook'ları yönetme yetkisi sağlar." },
-            { "sla.manage", "SLA (Hizmet Seviyesi) politikalarını yönetme yetkisi sağlar." },
-            { "audit.view", "Sistem denetim kayıtlarını (Audit Logs) görüntüleme yetkisi sağlar." },
-            { "kb.manage", "Bilgi bankası makalelerini oluşturma ve düzenleme yetkisi sağlar." },
-            { "kb.view", "Bilgi bankası makalelerini okuma yetkisi sağlar." },
-            { "survey.submit", "Müşteri memnuniyet anketlerini doldurma yetkisi sağlar." },
-            { "user.manage", "Kullanıcıları ve rolleri yönetme yetkisi sağlar." }
-        };
-        
+        // Fill in descriptions that are missing
         var permissionsToUpdate = existingPermissions.Where(ep => string.IsNullOrEmpty(ep.Description)).ToList();
         foreach (var ep in permissionsToUpdate)
         {
-            if (permDescriptions.TryGetValue(ep.Key, out var desc))
+            if (PermissionDescriptions.TryGetValue(ep.Key, out var desc))
             {
                 ep.Description = desc;
             }
@@ -237,7 +237,7 @@ public class DataSeeder
         if (_firstAdmin == null || await _context.Users.AnyAsync()) return;
 
         var superAdminRole = await _context.Roles.FirstAsync(r => r.Name == RoleSuperAdmin);
-        var itDept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == "Bilgi Teknolojileri");
+        var itDept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == ItDepartment);
         var admin = new ItsTool.Domain.Entities.Organization.User
         {
             Username = _firstAdmin.Username,
@@ -271,15 +271,15 @@ public class DataSeeder
 
     private async Task SeedProjectsAndCategoriesAsync()
     {
-        // 5 Adet Default Proje (Doküman Madde 3.3)
+        // Five default projects
         if (!await _context.Projects.AnyAsync())
         {
             _context.Projects.AddRange(
-                new ItsTool.Domain.Entities.Project.Project { Name = "IT Destek", ProjectKey = "ITS" },
-                new ItsTool.Domain.Entities.Project.Project { Name = "İnsan Kaynakları", ProjectKey = "HR" },
-                new ItsTool.Domain.Entities.Project.Project { Name = "Yazılım Geliştirme", ProjectKey = "DEV" },
-                new ItsTool.Domain.Entities.Project.Project { Name = "DevOps & Altyapı", ProjectKey = "OPS" },
-                new ItsTool.Domain.Entities.Project.Project { Name = "Güvenlik Operasyonları", ProjectKey = "SEC" }
+                new ItsTool.Domain.Entities.Project.Project { Name = "IT Support", ProjectKey = "ITS" },
+                new ItsTool.Domain.Entities.Project.Project { Name = "Human Resources", ProjectKey = "HR" },
+                new ItsTool.Domain.Entities.Project.Project { Name = "Software Development", ProjectKey = "DEV" },
+                new ItsTool.Domain.Entities.Project.Project { Name = "DevOps & Infrastructure", ProjectKey = "OPS" },
+                new ItsTool.Domain.Entities.Project.Project { Name = "Security Operations", ProjectKey = "SEC" }
             );
             await _context.SaveChangesAsync();
         }
@@ -288,9 +288,9 @@ public class DataSeeder
         if (!await _context.Categories.AnyAsync() && itsProject != null)
         {
             _context.Categories.AddRange(
-                new ItsTool.Domain.Entities.Ticket.Category { Name = "Donanım Arızası", ProjectId = itsProject.Id },
-                new ItsTool.Domain.Entities.Ticket.Category { Name = "Yazılım Talebi", ProjectId = itsProject.Id },
-                new ItsTool.Domain.Entities.Ticket.Category { Name = "Ağ & İnternet", ProjectId = itsProject.Id }
+                new ItsTool.Domain.Entities.Ticket.Category { Name = HardwareCategory, ProjectId = itsProject.Id },
+                new ItsTool.Domain.Entities.Ticket.Category { Name = "Software Request", ProjectId = itsProject.Id },
+                new ItsTool.Domain.Entities.Ticket.Category { Name = "Network & Internet", ProjectId = itsProject.Id }
             );
             await _context.SaveChangesAsync();
         }
@@ -301,12 +301,12 @@ public class DataSeeder
         // Dynamic Fields Demo
         if (!await _context.FieldDefinitions.AnyAsync())
         {
-            var serverNameField = new ItsTool.Domain.Entities.Config.FieldDefinition { Key = "sunucu_adi", Label = "Sunucu Adı", FieldType = ItsTool.Domain.Entities.Config.FieldType.Text };
-            var impactedUsersField = new ItsTool.Domain.Entities.Config.FieldDefinition { Key = "etkilenen_kullanicilar", Label = "Etkilenen Kullanıcı Sayısı", FieldType = ItsTool.Domain.Entities.Config.FieldType.Number };
+            var serverNameField = new ItsTool.Domain.Entities.Config.FieldDefinition { Key = "server_name", Label = "Server Name", FieldType = ItsTool.Domain.Entities.Config.FieldType.Text };
+            var impactedUsersField = new ItsTool.Domain.Entities.Config.FieldDefinition { Key = "affected_users", Label = "Number of Affected Users", FieldType = ItsTool.Domain.Entities.Config.FieldType.Number };
             _context.FieldDefinitions.AddRange(serverNameField, impactedUsersField);
             await _context.SaveChangesAsync();
 
-            var hwCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Name == "Donanım Arızası");
+            var hwCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Name == HardwareCategory);
             if (hwCategory != null)
             {
                 _context.FormFieldPlacements.AddRange(
@@ -323,14 +323,14 @@ public class DataSeeder
         // SLA Seed Data
         if (!await _context.SlaPolicies.AnyAsync())
         {
-            var policy = new SlaPolicy { Name = "Default SLA Policy", Description = "Varsayılan hizmet seviyesi sözleşmesi" };
+            var policy = new SlaPolicy { Name = "Default SLA Policy", Description = "Default service level agreement" };
             _context.SlaPolicies.Add(policy);
             await _context.SaveChangesAsync();
 
-            var critical = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "Kritik");
-            var high = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "Yüksek");
-            var medium = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "Orta");
-            var low = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "Düşük");
+            var critical = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "Critical");
+            var high = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "High");
+            var medium = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "Medium");
+            var low = await _context.Priorities.FirstOrDefaultAsync(p => p.Name == "Low");
 
             if (critical != null && high != null && medium != null && low != null)
             {
@@ -417,32 +417,32 @@ public class DataSeeder
         if (!await _context.KnowledgeCategories.AnyAsync())
         {
             _context.KnowledgeCategories.AddRange(
-                new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeCategory { Name = "Rehberler" },
-                new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeCategory { Name = "Prosedürler" },
-                new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeCategory { Name = "Sistem & Altyapı" }
+                new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeCategory { Name = "Guides" },
+                new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeCategory { Name = "Procedures" },
+                new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeCategory { Name = "Systems & Infrastructure" }
             );
             await _context.SaveChangesAsync();
         }
 
         if (!await _context.KnowledgeArticles.AnyAsync())
         {
-            var rehberlerCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Rehberler");
-            var prosedurlerCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Prosedürler");
-            var sistemCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Sistem & Altyapı");
+            var guidesCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Guides");
+            var proceduresCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Procedures");
+            var systemsCat = await _context.KnowledgeCategories.FirstOrDefaultAsync(c => c.Name == "Systems & Infrastructure");
 
             var adminAuthor = await _context.UserRoles
                 .Where(ur => ur.Role != null && ur.Role.Name == RoleSuperAdmin && !ur.IsDeleted)
                 .Select(ur => ur.User)
                 .FirstOrDefaultAsync();
             
-            if (adminAuthor != null && rehberlerCat != null && prosedurlerCat != null && sistemCat != null)
+            if (adminAuthor != null && guidesCat != null && proceduresCat != null && systemsCat != null)
             {
                 _context.KnowledgeArticles.AddRange(
                     new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeArticle
                     {
-                        Title = "VPN Bağlantı Rehberi",
-                        Content = "Şirket ağına uzaktan erişim sağlamak için VPN bağlantısının nasıl kurulacağını adım adım anlatan rehber.\n\n1. Cisco AnyConnect uygulamasını açın.\n2. Sunucu adresi olarak vpn.sirket.com girin.\n3. Kullanıcı adı ve şifrenizle giriş yapın.\n4. MFA (Çok Faktörlü Doğrulama) kodunu girin.",
-                        CategoryId = rehberlerCat.Id,
+                        Title = "VPN Connection Guide",
+                        Content = "A step-by-step guide to setting up the VPN connection for remote access to the company network.\n\n1. Open the Cisco AnyConnect app.\n2. Enter vpn.example.com as the server address.\n3. Sign in with your username and password.\n4. Enter your MFA (multi-factor authentication) code.",
+                        CategoryId = guidesCat.Id,
                         AuthorUserId = adminAuthor.Id,
                         Visibility = ItsTool.Domain.Entities.KnowledgeBase.ArticleVisibility.Public,
                         Status = ItsTool.Domain.Entities.KnowledgeBase.ArticleStatus.Published,
@@ -450,9 +450,9 @@ public class DataSeeder
                     },
                     new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeArticle
                     {
-                        Title = "Parola Sıfırlama Prosedürü",
-                        Content = "Hesap parolanızı unuttuysanız veya süresi dolduysa izlemeniz gereken adımlar.\n\nEğer bilgisayarınızda oturum açabiliyorsanız, Ctrl+Alt+Del yaparak 'Parola Değiştir' seçeneğini kullanın. Oturum açamıyorsanız Self-Service Portal üzerinden telefon numaranıza gelecek SMS ile sıfırlama yapabilirsiniz.",
-                        CategoryId = prosedurlerCat.Id,
+                        Title = "Password Reset Procedure",
+                        Content = "The steps to follow if you have forgotten your account password or it has expired.\n\nIf you can sign in to your computer, press Ctrl+Alt+Del and choose 'Change a password'. If you cannot sign in, you can reset it through the Self-Service Portal with an SMS sent to your phone number.",
+                        CategoryId = proceduresCat.Id,
                         AuthorUserId = adminAuthor.Id,
                         Visibility = ItsTool.Domain.Entities.KnowledgeBase.ArticleVisibility.Public,
                         Status = ItsTool.Domain.Entities.KnowledgeBase.ArticleStatus.Published,
@@ -460,9 +460,9 @@ public class DataSeeder
                     },
                     new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeArticle
                     {
-                        Title = "Sunucu Bakım Kontrol Listesi",
-                        Content = "DİKKAT: Bu doküman sadece IT personeli içindir.\n\nAylık sunucu bakımlarında kontrol edilmesi gereken metrikler:\n- CPU ve RAM kullanım trendleri\n- Disk doluluk oranları (>%80 ise uyarı)\n- Güvenlik yamalarının (patch) durumu\n- Backup operasyonlarının son durumu (Success/Failure logları)",
-                        CategoryId = sistemCat.Id,
+                        Title = "Server Maintenance Checklist",
+                        Content = "NOTE: This document is for IT staff only.\n\nMetrics to check during monthly server maintenance:\n- CPU and RAM usage trends\n- Disk usage (warn above 80%)\n- Security patch status\n- Latest status of backup jobs (success/failure logs)",
+                        CategoryId = systemsCat.Id,
                         AuthorUserId = adminAuthor.Id,
                         Visibility = ItsTool.Domain.Entities.KnowledgeBase.ArticleVisibility.Internal,
                         Status = ItsTool.Domain.Entities.KnowledgeBase.ArticleStatus.Published,
@@ -470,9 +470,9 @@ public class DataSeeder
                     },
                     new ItsTool.Domain.Entities.KnowledgeBase.KnowledgeArticle
                     {
-                        Title = "Taslak: Yeni Personel Onboarding",
-                        Content = "Yeni personellerin ilk günlerinde IT tarafından sağlanacak donanım ve yazılım erişimlerinin taslağıdır. Henüz tamamlanmamıştır.",
-                        CategoryId = rehberlerCat.Id,
+                        Title = "Draft: New Staff Onboarding",
+                        Content = "A draft of the hardware and software access IT provides to new staff in their first days. Not finished yet.",
+                        CategoryId = guidesCat.Id,
                         AuthorUserId = adminAuthor.Id,
                         Visibility = ItsTool.Domain.Entities.KnowledgeBase.ArticleVisibility.Internal,
                         Status = ItsTool.Domain.Entities.KnowledgeBase.ArticleStatus.Draft,
@@ -492,19 +492,19 @@ public class DataSeeder
             new() { WorkflowId = workflowId, FromStatusId = openId, ToStatusId = inProgressId, IsActive = true, TransitionName = TransitionConstants.StartProgress },
             new() { WorkflowId = workflowId, FromStatusId = openId, ToStatusId = onHoldId, IsActive = true, TransitionName = TransitionConstants.PutOnHold },
             new() { WorkflowId = workflowId, FromStatusId = openId, ToStatusId = resolvedId, IsActive = true, TransitionName = TransitionConstants.Resolve, RequiredPermissionKey = PermissionConstants.TicketResolve },
-            new() { WorkflowId = workflowId, FromStatusId = openId, ToStatusId = closedId, IsActive = true, TransitionName = StatusConstants.Closed, RequiredPermissionKey = PermissionConstants.TicketClose },
+            new() { WorkflowId = workflowId, FromStatusId = openId, ToStatusId = closedId, IsActive = true, TransitionName = TransitionConstants.Close, RequiredPermissionKey = PermissionConstants.TicketClose },
             new() { WorkflowId = workflowId, FromStatusId = inProgressId, ToStatusId = openId, IsActive = true, TransitionName = TransitionConstants.MoveToOpen },
             new() { WorkflowId = workflowId, FromStatusId = inProgressId, ToStatusId = onHoldId, IsActive = true, TransitionName = TransitionConstants.PutOnHold },
             new() { WorkflowId = workflowId, FromStatusId = inProgressId, ToStatusId = resolvedId, IsActive = true, TransitionName = TransitionConstants.Resolve, RequiredPermissionKey = PermissionConstants.TicketResolve },
-            new() { WorkflowId = workflowId, FromStatusId = inProgressId, ToStatusId = closedId, IsActive = true, TransitionName = StatusConstants.Closed, RequiredPermissionKey = PermissionConstants.TicketClose },
+            new() { WorkflowId = workflowId, FromStatusId = inProgressId, ToStatusId = closedId, IsActive = true, TransitionName = TransitionConstants.Close, RequiredPermissionKey = PermissionConstants.TicketClose },
             new() { WorkflowId = workflowId, FromStatusId = onHoldId, ToStatusId = openId, IsActive = true, TransitionName = TransitionConstants.MoveToOpen },
             new() { WorkflowId = workflowId, FromStatusId = onHoldId, ToStatusId = inProgressId, IsActive = true, TransitionName = TransitionConstants.ResumeProgress },
             new() { WorkflowId = workflowId, FromStatusId = onHoldId, ToStatusId = resolvedId, IsActive = true, TransitionName = TransitionConstants.Resolve, RequiredPermissionKey = PermissionConstants.TicketResolve },
-            new() { WorkflowId = workflowId, FromStatusId = onHoldId, ToStatusId = closedId, IsActive = true, TransitionName = StatusConstants.Closed, RequiredPermissionKey = PermissionConstants.TicketClose },
+            new() { WorkflowId = workflowId, FromStatusId = onHoldId, ToStatusId = closedId, IsActive = true, TransitionName = TransitionConstants.Close, RequiredPermissionKey = PermissionConstants.TicketClose },
             new() { WorkflowId = workflowId, FromStatusId = resolvedId, ToStatusId = openId, IsActive = true, TransitionName = TransitionConstants.ReopenToOpen, RequiredPermissionKey = PermissionConstants.TicketReopen },
             new() { WorkflowId = workflowId, FromStatusId = resolvedId, ToStatusId = inProgressId, IsActive = true, TransitionName = TransitionConstants.ReopenToProgress, RequiredPermissionKey = PermissionConstants.TicketReopen },
             new() { WorkflowId = workflowId, FromStatusId = resolvedId, ToStatusId = onHoldId, IsActive = true, TransitionName = TransitionConstants.ReopenToPending, RequiredPermissionKey = PermissionConstants.TicketReopen },
-            new() { WorkflowId = workflowId, FromStatusId = resolvedId, ToStatusId = closedId, IsActive = true, TransitionName = StatusConstants.Closed, RequiredPermissionKey = PermissionConstants.TicketClose },
+            new() { WorkflowId = workflowId, FromStatusId = resolvedId, ToStatusId = closedId, IsActive = true, TransitionName = TransitionConstants.Close, RequiredPermissionKey = PermissionConstants.TicketClose },
             new() { WorkflowId = workflowId, FromStatusId = closedId, ToStatusId = openId, IsActive = true, TransitionName = TransitionConstants.ReopenToOpen, RequiredPermissionKey = PermissionConstants.TicketReopen },
             new() { WorkflowId = workflowId, FromStatusId = closedId, ToStatusId = inProgressId, IsActive = true, TransitionName = TransitionConstants.ReopenToProgress, RequiredPermissionKey = PermissionConstants.TicketReopen },
             new() { WorkflowId = workflowId, FromStatusId = closedId, ToStatusId = onHoldId, IsActive = true, TransitionName = TransitionConstants.ReopenToPending, RequiredPermissionKey = PermissionConstants.TicketReopen },
@@ -520,7 +520,7 @@ public class DataSeeder
             wf = new ItsTool.Domain.Entities.Workflow.Workflow 
             { 
                 Name = "Default Global Workflow", 
-                Description = "Sistem varsayılan iş akışı", 
+                Description = "System default workflow", 
                 IsActive = true 
             };
             _context.Workflows.Add(wf);

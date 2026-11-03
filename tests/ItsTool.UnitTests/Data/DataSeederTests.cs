@@ -20,9 +20,9 @@ public class DataSeederTests : TestBase
         var workflow = await _context.Workflows.FirstOrDefaultAsync(w => w.Name == "Default Global Workflow");
         Assert.NotNull(workflow);
 
-        var closedStatus = await _context.Statuses.FirstOrDefaultAsync(s => s.Name == "Kapatıldı");
-        var resolvedStatus = await _context.Statuses.FirstOrDefaultAsync(s => s.Name == "Çözüldü");
-        var inProgressStatus = await _context.Statuses.FirstOrDefaultAsync(s => s.Name == "Devam Ediyor");
+        var closedStatus = await _context.Statuses.FirstOrDefaultAsync(s => s.Name == StatusConstants.Closed);
+        var resolvedStatus = await _context.Statuses.FirstOrDefaultAsync(s => s.Name == StatusConstants.Resolved);
+        var inProgressStatus = await _context.Statuses.FirstOrDefaultAsync(s => s.Name == StatusConstants.InProgress);
 
         Assert.NotNull(closedStatus);
         Assert.NotNull(resolvedStatus);
@@ -119,6 +119,28 @@ public class DataSeederTests : TestBase
 
         Assert.False(await _context.UserRoles.AnyAsync());
         Assert.False(await _context.GroupRoles.AnyAsync());
+    }
+
+    [Fact]
+    public async Task SeedAsync_WritesEnglishOnly()
+    {
+        // With an administrator the sample knowledge base articles are seeded too
+        await new DataSeeder(_context, FirstAdmin).SeedAsync();
+
+        Assert.Equal(new[] { "Open", "In Progress", "Pending", "Resolved", "Closed" },
+            await _context.Statuses.OrderBy(s => s.SortOrder).Select(s => s.Name).ToListAsync());
+        Assert.Equal(new[] { "Critical", "High", "Medium", "Low" },
+            await _context.Priorities.OrderBy(p => p.SeverityLevel).Select(p => p.Name).ToListAsync());
+        Assert.NotEmpty(await _context.KnowledgeArticles.ToListAsync());
+
+        // Every text the seeder wrote; these letters are Turkish, not English
+        var turkish = new System.Text.RegularExpressions.Regex("[ıİşŞğĞçÇöÖüÜ]");
+        var found = _context.ChangeTracker.Entries()
+            .SelectMany(e => e.Properties.Where(p => p.CurrentValue is string)
+                .Select(p => $"{e.Metadata.ClrType.Name}.{p.Metadata.Name}: {p.CurrentValue}"))
+            .Where(text => turkish.IsMatch(text))
+            .ToList();
+        Assert.Empty(found);
     }
 
     [Fact]
