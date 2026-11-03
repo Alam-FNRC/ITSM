@@ -147,12 +147,15 @@
                 `;
 
         
+        // Charts follow the chosen theme
+        const themeColor = (name, fallback) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+
         function buildStatusChart(dist) {
             new Chart(document.getElementById('statusChart'), {
                         type: 'doughnut',
                         data: {
                             labels: dist.byStatus.map(d => t('db_' + d.key.toLowerCase().replaceAll(' ', '_'))),
-                            datasets: [{ data: dist.byStatus.map(d => d.count), backgroundColor: ['#0052CC','#00875A','#FF991F','#DE350B','#42526E'] }]
+                            datasets: [{ data: dist.byStatus.map(d => d.count), backgroundColor: [themeColor('--chart-1', '#0052CC'), themeColor('--chart-2', '#00875A'), themeColor('--chart-3', '#FF991F'), themeColor('--chart-4', '#DE350B'), themeColor('--chart-5', '#42526E')] }]
                         },
                         options: { 
                             maintainAspectRatio: false, 
@@ -174,7 +177,7 @@
                         type: 'bar',
                         data: {
                             labels: dist.byPriority.map(d => t('db_' + d.key.toLowerCase().replaceAll(' ', '_'))),
-                            datasets: [{ label: t('dash_count'), data: dist.byPriority.map(d => d.count), backgroundColor: '#0052CC' }]
+                            datasets: [{ label: t('dash_count'), data: dist.byPriority.map(d => d.count), backgroundColor: themeColor('--chart-1', '#0052CC') }]
                         },
                         options: { 
                             maintainAspectRatio: false, 

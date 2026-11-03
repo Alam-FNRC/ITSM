@@ -1,11 +1,29 @@
 /* Design System for ITSM Tool (Jira / ClickUp Inspired) */
 
+/* Dubai, the UAE government typeface, used by the FNRC theme. Self-hosted, so it also works on a network
+   that blocks font CDNs; it covers Arabic and Latin, so both languages share one type scale. */
+@font-face { font-family: 'Dubai'; src: url('../fonts/dubai/DubaiW23-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Dubai'; src: url('../fonts/dubai/DubaiW23-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Dubai'; src: url('../fonts/dubai/DubaiW23-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Dubai'; src: url('../fonts/dubai/DubaiW23-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+
 /* 1. Design Tokens (Variables) */
 :root {
     /* Brand & Primary Colors */
     --primary: #0052CC;
     --primary-hover: #0047b3;
     --primary-light: #DEEBFF;
+    /* Filled buttons and chart marks. Separate from --primary, which also colours text and links, because a
+       theme's fill colour may be too light for text (the FNRC gold is). Text on the fill uses --on-primary-fill. */
+    --primary-fill: var(--primary);
+    --primary-fill-hover: var(--primary-hover);
+    --on-primary-fill: var(--text-inverse);
+    /* Chart series, in order; a theme changes one when two would look alike */
+    --chart-1: var(--primary-fill);
+    --chart-2: var(--success);
+    --chart-3: var(--warning);
+    --chart-4: var(--danger);
+    --chart-5: var(--text-muted);
     
     /* Semantic Colors */
     --success: #00875A;
@@ -55,8 +73,50 @@
 }
 
 /* =========================================
-   THEMES (Dark, Dracula, Monokai, GitHub)
+   THEMES (FNRC, Dark, Dracula, Monokai, GitHub)
    ========================================= */
+
+/* 0. FNRC: the palette and typeface of the FNRC employee portal (Workspace v2), so staff see one style.
+   Gold #B98B2E is 3.09:1 on white, so it is a fill only and carries dark text (5.37:1). Text, links and
+   focus rings use the deep gold #7F5C10 (6.10:1). Every text colour here passes WCAG AA. */
+[data-theme="fnrc"] {
+    --primary: #7F5C10;
+    --primary-hover: #6A4C0C;
+    --primary-light: #F4EAD0;
+    --primary-fill: #B98B2E;
+    --primary-fill-hover: #C99B3E;
+    --on-primary-fill: #211E1A;
+
+    --success: #15803D;
+    --success-light: #DCFCE7;
+    --warning: #A15C07;
+    --warning-light: #FEF3C7;
+    --danger: #A23C1B;
+    --danger-light: #FDF4F1;
+    --info: #2A7F7F;
+    --info-light: #E2F0EF;
+
+    --text-main: #211E1A;
+    --text-muted: #6B6256;
+    --text-danger-strong: #A23C1B;
+
+    --bg-body: #FAF9F5;
+    --bg-surface: #FFFFFF;
+    --bg-hover: #F1ECE2;
+    --bg-danger-light: #FDF4F1;
+    --border: #EAE4D8;
+    --border-danger-light: #F0D9CF;
+
+    --shadow-sm: 0 1px 2px rgba(40, 30, 15, 0.06), 0 0 0 1px rgba(40, 30, 15, 0.04);
+    --shadow-md: 0 4px 10px rgba(40, 30, 15, 0.10), 0 0 1px rgba(40, 30, 15, 0.22);
+
+    --font-family: 'Dubai', 'Segoe UI', system-ui, sans-serif;
+    /* Gold and amber side by side read as one colour, so the third series is the portal's teal */
+    --chart-3: #2A7F7F;
+}
+/* The portal marks the current page with soft gold; its warning text is darker than the default's */
+[data-theme="fnrc"] .sidebar-nav-item.active { background-color: var(--primary-light); }
+[data-theme="fnrc"] .badge-warning { color: #92400E; }
 
 /* 1. Classic Dark Theme */
 [data-theme="dark"] {
@@ -782,10 +842,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-    background-color: var(--primary);
-    color: var(--text-inverse);
+    background-color: var(--primary-fill);
+    color: var(--on-primary-fill);
 }
-.btn-primary:hover { background-color: var(--primary-hover); text-decoration: none; }
+.btn-primary:hover { background-color: var(--primary-fill-hover); text-decoration: none; }
 
 .btn-secondary {
     background-color: rgba(9, 30, 66, 0.04);

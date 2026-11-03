@@ -467,6 +467,7 @@ export function bindShellActions() {
         
         const themes = [
             { id: 'light', name: t('ui_theme_light') },
+            { id: 'fnrc', name: 'FNRC' },
             { id: 'dark', name: t('ui_theme_dark') },
             { id: 'dracula', name: 'Dracula' },
             { id: 'monokai', name: 'Monokai' },
