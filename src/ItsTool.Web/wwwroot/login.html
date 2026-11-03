@@ -3,354 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="login_signin" data-i18n-target="document-title">ITSM Tool - Login</title>
+    <title data-i18n="login_signin" data-i18n-target="document-title">ITSM Tool - Sign in</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
-        body { 
-            background: linear-gradient(135deg, var(--primary) 0%, #002255 100%);
-            display: flex; justify-content: center; align-items: center; height: 100vh;
+        /* The FNRC sign-in design (docs: "Fujairah ITSM sign-in"). The page keeps its own brand colours whatever
+           theme a user picked inside the app. Every text colour passes WCAG AA on its background. */
+        .signin {
+            --si-panel: #103F42;
+            --si-band: #113A40;
+            --si-panel-text: #F7F6EF;
+            --si-panel-muted: #C2D5D1;
+            --si-bg: #FAF9F6;
+            --si-ink: #183B3B;
+            --si-muted: #5D6B69;
+            --si-accent: #0B5254;
+            --si-accent-hover: #08403F;
+            --si-accent-light: #E3EEEC;
+            --si-field-border: #81918D;
+            --si-placeholder: #697673;
+            --si-danger: #A23C1B;
+            --si-danger-light: #FDF4F1;
+            --si-danger-border: #F0D9CF;
+            display: flex;
+            min-height: 100vh;
+            background: var(--si-bg);
+            color: var(--si-ink);
+            font-family: 'Dubai', 'Segoe UI', system-ui, sans-serif;
+            font-size: 16px;
         }
-        .login-box { 
-            background: var(--bg-surface); padding: var(--spacing-xl); 
-            border-radius: var(--radius-lg); box-shadow: var(--shadow-md); 
-            width: 100%; max-width: 400px; text-align: center;
+
+        /* Brand panel */
+        .signin-panel {
+            flex: 0 0 clamp(420px, 41.7vw, 640px);
+            display: flex; flex-direction: column;
+            height: 100vh; position: sticky; top: 0; overflow: hidden;
+            background: var(--si-panel); color: var(--si-panel-text);
         }
-        .login-logo {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 48px; height: 48px; background-color: var(--primary-light);
-            color: var(--primary); border-radius: var(--radius-md); margin-bottom: var(--spacing-md);
+        .signin-brand { padding: 56px 56px 0; }
+        .signin-brand-name { font-size: 28px; font-weight: 700; line-height: 1.2; letter-spacing: 0.01em; }
+        .signin-brand-sub { margin-top: 6px; font-size: 15px; color: var(--si-panel-muted); }
+        .signin-hero { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center; padding: 40px 56px; }
+        .signin-eyebrow {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--si-panel-muted);
         }
-        .login-logo svg { width: 24px; height: 24px; fill: currentColor; }
-        h1 { margin-bottom: var(--spacing-lg); color: var(--text-main); font-size: 24px; }
-        .form-group { text-align: start; }
-        .error { color: var(--danger); text-align: center; margin-top: var(--spacing-md); display: none; font-size: 13px; font-weight: 500; }
+        .signin-eyebrow::before { content: ''; width: 28px; height: 1px; background: currentColor; }
+        .signin-headline { margin-top: 22px; font-size: clamp(32px, 3.05vw, 44px); font-weight: 500; line-height: 1.18; letter-spacing: -0.01em; color: var(--si-panel-text); }
+        .signin-headline span { display: block; }
+        .signin-intro { margin-top: 24px; max-width: 400px; font-size: 17px; line-height: 1.6; color: var(--si-panel-muted); }
+        .signin-figure { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; }
+        .signin-band { flex: none; padding: 22px 24px; background: var(--si-band); text-align: center; font-size: 19px; font-weight: 500; color: #FFFFFF; }
+        .signin-figure img { display: block; width: 100%; min-height: 0; flex: 0 1 auto; object-fit: cover; object-position: center top; }
+
+        /* Form side */
+        .signin-main { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; }
+        .signin-top { display: flex; justify-content: flex-end; padding: 52px 56px 0; }
+        .signin-lang {
+            display: inline-flex; align-items: center; gap: 8px; padding: 6px 4px;
+            background: none; border: none; border-radius: 4px; cursor: pointer;
+            font: inherit; font-size: 15px; color: var(--si-ink);
+        }
+        .signin-lang:hover { color: var(--si-accent); }
+        .signin-body { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; padding: 40px 24px 72px; }
+        .signin-card { width: 100%; max-width: 420px; }
+        .signin-card h1 { font-size: 38px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; color: var(--si-ink); }
+        .signin-subtitle { margin-top: 10px; font-size: 17px; color: var(--si-muted); }
+        .signin-form { margin-top: 36px; }
+        .signin-field + .signin-field { margin-top: 22px; }
+        .signin-label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+        .signin-label { display: block; font-size: 15px; font-weight: 700; color: var(--si-ink); }
+        .signin-field > .signin-label { margin-bottom: 8px; }
+        .signin-link {
+            background: none; border: none; padding: 0; cursor: pointer;
+            font: inherit; font-size: 15px; font-weight: 700; color: var(--si-accent);
+        }
+        .signin-link:hover { text-decoration: underline; }
+        .signin-input-wrap { position: relative; }
+        .signin-input {
+            display: block; width: 100%; height: 54px; padding: 0 16px;
+            background: #FFFFFF; border: 1px solid var(--si-field-border); border-radius: 4px;
+            font: inherit; font-size: 17px; color: var(--si-ink);
+        }
+        .signin-input::placeholder { color: var(--si-placeholder); opacity: 1; }
+        .signin-input-wrap .signin-input { padding-inline-end: 52px; }
+        .signin-input:focus { border-color: var(--si-accent); box-shadow: 0 0 0 1px var(--si-accent); outline: none; }
+        .signin-eye {
+            position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
+            display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+            background: none; border: none; border-radius: 4px; cursor: pointer; color: var(--si-muted);
+        }
+        .signin-eye:hover, .signin-eye[aria-pressed="true"] { color: var(--si-accent); }
+        .signin-hint { margin-top: 6px; font-size: 13px; color: var(--si-muted); }
+        .signin-submit {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 54px; margin-top: 24px; padding: 0 52px;
+            background: var(--si-accent); border: none; border-radius: 4px; cursor: pointer;
+            font: inherit; font-size: 16px; font-weight: 700; color: #FFFFFF;
+        }
+        .signin-submit:hover { background: var(--si-accent-hover); }
+        .signin-submit:disabled { cursor: progress; opacity: 0.8; }
+        .signin-submit svg { position: absolute; inset-inline-end: 20px; }
+        [dir="rtl"] .signin-submit svg { transform: scaleX(-1); }
+        .signin-error {
+            margin-top: 20px; padding: 10px 14px;
+            background: var(--si-danger-light); border: 1px solid var(--si-danger-border); border-radius: 4px;
+            font-size: 14px; font-weight: 500; color: var(--si-danger);
+        }
+        .signin-success { margin-top: 20px; font-size: 14px; font-weight: 700; color: #15803D; }
+        .signin-note {
+            margin-top: 24px; padding: 12px 14px;
+            background: var(--si-accent-light); border-inline-start: 4px solid var(--si-accent); border-radius: 4px;
+            font-size: 14px; line-height: 1.55; color: var(--si-ink);
+        }
+        .signin-help { margin-top: 44px; text-align: center; font-size: 16px; color: var(--si-muted); }
+        .signin-help .signin-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 16px; }
+        .signin :focus-visible { outline: 2px solid var(--si-accent); outline-offset: 2px; }
+        .signin .signin-input:focus-visible { outline: none; }
+        [hidden] { display: none !important; }
+
+        /* Help dialog */
+        .signin-dialog {
+            width: min(460px, calc(100% - 32px)); margin: auto; padding: 0;
+            border: none; border-radius: 8px; box-shadow: 0 16px 40px rgba(16, 63, 66, 0.28);
+            background: #FFFFFF; color: #183B3B; font-family: 'Dubai', 'Segoe UI', system-ui, sans-serif;
+        }
+        .signin-dialog::backdrop { background: rgba(16, 63, 66, 0.55); }
+        .signin-dialog :focus-visible { outline: 2px solid #0B5254; outline-offset: 2px; }
+        .signin-dialog h2 { padding: 20px 24px 0; font-size: 20px; font-weight: 700; }
+        .signin-dialog-body { padding: 12px 24px 0; font-size: 15px; line-height: 1.6; }
+        .signin-dialog-body p + p { margin-top: 10px; }
+        .signin-dialog-actions { display: flex; justify-content: flex-end; padding: 20px 24px; }
+        .signin-dialog-actions button {
+            height: 40px; padding: 0 20px; background: #0B5254; border: none; border-radius: 4px; cursor: pointer;
+            font: inherit; font-size: 15px; font-weight: 700; color: #FFFFFF;
+        }
+
+        /* The Arabic script joins its letters, so it takes no letter spacing */
+        [dir="rtl"] .signin-eyebrow, [dir="rtl"] .signin-headline, [dir="rtl"] .signin-card h1 { letter-spacing: 0; }
+        [dir="rtl"] .signin-eyebrow { font-size: 14px; }
+        /* Email addresses and user names are Latin, so they run left to right inside the Arabic form */
+        [dir="rtl"] #username { text-align: right; }
+
+        /* Short screens drop the picture before the words */
+        @media (max-height: 640px) { .signin-figure { display: none; } }
+
+        /* Tablets and phones: the panel becomes a header with the brand */
+        @media (max-width: 900px) {
+            .signin { flex-direction: column; }
+            .signin-panel { flex: none; height: auto; position: static; }
+            .signin-brand { padding: 20px 16px; }
+            .signin-brand-name { font-size: 22px; }
+            .signin-brand-sub { margin-top: 2px; font-size: 14px; }
+            .signin-hero, .signin-figure { display: none; }
+            .signin-top { padding: 16px 16px 0; }
+            .signin-body { align-items: flex-start; padding: 24px 16px 48px; }
+            .signin-card h1 { font-size: 32px; }
+        }
     </style>
 
     <script>
         (function() {
             try {
-                const savedTheme = localStorage.getItem('itsm_theme') || 'light';
-                document.documentElement.dataset.theme = savedTheme;
                 const savedLang = localStorage.getItem('itsm_lang') || 'en';
                 document.documentElement.lang = savedLang;
                 // Arabic is written right to left; i18n.js sets the same once it loads
                 document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
             } catch (e) {
-                console.warn('Could not load theme/lang:', e);
+                console.warn('Could not load the language:', e);
             }
         })();
     </script>
-
 </head>
 <body>
+<div class="signin">
 
-    <div style="position: absolute; top: 20px; inset-inline-end: 20px; display: flex; gap: 8px;">
-        <div class="dropdown" style="position:relative;">
-            <button class="btn btn-ghost d-flex align-items-center gap-sm" onclick="this.nextElementSibling.classList.toggle('show')" id="langMenuBtn">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c1.96-1.66 3.49-2.93 5.33-3.56C9.81 5.55 9.35 6.75 9.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.34.16-2h4.68c.09.66.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.24 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
-                <span id="currentLangText">EN</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" id="loginLangMenu" style="position:absolute; inset-inline-end:0; top:100%;"></ul>
+    <aside class="signin-panel">
+        <div class="signin-brand">
+            <div class="signin-brand-name">FNRC</div>
+            <div class="signin-brand-sub" data-i18n="signin_brand_sub">IT Service Management</div>
         </div>
-<!-- 
-            
-            
-        -->
-        <div class="dropdown" style="position:relative;">
-            <button class="btn btn-ghost d-flex align-items-center gap-sm" onclick="this.nextElementSibling.classList.toggle('show')" id="themeMenuBtn">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" style="position:absolute; inset-inline-end:0; top:100%;">
-                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="light">Light</a></li>
-                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="dark">Dark</a></li>
-                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="dracula">Dracula</a></li>
-                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="monokai">Monokai</a></li>
-                <li><a class="dropdown-item login-theme-opt" href="#" data-theme="github-dark">GitHub Dark</a></li>
-            </ul>
+        <div class="signin-hero">
+            <p class="signin-eyebrow"><span data-i18n="signin_eyebrow">Your IT workspace</span></p>
+            <p class="signin-headline">
+                <span data-i18n="signin_headline_1">Better support.</span>
+                <span data-i18n="signin_headline_2">A clearer working day.</span>
+            </p>
+            <p class="signin-intro" data-i18n="signin_intro">Request IT support, track your requests and find the guidance you need — in one place.</p>
         </div>
-<!-- 
-            
-            
-            
-            
-            
-        -->
-    </div>
+        <div class="signin-figure">
+            <div class="signin-band" data-i18n="signin_band">IT Service Management (ITSM)</div>
+            <img src="img/signin-illustration.webp" width="600" height="364" alt="">
+        </div>
+    </aside>
 
-    <div class="login-box">
-        <div class="login-logo">
-            <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z"/></svg>
+    <main class="signin-main">
+        <div class="signin-top">
+            <button type="button" class="signin-lang" id="langToggle">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>
+                </svg>
+                <span id="langToggleText"></span>
+            </button>
         </div>
-        <h1 id="lbl_welcome" data-i18n="login_welcome">Welcome Back</h1>
-        <form id="loginForm">
-            <div class="form-group">
-                <label class="form-label" for="username" id="lbl_username" data-i18n="login_username">Username or Email</label>
-                <input id="username" class="form-control" autocomplete="username" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="password" id="lbl_password" data-i18n="login_password">Password</label>
-                <div style="position: relative;">
-                    <input type="password" id="password" class="form-control" autocomplete="current-password" required style="padding-inline-end: 40px;">
-                    <button type="button" id="togglePassword" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;">
-                        <svg id="eyeIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+
+        <div class="signin-body">
+            <div class="signin-card">
+                <h1 id="signinTitle" data-i18n="login_signin">Sign in</h1>
+                <p class="signin-subtitle" id="signinSubtitle" data-i18n="signin_subtitle">Use your work account to access IT services.</p>
+
+                <form id="loginForm" class="signin-form" novalidate>
+                    <div class="signin-field">
+                        <label class="signin-label" for="username" data-i18n="login_username">Work email or username</label>
+                        <input id="username" class="signin-input" dir="ltr" autocomplete="username" autocapitalize="none" spellcheck="false" required
+                               placeholder="name@fnrc.gov.ae" data-i18n="signin_user_ph" data-i18n-target="placeholder">
+                    </div>
+                    <div class="signin-field">
+                        <div class="signin-label-row">
+                            <label class="signin-label" for="password" data-i18n="login_password">Password</label>
+                            <button type="button" class="signin-link" data-help data-i18n="login_forgot">Forgot password?</button>
+                        </div>
+                        <div class="signin-input-wrap">
+                            <input type="password" id="password" class="signin-input" autocomplete="current-password" required
+                                   placeholder="Enter your password" data-i18n="signin_password_ph" data-i18n-target="placeholder">
+                            <button type="button" class="signin-eye" data-reveal="password" aria-pressed="false" aria-label="Show/Hide Password" data-i18n="login_toggle_password" data-i18n-target="aria-label"></button>
+                        </div>
+                    </div>
+                    <div id="errorMessage" class="signin-error" role="alert" hidden></div>
+                    <button type="submit" class="signin-submit" id="signinButton">
+                        <span id="signinButtonText" data-i18n="login_signin">Sign in</span>
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </button>
+                </form>
+
+                <!-- A temporary password must be replaced before the user gets in -->
+                <div id="forcePasswordContainer" hidden>
+                    <div class="signin-note">
+                        <strong data-i18n="login_force_alert_title">Temporary Password — Set Your Password</strong><br>
+                        <span data-i18n="login_force_alert_desc">You logged in with a temporary password. For security, please set your new permanent password.</span>
+                    </div>
+                    <form id="forcePasswordForm" class="signin-form" novalidate>
+                        <div class="signin-field">
+                            <label class="signin-label" for="forceNewPassword" data-i18n="login_force_new_pwd">New Password</label>
+                            <div class="signin-input-wrap">
+                                <input type="password" id="forceNewPassword" class="signin-input" autocomplete="new-password" required minlength="12"
+                                       placeholder="Enter your new password" data-i18n="login_force_new_pwd_ph" data-i18n-target="placeholder">
+                                <button type="button" class="signin-eye" data-reveal="forceNewPassword" aria-pressed="false" aria-label="Show/Hide Password" data-i18n="login_toggle_password" data-i18n-target="aria-label"></button>
+                            </div>
+                            <div class="signin-hint" data-i18n="login_force_min_chars">Must be at least 12 characters.</div>
+                        </div>
+                        <div class="signin-field">
+                            <label class="signin-label" for="forceConfirmPassword" data-i18n="login_force_confirm_pwd">Confirm New Password</label>
+                            <div class="signin-input-wrap">
+                                <input type="password" id="forceConfirmPassword" class="signin-input" autocomplete="new-password" required minlength="12"
+                                       placeholder="Enter your new password again" data-i18n="login_force_confirm_pwd_ph" data-i18n-target="placeholder">
+                                <button type="button" class="signin-eye" data-reveal="forceConfirmPassword" aria-pressed="false" aria-label="Show/Hide Password" data-i18n="login_toggle_password" data-i18n-target="aria-label"></button>
+                            </div>
+                        </div>
+                        <div id="forcePasswordError" class="signin-error" role="alert" hidden></div>
+                        <div id="forcePasswordSuccess" class="signin-success" role="status" hidden></div>
+                        <button type="submit" class="signin-submit" id="btnSubmitForcePassword">
+                            <span id="forceButtonText" data-i18n="login_force_btn">Save Password &amp; Sign In</span>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="signin-help">
+                    <div data-i18n="signin_help_question">Need help signing in?</div>
+                    <button type="button" class="signin-link" data-help>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M19 20c0 1.1-1.3 2-3 2h-3"/>
                         </svg>
+                        <span data-i18n="signin_help_link">Contact the service desk</span>
                     </button>
                 </div>
             </div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
-                <button type="button" class="btn-link" onclick="openForgotPasswordModal()" data-i18n="login_forgot" style="background: none; border: none; padding: 0; font-size: 12px; color: var(--primary); cursor: pointer; text-decoration: underline;" id="lbl_forgot_pass">
-                    Forgot your password?
-                </button>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: var(--spacing-md); padding: 10px;" id="lbl_signin" data-i18n="login_signin">Sign In</button>
-            <div id="errorMessage" class="error"></div>
-            
-        </form>
-
-        <!-- Force Password Change Container -->
-        <div id="forcePasswordContainer" style="display: none; text-align: start;">
-            <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-inline-start: 4px solid var(--primary); padding: 12px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; color: var(--text-main, #1E40AF); line-height: 1.5;">
-                <strong id="lbl_force_alert_title" data-i18n="login_force_alert_title">Temporary Password — Set Your Password</strong><br>
-                <span id="lbl_force_alert_desc" data-i18n="login_force_alert_desc">You logged in with a temporary password. For security, please set your new permanent password.</span>
-            </div>
-
-            <form id="forcePasswordForm">
-                <div class="form-group" style="margin-bottom: 14px;">
-                    <label class="form-label" for="forceNewPassword" id="lbl_force_new_pwd" data-i18n="login_force_new_pwd" style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">New Password</label>
-                    <div style="position: relative;">
-                        <input type="password" id="forceNewPassword" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Enter your new password" data-i18n="login_force_new_pwd_ph" data-i18n-target="placeholder" style="padding-inline-end: 40px;">
-                        <button type="button" id="toggleForceNewPassword" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Show/Hide Password" data-i18n="login_toggle_password" data-i18n-target="title">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;" id="lbl_force_min_chars" data-i18n="login_force_min_chars">Must be at least 12 characters.</div>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 16px;">
-                    <label class="form-label" for="forceConfirmPassword" id="lbl_force_confirm_pwd" data-i18n="login_force_confirm_pwd" style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">Confirm New Password</label>
-                    <div style="position: relative;">
-                        <input type="password" id="forceConfirmPassword" class="form-control" autocomplete="new-password" required minlength="12" placeholder="Enter your new password again" data-i18n="login_force_confirm_pwd_ph" data-i18n-target="placeholder" style="padding-inline-end: 40px;">
-                        <button type="button" id="toggleForceConfirmPassword" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="Show/Hide Password" data-i18n="login_toggle_password" data-i18n-target="title">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="forcePasswordError" class="error" style="margin-bottom: 12px; display: none;"></div>
-                <div id="forcePasswordSuccess" style="color: var(--success); font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 12px; display: none;"></div>
-
-                <button type="submit" class="btn btn-primary" id="btnSubmitForcePassword" data-i18n="login_force_btn" style="width: 100%; justify-content: center; padding: 10px; font-weight: 600;">Save Password &amp; Sign In</button>
-            </form>
         </div>
+    </main>
+</div>
 
+<dialog id="helpDialog" class="signin-dialog" aria-labelledby="helpDialogTitle">
+    <h2 id="helpDialogTitle" data-i18n="login_forgot_title">Help signing in</h2>
+    <div class="signin-dialog-body">
+        <p><strong data-i18n="login_forgot_policy_title">Security policy:</strong> <span data-i18n="login_forgot_policy_desc">If you have forgotten your password or your account is locked, contact the IT Service Desk.</span></p>
+        <p data-i18n="login_forgot_admin_desc">The service desk will verify your identity, set a temporary password for you and share it through a secure channel. You will choose your own password when you next log in.</p>
     </div>
+    <form method="dialog" class="signin-dialog-actions">
+        <button data-i18n="login_forgot_ok">OK</button>
+    </form>
+</dialog>
 
-    <script type="module">
-        import './js/api.js';
-        import { t, LANGUAGES, getCurrentLanguage, setLanguage } from './js/i18n.js';
+<script type="module">
+    import './js/api.js';
+    import { t, getCurrentLanguage, setLanguage } from './js/i18n.js';
 
-        document.getElementById('currentLangText').textContent = getCurrentLanguage().toUpperCase();
-        const langMenu = document.getElementById('loginLangMenu');
-        for (const lang of LANGUAGES) {
-            const item = document.createElement('li');
-            const link = document.createElement('a');
-            link.className = 'dropdown-item login-lang-opt';
-            link.href = '#';
-            link.textContent = lang.name;
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                setLanguage(lang.id);
-            });
-            item.appendChild(link);
-            langMenu.appendChild(item);
+    // English and Arabic are the two languages FNRC staff use; the other one is offered in its own script
+    const other = getCurrentLanguage() === 'ar' ? { id: 'en', name: 'English' } : { id: 'ar', name: 'العربية' };
+    const langText = document.getElementById('langToggleText');
+    langText.textContent = other.name;
+    langText.lang = other.id;
+    document.getElementById('langToggle').addEventListener('click', () => setLanguage(other.id));
+
+    // Show/hide password buttons
+    const EYE = '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';
+    const EYE_OFF = '<path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.6 3.5M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7a9.9 9.9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/>';
+    const eyeIcon = (paths) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+    document.querySelectorAll('[data-reveal]').forEach(btn => {
+        const input = document.getElementById(btn.dataset.reveal);
+        btn.innerHTML = eyeIcon(EYE);
+        btn.addEventListener('click', () => {
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.setAttribute('aria-pressed', String(show));
+            btn.innerHTML = eyeIcon(show ? EYE_OFF : EYE);
+        });
+    });
+
+    // Forgotten passwords and other sign-in problems go to the service desk
+    const helpDialog = document.getElementById('helpDialog');
+    document.querySelectorAll('[data-help]').forEach(btn => btn.addEventListener('click', () => helpDialog.showModal()));
+    helpDialog.addEventListener('click', (e) => { if (e.target === helpDialog) helpDialog.close(); });
+
+    function showError(el, message) {
+        el.textContent = message;
+        el.hidden = false;
+    }
+
+    // Sign in
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('signinButton');
+        const label = document.getElementById('signinButtonText');
+
+        errorDiv.hidden = true;
+        if (!username || !password) {
+            showError(errorDiv, t('signin_missing'));
+            (username ? document.getElementById('password') : document.getElementById('username')).focus();
+            return;
         }
+        submitBtn.disabled = true;
+        label.textContent = t('signin_signing_in');
 
-        const currentTheme = localStorage.getItem('itsm_theme') || 'light';
-        document.documentElement.dataset.theme = currentTheme;
-
-        document.querySelectorAll('.login-theme-opt').forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                e.preventDefault();
-                const val = e.target.dataset.theme;
-                localStorage.setItem('itsm_theme', val);
-                document.documentElement.dataset.theme = val;
-                e.target.closest('ul').classList.remove('show');
-            });
-        });
-        
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+        try {
+            const res = await window.api.login(username, password);
+            if (res && res.mustChangePassword) {
+                document.getElementById('loginForm').hidden = true;
+                document.getElementById('signinSubtitle').hidden = true;
+                document.getElementById('signinTitle').textContent = t('login_force_title');
+                document.getElementById('forcePasswordContainer').hidden = false;
+                document.getElementById('forceNewPassword').focus();
+            } else {
+                window.location.href = '/dashboard.html?v=' + Date.now();
             }
-        });
-
-        // Eye toggle helper
-        const EYE_OPEN = 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z';
-        const EYE_CLOSED = 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-2.5c4.73 0 9 3.11 11 7.5-1.73 4.39-6 7.5-11 7.5S2 16.39.27 12c1.73-4.39 6-7.5 11-7.5zm0 13c3.87 0 7.33-2.11 9.17-5.5C19.33 8.61 15.87 6.5 12 6.5S4.67 8.61 2.83 12c1.84 3.39 5.3 5.5 9.17 5.5zm4.07-7.96l-1.42 1.42C14.54 10.5 14 11.19 14 12c0 1.1-.9 2-2 2-.81 0-1.5-.54-1.84-1.28l-1.42 1.42C9.43 14.85 10.63 15.5 12 15.5c1.93 0 3.5-1.57 3.5-3.5 0-1.37-.65-2.57-1.36-3.26z';
-
-        function bindEyeToggle(inputId, buttonId) {
-            const btn = document.getElementById(buttonId);
-            const input = document.getElementById(inputId);
-            if (!btn || !input) return;
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const icon = btn.querySelector('svg path');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    btn.style.color = 'var(--primary)';
-                    if (icon) icon.setAttribute('d', EYE_CLOSED);
-                } else {
-                    input.type = 'password';
-                    btn.style.color = 'var(--text-muted)';
-                    if (icon) icon.setAttribute('d', EYE_OPEN);
-                }
-            });
+        } catch (err) {
+            console.error(err);
+            showError(errorDiv, t('login_failed'));
+            submitBtn.disabled = false;
+            label.textContent = t('login_signin');
         }
+    });
 
-        bindEyeToggle('password', 'togglePassword');
-        bindEyeToggle('forceNewPassword', 'toggleForceNewPassword');
-        bindEyeToggle('forceConfirmPassword', 'toggleForceConfirmPassword');
+    // Replace a temporary password
+    document.getElementById('forcePasswordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newPass = document.getElementById('forceNewPassword').value;
+        const confirmPass = document.getElementById('forceConfirmPassword').value;
+        const errDiv = document.getElementById('forcePasswordError');
+        const successDiv = document.getElementById('forcePasswordSuccess');
+        const btn = document.getElementById('btnSubmitForcePassword');
+        const label = document.getElementById('forceButtonText');
 
-        // Normal Login Form
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('errorMessage');
-            const submitBtn = document.getElementById('lbl_signin');
-            
-            errorDiv.style.display = 'none';
-            submitBtn.disabled = true;
-            submitBtn.textContent = '...';
+        errDiv.hidden = true;
+        successDiv.hidden = true;
 
-            try {
-                const res = await window.api.login(username, password);
-                if (res && res.mustChangePassword) {
-                    // Switch to Force Password Change step!
-                    document.getElementById('loginForm').style.display = 'none';
-                    document.getElementById('lbl_welcome').textContent = t('login_force_title');
-                    document.getElementById('forcePasswordContainer').style.display = 'block';
-                    document.getElementById('forceNewPassword').focus();
-                } else {
-                    window.location.href = '/dashboard.html?v=' + Date.now();
-                }
-            } catch (err) {
-                console.error(err);
-                errorDiv.textContent = t('login_failed');
-                errorDiv.style.display = 'block';
-                submitBtn.disabled = false;
-                submitBtn.textContent = t('login_signin');
-            }
-        });
+        if (!newPass || !confirmPass) return showError(errDiv, t('login_force_empty'));
+        if (newPass.length < 12) return showError(errDiv, t('login_force_short'));
+        if (newPass !== confirmPass) return showError(errDiv, t('login_force_mismatch'));
 
-        // Force Password Form
-        document.getElementById('forcePasswordForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newPass = document.getElementById('forceNewPassword').value;
-            const confirmPass = document.getElementById('forceConfirmPassword').value;
-            const errDiv = document.getElementById('forcePasswordError');
-            const successDiv = document.getElementById('forcePasswordSuccess');
-            const btn = document.getElementById('btnSubmitForcePassword');
+        btn.disabled = true;
+        label.textContent = t('login_force_saving');
 
-            errDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-
-            if (!newPass || !confirmPass) {
-                errDiv.textContent = t('login_force_empty');
-                errDiv.style.display = 'block';
-                return;
-            }
-            if (newPass.length < 12) {
-                errDiv.textContent = t('login_force_short');
-                errDiv.style.display = 'block';
-                return;
-            }
-            if (newPass !== confirmPass) {
-                errDiv.textContent = t('login_force_mismatch');
-                errDiv.style.display = 'block';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.textContent = t('login_force_saving');
-
-            try {
-                // The temporary password the user just logged in with is the current one
-                const currentPass = document.getElementById('password').value;
-                await window.api.changePassword(newPass, confirmPass, currentPass);
-                successDiv.textContent = t('login_force_success');
-                successDiv.style.display = 'block';
-                setTimeout(() => {
-                    window.location.href = '/dashboard.html?v=' + Date.now();
-                }, 1000);
-            } catch (err) {
-                console.error('Password change error:', err);
-                errDiv.textContent = window.api.errorMessage(err, t('login_force_error'));
-                errDiv.style.display = 'block';
-                btn.disabled = false;
-                btn.textContent = t('login_force_btn');
-            }
-        });
-
-        window.openForgotPasswordModal = function() {
-            const m = document.getElementById('forgotPasswordModal');
-            if (m) {
-                m.style.display = 'flex';
-                m.getBoundingClientRect(); // force reflow for smooth transition
-                m.classList.add('active');
-            }
-        };
-        window.closeForgotPasswordModal = function() {
-            const m = document.getElementById('forgotPasswordModal');
-            if (m) {
-                m.classList.remove('active');
-                setTimeout(() => {
-                    if (!m.classList.contains('active')) {
-                        m.style.display = 'none';
-                    }
-                }, 200);
-            }
-        };
-
-        // Close on backdrop click
-        document.getElementById('forgotPasswordModal')?.addEventListener('click', function(e) {
-            if (e.target === this) {
-                window.closeForgotPasswordModal();
-            }
-        });
-
-        // Close on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                window.closeForgotPasswordModal();
-            }
-        });
-    </script>
-
-    <!-- Forgot Password Modal -->
-    <div id="forgotPasswordModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); align-items: center; justify-content: center; z-index: 1000; padding: 16px;">
-        <div class="modal" style="width: min(460px, 100%); background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border);">
-                <h3 data-i18n="login_forgot_title" style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main);">Forgotten Password</h3>
-                <button type="button" class="close-btn" onclick="closeForgotPasswordModal()" style="border: none; background: none; cursor: pointer; font-size: 22px; color: var(--text-muted); line-height: 1;">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 20px; font-size: 13.5px; line-height: 1.6; color: var(--text-main);">
-                <div style="background: var(--primary-light, #EFF6FF); border: 1px solid var(--border, #BFDBFE); border-inline-start: 4px solid var(--primary); padding: 12px; border-radius: 6px; margin-bottom: 16px; color: var(--text-main, #1E40AF);">
-                    <strong data-i18n="login_forgot_policy_title">Security policy:</strong><br>
-                    <span data-i18n="login_forgot_policy_desc">If you have forgotten your password or your account is locked, contact the IT Service Desk.</span>
-                </div>
-                <p style="margin: 0;" data-i18n="login_forgot_admin_desc">The service desk will verify your identity, set a temporary password for you and share it through a secure channel. You will choose your own password when you next log in.</p>
-            </div>
-            <div class="modal-footer" style="padding: 12px 20px; display: flex; justify-content: flex-end; border-top: 1px solid var(--border);">
-                <button type="button" class="btn btn-primary btn-sm" onclick="closeForgotPasswordModal()" data-i18n="login_forgot_ok" style="padding: 6px 16px;">OK</button>
-            </div>
-        </div>
-    </div>
+        try {
+            // The temporary password the user just signed in with is the current one
+            const currentPass = document.getElementById('password').value;
+            await window.api.changePassword(newPass, confirmPass, currentPass);
+            successDiv.textContent = t('login_force_success');
+            successDiv.hidden = false;
+            setTimeout(() => {
+                window.location.href = '/dashboard.html?v=' + Date.now();
+            }, 1000);
+        } catch (err) {
+            console.error('Password change error:', err);
+            showError(errDiv, window.api.errorMessage(err, t('login_force_error')));
+            btn.disabled = false;
+            label.textContent = t('login_force_btn');
+        }
+    });
+</script>
 </body>
 </html>
