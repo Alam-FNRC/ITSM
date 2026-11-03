@@ -103,6 +103,8 @@ class ApiClient {
         const response = await fetch(`${API_BASE_URL}${finalEndpoint}`, config);
 
         if (response.status === 401) {
+            // A refused sign-in is answered on the sign-in page; anywhere else a 401 means the session has ended
+            if (options.authRedirect === false) throw new Error('Unauthorized');
             this.clearToken();
             window.location.href = '/login.html';
             throw new Error('Unauthorized');
@@ -167,7 +169,8 @@ class ApiClient {
     async login(username, password) {
         const res = await this.request('/auth/login', {
             method: 'POST',
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }),
+            authRedirect: false
         });
         this.setToken(res.token);
         return res;
