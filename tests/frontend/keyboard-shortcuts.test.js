@@ -107,7 +107,7 @@ global.window = {
     addEventListener: () => {}
 };
 global.localStorage = {
-    _store: { itsm_lang: 'tr' },
+    _store: { itsm_lang: 'en' },
     getItem(k) { return this._store[k] || null; },
     setItem(k, v) { this._store[k] = String(v); },
     removeItem(k) { delete this._store[k]; },

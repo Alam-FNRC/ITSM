@@ -3195,18 +3195,20 @@ export const translations = {
 export const LANGUAGES = [
     { id: 'en', name: 'English', dir: 'ltr', locale: 'en-US' },
     // Latin digits, as UAE government services use
-    { id: 'ar', name: 'العربية', dir: 'rtl', locale: 'ar-AE-u-nu-latn' },
-    { id: 'tr', name: 'Türkçe', dir: 'ltr', locale: 'tr-TR' }
+    { id: 'ar', name: 'العربية', dir: 'rtl', locale: 'ar-AE-u-nu-latn' }
+    // The Turkish dictionary above is no longer offered (Nov 2026): FNRC uses English and Arabic
 ];
 
 const DEFAULT_LANGUAGE = 'en';
+
+const isOffered = (lang) => LANGUAGES.some(l => l.id === lang);
 
 /**
  * Gets the selected language from localStorage: English when none is saved or the saved one is not offered.
  */
 export function getCurrentLanguage() {
     const saved = localStorage.getItem('itsm_lang');
-    return saved && Object.hasOwn(translations, saved) ? saved : DEFAULT_LANGUAGE;
+    return isOffered(saved) ? saved : DEFAULT_LANGUAGE;
 }
 
 /** The locale for formatting dates and numbers in the current language. */
@@ -3223,7 +3225,7 @@ export function getTextDirection(lang = getCurrentLanguage()) {
  * Sets the new language and applies translations immediately.
  */
 export function setLanguage(langCode) {
-    if (translations[langCode]) {
+    if (isOffered(langCode)) {
         localStorage.setItem('itsm_lang', langCode);
         window.location.reload();
     }

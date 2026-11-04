@@ -88,13 +88,22 @@ test('the language defaults to English, also when the saved one is not offered',
     assert.equal(getCurrentLanguage(), 'en');
     useLanguage('__proto__');
     assert.equal(getCurrentLanguage(), 'en');
+    useLanguage('ar');
+    assert.equal(getCurrentLanguage(), 'ar');
+});
+
+test('Turkish is no longer offered; someone who chose it gets English', () => {
+    assert.deepEqual(LANGUAGES.map(l => l.id), ['en', 'ar']);
     useLanguage('tr');
-    assert.equal(getCurrentLanguage(), 'tr');
+    assert.equal(getCurrentLanguage(), 'en');
+    applyTranslations();
+    assert.equal(document.documentElement.lang, 'en');
+    assert.equal(t('nav_tickets'), translations.en.nav_tickets);
 });
 
 test('t() uses the current language, then English, then the fallback, then the key', () => {
-    useLanguage('tr');
-    assert.equal(t('topbar_language'), translations.tr.topbar_language);
+    useLanguage('ar');
+    assert.equal(t('topbar_language'), translations.ar.topbar_language);
 
     translations.en.only_in_english = 'Only in English';
     try {
@@ -108,9 +117,9 @@ test('t() uses the current language, then English, then the fallback, then the k
 });
 
 test('applyTranslations sets the page language and text direction', () => {
-    useLanguage('tr');
+    useLanguage('en');
     applyTranslations();
-    assert.equal(document.documentElement.lang, 'tr');
+    assert.equal(document.documentElement.lang, 'en');
     assert.equal(document.documentElement.dir, 'ltr');
     assert.equal(getTextDirection('en'), 'ltr');
     assert.equal(getTextDirection('xx'), 'ltr');
@@ -119,7 +128,7 @@ test('applyTranslations sets the page language and text direction', () => {
 test('applyTranslations shows English for a key the language does not have yet', () => {
     translations.en.only_in_english = 'Only in English';
     try {
-        useLanguage('tr');
+        useLanguage('ar');
         const node = translatableElement('only_in_english');
         applyTranslations();
         assert.equal(node.nodeValue, 'Only in English');
@@ -130,20 +139,20 @@ test('applyTranslations shows English for a key the language does not have yet',
 });
 
 test('dates and numbers use the locale of the current language', () => {
-    useLanguage('tr');
-    assert.equal(getLocale(), 'tr-TR');
+    useLanguage('ar');
+    assert.equal(getLocale(), 'ar-AE-u-nu-latn');
     useLanguage(null);
     assert.equal(getLocale(), 'en-US');
 });
 
 test('data-i18n-target="title" translates the tooltip and leaves the content alone', () => {
-    useLanguage('tr');
+    useLanguage('ar');
     const icon = { nodeType: 1 };
     const button = { dataset: { i18n: 'login_toggle_password', i18nTarget: 'title' }, childNodes: [icon], title: 'Show/Hide Password' };
     translatable.push(button);
     try {
         applyTranslations();
-        assert.equal(button.title, translations.tr.login_toggle_password);
+        assert.equal(button.title, translations.ar.login_toggle_password);
         assert.deepEqual(button.childNodes, [icon]);
     } finally {
         translatable.length = 0;

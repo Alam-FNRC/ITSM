@@ -164,9 +164,9 @@
     <script>
         (function() {
             try {
-                const savedLang = localStorage.getItem('itsm_lang') || 'en';
+                // English or Arabic, which is written right to left; i18n.js sets the same once it loads
+                const savedLang = localStorage.getItem('itsm_lang') === 'ar' ? 'ar' : 'en';
                 document.documentElement.lang = savedLang;
-                // Arabic is written right to left; i18n.js sets the same once it loads
                 document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
             } catch (e) {
                 console.warn('Could not load the language:', e);
@@ -297,7 +297,7 @@
     import './js/api.js';
     import { t, getCurrentLanguage, setLanguage } from './js/i18n.js';
 
-    // English and Arabic are the two languages FNRC staff use; the other one is offered in its own script
+    // The button switches between the two languages offered
     const other = getCurrentLanguage() === 'ar' ? { id: 'en', name: 'English' } : { id: 'ar', name: 'العربية' };
     const langText = document.getElementById('langToggleText');
     langText.textContent = other.name;
