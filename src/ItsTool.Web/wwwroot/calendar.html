@@ -94,7 +94,7 @@
         
         injectShell();
         
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
         
         let globalLookupData = {};
@@ -334,7 +334,7 @@
                     if (window.openTicketPreview && info.event.extendedProps.ticketData) {
                         window.openTicketPreview(info.event.extendedProps.ticketData, globalLookupData);
                     } else {
-                        window.location.href = `/ticket-detail.html?id=${info.event.id}`;
+                        window.location.href = `ticket-detail.html?id=${info.event.id}`;
                     }
                 },
                 datesSet: function(info) {

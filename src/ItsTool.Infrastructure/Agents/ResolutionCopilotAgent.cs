@@ -390,7 +390,7 @@ KURALLAR:
             int idx = 1;
             foreach (var kb in articleList)
             {
-                sb.AppendLine($"{idx++}. {kb.Title} (/kb-article.html?id={kb.Id})");
+                sb.AppendLine($"{idx++}. {kb.Title} (kb-article.html?id={kb.Id})");
             }
             sb.AppendLine();
         }
@@ -435,7 +435,7 @@ KURALLAR:
             int idx = 1;
             foreach (var kb in articleList)
             {
-                sb.AppendLine($"{idx++}. {kb.Title} (/kb-article.html?id={kb.Id})");
+                sb.AppendLine($"{idx++}. {kb.Title} (kb-article.html?id={kb.Id})");
             }
             sb.AppendLine();
         }

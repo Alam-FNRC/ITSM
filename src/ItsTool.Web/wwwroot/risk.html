@@ -64,7 +64,7 @@
             </header>
 
             <div class="content-area">
-                <a href="/risks.html" class="back-link">
+                <a href="risks.html" class="back-link">
                     <svg class="flip-rtl" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                     <span data-i18n="risk_back">Back to the risk register</span>
                 </a>
@@ -197,7 +197,7 @@
         } from './js/risks.js';
         injectShell();
 
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
 
         const riskId = riskIdFromUrl(window.location.search);
@@ -348,7 +348,7 @@
                 if (riskId == null) {
                     const created = await window.api.request('/risks', { method: 'POST', body: JSON.stringify(payload), silent: true });
                     showToast(t('risk_created').replaceAll('{0}', reference(created.number)));
-                    window.location.href = `/risk.html?id=${Number(created.id)}`;
+                    window.location.href = `risk.html?id=${Number(created.id)}`;
                     return;
                 }
                 await window.api.request(`/risks/${riskId}`, { method: 'PUT', body: JSON.stringify(payload), silent: true });

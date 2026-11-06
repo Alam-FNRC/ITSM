@@ -96,7 +96,7 @@
                         <option value="" data-i18n="t_saved_filters">Saved Filters...</option>
                     </select>
                     <button type="button" id="btnExportCsv" class="btn btn-ghost" data-i18n="t_export_csv">Export CSV</button>
-                    <a href="/ticket-create.html" class="btn btn-primary ml-auto" data-i18n="t_btn_new">+ New Ticket</a>
+                    <a href="ticket-create.html" class="btn btn-primary ml-auto" data-i18n="t_btn_new">+ New Ticket</a>
                 </div>
 
                 <div class="filter-bar" style="margin-top: 12px; margin-bottom: 24px;">
@@ -151,7 +151,7 @@
         import { t, getLocale } from './js/i18n.js?v=1006';
         injectShell();
         
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
 
         let activeFilterState = 'active'; // 'active', 'closed', 'all'
@@ -307,13 +307,13 @@
                     const canEdit = isManagerOrAdmin || userPerms.has('ticket.edit') || userPerms.has('ticket.manage') || userPerms.has('ticket.assign');
                     const canDelete = isManagerOrAdmin || userPerms.has('ticket.delete') || userPerms.has('ticket.manage') || userPerms.has('ticket.assign');
                     
-                    const editBtnHtml = canEdit ? `<a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost" style="color: var(--primary);">${t('ticket_btn_edit')}</a>` : '';
+                    const editBtnHtml = canEdit ? `<a href="ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost" style="color: var(--primary);">${t('ticket_btn_edit')}</a>` : '';
                     const deleteBtnHtml = canDelete ? `<button type="button" data-ticket-number="${escapeHtml(ticketItem.ticketNumber)}" onclick="window.deleteTicket(${ticketItem.id}, this.dataset.ticketNumber)" class="btn btn-ghost" style="color: var(--danger); font-weight: 500;">${t('ticket_btn_delete')}</button>` : '';
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>
-                            <a href="/ticket-detail.html?id=${ticketItem.id}" class="ticket-title" style="display: block;">
+                            <a href="ticket-detail.html?id=${ticketItem.id}" class="ticket-title" style="display: block;">
                                 <div>
                                     <span class="ticket-number" style="display:inline-block; font-size: 14px; font-weight: 600; color: var(--primary);">${escapeHtml(ticketItem.ticketNumber)}</span>
                                     <span style="font-size: 11px; color: var(--text-muted); margin-inline-start: 4px;">#${ticketItem.id}</span>
@@ -327,7 +327,7 @@
                         <td>${renderSlaCell(ticketItem.sla, isClosed)}</td>
                         <td style="text-align: end; white-space: nowrap;">
                             <div class="row-actions">
-                                <a href="/ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost">${t('t_btn_view')}</a>
+                                <a href="ticket-detail.html?id=${ticketItem.id}" class="btn btn-ghost">${t('t_btn_view')}</a>
                                 ${editBtnHtml}
                                 ${deleteBtnHtml}
                             </div>
@@ -577,7 +577,7 @@
                     chip.style.fontSize = '12px';
 
                     chip.innerHTML = `
-                        <a href="/ticket-detail.html?id=${item.id}" style="color: var(--text-main); text-decoration: none; font-weight: 500;" title="${escapeHtml(item.title || '')}">
+                        <a href="ticket-detail.html?id=${item.id}" style="color: var(--text-main); text-decoration: none; font-weight: 500;" title="${escapeHtml(item.title || '')}">
                             <span style="color: var(--primary); font-weight: 600;">${escapeHtml(item.ticketNumber || '')}</span>
                             <span dir="auto" style="max-width: 140px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;">${escapeHtml(item.title || '')}</span>
                         </a>

@@ -34,7 +34,7 @@ function setupNotificationActionButtons(notifList) {
 }
 
 export async function initNotifications() {
-    const token = window.api ? window.api.token : localStorage.getItem('jwt_token');
+    const token = window.api ? window.api.token : localStorage.getItem('itsm_token');
     if (!token) return;
 
     function getUserIdFromToken() {
@@ -52,7 +52,7 @@ export async function initNotifications() {
 
     // Setup SignalR
     hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/hubs/notification", {
+        .withUrl("hubs/notification", {
             accessTokenFactory: () => token
         })
         .withAutomaticReconnect()
@@ -252,12 +252,12 @@ function showToastNotification(payload) {
     let linkUrl = '#';
     if (payload.entityId) {
         if (payload.entityType === 'Ticket') {
-            linkUrl = `/ticket-detail.html?id=${payload.entityId}`;
+            linkUrl = `ticket-detail.html?id=${payload.entityId}`;
             if (commentId) linkUrl += `&highlight=true&commentId=${commentId}`;
         } else if (payload.entityType === 'KnowledgeArticle') {
-            linkUrl = `/kb-article.html?id=${payload.entityId}`;
+            linkUrl = `kb-article.html?id=${payload.entityId}`;
         } else if (payload.entityType === 'SecurityIncident') {
-            linkUrl = `/security-incident.html?id=${Number(payload.entityId)}`;
+            linkUrl = `security-incident.html?id=${Number(payload.entityId)}`;
         }
     }
     if (payload.entityType === 'Risk') linkUrl = riskLink(payload.entityId);
@@ -293,20 +293,20 @@ function showToastNotification(payload) {
 
 function getNotificationLink(n, commentId) {
     if (n.entityType === 'Ticket' && n.entityId) {
-        return `/ticket-detail.html?id=${n.entityId}` + (commentId ? `&highlight=true&commentId=${commentId}` : '');
+        return `ticket-detail.html?id=${n.entityId}` + (commentId ? `&highlight=true&commentId=${commentId}` : '');
     }
     if (n.entityType === 'KnowledgeArticle' && n.entityId) {
-        return `/kb-article.html?id=${n.entityId}`;
+        return `kb-article.html?id=${n.entityId}`;
     }
     if (n.entityType === 'SecurityIncident' && n.entityId) {
-        return `/security-incident.html?id=${Number(n.entityId)}`;
+        return `security-incident.html?id=${Number(n.entityId)}`;
     }
     if (n.entityType === 'Risk') return riskLink(n.entityId);
     return '#';
 }
 
 // A reminder about one risk opens it; the yearly review reminder (no risk) opens the register
-const riskLink = (id) => Number(id) > 0 ? `/risk.html?id=${Number(id)}` : '/risks.html';
+const riskLink = (id) => Number(id) > 0 ? `risk.html?id=${Number(id)}` : 'risks.html';
 
 // Mention notifications end in "|<comment id>"; the text before it can itself contain "|" (it includes the ticket title)
 export function parseNotificationBody(n) {

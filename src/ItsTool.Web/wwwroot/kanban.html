@@ -91,7 +91,7 @@
         import { t } from './js/i18n.js';
         injectShell();
         
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
 
         let statuses = [];
@@ -276,7 +276,7 @@
             
             card.innerHTML = `
             <div class="card-header">
-                <a href="/ticket-detail.html?id=${ticket.id}" class="card-number" target="_blank">${escapeHtml(ticket.ticketNumber)}</a>
+                <a href="ticket-detail.html?id=${ticket.id}" class="card-number" target="_blank">${escapeHtml(ticket.ticketNumber)}</a>
                 ${getPriorityIcon(ticket.priorityId)}
             </div>
             <div class="card-title" dir="auto">${escapeHtml(ticket.title)}</div>

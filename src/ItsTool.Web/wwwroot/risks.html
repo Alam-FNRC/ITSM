@@ -159,7 +159,7 @@
         } from './js/risks.js';
         injectShell();
 
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
         window.openModal = openModal;
         window.closeModal = closeModal;
@@ -240,13 +240,13 @@
             renderSummary();
             renderRows();
         });
-        const openRisk = (row) => { if (row) window.location.href = `/risk.html?id=${Number(row.dataset.id)}`; };
+        const openRisk = (row) => { if (row) window.location.href = `risk.html?id=${Number(row.dataset.id)}`; };
         document.getElementById('risksBody').addEventListener('click', (e) => openRisk(e.target.closest('.risk-row')));
         document.getElementById('risksBody').addEventListener('keydown', (e) => { if (e.key === 'Enter') openRisk(e.target.closest('.risk-row')); });
         document.getElementById('filterSearch').addEventListener('input', renderRows);
         filterStatus.addEventListener('change', renderRows);
         filterLevel.addEventListener('change', renderRows);
-        document.getElementById('btnNew').addEventListener('click', () => { window.location.href = '/risk.html'; });
+        document.getElementById('btnNew').addEventListener('click', () => { window.location.href = 'risk.html'; });
 
         async function bulk(path, ids, doneKey) {
             try {

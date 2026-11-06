@@ -705,9 +705,10 @@ export function bindShellActions() {
     }
 
 
-    const currentPath = window.location.pathname;
+    // The links name the page only, as the app may sit under a sub-path such as /itsm/
+    const currentPage = window.location.pathname.split('/').pop();
     document.querySelectorAll('.sidebar-nav-item').forEach(l => {
-        if (l.getAttribute('href') === currentPath) {
+        if (l.getAttribute('href') === currentPage) {
             l.classList.add('active');
         }
     });
@@ -738,13 +739,13 @@ export function bindShellActions() {
         if (isSuperAdmin) return; // SuperAdmin sees everything
 
         if (!perms.includes('config.manage')) {
-            document.querySelectorAll('a[href="/projects.html"], a[href="/categories.html"], a[href="/departments.html"], a[href="/groups.html"], a[href="/admin-fields.html"], a[href="/rules.html"], a[href="/webhooks.html"]').forEach(el => {
+            document.querySelectorAll('a[href="projects.html"], a[href="categories.html"], a[href="departments.html"], a[href="groups.html"], a[href="admin-fields.html"], a[href="rules.html"], a[href="webhooks.html"]').forEach(el => {
                 if (el) el.style.display = 'none';
             });
         }
         
         if (!perms.includes('user.manage')) {
-            document.querySelectorAll('a[href="/users.html"], a[href="/roles.html"]').forEach(el => {
+            document.querySelectorAll('a[href="users.html"], a[href="roles.html"]').forEach(el => {
                 if (el) el.style.display = 'none';
             });
         }
@@ -755,7 +756,7 @@ export function bindShellActions() {
         }
 
         if (!perms.includes('audit.view')) {
-            const auditLink = document.querySelector('a[href="/audit-log.html"]');
+            const auditLink = document.querySelector('a[href="audit-log.html"]');
             if (auditLink) auditLink.style.display = 'none';
         }
     }
@@ -871,11 +872,11 @@ export function initGlobalKeyboardShortcuts() {
         } else if (!e.ctrlKey && !e.altKey && !e.metaKey) {
             const k = e.key.toLowerCase();
             if (k === 'n' || k === 'c') {
-                window.location.href = '/ticket-create.html';
+                window.location.href = 'ticket-create.html';
             } else if (k === 't') {
-                window.location.href = '/tickets.html';
+                window.location.href = 'tickets.html';
             } else if (k === 'd') {
-                window.location.href = '/dashboard.html';
+                window.location.href = 'dashboard.html';
             }
         }
     });
@@ -975,7 +976,7 @@ export async function openTicketPreview(ticketData, lookupData) {
     
     setupPreviewColorPicker(ticketData);
 
-    document.getElementById('previewDetailLink').href = `/ticket-detail.html?id=${ticketData.id}`;
+    document.getElementById('previewDetailLink').href = `ticket-detail.html?id=${ticketData.id}`;
     openModal('previewModal');
 }
 
