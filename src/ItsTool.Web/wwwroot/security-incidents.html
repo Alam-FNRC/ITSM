@@ -136,7 +136,7 @@
         import { STATUSES, CATEGORIES, statusLabel, statusBadge, severityBadge, severityLabel, categoryLabel, optionsHtml, formatDateTime } from './js/security.js';
         injectShell();
 
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
         window.openModal = openModal;
         window.closeModal = closeModal;
@@ -181,7 +181,7 @@
             }
         }
 
-        const openIncident = (row) => { if (row) window.location.href = `/security-incident.html?id=${Number(row.dataset.id)}`; };
+        const openIncident = (row) => { if (row) window.location.href = `security-incident.html?id=${Number(row.dataset.id)}`; };
         document.getElementById('incidentsBody').addEventListener('click', (e) => openIncident(e.target.closest('.incident-row')));
         document.getElementById('incidentsBody').addEventListener('keydown', (e) => { if (e.key === 'Enter') openIncident(e.target.closest('.incident-row')); });
 
@@ -213,7 +213,7 @@
                     silent: true
                 });
                 showToast(t('seci_created').replaceAll('{0}', created.reference));
-                window.location.href = `/security-incident.html?id=${Number(created.id)}`;
+                window.location.href = `security-incident.html?id=${Number(created.id)}`;
             } catch (err) {
                 console.error(err);
                 showToast(window.api.errorMessage(err, t('seci_save_failed')), 'error');

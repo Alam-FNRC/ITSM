@@ -29,6 +29,6 @@ test('a 401 anywhere else ends the session and sends the user to sign in', async
     window.location = { href: 'tickets page' };
     window.api.setToken('expired');
     await assert.rejects(window.api.request('/tickets'), /Unauthorized/);
-    assert.equal(window.location.href, '/login.html');
+    assert.equal(window.location.href, 'login.html');
     assert.equal(localStorage.getItem('jwt_token'), null);
 });

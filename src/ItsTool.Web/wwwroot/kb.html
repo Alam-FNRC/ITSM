@@ -190,7 +190,7 @@
         import { t, getLocale } from './js/i18n.js';
         injectShell();
         
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
         
         window.closeModal = closeModal;
@@ -399,7 +399,7 @@
         }
 
         window.openArticle = function(id) {
-            window.location.href = `/kb-article.html?id=${id}`;
+            window.location.href = `kb-article.html?id=${id}`;
         };
 
         function escapeHtml(unsafe) {

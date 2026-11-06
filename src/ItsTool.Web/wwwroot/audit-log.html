@@ -139,7 +139,7 @@
         import { t, getLocale } from './js/i18n.js';
         injectShell();
 
-        if (!window.api.token) window.location.href = '/login.html';
+        if (!window.api.token) window.location.href = 'login.html';
         bindShellActions();
 
         let currentAuditItems = [];
@@ -197,7 +197,7 @@
                     const entityType = a.entityType || (a.ticketId ? 'Ticket' : 'Config');
 
                     const entityLink = entityType === 'Ticket' 
-                        ? `<a href="/ticket-detail.html?id=${encodeURIComponent(entityIdText)}&highlight=true" style="font-weight:600; color:var(--primary);">ITS-${escapeHtml(entityIdText)}</a>` 
+                        ? `<a href="ticket-detail.html?id=${encodeURIComponent(entityIdText)}&highlight=true" style="font-weight:600; color:var(--primary);">ITS-${escapeHtml(entityIdText)}</a>` 
                         : `<span class="badge badge-default" style="margin-inline-end:4px;">${escapeHtml(formatEntityType(entityType))}</span> <span style="font-weight:500;">${escapeHtml(entityNameText)}</span>`;
                     
                     const creatorUser = users.find(u => String(u.id) === a.createdBy);
@@ -387,7 +387,7 @@
         function resolveAuditDeepLink(a, entityType, entityIdText) {
             const et = entityType.toLowerCase();
             if (et === 'ticket') {
-                let deepLink = `/ticket-detail.html?id=${entityIdText}&highlight=true`;
+                let deepLink = `ticket-detail.html?id=${entityIdText}&highlight=true`;
                 if (a.action === 'CommentAdded' || a.action === 'InternalNoteAdded' || a.action === 'CommentEdited' || a.action === 'CommentReplied') {
                     const cid = (!Number.isNaN(Number(a.fieldName)) && a.fieldName) ? a.fieldName : a.oldValue;
                     return deepLink + `&commentId=${cid}`;
@@ -399,21 +399,21 @@
             
             const en = (a.entityName || '').toLowerCase();
             const linkMap = {
-                'slapolicy': `/sla.html`,
-                'sla': `/sla.html`,
-                'rule': `/rules.html?highlight=${entityIdText}`,
-                'webhook': `/webhooks.html?highlight=${entityIdText}`,
-                'knowledgearticle': `/kb-article.html?id=${entityIdText}`,
-                'user': `/users.html?highlight=${entityIdText}`,
-                'groupmember': `/admin-crud.html?type=groups`,
-                'project': `/admin-crud.html?type=projects&highlight=${entityIdText}`,
-                'category': `/admin-crud.html?type=categories&highlight=${entityIdText}`,
-                'department': `/admin-crud.html?type=departments&highlight=${entityIdText}`,
-                'group': `/admin-crud.html?type=groups&highlight=${entityIdText}`,
-                'role': `/admin-crud.html?type=roles&highlight=${entityIdText}`
+                'slapolicy': `sla.html`,
+                'sla': `sla.html`,
+                'rule': `rules.html?highlight=${entityIdText}`,
+                'webhook': `webhooks.html?highlight=${entityIdText}`,
+                'knowledgearticle': `kb-article.html?id=${entityIdText}`,
+                'user': `users.html?highlight=${entityIdText}`,
+                'groupmember': `admin-crud.html?type=groups`,
+                'project': `admin-crud.html?type=projects&highlight=${entityIdText}`,
+                'category': `admin-crud.html?type=categories&highlight=${entityIdText}`,
+                'department': `admin-crud.html?type=departments&highlight=${entityIdText}`,
+                'group': `admin-crud.html?type=groups&highlight=${entityIdText}`,
+                'role': `admin-crud.html?type=roles&highlight=${entityIdText}`
             };
             
-            if (en === 'assignmentrule') return `/rules.html?highlight=${entityIdText}`;
+            if (en === 'assignmentrule') return `rules.html?highlight=${entityIdText}`;
             return linkMap[et] || '#';
         }
 

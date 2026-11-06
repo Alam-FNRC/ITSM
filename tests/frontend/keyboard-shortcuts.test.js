@@ -257,17 +257,17 @@ test('Global Keyboard Shortcuts - n, c, t, d trigger fast page navigation', () =
 
     window.location.href = '/';
     document.dispatchEvent({ type: 'keydown', key: 'n', shiftKey: false, ctrlKey: false, altKey: false, metaKey: false });
-    assert.equal(window.location.href, '/ticket-create.html', 'n should navigate to /ticket-create.html');
+    assert.equal(window.location.href, 'ticket-create.html', 'n should navigate to ticket-create.html');
 
     window.location.href = '/';
     document.dispatchEvent({ type: 'keydown', key: 'c', shiftKey: false, ctrlKey: false, altKey: false, metaKey: false });
-    assert.equal(window.location.href, '/ticket-create.html', 'c should navigate to /ticket-create.html (Jira compatibility)');
+    assert.equal(window.location.href, 'ticket-create.html', 'c should navigate to ticket-create.html (Jira compatibility)');
 
     document.dispatchEvent({ type: 'keydown', key: 't', shiftKey: false, ctrlKey: false, altKey: false, metaKey: false });
-    assert.equal(window.location.href, '/tickets.html', 't should navigate to /tickets.html');
+    assert.equal(window.location.href, 'tickets.html', 't should navigate to tickets.html');
 
     document.dispatchEvent({ type: 'keydown', key: 'd', shiftKey: false, ctrlKey: false, altKey: false, metaKey: false });
-    assert.equal(window.location.href, '/dashboard.html', 'd should navigate to /dashboard.html');
+    assert.equal(window.location.href, 'dashboard.html', 'd should navigate to dashboard.html');
 });
 
 test('Global Keyboard Shortcuts - typing in input/textarea/contenteditable does NOT trigger shortcuts', () => {

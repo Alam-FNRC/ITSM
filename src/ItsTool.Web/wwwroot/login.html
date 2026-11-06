@@ -356,7 +356,7 @@
                 document.getElementById('forcePasswordContainer').hidden = false;
                 document.getElementById('forceNewPassword').focus();
             } else {
-                window.location.href = '/dashboard.html?v=' + Date.now();
+                window.location.href = 'dashboard.html?v=' + Date.now();
             }
         } catch (err) {
             console.error(err);
@@ -393,7 +393,7 @@
             successDiv.textContent = t('login_force_success');
             successDiv.hidden = false;
             setTimeout(() => {
-                window.location.href = '/dashboard.html?v=' + Date.now();
+                window.location.href = 'dashboard.html?v=' + Date.now();
             }, 1000);
         } catch (err) {
             console.error('Password change error:', err);

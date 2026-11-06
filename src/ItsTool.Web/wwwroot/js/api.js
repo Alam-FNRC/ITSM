@@ -1,8 +1,9 @@
 import { showToast } from './ui.js';
 import { t } from './i18n.js';
 
-// The API serves these pages, so it is on the same origin in every environment
-const API_BASE_URL = '/api';
+// The API serves these pages, so it is on the same origin in every environment. Relative, like every link
+// between pages, so the app also works as a sub-application such as https://staging.fnrc.gov.ae/itsm/
+const API_BASE_URL = 'api';
 
 class ApiClient {
     constructor() {
@@ -106,7 +107,7 @@ class ApiClient {
             // A refused sign-in is answered on the sign-in page; anywhere else a 401 means the session has ended
             if (options.authRedirect === false) throw new Error('Unauthorized');
             this.clearToken();
-            window.location.href = '/login.html';
+            window.location.href = 'login.html';
             throw new Error('Unauthorized');
         }
 
