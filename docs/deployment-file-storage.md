@@ -13,15 +13,11 @@ Leaving the defaults on a server is a mistake: the files would sit inside the si
 
 Both settings take a UNC path. Tested 1 Nov 2026: upload, download and the evidence fingerprint check all work over UNC, and the database stores the full `\\server\share\...` path.
 
-Put them in `appsettings.Production.json` on the server (not in the repository), or as environment variables in the site's `web.config`:
+Set them with the app's other settings on the IIS application pool, as `FileStorage__BasePath` and `FileStorage__EvidencePath` ([deployment-staging.md](deployment-staging.md), step 5). Not in the site's `web.config`: each release replaces it.
 
-```json
-{
-  "FileStorage": {
-    "BasePath": "\\\\fileserver\\ITSM-Files\\uploads",
-    "EvidencePath": "\\\\fileserver\\ITSM-Evidence\\evidence"
-  }
-}
+```powershell
+Set-ItsmSetting 'FileStorage__BasePath' '\\fileserver\ITSM-Files\uploads'
+Set-ItsmSetting 'FileStorage__EvidencePath' '\\fileserver\ITSM-Evidence\evidence'
 ```
 
 - **Use the UNC path, never a mapped drive letter.** IIS application pools do not see drives mapped for a logged-on user.
