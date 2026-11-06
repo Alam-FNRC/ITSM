@@ -22,14 +22,21 @@
     <ProjectReference Include="..\ItsTool.Infrastructure\ItsTool.Infrastructure.csproj" />
   </ItemGroup>
 
-  <!-- A publish is the whole site: the pages from ItsTool.Web go to wwwroot, where Program.cs looks for them.
-       Local settings and files saved while developing stay out. -->
+  <!-- A publish is the whole site. Local settings and files saved while developing stay out. -->
   <ItemGroup>
-    <Content Include="..\ItsTool.Web\wwwroot\**" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="Never" />
     <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
     <Content Remove="uploads\**;evidence\**" />
     <None Remove="uploads\**;evidence\**" />
   </ItemGroup>
+
+  <!-- The pages from ItsTool.Web go to wwwroot, where Program.cs looks for them. Added at publish only: as project
+       content they would become Development static web assets, which expect a wwwroot folder in this project. -->
+  <Target Name="PublishWebPages" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <_WebPage Include="..\ItsTool.Web\wwwroot\**" />
+      <ResolvedFileToPublish Include="@(_WebPage)" RelativePath="wwwroot\%(_WebPage.RecursiveDir)%(_WebPage.Filename)%(_WebPage.Extension)" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
 
 
   <ItemGroup>
