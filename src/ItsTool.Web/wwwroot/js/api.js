@@ -7,7 +7,7 @@ const API_BASE_URL = 'api';
 
 class ApiClient {
     constructor() {
-        this.token = localStorage.getItem('jwt_token');
+        this.token = localStorage.getItem('itsm_token');
         this.parseToken();
     }
 
@@ -43,14 +43,14 @@ class ApiClient {
 
     setToken(token) {
         this.token = token;
-        localStorage.setItem('jwt_token', token);
+        localStorage.setItem('itsm_token', token);
         this.parseToken();
     }
 
     clearToken() {
         this.token = null;
         this.decodedToken = null;
-        localStorage.removeItem('jwt_token');
+        localStorage.removeItem('itsm_token');
     }
 
     

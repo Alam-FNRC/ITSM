@@ -54,7 +54,7 @@ function applyRbacToSidebar() {
     let perms = [];
     let isSuperAdmin = false;
     try {
-        const token = localStorage.getItem('jwt_token');
+        const token = localStorage.getItem('itsm_token');
         if (token) {
             const payload = JSON.parse(atob(token.split('.')[1]));
             if (payload.permission) {

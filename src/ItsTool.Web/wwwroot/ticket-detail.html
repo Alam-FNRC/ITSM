@@ -934,7 +934,7 @@
         let isSuperAdmin = false;
         
         try {
-            const token = localStorage.getItem('jwt_token');
+            const token = localStorage.getItem('itsm_token');
             if (token) {
                 const payload = JSON.parse(atob(window.api.token.split('.')[1]));
                 try {

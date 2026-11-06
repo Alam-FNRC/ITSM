@@ -34,7 +34,7 @@ function setupNotificationActionButtons(notifList) {
 }
 
 export async function initNotifications() {
-    const token = window.api ? window.api.token : localStorage.getItem('jwt_token');
+    const token = window.api ? window.api.token : localStorage.getItem('itsm_token');
     if (!token) return;
 
     function getUserIdFromToken() {
