@@ -26,7 +26,7 @@ Set-ItsmSetting 'FileStorage__EvidencePath' '\\fileserver\ITSM-Evidence\evidence
 
 ## The application pool account
 
-The site's application pool needs access to both shares. Use a dedicated domain service account, preferably a group managed service account (gMSA), as the pool identity. With the default ApplicationPoolIdentity, the pool reaches the network as the server's computer account (`DOMAIN\SERVERNAME$`), which you would then have to grant instead.
+The site's application pool needs access to both shares. With IIS's default pool identity, as in [deployment-staging.md](deployment-staging.md), the pool reaches the network as the web server's computer account (`DOMAIN\SERVERNAME$`): grant that account. If the domain team provides a dedicated service account for the pool instead, preferably a group managed service account (gMSA), grant that account.
 
 ## Permissions
 

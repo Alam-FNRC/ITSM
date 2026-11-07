@@ -9,7 +9,7 @@ It has its own application pool, its own folder and its own SQL Server database.
 Rehearsed on 7 Nov 2026 with IIS Express on a development PC: sub-application under a parent site, database built
 only from the package's scripts, app running on the limited database account, first sign-in, a ticket, live
 notifications and a release update. Two things could not be rehearsed there and are Microsoft's documented IIS
-setup: settings kept on the application pool, and the pool running as a service account.
+setup: settings kept on the application pool, and (optionally) the pool running as a service account.
 
 ## What you need
 
@@ -18,8 +18,7 @@ setup: settings kept on the application pool, and the pool running as a service 
 | Windows Server 2016 or later with IIS 10, admin rights | Server team | The server that hosts staging.fnrc.gov.ae |
 | **ASP.NET Core 8.0 Hosting Bundle**, latest 8.0.x | Server team | [dotnet.microsoft.com/download/dotnet/8.0](https://dotnet.microsoft.com/download/dotnet/8.0), "Hosting Bundle" under ASP.NET Core Runtime |
 | IIS features **WebSocket Protocol** and **Application Initialization** | Server team | Recommended. Without WebSockets, live notifications fall back to slower polling; without Application Initialization, the app starts on the first visit after IIS recycles it |
-| SQL Server, and a login that may create a database | DBA | SQL Server Management Studio (SSMS) to run the scripts |
-| A service account for the app | AD team | Preferably a group managed service account (gMSA), such as `FNRC\svc-itsm$`: no password to keep or rotate |
+| SQL Server, and a login that may create a database | DBA | SQL Server Management Studio (SSMS) to run the scripts. The server must allow SQL logins ("SQL Server and Windows Authentication mode"): the app signs in with one |
 | Two file shares, for attachments and for security evidence | File server team | Set-up and permissions: [deployment-file-storage.md](deployment-file-storage.md) |
 | HTTPS on staging.fnrc.gov.ae | Server team | The sub-application uses the site's certificate |
 
@@ -30,7 +29,7 @@ In the commands below, replace these examples with the real names:
 | `staging.fnrc.gov.ae` | The parent site's name in IIS Manager |
 | `SQLSTG01` | The SQL Server |
 | `FnrcItsm` | The database |
-| `FNRC\svc-itsm$` | The application pool's account |
+| `FNRC\WEBSTG01$` | The web server's computer account, which reaches the file shares for the app |
 | `D:\Sites\itsm` | The app's folder: outside the parent site's folder |
 | `\\fileserver\ITSM-Files`, `\\fileserver\ITSM-Evidence` | The two shares |
 
@@ -67,9 +66,10 @@ In SSMS, as a SQL Server administrator, open and run the scripts in this order:
 
 1. `sql\1-create-database.sql`: creates `FnrcItsm`. Add it to the backup plan, together with the two shares.
 2. `sql\2-database-update.sql`, with `FnrcItsm` selected: creates the tables and the `itsm_app` role.
-3. `sql\3-app-account.sql`, with `FnrcItsm` selected. First change `@Account` at the top to the pool's account.
-   With the default pool identity instead of a service account, the account is the web server's computer account,
-   such as `FNRC\WEBSTG01$`.
+3. `sql\3-app-account.sql`, with `FnrcItsm` selected. It creates the SQL login `itsm_app_login` and shows its
+   password **once**, in the results. Copy it straight into step 5's connection string; do not keep it anywhere else.
+   (If the domain team provides a service account for the app pool, set `@WindowsAccount` at the top first: the
+   app then signs in as that account, with no password.)
 
 The app's account can read and change data, but not tables, and it cannot change or delete audit and history
 records, in the app or directly in SQL. Database updates are therefore always run by the DBA's login.
@@ -94,11 +94,16 @@ $folder = 'D:\Sites\itsm'
 & $appcmd add app /site.name:$site /path:/itsm /physicalPath:$folder /applicationPool:$pool /preloadEnabled:true
 
 New-Item -ItemType Directory -Force $folder | Out-Null
-icacls $folder /grant 'FNRC\svc-itsm$:(OI)(CI)RX'
+icacls $folder /grant "IIS AppPool\${pool}:(OI)(CI)RX"
 ```
 
-Then set the pool's account in IIS Manager: *Application Pools* > *FNRC-ITSM* > *Advanced Settings* > *Identity* >
-*Custom account* > `FNRC\svc-itsm$`. For a gMSA, leave both password boxes empty.
+The pool keeps IIS's own identity (`IIS AppPool\FNRC-ITSM`). On the file shares it appears as the web server's
+computer account, `FNRC\WEBSTG01$`: grant that account the rights in
+[deployment-file-storage.md](deployment-file-storage.md).
+
+Only with a service account from the domain team: set it in IIS Manager (*Application Pools* > *FNRC-ITSM* >
+*Advanced Settings* > *Identity* > *Custom account*; for a group managed service account, leave both password boxes
+empty), and give it the folder and share rights instead.
 
 The app must have **its own pool**: an ASP.NET Core app cannot share one (error 500.35).
 
@@ -116,7 +121,7 @@ function Set-ItsmSetting([string]$Name, [string]$Value) {
 $key = New-Object byte[] 48
 [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($key)
 
-Set-ItsmSetting 'ConnectionStrings__DefaultConnection' 'Server=SQLSTG01;Database=FnrcItsm;Integrated Security=True;Encrypt=True'
+Set-ItsmSetting 'ConnectionStrings__DefaultConnection' 'Server=SQLSTG01;Database=FnrcItsm;User ID=itsm_app_login;Password=<the password from step 2>;Encrypt=True'
 Set-ItsmSetting 'Jwt__Secret' ([Convert]::ToBase64String($key))
 Set-ItsmSetting 'AppBaseUrl' 'https://staging.fnrc.gov.ae/itsm'
 Set-ItsmSetting 'FileStorage__BasePath' '\\fileserver\ITSM-Files\uploads'
@@ -131,7 +136,7 @@ Set-ItsmSetting 'Bootstrap__AdminPassword' '<a temporary password>'
 
 | Setting | What it does |
 |---|---|
-| `ConnectionStrings__DefaultConnection` | The database. `Integrated Security=True` signs in as the pool's account, with no password |
+| `ConnectionStrings__DefaultConnection` | The database, and the SQL login from step 2 with its password. With a service account instead: `Integrated Security=True` in place of `User ID` and `Password` |
 | `Jwt__Secret` | Signs sign-in sessions. Generated above; changing it signs everyone out |
 | `AppBaseUrl` | The address used in links in e-mails |
 | `FileStorage__*` | Where attachments and evidence are kept (UNC paths, never a mapped drive) |
@@ -193,7 +198,7 @@ The app writes its errors to **Event Viewer > Windows Logs > Application**, sour
 | What you see | Cause and fix |
 |---|---|
 | HTTP 500.19 | The Hosting Bundle is missing: install it and run `iisreset`. Or the parent site's `web.config` locks a section the app sets: ask the parent site's owner |
-| HTTP 500.30, "app failed to start" | Read the event log. *Connection string 'DefaultConnection' is not configured* or *Jwt:Secret is not configured*: step 5. *Login failed for user*: `3-app-account.sql` (step 2) was not run, or the pool runs as another account. *CREATE TABLE permission denied* or *Invalid object name*: this release's `2-database-update.sql` was not run |
+| HTTP 500.30, "app failed to start" | Read the event log. *Connection string 'DefaultConnection' is not configured* or *Jwt:Secret is not configured*: step 5. *Login failed for user 'itsm_app_login'*: the password in the connection string is not the one step 2 showed, or `3-app-account.sql` was not run. A lost password is replaced by the DBA (`ALTER LOGIN [itsm_app_login] WITH PASSWORD = N'<new password>';`, at least 12 characters with upper and lower case letters and digits), then put in the connection string (step 5). *CREATE TABLE permission denied* or *Invalid object name*: this release's `2-database-update.sql` was not run |
 | HTTP 500.35 | Another app shares the pool: give `/itsm` its own (step 4) |
 | HTTP 401 or a Windows sign-in prompt before the sign-in page | Windows Authentication is inherited from the parent site: in IIS Manager, select `itsm` > *Authentication*, enable *Anonymous*, disable *Windows* |
 | The parent site's page or 404 instead of the service desk | The parent site's URL Rewrite rules apply to `/itsm` too: ask its owner to exclude `itsm/` from them |
@@ -204,6 +209,7 @@ The app writes its errors to **Event Viewer > Windows Logs > Application**, sour
 - **Shared address:** under `staging.fnrc.gov.ae/itsm` the app shares an origin with every other application on
   that site. Browsers keep sign-ins per origin, so a flaw in any of those applications could reach service desk
   sessions. That is acceptable for staging; production should have its own host name, such as `itsm.fnrc.gov.ae`.
-- Passwords and keys are only in the pool's settings: never in the repository, the package or the site folder.
+- Passwords and keys (the database password, the signing key) are only in the pool's settings: never in the
+  repository, the package or the site folder.
 - The app's database account cannot change tables, audit records or histories.
 - Remove the `Bootstrap__` settings after the first sign-in (step 7).
