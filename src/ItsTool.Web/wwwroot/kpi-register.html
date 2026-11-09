@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav_kpi_register" data-i18n-target="document-title">FNRC - ITSM - IT KPIs</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .admin-header { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md); flex-wrap: wrap; }
+        .header-actions { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; align-items: center; }
+        .header-actions .form-control { width: auto; }
+        .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: var(--spacing-md); }
+        .tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 14px; cursor: pointer; font: inherit; color: var(--text-muted); }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+        .table-container { background: var(--bg-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow-x: auto; }
+        .cap-row td { background: var(--bg-hover); font-weight: 600; }
+        .kpi-row { cursor: pointer; }
+        .kpi-row:hover { background: var(--bg-hover); }
+        .nowrap { white-space: nowrap; }
+        .num { text-align: end; white-space: nowrap; }
+        .missing { color: var(--warning); font-weight: 600; }
+        .modal.wide { max-width: 1000px; width: 95vw; }
+        .import-notes { font-size: 12px; color: var(--warning); }
+        .import-skip { font-size: 12px; color: var(--text-muted); }
+        .report-note { font-size: 12px; color: var(--text-muted); margin: var(--spacing-sm) 0 0; }
+        .print-header { display: none; }
+        @media print {
+            .sidebar, .topbar, .admin-header, .tabs, .sidebar-overlay { display: none !important; }
+            .app-shell, .main-content { display: block; height: auto; overflow: visible; }
+            .content-area { overflow: visible; padding: 0; }
+            .print-header { display: block; font-size: 12px; margin-bottom: 12px; }
+            .table-container { overflow: visible; box-shadow: none; }
+            .table th, .table td { padding: 5px 6px; font-size: 10.5px; }
+            tr { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell" data-shell>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <h2 data-i18n="kpir_title">IT KPIs</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
+                        <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
+                            <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
+                            <div id="notificationItems"></div>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item text-center text-muted" onclick="markAllAsRead(event)" data-i18n="topbar_mark_all_read" style="width: 100%; border: none; background: none;">Mark all as read</button></li>
+                        </ul>
+                    </div>
+                    <div class="avatar">U</div>
+                    <button class="btn btn-ghost" id="shellLogoutBtn" data-i18n="topbar_logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="admin-header">
+                    <div>
+                        <h3 style="margin:0; font-size: 18px;" data-i18n="kpir_title">IT KPIs</h3>
+                        <p class="text-muted" style="margin: 4px 0 0 0; font-size: 13px;" data-i18n="kpir_desc">The IT KPIs by capability. Owners enter their values; the administrator keeps the definitions.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-ghost manage-only" id="btnImport" style="display: none;" data-i18n="kpir_btn_import">Import from Excel</button>
+                        <button type="button" class="btn btn-ghost manage-only" id="btnNewCapability" style="display: none;" data-i18n="kpir_btn_new_capability">New capability</button>
+                        <button type="button" class="btn btn-primary manage-only" id="btnNew" style="display: none;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor; margin-inline-end: 4px; vertical-align: middle;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="kpir_btn_new">New KPI</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button type="button" class="tab active" data-tab="register" data-i18n="kpir_tab_register">Register</button>
+                    <button type="button" class="tab manage-only" data-tab="report" style="display: none;" data-i18n="kpir_tab_report">Year-end report</button>
+                </div>
+
+                <section id="registerTab">
+                    <div class="header-actions" style="margin-bottom: var(--spacing-md);">
+                        <label class="form-label" for="year" style="margin: 0;" data-i18n="kpir_year">Year</label>
+                        <select id="year" class="form-control"></select>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="kpir_col_no">No.</th>
+                                    <th data-i18n="kpir_col_kpi">KPI</th>
+                                    <th data-i18n="kpir_col_owner">Owner</th>
+                                    <th data-i18n="kpir_col_cycle">Cycle</th>
+                                    <th class="num" data-i18n="kpir_col_entered">Entered</th>
+                                    <th class="num" data-i18n="kpir_col_value">Value</th>
+                                    <th class="num" data-i18n="kpir_col_target">Target</th>
+                                    <th data-i18n="kpir_col_result">Result</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registerBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="reportTab" style="display: none;">
+                    <div class="header-actions" style="margin-bottom: var(--spacing-md);">
+                        <label class="form-label" for="fromYear" style="margin: 0;" data-i18n="kpir_from">From</label>
+                        <select id="fromYear" class="form-control"></select>
+                        <label class="form-label" for="toYear" style="margin: 0;" data-i18n="kpir_to">To</label>
+                        <select id="toYear" class="form-control"></select>
+                        <span style="flex: 1;"></span>
+                        <button type="button" class="btn btn-ghost" id="btnCsv" disabled data-i18n="kpir_btn_csv">Download CSV</button>
+                        <button type="button" class="btn btn-primary" id="btnPrint" disabled data-i18n="kpir_btn_print">Print or save as PDF</button>
+                    </div>
+                    <div class="print-header" id="printHeader"></div>
+                    <div class="table-container">
+                        <table class="table" id="reportTable">
+                            <thead id="reportHead"></thead>
+                            <tbody id="reportBody"></tbody>
+                        </table>
+                    </div>
+                    <p class="report-note" data-i18n="kpir_report_years_note">The year's figure is the last value entered (counts) or the average (percentages and times); periods with no value are left out.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="capabilityModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 data-i18n="kpir_cap_title">Capability</h2>
+                <button type="button" class="close-btn" onclick="closeModal('capabilityModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <form id="capabilityForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="capNumber" data-i18n="kpir_cap_number">Number</label>
+                        <input id="capNumber" type="number" min="1" max="999999" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="capNameEn" data-i18n="kpir_cap_name_en">Name (English)</label>
+                        <input id="capNameEn" class="form-control" maxlength="200" required dir="ltr">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="capNameAr" data-i18n="kpir_cap_name_ar">Name (Arabic)</label>
+                        <input id="capNameAr" class="form-control" maxlength="200" required dir="rtl">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('capabilityModal')" data-i18n="btn_cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="kpir_btn_save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="importModal" class="modal-overlay">
+        <div class="modal wide">
+            <div class="modal-header">
+                <h2 data-i18n="kpir_import_title">Import from the Excel sheet</h2>
+                <button type="button" class="close-btn" onclick="closeModal('importModal')" aria-label="Close" data-i18n="btn_close" data-i18n-target="aria-label">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="card-hint" style="font-size: 13px;" data-i18n="kpir_import_hint">Choose the KPIs sheet (.xlsx). Nothing is saved until you press Import. KPIs already in the register are skipped. Owners and targets are set afterwards.</p>
+                <div class="form-group">
+                    <input id="importFile" type="file" class="form-control" accept=".xlsx">
+                </div>
+                <div id="importPreview" class="table-container" style="display: none;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="kpir_col_no">No.</th>
+                                <th data-i18n="kpir_col_capability">Capability</th>
+                                <th data-i18n="kpir_col_kpi">KPI</th>
+                                <th data-i18n="kpir_col_cycle">Cycle</th>
+                                <th id="importYears"></th>
+                                <th data-i18n="kpir_col_notes">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="importBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('importModal')" data-i18n="btn_cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnDoImport" disabled data-i18n="kpir_btn_do_import">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { injectShell } from './js/layout.js?v=999';
+        import './js/api.js';
+        import { bindShellActions, showToast, openModal, closeModal, escapeHtml, downloadCsv } from './js/ui.js';
+        import { t } from './js/i18n.js';
+        import {
+            nameOf, cycleLabel, directionSymbol, directionLabel, formatValue, targetBadge, targetState, warningText, skipLabel, formatDateTime, reportCsvRows
+        } from './js/kpi-register.js';
+        injectShell();
+
+        if (!window.api.token) window.location.href = 'login.html';
+        bindShellActions();
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        const $ = (id) => document.getElementById(id);
+        const thisYear = new Date().getFullYear();
+        let register = { year: thisYear, capabilities: [], kpis: [], canManage: false };
+        let report = null;
+        let me = null;
+
+        const yearOptions = (selected, from = thisYear - 5, to = thisYear + 1) => {
+            let html = '';
+            for (let y = to; y >= from; y--) html += `<option value="${y}"${y === selected ? ' selected' : ''}>${y}</option>`;
+            return html;
+        };
+        $('year').innerHTML = yearOptions(thisYear);
+        $('fromYear').innerHTML = yearOptions(thisYear - 3);
+        $('toYear').innerHTML = yearOptions(thisYear);
+
+        const empty = (colspan, key, cls = 'text-muted') =>
+            `<tr><td colspan="${colspan}" style="text-align: center; padding: var(--spacing-xl);" class="${cls}">${escapeHtml(t(key))}</td></tr>`;
+
+        function renderRegister() {
+            const body = $('registerBody');
+            if (!register.kpis.length) {
+                body.innerHTML = empty(8, register.canManage ? 'kpir_empty' : 'kpir_empty_own');
+                return;
+            }
+            body.innerHTML = register.capabilities.map(c => {
+                const kpis = register.kpis.filter(k => k.capabilityId === c.id);
+                if (!kpis.length) return '';
+                return `<tr class="cap-row"><td class="nowrap">${Number(c.number)}</td><td colspan="7" dir="auto">${escapeHtml(nameOf(c))}</td></tr>` + kpis.map(k => `
+                    <tr class="kpi-row" data-id="${Number(k.id)}" tabindex="0">
+                        <td class="nowrap">${Number(k.number)}</td>
+                        <td dir="auto">${escapeHtml(nameOf(k))} <span class="text-muted" title="${escapeHtml(directionLabel(k.direction))}">${directionSymbol(k.direction)}</span></td>
+                        <td dir="auto">${escapeHtml(k.ownerName || t('kpir_no_owner'))}</td>
+                        <td class="nowrap">${escapeHtml(cycleLabel(k.cycle))}</td>
+                        <td class="num${k.periodsEntered < k.periodsDue ? ' missing' : ''}">${k.periodsEntered} / ${k.periodsDue}</td>
+                        <td class="num">${escapeHtml(formatValue(k.yearValue, k.resultType, k.unit))}</td>
+                        <td class="num">${escapeHtml(formatValue(k.target, k.resultType, k.unit))}</td>
+                        <td class="nowrap">${targetBadge(k.yearValue, k.target, k.direction)}</td>
+                    </tr>`).join('');
+            }).join('');
+        }
+
+        async function loadRegister() {
+            try {
+                register = await window.api.request(`/kpi-register?year=${Number($('year').value)}`, { silent: true });
+                document.querySelectorAll('.manage-only').forEach(el => { el.style.display = register.canManage ? '' : 'none'; });
+                renderRegister();
+            } catch (e) {
+                console.error(e);
+                $('registerBody').innerHTML = empty(8, 'kpir_load_failed', 'text-danger');
+            }
+        }
+
+        // ---- The year-end report ----
+        const generatedText = () => t('kpir_generated')
+            .replaceAll('{0}', formatDateTime(report?.generatedAt))
+            .replaceAll('{1}', me ? `${me.firstName ?? ''} ${me.lastName ?? ''}`.trim() || me.username : '');
+
+        function renderReport() {
+            const years = [];
+            for (let y = report.fromYear; y <= report.toYear; y++) years.push(y);
+            $('reportHead').innerHTML = `<tr>
+                <th>${escapeHtml(t('kpir_col_no'))}</th><th>${escapeHtml(t('kpir_col_kpi'))}</th><th>${escapeHtml(t('kpir_col_unit'))}</th><th>${escapeHtml(t('kpir_col_owner'))}</th>
+                ${years.map(y => `<th class="num">${y}</th>`).join('')}
+                <th class="num">${escapeHtml(t('kpir_col_target'))} ${report.toYear}</th><th>${escapeHtml(t('kpir_col_result'))}</th></tr>`;
+            const colspan = 6 + years.length;
+            if (!report.kpis.length) { $('reportBody').innerHTML = empty(colspan, 'kpir_report_empty'); return; }
+            $('reportBody').innerHTML = report.capabilities.map(c => {
+                const kpis = report.kpis.filter(k => k.capabilityId === c.id);
+                if (!kpis.length) return '';
+                return `<tr class="cap-row"><td class="nowrap">${Number(c.number)}</td><td colspan="${colspan - 1}" dir="auto">${escapeHtml(nameOf(c))}</td></tr>` + kpis.map(k => `
+                    <tr>
+                        <td class="nowrap">${Number(k.number)}</td>
+                        <td dir="auto">${escapeHtml(nameOf(k))} <span class="text-muted">${directionSymbol(k.direction)}</span></td>
+                        <td class="nowrap">${escapeHtml(k.resultType === 'Percentage' ? '%' : (k.unit ?? ''))}</td>
+                        <td dir="auto">${escapeHtml(k.ownerName || '—')}</td>
+                        ${years.map(y => `<td class="num">${escapeHtml(formatValue(k.values[y], k.resultType, null))}</td>`).join('')}
+                        <td class="num">${escapeHtml(formatValue(k.targets[report.toYear], k.resultType, null))}</td>
+                        <td class="nowrap">${targetBadge(k.values[report.toYear], k.targets[report.toYear], k.direction)}</td>
+                    </tr>`).join('');
+            }).join('');
+            $('btnCsv').disabled = $('btnPrint').disabled = false;
+        }
+
+        async function loadReport() {
+            const from = Number($('fromYear').value), to = Number($('toYear').value);
+            if (from > to) { $('fromYear').value = String(to); return loadReport(); }
+            try {
+                report = await window.api.request(`/kpi-register/report?from=${from}&to=${to}`, { silent: true });
+                renderReport();
+            } catch (e) {
+                console.error(e);
+                $('reportBody').innerHTML = empty(8, 'kpir_load_failed', 'text-danger');
+            }
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === tab));
+            $('registerTab').style.display = tab.dataset.tab === 'register' ? '' : 'none';
+            $('reportTab').style.display = tab.dataset.tab === 'report' ? '' : 'none';
+            if (tab.dataset.tab === 'report' && !report) loadReport();
+        }));
+        // kpi-register.html#report opens the report straight away
+        if (window.location.hash === '#report') document.querySelector('[data-tab="report"]').click();
+        $('year').addEventListener('change', loadRegister);
+        $('fromYear').addEventListener('change', loadReport);
+        $('toYear').addEventListener('change', loadReport);
+
+        const openKpi = (row) => { if (row) window.location.href = `kpi-item.html?id=${Number(row.dataset.id)}`; };
+        $('registerBody').addEventListener('click', (e) => openKpi(e.target.closest('.kpi-row')));
+        $('registerBody').addEventListener('keydown', (e) => { if (e.key === 'Enter') openKpi(e.target.closest('.kpi-row')); });
+        $('btnNew').addEventListener('click', () => { window.location.href = 'kpi-item.html'; });
+
+        $('btnCsv').addEventListener('click', () => {
+            if (!report) return;
+            const [header, ...rows] = reportCsvRows(report, { generatedText: generatedText() });
+            downloadCsv(`it-kpis_${report.fromYear}-${report.toYear}.csv`, header, rows);
+        });
+        $('btnPrint').addEventListener('click', () => window.print());
+        window.addEventListener('beforeprint', () => {
+            if (report) $('printHeader').innerHTML = `<h3 style="margin: 0 0 4px;">${escapeHtml(t('kpir_report_title'))}</h3><div>${escapeHtml(generatedText())}</div>`;
+        });
+
+        // ---- Capabilities ----
+        $('btnNewCapability').addEventListener('click', () => {
+            $('capabilityForm').reset();
+            $('capNumber').value = String(Math.max(0, ...register.capabilities.map(c => c.number)) + 1);
+            openModal('capabilityModal');
+        });
+        $('capabilityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await window.api.request('/kpi-register/capabilities', {
+                    method: 'POST', silent: true,
+                    body: JSON.stringify({ number: Number($('capNumber').value), nameEn: $('capNameEn').value, nameAr: $('capNameAr').value })
+                });
+                closeModal('capabilityModal');
+                showToast(t('kpir_saved'));
+                await loadRegister();
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('kpir_save_failed')), 'error');
+            }
+        });
+
+        // ---- Import: read the file, show what would come in, then import ----
+        const importFile = $('importFile');
+        const doImport = $('btnDoImport');
+        const upload = () => { const form = new FormData(); form.append('file', importFile.files[0]); return form; };
+
+        $('btnImport').addEventListener('click', () => {
+            importFile.value = '';
+            $('importPreview').style.display = 'none';
+            doImport.disabled = true;
+            doImport.textContent = t('kpir_btn_do_import');
+            openModal('importModal');
+        });
+
+        importFile.addEventListener('change', async () => {
+            doImport.disabled = true;
+            $('importPreview').style.display = 'none';
+            if (!importFile.files.length) return;
+            try {
+                const preview = await window.api.request('/kpi-register/import/preview', { method: 'POST', body: upload(), silent: true });
+                const years = [...new Set(preview.rows.flatMap(r => Object.keys(r.values)))].sort();
+                $('importYears').textContent = years.join(' · ');
+                $('importBody').innerHTML = preview.rows.map(r => `
+                    <tr${r.skip ? ' style="opacity: 0.6;"' : ''}>
+                        <td class="nowrap">${r.number ?? escapeHtml(t('kpir_new_number'))}</td>
+                        <td dir="auto">${r.capabilityNumber ?? ''} ${escapeHtml(r.capabilityNameAr ?? '')}</td>
+                        <td dir="auto">${escapeHtml(r.nameEn)}<div class="text-muted" style="font-size: 12px;" dir="rtl">${escapeHtml(r.nameAr)}</div></td>
+                        <td class="nowrap">${escapeHtml(cycleLabel(r.cycle))}</td>
+                        <td class="nowrap">${years.map(y => `${y}: ${r.values[y] ?? '—'}${r.resultType === 'Percentage' && r.values[y] != null ? '%' : ''}`).join('<br>')}</td>
+                        <td>
+                            ${r.skip ? `<div class="import-skip">${escapeHtml(skipLabel(r.skip))}</div>` : ''}
+                            ${r.warnings.map(w => `<div class="import-notes" dir="auto">${escapeHtml(warningText(w))}</div>`).join('')}
+                        </td>
+                    </tr>`).join('');
+                $('importPreview').style.display = '';
+                const importable = preview.rows.filter(r => !r.skip).length;
+                doImport.disabled = importable === 0;
+                doImport.textContent = t('kpir_btn_do_import_n').replaceAll('{0}', String(importable));
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('kpir_import_failed')), 'error');
+            }
+        });
+
+        doImport.addEventListener('click', async () => {
+            doImport.disabled = true;
+            try {
+                const result = await window.api.request('/kpi-register/import', { method: 'POST', body: upload(), silent: true });
+                showToast(t('kpir_imported').replaceAll('{0}', String(result.imported)));
+                closeModal('importModal');
+                report = null;
+                await loadRegister();
+            } catch (err) {
+                console.error(err);
+                doImport.disabled = false;
+                showToast(window.api.errorMessage(err, t('kpir_import_failed')), 'error');
+            }
+        });
+
+        window.api.getMe().then(m => { me = m; }).catch(() => {});
+        loadRegister();
+    </script>
+</body>
+</html>

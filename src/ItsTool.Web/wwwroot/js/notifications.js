@@ -261,6 +261,7 @@ function showToastNotification(payload) {
         }
     }
     if (payload.entityType === 'Risk') linkUrl = riskLink(payload.entityId);
+    if (payload.entityType === 'Kpi') linkUrl = kpiLink(payload.entityId);
 
     const toastHtml = `
         <div id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" style="display: flex; flex-direction: column; margin-bottom: 10px; width: 280px; border: none; border-inline-start: 3px solid ${borderCol}; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); background: var(--bg-surface); opacity: 1; transition: opacity 0.4s ease;">
@@ -274,7 +275,7 @@ function showToastNotification(payload) {
             <div style="padding: 4px 12px 12px 12px; font-size: 12px; color: var(--text-muted); line-height: 1.4;">
                 <div style="margin-bottom: 8px;">${escapeHtml(bodyText)}</div>
                 <div style="text-align: end;">
-                    <a href="${escapeHtml(linkUrl)}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">${escapeHtml(t(payload.entityType === 'SecurityIncident' ? 'notif_go_security' : payload.entityType === 'Risk' ? 'notif_go_risk' : 'notif_go_ticket'))}</a>
+                    <a href="${escapeHtml(linkUrl)}" class="btn btn-sm btn-outline-primary" style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; text-decoration: none; cursor: pointer;">${escapeHtml(t(payload.entityType === 'SecurityIncident' ? 'notif_go_security' : payload.entityType === 'Risk' ? 'notif_go_risk' : payload.entityType === 'Kpi' ? 'notif_go_kpi' : 'notif_go_ticket'))}</a>
                 </div>
             </div>
         </div>
@@ -302,11 +303,14 @@ function getNotificationLink(n, commentId) {
         return `security-incident.html?id=${Number(n.entityId)}`;
     }
     if (n.entityType === 'Risk') return riskLink(n.entityId);
+    if (n.entityType === 'Kpi') return kpiLink(n.entityId);
     return '#';
 }
 
 // A reminder about one risk opens it; the yearly review reminder (no risk) opens the register
 const riskLink = (id) => Number(id) > 0 ? `risk.html?id=${Number(id)}` : 'risks.html';
+// A KPI reminder opens the KPI, where the owner enters the missing value
+const kpiLink = (id) => Number(id) > 0 ? `kpi-item.html?id=${Number(id)}` : 'kpi-register.html';
 
 // Mention notifications end in "|<comment id>"; the text before it can itself contain "|" (it includes the ticket title)
 export function parseNotificationBody(n) {

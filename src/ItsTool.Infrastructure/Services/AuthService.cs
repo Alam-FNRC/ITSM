@@ -82,9 +82,7 @@ public class AuthService : IAuthService
 
         var permissions = await _permissionCalculator.CalculateEffectivePermissionsAsync(user.Id);
 
-        var token = user.MustChangePassword
-            ? _tokenService.GenerateToken(user.Id, user.Username, roles, permissions, true)
-            : _tokenService.GenerateToken(user.Id, user.Username, roles, permissions);
+        var token = await IssueTokenAsync(user, roles, permissions, user.MustChangePassword);
 
         var expiryMinutes = double.Parse(_configuration["Jwt:ExpiryMinutes"] ?? "120");
 
@@ -96,6 +94,19 @@ public class AuthService : IAuthService
             Permissions: permissions,
             MustChangePassword: user.MustChangePassword
         );
+    }
+
+    /// <summary>
+    /// The menu shows the KPI register to a KPI's owner, who needs no permission for it, so a token says when the
+    /// user owns one. It is read again at the next sign-in, like roles and permissions.
+    /// </summary>
+    private async Task<string> IssueTokenAsync(User user, List<string> roles, HashSet<string> permissions, bool mustChangePassword)
+    {
+        if (await _context.KpiDefinitions.AnyAsync(k => k.OwnerUserId == user.Id && !k.IsDeleted))
+            return _tokenService.GenerateToken(user.Id, user.Username, roles, permissions, mustChangePassword, new Dictionary<string, string> { ["kpiOwner"] = "true" });
+        return mustChangePassword
+            ? _tokenService.GenerateToken(user.Id, user.Username, roles, permissions, true)
+            : _tokenService.GenerateToken(user.Id, user.Username, roles, permissions);
     }
 
     /// <summary>Records the failed attempt. Callers get the same message whatever the reason.</summary>
@@ -193,9 +204,7 @@ public class AuthService : IAuthService
 
         var permissions = await _permissionCalculator.CalculateEffectivePermissionsAsync(user.Id);
 
-        var token = user.MustChangePassword
-            ? _tokenService.GenerateToken(user.Id, user.Username, roles, permissions, true)
-            : _tokenService.GenerateToken(user.Id, user.Username, roles, permissions);
+        var token = await IssueTokenAsync(user, roles, permissions, user.MustChangePassword);
 
         var expiryMinutes = double.Parse(_configuration["Jwt:ExpiryMinutes"] ?? "120");
 
@@ -257,7 +266,7 @@ public class AuthService : IAuthService
 
         var permissions = await _permissionCalculator.CalculateEffectivePermissionsAsync(user.Id);
 
-        var token = _tokenService.GenerateToken(user.Id, user.Username, roles, permissions);
+        var token = await IssueTokenAsync(user, roles, permissions, false);
         var expiryMinutes = double.Parse(_configuration["Jwt:ExpiryMinutes"] ?? "120");
 
         return new AuthResponseDto(

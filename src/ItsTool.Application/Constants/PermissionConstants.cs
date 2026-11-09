@@ -33,6 +33,10 @@ public static class PermissionConstants
     public const string RiskManage = "risk.manage";
     public const string RiskApprove = "risk.approve";
 
+    // IT KPI register: define the KPIs, their owners, cycles and targets, and see the year-end report. Not explicit-only:
+    // the figures are not sensitive, so SuperAdmin holds it. Owners need no permission for their own KPIs.
+    public const string KpiManage = "kpi.manage";
+
     /// <summary>
     /// Held only through a role, group or override that grants them. SuperAdmin does not get them automatically,
     /// so a system administrator cannot read security incidents without a grant, which the audit log records.
@@ -43,6 +47,6 @@ public static class PermissionConstants
     {
         TicketCreate, TicketView, TicketEdit, TicketAssign, TicketTransfer, 
         TicketResolve, TicketClose, TicketReopen, TicketCommentInternal, TicketCommentEdit, TicketCommentReply, TicketCommentDelete, ReportView, AdminManage, ConfigManage, SlaManage, AuditView,
-        KbManage, KbView, SurveySubmit, TicketComment, SecurityIncidentView, SecurityIncidentManage, RiskManage, RiskApprove
+        KbManage, KbView, SurveySubmit, TicketComment, SecurityIncidentView, SecurityIncidentManage, RiskManage, RiskApprove, KpiManage
     };
 }

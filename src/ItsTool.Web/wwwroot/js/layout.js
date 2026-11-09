@@ -53,6 +53,7 @@ function highlightActiveLink() {
 function applyRbacToSidebar() {
     let perms = [];
     let isSuperAdmin = false;
+    let kpiOwner = false;
     try {
         const token = localStorage.getItem('itsm_token');
         if (token) {
@@ -60,6 +61,7 @@ function applyRbacToSidebar() {
             if (payload.permission) {
                 perms = Array.isArray(payload.permission) ? payload.permission : [payload.permission];
             }
+            kpiOwner = payload.kpiOwner === 'true';
             if (payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) {
                 const roles = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
                 isSuperAdmin = Array.isArray(roles) ? roles.includes('SuperAdmin') : roles === 'SuperAdmin';
@@ -73,6 +75,9 @@ function applyRbacToSidebar() {
     // The risk register likewise; a risk owner without either permission opens their risks from the reminders
     const riskTeam = perms.includes('risk.manage') || perms.includes('risk.approve');
     document.querySelectorAll('[data-risk-only]').forEach(el => { el.style.display = riskTeam ? '' : 'none'; });
+    // The IT KPIs: the administrator (kpi.manage, held by SuperAdmin) and the owners of KPIs, whose token says so
+    const kpiPeople = isSuperAdmin || perms.includes('kpi.manage') || kpiOwner;
+    document.querySelectorAll('[data-kpi-only]').forEach(el => { el.style.display = kpiPeople ? '' : 'none'; });
     // Items for one permission; SuperAdmin holds every permission that is not explicit-only
     document.querySelectorAll('[data-permission]').forEach(el => { el.style.display = isSuperAdmin || perms.includes(el.dataset.permission) ? '' : 'none'; });
 
@@ -146,6 +151,9 @@ const shellHtml = `
                 </a>
                 <a href="risks.html" class="sidebar-nav-item" data-risk-only style="display: none;">
                     <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> <span data-i18n="nav_risks">Risk register</span>
+                </a>
+                <a href="kpi-register.html" class="sidebar-nav-item" data-kpi-only style="display: none;">
+                    <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg> <span data-i18n="nav_kpi_register">IT KPIs</span>
                 </a>
                 
                 <div class="sidebar-nav-title" style="padding: 16px 20px 8px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;" data-i18n="nav_admin_title">Administration</div>

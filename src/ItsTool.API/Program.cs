@@ -147,6 +147,8 @@ builder.Services.AddScoped<ISignalRPusher, ItsTool.API.Services.SignalRPusher>()
     builder.Services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
     builder.Services.AddScoped<IRiskService, RiskService>();
     builder.Services.AddHostedService<RiskReminderService>();
+    builder.Services.AddScoped<IKpiRegisterService, KpiRegisterService>();
+    builder.Services.AddHostedService<KpiReminderService>();
 
     // Dashboard, Reporting & KB (Phase 8)
     builder.Services.AddScoped<IDashboardService, DashboardService>();

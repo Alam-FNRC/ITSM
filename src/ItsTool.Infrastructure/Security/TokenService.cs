@@ -21,7 +21,10 @@ public class TokenService : ITokenService
         return GenerateToken(userId, username, roles, permissions, false);
     }
 
-    public string GenerateToken(int userId, string username, IEnumerable<string> roles, IEnumerable<string> permissions, bool mustChangePassword)
+    public string GenerateToken(int userId, string username, IEnumerable<string> roles, IEnumerable<string> permissions, bool mustChangePassword) =>
+        GenerateToken(userId, username, roles, permissions, mustChangePassword, new Dictionary<string, string>());
+
+    public string GenerateToken(int userId, string username, IEnumerable<string> roles, IEnumerable<string> permissions, bool mustChangePassword, IReadOnlyDictionary<string, string> extraClaims)
     {
         var claims = new List<Claim>
         {
@@ -40,6 +43,11 @@ public class TokenService : ITokenService
         foreach (var perm in permissions)
         {
             claims.Add(new Claim("permission", perm));
+        }
+
+        foreach (var (type, value) in extraClaims)
+        {
+            claims.Add(new Claim(type, value));
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]!));
