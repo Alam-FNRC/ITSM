@@ -130,7 +130,7 @@ public static class KpiWorkbook
     private static string? Translate(string? arabic) => arabic == null ? null : KpiNames.Of(arabic) ?? arabic;
 
     private static int? WholeNumber(string? raw) =>
-        raw != null && double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out var value) && value == Math.Floor(value) && value is > 0 and < 1000
+        raw != null && double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out var value) && value == Math.Floor(value) && value is > 0 and < 1_000_000
             ? (int)value : null;
 
     private static KpiDirection ReadDirection(string? raw, List<string> warnings)

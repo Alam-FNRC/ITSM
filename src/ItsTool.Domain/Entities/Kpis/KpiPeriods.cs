@@ -54,7 +54,7 @@ public static class KpiPeriods
     {
         if (values.Count == 0) return null;
         return rule == KpiYearEnd.Average
-            ? Math.Round(values.Average(v => v.Value), 2)
+            ? Math.Round(values.Average(v => v.Value), 2, MidpointRounding.AwayFromZero)
             : values.OrderByDescending(v => End(v.Cycle, year, v.Period)).ThenBy(v => Count(v.Cycle)).First().Value;
     }
 }

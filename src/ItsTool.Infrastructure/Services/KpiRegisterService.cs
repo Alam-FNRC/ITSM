@@ -285,7 +285,7 @@ public class KpiRegisterService : IKpiRegisterService
                     if (start > today) continue;
                     var end = KpiPeriods.End(kpi.Cycle, year, period);
                     var report = await _tickets.GetReportAsync(new KpiFilterDto { From = start, To = end < today ? end : today });
-                    if (report.Summary.MeanTimeToResolveMinutes is { } minutes) result[(kpi.Id, year, period)] = Math.Round((decimal)minutes / 60, 1);
+                    if (report?.Summary?.MeanTimeToResolveMinutes is { } minutes) result[(kpi.Id, year, period)] = Math.Round((decimal)minutes / 60, 1, MidpointRounding.AwayFromZero);
                 }
             }
         }

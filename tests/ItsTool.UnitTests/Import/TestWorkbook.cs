@@ -38,6 +38,28 @@ public static class TestWorkbook
         return cells.Where(c => c.Item2 != "");
     }
 
+    /// <summary>The IT KPIs sheet's heading row 3 (columns B-R), in Arabic as FNRC writes it, with the years 2023-2026.</summary>
+    public static readonly (string Cell, string Value)[] KpiHeadings =
+    {
+        ("B3", "القدرة"), ("C3", "اسم القدرة"), ("D3", "المؤشر"), ("E3", "اسم المؤشر"), ("F3", "طبيعة النتائج"), ("G3", "نوع المؤشر"),
+        ("H3", "معادلة المؤشر"), ("I3", "دورة القياس"), ("J3", "اتجاه المؤشر"), ("K3", "مصدر قياس المؤشر"), ("L3", "نطاق القياس"),
+        ("M3", "وصف المؤشر"), ("N3", "وحدة القياس"), ("O3", "2023"), ("P3", "2024"), ("Q3", "2025"), ("R3", "2026")
+    };
+
+    /// <summary>A KPI row; the capability number and name are given on a capability's first row only, as the merged cells leave them.</summary>
+    public static IEnumerable<(string Cell, string Value)> KpiRow(int row, string capabilityNumber, string capabilityName, string number, string name,
+        string result = "رقم", string cycle = "سنوي", string direction = "تصاعدي ▲", string unit = "خدمة", string scope = "تشغيلي",
+        string v2023 = "", string v2024 = "", string v2025 = "", string v2026 = "")
+    {
+        var cells = new List<(string, string)>
+        {
+            ($"B{row}", capabilityNumber), ($"C{row}", capabilityName), ($"D{row}", number), ($"E{row}", name), ($"F{row}", result), ($"G{row}", "أداء"),
+            ($"H{row}", "المعادلة"), ($"I{row}", cycle), ($"J{row}", direction), ($"K{row}", "المصدر"), ($"L{row}", scope), ($"M{row}", "الوصف"), ($"N{row}", unit),
+            ($"O{row}", v2023), ($"P{row}", v2024), ($"Q{row}", v2025), ($"R{row}", v2026)
+        };
+        return cells.Where(c => c.Item2 != "");
+    }
+
     public static MemoryStream Build(IEnumerable<(string Cell, string Value)> cells, string sheetName = "Risk Assessment", ISet<string>? inline = null)
     {
         var shared = new List<string>();

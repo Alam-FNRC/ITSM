@@ -8,7 +8,7 @@ namespace ItsTool.Application.DTOs;
 public record KpiCapabilityDto(int Id, int Number, string NameEn, string NameAr);
 
 public record SaveKpiCapabilityDto(
-    [Range(1, 999)] int Number,
+    [Range(1, 999_999)] int Number,
     [Required, MaxLength(200)] string NameEn,
     [Required, MaxLength(200)] string NameAr);
 
@@ -65,7 +65,7 @@ public record KpiDetailDto(
     DateTime CreatedAt);
 
 public record SaveKpiDto(
-    [Range(1, 999)] int Number,
+    [Range(1, 999_999)] int Number,
     int CapabilityId,
     [Required, MaxLength(300)] string NameEn,
     [Required, MaxLength(300)] string NameAr,
