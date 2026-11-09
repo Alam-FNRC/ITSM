@@ -69,7 +69,8 @@ public class DataSeeder
         { PermissionConstants.SecurityIncidentView, "See all security incidents and federal reports." },
         { PermissionConstants.SecurityIncidentManage, "Triage, work on and close security incidents." },
         { PermissionConstants.RiskManage, "See and keep the risk register." },
-        { PermissionConstants.RiskApprove, "See every risk and approve treatment plans and risk acceptance (the IT manager or a deputy)." }
+        { PermissionConstants.RiskApprove, "See every risk and approve treatment plans and risk acceptance (the IT manager or a deputy)." },
+        { PermissionConstants.KpiManage, "Define the IT KPIs, their owners, cycles and targets; enter any value; see the year-end report." }
     };
 
     private const string TicketView = PermissionConstants.TicketView;

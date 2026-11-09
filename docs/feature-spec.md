@@ -28,6 +28,7 @@ Priority: **P1** = needed for the next ISO audit, **P2** = needed for go-live, *
 | Business rules engine (routing, auto-assign) | GLPI | Partial: assignment rules | P2 | 4 |
 | SLA matching by service and priority; OLAs; escalation levels | iTop, GLPI | Partial: SLA per priority/project | P2 | 4 |
 | Risk register (replaces FNRC's Excel ISMS risk register; decided 30 Oct) | Neither (ISO 27001 6.1.2, 6.1.3, 8.2, 8.3) | Done 2 Nov: register, one approval, yearly review, reminders, Excel import. Links to incidents and assets later | P1 | 4 |
+| IT KPI register (replaces the IT KPIs spreadsheet; decided 9 Nov) | Neither (ISO 27001 9.1, ISO 20000 9.1) | Built 9 Nov: capabilities and KPIs with owners, cycles and targets; owners enter values; year-end report; Excel import | P1 | 3 |
 | Problem management | iTop, GLPI | No | P1 | 4 |
 | Known errors (a problem status, not a separate record; 2 Nov) | iTop | No | P2 | 4 |
 | Change management (standard, normal, emergency) with one approver, no CAB (decided 2 Nov) | iTop, GLPI | No | P1 | 4 |
@@ -135,6 +136,22 @@ Decided 30 Oct 2026: the service desk replaces FNRC's Excel register ("FNRC ISMS
 **Built 2 Nov 2026.** The register page shows counts that double as filters (high, medium and low not done, overdue, waiting for approval, due for review). The approver can approve all waiting risks at once, and the security team records the yearly review for the whole register in one step; each risk keeps the date, the reviewer and its scores of the day. Reminders go to the owner 14 days before the target date and when it passes (the security team too), and to the security team once a month while a review is due. The Excel import shows a preview with anything it could not read (such as the target date "Q432025"), asks which user each owner name in the file is, and skips rows already in the register. Not built yet: links to security incidents, federal findings and assets.
 
 Points found in the Excel (30 Oct): scores and levels of risks 3–6 and 10–13 are typed rather than calculated; the treatment list says "Mitigate" where the criteria sheet says "Reduce"; the status drop-down sits on the Recommended Controls column, so Status is free text; the residual "Status" column is empty; risk 14 (IDOR) is mapped to A.5.30 (ICT readiness for business continuity) where A.8.28 or A.8.29 may fit better.
+
+## IT KPI register
+
+Decided 9 Nov 2026: the service desk replaces the IT KPIs spreadsheet (`docs/kpis-list.xlsx`, not committed), in which staff type the year's figures for 15 KPIs under 7 capabilities (digital strategy, digital transformation, digital channels, ISMS, resilience, partnerships, self-service portal). Evidence of monitoring and measurement for ISO 27001 9.1 and ISO 20000 9.1.
+
+- **Capabilities and KPIs.** The sheet's columns: number, Arabic and English name, result type (number or percentage), direction (▲ higher is better, ▼ lower is better, ◆ monitored only), formula, data source, scope, description, unit. Set up by an administrator (`kpi.manage`, which SuperAdmin holds automatically, since the figures are not sensitive).
+- **Owner and cycle (decided 9 Nov).** Each KPI has one owner (a user) and a measurement cycle of yearly, twice a year, quarterly or monthly, set by the administrator and never by the owner. The owner enters a value for each period, with an optional note (such as the list of systems counted), once the period has started; there is no approval step. Values can be corrected; the system audit log records who changed what.
+- **Year-end figure.** Counts take the last value of the year, percentages and times the average; the administrator can change the rule per KPI.
+- **Targets.** Optional, one per KPI per year; the report shows met or missed following the direction.
+- **KPI 6 (average fault resolution time)** can be filled from this system's own tickets (working hours, as on the KPI reports page); the figure is shown as "from tickets" and the owner can store it or type another.
+- **Access.** `kpi.manage` sees and edits everything and the year-end report; an owner sees and enters their own KPIs, and the menu shows the register to them.
+- **Reminders.** When a period ends with no value, the owner gets one notification for that period.
+- **Report.** The year-end table as in the sheet: KPI rows under their capability, one column per year, target and result, CSV download and printing to PDF.
+- **Import.** The sheet's rows, with their 2023–2026 yearly values; rows whose number already exists are skipped. The sheet has no owners or targets: those are set afterwards. English names for the known KPIs are built in and can be edited.
+
+Points found in the sheet (9 Nov): KPI 3 is marked a percentage but holds counts (11, 12, 14, 14); KPI 14 falls from 6 to 2 although higher is better; percentages are stored as fractions (0.99); KPI 5 holds text ("4 سنوات"). The import keeps the numbers and flags the text.
 
 ## Problem and Known Error
 
