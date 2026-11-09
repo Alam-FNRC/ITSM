@@ -684,7 +684,6 @@ export const ar = {
     "ui_no_assignees": "لم يُسند هذا السجل إلى أي شخص.",
     "ui_switch_theme": "تغيير المظهر",
     "ui_theme_light": "فاتح (افتراضي)",
-    "ui_theme_dark": "داكن كلاسيكي",
     "ui_no_description": "لا يوجد وصف.",
     "ui_kb_suggestions": "اقتراحات المقالات: {0}",
     "ui_profile_load_failed": "تعذر تحميل تفاصيل ملفك الشخصي.",

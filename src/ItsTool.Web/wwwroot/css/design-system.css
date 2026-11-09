@@ -9,10 +9,10 @@
 
 /* 1. Design Tokens (Variables) */
 :root {
-    /* Brand & Primary Colors */
-    --primary: #0052CC;
-    --primary-hover: #0047b3;
-    --primary-light: #DEEBFF;
+    /* Brand & Primary Colors: the sign-in page's teal green (#0B5254 is 7.9:1 on white) */
+    --primary: #0B5254;
+    --primary-hover: #08403F;
+    --primary-light: #E3EEEC;
     /* Filled buttons and chart marks. Separate from --primary, which also colours text and links, because a
        theme's fill colour may be too light for text (the FNRC gold is). Text on the fill uses --on-primary-fill. */
     --primary-fill: var(--primary);
@@ -73,19 +73,15 @@
 }
 
 /* =========================================
-   THEMES (FNRC, Dark, Dracula, Monokai, GitHub)
+   THEMES (FNRC, GitHub Dark)
    ========================================= */
 
-/* 0. FNRC: the palette and typeface of the FNRC employee portal (Workspace v2), so staff see one style.
-   Gold #B98B2E is 3.09:1 on white, so it is a fill only and carries dark text (5.37:1). Text, links and
-   focus rings use the deep gold #7F5C10 (6.10:1). Every text colour here passes WCAG AA. */
+/* 0. FNRC: the teal green of the sign-in page with the warm neutrals and the Dubai typeface of the FNRC
+   employee portal (Workspace v2), so staff see one style. Every text colour here passes WCAG AA. */
 [data-theme="fnrc"] {
-    --primary: #7F5C10;
-    --primary-hover: #6A4C0C;
-    --primary-light: #F4EAD0;
-    --primary-fill: #B98B2E;
-    --primary-fill-hover: #C99B3E;
-    --on-primary-fill: #211E1A;
+    --primary: #0B5254;
+    --primary-hover: #08403F;
+    --primary-light: #E3EEEC;
 
     --success: #15803D;
     --success-light: #DCFCE7;
@@ -93,16 +89,17 @@
     --warning-light: #FEF3C7;
     --danger: #A23C1B;
     --danger-light: #FDF4F1;
-    --info: #2A7F7F;
-    --info-light: #E2F0EF;
+    /* Blue, so info badges do not read as the teal primary */
+    --info: #1D5F9E;
+    --info-light: #E4EEF8;
 
-    --text-main: #211E1A;
-    --text-muted: #6B6256;
+    --text-main: #183B3B;
+    --text-muted: #5D6B69;
     --text-danger-strong: #A23C1B;
 
-    --bg-body: #FAF9F5;
+    --bg-body: #FAF9F6;
     --bg-surface: #FFFFFF;
-    --bg-hover: #F1ECE2;
+    --bg-hover: #EEF2F0;
     --bg-danger-light: #FDF4F1;
     --border: #EAE4D8;
     --border-danger-light: #F0D9CF;
@@ -111,111 +108,10 @@
     --shadow-md: 0 4px 10px rgba(40, 30, 15, 0.10), 0 0 1px rgba(40, 30, 15, 0.22);
 
     --font-family: 'Dubai', 'Segoe UI', system-ui, sans-serif;
-    /* Gold and amber side by side read as one colour, so the third series is the portal's teal */
-    --chart-3: #2A7F7F;
 }
-/* The portal marks the current page with soft gold; its warning text is darker than the default's */
+/* The portal marks the current page with a soft tint; its warning text is darker than the default's */
 [data-theme="fnrc"] .sidebar-nav-item.active { background-color: var(--primary-light); }
 [data-theme="fnrc"] .badge-warning { color: #92400E; }
-
-/* 1. Classic Dark Theme */
-[data-theme="dark"] {
-    --primary: #4C9AFF;
-    --primary-hover: #2684FF;
-    --primary-light: #1A365D;
-
-    --success: #36B37E;
-    --success-light: #0B3D23;
-    --warning: #FFAB00;
-    --warning-light: #5C3A00;
-    --danger: #FF5630;
-    --danger-light: #4A1504;
-    --info: #00B8D9;
-    --info-light: #003847;
-
-    --text-main: #E4E5E7;
-    --text-muted: #A6A9B0;
-    --text-inverse: #1D2125;
-    --text-danger-strong: #FF8F73;
-
-    --bg-body: #1D2125;
-    --bg-surface: #22272B;
-    --bg-hover: #2C333A;
-    --bg-danger-light: rgba(255, 86, 48, 0.1);
-    --bg-subitem: rgba(255,255,255,0.02);
-
-    --border: #38414A;
-    --border-danger-light: rgba(255, 86, 48, 0.2);
-
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 0, 0, 0.6);
-}
-
-/* 2. Dracula Theme */
-[data-theme="dracula"] {
-    --primary: #bd93f9;
-    --primary-hover: #caa9fa;
-    --primary-light: rgba(189, 147, 249, 0.2);
-
-    --success: #50fa7b;
-    --success-light: rgba(80, 250, 123, 0.15);
-    --warning: #f1fa8c;
-    --warning-light: rgba(241, 250, 140, 0.15);
-    --danger: #ff5555;
-    --danger-light: rgba(255, 85, 85, 0.15);
-    --info: #8be9fd;
-    --info-light: rgba(139, 233, 253, 0.15);
-
-    --text-main: #f8f8f2;
-    --text-muted: #8ba0da;
-    --text-inverse: #282a36;
-    --text-danger-strong: #ffb86c;
-
-    --bg-body: #1e1f29;
-    --bg-surface: #282a36;
-    --bg-hover: #44475a;
-    --bg-danger-light: rgba(255, 85, 85, 0.1);
-    --bg-subitem: rgba(255,255,255,0.02);
-
-    --border: #6272a4;
-    --border-danger-light: rgba(255, 85, 85, 0.2);
-
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.7);
-}
-
-/* 3. Monokai Theme */
-[data-theme="monokai"] {
-    --primary: #fd971f;
-    --primary-hover: #e6db74;
-    --primary-light: rgba(253, 151, 31, 0.2);
-
-    --success: #a6e22e;
-    --success-light: rgba(166, 226, 46, 0.15);
-    --warning: #e6db74;
-    --warning-light: rgba(230, 219, 116, 0.15);
-    --danger: #f92672;
-    --danger-light: rgba(249, 38, 114, 0.15);
-    --info: #66d9ef;
-    --info-light: rgba(102, 217, 239, 0.15);
-
-    --text-main: #f8f8f2;
-    --text-muted: #b3b09d;
-    --text-inverse: #272822;
-    --text-danger-strong: #f92672;
-
-    --bg-body: #272822;
-    --bg-surface: #3e3d32;
-    --bg-hover: #49483e;
-    --bg-danger-light: rgba(249, 38, 114, 0.1);
-    --bg-subitem: rgba(255,255,255,0.02);
-
-    --border: #75715e;
-    --border-danger-light: rgba(249, 38, 114, 0.2);
-
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.7);
-}
 
 /* 4. GitHub Dark Theme */
 [data-theme="github-dark"] {
@@ -253,99 +149,96 @@
 /* =========================================
    BOOTSTRAP OVERRIDES FOR DARK THEMES
    ========================================= */
-[data-theme="dark"] .bg-white, [data-theme="dracula"] .bg-white, [data-theme="monokai"] .bg-white, [data-theme="github-dark"] .bg-white,
-[data-theme="dark"] .bg-light, [data-theme="dracula"] .bg-light, [data-theme="monokai"] .bg-light, [data-theme="github-dark"] .bg-light {
+[data-theme="github-dark"] .bg-white,
+[data-theme="github-dark"] .bg-light {
     background-color: var(--bg-surface) !important;
 }
 
-[data-theme="dark"] body, [data-theme="dracula"] body, [data-theme="monokai"] body, [data-theme="github-dark"] body {
+[data-theme="github-dark"] body {
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] h1, [data-theme="dracula"] h1, [data-theme="monokai"] h1, [data-theme="github-dark"] h1,
-[data-theme="dark"] h2, [data-theme="dracula"] h2, [data-theme="monokai"] h2, [data-theme="github-dark"] h2,
-[data-theme="dark"] h3, [data-theme="dracula"] h3, [data-theme="monokai"] h3, [data-theme="github-dark"] h3,
-[data-theme="dark"] h4, [data-theme="dracula"] h4, [data-theme="monokai"] h4, [data-theme="github-dark"] h4,
-[data-theme="dark"] h5, [data-theme="dracula"] h5, [data-theme="monokai"] h5, [data-theme="github-dark"] h5,
-[data-theme="dark"] h6, [data-theme="dracula"] h6, [data-theme="monokai"] h6, [data-theme="github-dark"] h6,
-[data-theme="dark"] .text-dark, [data-theme="dracula"] .text-dark, [data-theme="monokai"] .text-dark, [data-theme="github-dark"] .text-dark,
-[data-theme="dark"] .text-body, [data-theme="dracula"] .text-body, [data-theme="monokai"] .text-body, [data-theme="github-dark"] .text-body,
-[data-theme="dark"] .dropdown-header, [data-theme="dracula"] .dropdown-header, [data-theme="monokai"] .dropdown-header, [data-theme="github-dark"] .dropdown-header {
+[data-theme="github-dark"] h1,
+[data-theme="github-dark"] h2,
+[data-theme="github-dark"] h3,
+[data-theme="github-dark"] h4,
+[data-theme="github-dark"] h5,
+[data-theme="github-dark"] h6,
+[data-theme="github-dark"] .text-dark,
+[data-theme="github-dark"] .text-body,
+[data-theme="github-dark"] .dropdown-header {
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] .text-muted, [data-theme="dracula"] .text-muted, [data-theme="monokai"] .text-muted, [data-theme="github-dark"] .text-muted {
+[data-theme="github-dark"] .text-muted {
     color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .border, [data-theme="dracula"] .border, [data-theme="monokai"] .border, [data-theme="github-dark"] .border,
-[data-theme="dark"] .border-bottom, [data-theme="dracula"] .border-bottom, [data-theme="monokai"] .border-bottom, [data-theme="github-dark"] .border-bottom,
-[data-theme="dark"] .border-top, [data-theme="dracula"] .border-top, [data-theme="monokai"] .border-top, [data-theme="github-dark"] .border-top {
+[data-theme="github-dark"] .border,
+[data-theme="github-dark"] .border-bottom,
+[data-theme="github-dark"] .border-top {
     border-color: var(--border) !important;
 }
 
-[data-theme="dark"] .card, [data-theme="dracula"] .card, [data-theme="monokai"] .card, [data-theme="github-dark"] .card {
+[data-theme="github-dark"] .card {
     background-color: var(--bg-surface) !important;
     border-color: var(--border) !important;
 }
 
-[data-theme="dark"] .modal-content, [data-theme="dracula"] .modal-content, [data-theme="monokai"] .modal-content, [data-theme="github-dark"] .modal-content,
-[data-theme="dark"] .dropdown-menu, [data-theme="dracula"] .dropdown-menu, [data-theme="monokai"] .dropdown-menu, [data-theme="github-dark"] .dropdown-menu {
+[data-theme="github-dark"] .modal-content,
+[data-theme="github-dark"] .dropdown-menu {
     background-color: var(--bg-surface) !important;
     border-color: var(--border) !important;
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] .dropdown-item, [data-theme="dracula"] .dropdown-item, [data-theme="monokai"] .dropdown-item, [data-theme="github-dark"] .dropdown-item {
+[data-theme="github-dark"] .dropdown-item {
     color: var(--text-main) !important;
 }
-[data-theme="dark"] .dropdown-item:hover, [data-theme="dracula"] .dropdown-item:hover, [data-theme="monokai"] .dropdown-item:hover, [data-theme="github-dark"] .dropdown-item:hover {
+[data-theme="github-dark"] .dropdown-item:hover {
     background-color: var(--bg-hover) !important;
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] input, [data-theme="dracula"] input, [data-theme="monokai"] input, [data-theme="github-dark"] input,
-[data-theme="dark"] select, [data-theme="dracula"] select, [data-theme="monokai"] select, [data-theme="github-dark"] select,
-[data-theme="dark"] textarea, [data-theme="dracula"] textarea, [data-theme="monokai"] textarea, [data-theme="github-dark"] textarea,
-[data-theme="dark"] .form-control, [data-theme="dracula"] .form-control, [data-theme="monokai"] .form-control, [data-theme="github-dark"] .form-control,
-[data-theme="dark"] .form-select, [data-theme="dracula"] .form-select, [data-theme="monokai"] .form-select, [data-theme="github-dark"] .form-select {
+[data-theme="github-dark"] input,
+[data-theme="github-dark"] select,
+[data-theme="github-dark"] textarea,
+[data-theme="github-dark"] .form-control,
+[data-theme="github-dark"] .form-select {
     background-color: var(--bg-body) !important;
     border-color: var(--border) !important;
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] input:focus, [data-theme="dracula"] input:focus, [data-theme="monokai"] input:focus, [data-theme="github-dark"] input:focus,
-[data-theme="dark"] select:focus, [data-theme="dracula"] select:focus, [data-theme="monokai"] select:focus, [data-theme="github-dark"] select:focus,
-[data-theme="dark"] textarea:focus, [data-theme="dracula"] textarea:focus, [data-theme="monokai"] textarea:focus, [data-theme="github-dark"] textarea:focus,
-[data-theme="dark"] .form-control:focus, [data-theme="dracula"] .form-control:focus, [data-theme="monokai"] .form-control:focus, [data-theme="github-dark"] .form-control:focus,
-[data-theme="dark"] .form-select:focus, [data-theme="dracula"] .form-select:focus, [data-theme="monokai"] .form-select:focus, [data-theme="github-dark"] .form-select:focus {
+[data-theme="github-dark"] input:focus,
+[data-theme="github-dark"] select:focus,
+[data-theme="github-dark"] textarea:focus,
+[data-theme="github-dark"] .form-control:focus,
+[data-theme="github-dark"] .form-select:focus {
     background-color: var(--bg-body) !important;
     border-color: var(--primary) !important;
     color: var(--text-main) !important;
     box-shadow: 0 0 0 0.25rem var(--primary-light) !important;
 }
 
-[data-theme="dark"] table, [data-theme="dracula"] table, [data-theme="monokai"] table, [data-theme="github-dark"] table,
-[data-theme="dark"] .table, [data-theme="dracula"] .table, [data-theme="monokai"] .table, [data-theme="github-dark"] .table {
+[data-theme="github-dark"] table,
+[data-theme="github-dark"] .table {
     color: var(--text-main) !important;
     border-color: var(--border) !important;
 }
 
-[data-theme="dark"] .table-hover tbody tr:hover, [data-theme="dracula"] .table-hover tbody tr:hover, [data-theme="monokai"] .table-hover tbody tr:hover, [data-theme="github-dark"] .table-hover tbody tr:hover {
+[data-theme="github-dark"] .table-hover tbody tr:hover {
     background-color: var(--bg-hover) !important;
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] th, [data-theme="dracula"] th, [data-theme="monokai"] th, [data-theme="github-dark"] th,
-[data-theme="dark"] td, [data-theme="dracula"] td, [data-theme="monokai"] td, [data-theme="github-dark"] td {
+[data-theme="github-dark"] th,
+[data-theme="github-dark"] td {
     background-color: transparent !important;
     border-color: var(--border) !important;
 }
 
 /* Internal Comments Theming for Dark Modes */
-[data-theme="dark"] .comment.internal,
-[data-theme="dracula"] .comment.internal,
-[data-theme="monokai"] .comment.internal,
 [data-theme="github-dark"] .comment.internal {
     background: rgba(255, 171, 0, 0.12) !important;
     border-color: rgba(255, 171, 0, 0.35) !important;
@@ -353,9 +246,6 @@
 }
 
 /* AI Copilot Panel Theming for Dark Modes */
-[data-theme="dark"] #aiCopilotPanel,
-[data-theme="dracula"] #aiCopilotPanel,
-[data-theme="monokai"] #aiCopilotPanel,
 [data-theme="github-dark"] #aiCopilotPanel {
     background: linear-gradient(180deg, rgba(76, 154, 255, 0.08) 0%, var(--bg-surface) 100%) !important;
     border-color: var(--border) !important;
@@ -363,117 +253,75 @@
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
 }
 
-[data-theme="dark"] .ai-panel-header-icon,
-[data-theme="dracula"] .ai-panel-header-icon,
-[data-theme="monokai"] .ai-panel-header-icon,
 [data-theme="github-dark"] .ai-panel-header-icon {
     background: var(--primary-light) !important;
     color: var(--primary) !important;
 }
 
-[data-theme="dark"] .ai-panel-title,
-[data-theme="dracula"] .ai-panel-title,
-[data-theme="monokai"] .ai-panel-title,
 [data-theme="github-dark"] .ai-panel-title {
     color: var(--primary) !important;
 }
 
-[data-theme="dark"] .ai-panel-settings-btn,
-[data-theme="dracula"] .ai-panel-settings-btn,
-[data-theme="monokai"] .ai-panel-settings-btn,
 [data-theme="github-dark"] .ai-panel-settings-btn {
     background: var(--bg-surface) !important;
     border-color: var(--border) !important;
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] .ai-panel-status-row,
-[data-theme="dracula"] .ai-panel-status-row,
-[data-theme="monokai"] .ai-panel-status-row,
 [data-theme="github-dark"] .ai-panel-status-row {
     background: var(--bg-hover) !important;
     border-color: var(--border) !important;
 }
 
-[data-theme="dark"] .ai-panel-lang-select,
-[data-theme="dracula"] .ai-panel-lang-select,
-[data-theme="monokai"] .ai-panel-lang-select,
 [data-theme="github-dark"] .ai-panel-lang-select {
     background: var(--bg-surface) !important;
     color: var(--text-main) !important;
     border-color: var(--border) !important;
 }
 
-[data-theme="dark"] .ai-panel-desc,
-[data-theme="dracula"] .ai-panel-desc,
-[data-theme="monokai"] .ai-panel-desc,
 [data-theme="github-dark"] .ai-panel-desc {
     color: var(--text-muted) !important;
 }
 
 /* AI Quick Action Buttons in Dark Mode */
-[data-theme="dark"] .ai-btn-suggest,
-[data-theme="dracula"] .ai-btn-suggest,
-[data-theme="monokai"] .ai-btn-suggest,
 [data-theme="github-dark"] .ai-btn-suggest {
     background: rgba(29, 78, 216, 0.18) !important;
     color: #93c5fd !important;
     border-color: rgba(147, 197, 253, 0.3) !important;
 }
-[data-theme="dark"] .ai-btn-suggest:hover:not(:disabled),
-[data-theme="dracula"] .ai-btn-suggest:hover:not(:disabled),
-[data-theme="monokai"] .ai-btn-suggest:hover:not(:disabled),
 [data-theme="github-dark"] .ai-btn-suggest:hover:not(:disabled) {
     background: #1D4ED8 !important;
     color: #FFFFFF !important;
     border-color: #1D4ED8 !important;
 }
 
-[data-theme="dark"] .ai-btn-summarize,
-[data-theme="dracula"] .ai-btn-summarize,
-[data-theme="monokai"] .ai-btn-summarize,
 [data-theme="github-dark"] .ai-btn-summarize {
     background: rgba(4, 120, 87, 0.18) !important;
     color: #6ee7b7 !important;
     border-color: rgba(110, 231, 183, 0.3) !important;
 }
-[data-theme="dark"] .ai-btn-summarize:hover:not(:disabled),
-[data-theme="dracula"] .ai-btn-summarize:hover:not(:disabled),
-[data-theme="monokai"] .ai-btn-summarize:hover:not(:disabled),
 [data-theme="github-dark"] .ai-btn-summarize:hover:not(:disabled) {
     background: #047857 !important;
     color: #FFFFFF !important;
     border-color: #047857 !important;
 }
 
-[data-theme="dark"] .ai-btn-draft,
-[data-theme="dracula"] .ai-btn-draft,
-[data-theme="monokai"] .ai-btn-draft,
 [data-theme="github-dark"] .ai-btn-draft {
     background: rgba(180, 83, 9, 0.18) !important;
     color: #fcd34d !important;
     border-color: rgba(252, 211, 77, 0.3) !important;
 }
-[data-theme="dark"] .ai-btn-draft:hover:not(:disabled),
-[data-theme="dracula"] .ai-btn-draft:hover:not(:disabled),
-[data-theme="monokai"] .ai-btn-draft:hover:not(:disabled),
 [data-theme="github-dark"] .ai-btn-draft:hover:not(:disabled) {
     background: #B45309 !important;
     color: #FFFFFF !important;
     border-color: #B45309 !important;
 }
 
-[data-theme="dark"] .ai-btn-ask,
-[data-theme="dracula"] .ai-btn-ask,
-[data-theme="monokai"] .ai-btn-ask,
 [data-theme="github-dark"] .ai-btn-ask {
     background: rgba(14, 116, 144, 0.18) !important;
     color: #67e8f9 !important;
     border-color: rgba(103, 232, 249, 0.3) !important;
 }
-[data-theme="dark"] .ai-btn-ask:hover:not(:disabled),
-[data-theme="dracula"] .ai-btn-ask:hover:not(:disabled),
-[data-theme="monokai"] .ai-btn-ask:hover:not(:disabled),
 [data-theme="github-dark"] .ai-btn-ask:hover:not(:disabled) {
     background: #0E7490 !important;
     color: #FFFFFF !important;
@@ -481,9 +329,6 @@
 }
 
 /* AI Result Area in Dark Mode */
-[data-theme="dark"] #aiResultArea,
-[data-theme="dracula"] #aiResultArea,
-[data-theme="monokai"] #aiResultArea,
 [data-theme="github-dark"] #aiResultArea {
     background: var(--bg-surface) !important;
     border-color: var(--border) !important;
@@ -492,37 +337,22 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
-[data-theme="dark"] #aiResultArea > div:first-child,
-[data-theme="dracula"] #aiResultArea > div:first-child,
-[data-theme="monokai"] #aiResultArea > div:first-child,
 [data-theme="github-dark"] #aiResultArea > div:first-child {
     border-bottom-color: var(--border) !important;
 }
 
-[data-theme="dark"] #aiResultArea > div:last-child,
-[data-theme="dracula"] #aiResultArea > div:last-child,
-[data-theme="monokai"] #aiResultArea > div:last-child,
 [data-theme="github-dark"] #aiResultArea > div:last-child {
     border-top-color: var(--border) !important;
 }
 
-[data-theme="dark"] #aiResultTitle,
-[data-theme="dracula"] #aiResultTitle,
-[data-theme="monokai"] #aiResultTitle,
 [data-theme="github-dark"] #aiResultTitle {
     color: var(--primary) !important;
 }
 
-[data-theme="dark"] #aiResultContent,
-[data-theme="dracula"] #aiResultContent,
-[data-theme="monokai"] #aiResultContent,
 [data-theme="github-dark"] #aiResultContent {
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] #aiFallbackNotice,
-[data-theme="dracula"] #aiFallbackNotice,
-[data-theme="monokai"] #aiFallbackNotice,
 [data-theme="github-dark"] #aiFallbackNotice {
     background: rgba(245, 158, 11, 0.12) !important;
     border-color: rgba(245, 158, 11, 0.3) !important;
@@ -546,25 +376,16 @@
     border: 1px solid #FECACA;
 }
 
-[data-theme="dark"] .ai-status-active,
-[data-theme="dracula"] .ai-status-active,
-[data-theme="monokai"] .ai-status-active,
 [data-theme="github-dark"] .ai-status-active {
     background: rgba(16, 185, 129, 0.18) !important;
     color: #34d399 !important;
     border-color: rgba(52, 211, 153, 0.35) !important;
 }
-[data-theme="dark"] .ai-status-fallback,
-[data-theme="dracula"] .ai-status-fallback,
-[data-theme="monokai"] .ai-status-fallback,
 [data-theme="github-dark"] .ai-status-fallback {
     background: rgba(245, 158, 11, 0.18) !important;
     color: #fbbf24 !important;
     border-color: rgba(251, 191, 36, 0.35) !important;
 }
-[data-theme="dark"] .ai-status-disconnected,
-[data-theme="dracula"] .ai-status-disconnected,
-[data-theme="monokai"] .ai-status-disconnected,
 [data-theme="github-dark"] .ai-status-disconnected {
     background: rgba(239, 68, 68, 0.18) !important;
     color: #f87171 !important;
@@ -572,127 +393,82 @@
 }
 
 /* LLM Modal Overrides in Dark Mode */
-[data-theme="dark"] #llmSettingsModal .modal-header,
-[data-theme="dracula"] #llmSettingsModal .modal-header,
-[data-theme="monokai"] #llmSettingsModal .modal-header,
 [data-theme="github-dark"] #llmSettingsModal .modal-header,
-[data-theme="dark"] #llmSettingsModal .modal-footer,
-[data-theme="dracula"] #llmSettingsModal .modal-footer,
-[data-theme="monokai"] #llmSettingsModal .modal-footer,
 [data-theme="github-dark"] #llmSettingsModal .modal-footer {
     background: var(--bg-surface) !important;
     border-color: var(--border) !important;
 }
 
-[data-theme="dark"] #llmSettingsModal .modal-header h2,
-[data-theme="dracula"] #llmSettingsModal .modal-header h2,
-[data-theme="monokai"] #llmSettingsModal .modal-header h2,
 [data-theme="github-dark"] #llmSettingsModal .modal-header h2 {
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] #llmSettingsModal .close-btn,
-[data-theme="dracula"] #llmSettingsModal .close-btn,
-[data-theme="monokai"] #llmSettingsModal .close-btn,
 [data-theme="github-dark"] #llmSettingsModal .close-btn {
     background: var(--bg-hover) !important;
     border-color: var(--border) !important;
     color: var(--text-main) !important;
 }
 
-[data-theme="dark"] #llmSettingsModal .form-label,
-[data-theme="dracula"] #llmSettingsModal .form-label,
-[data-theme="monokai"] #llmSettingsModal .form-label,
 [data-theme="github-dark"] #llmSettingsModal .form-label {
     color: var(--text-main) !important;
 }
 
 /* Badge Warning Text Contrast in Dark Mode */
-[data-theme="dark"] .badge-warning,
-[data-theme="dracula"] .badge-warning,
-[data-theme="monokai"] .badge-warning,
 [data-theme="github-dark"] .badge-warning {
     color: var(--warning) !important;
 }
 
 /* Chip Theming in Dark Mode */
-[data-theme="dark"] .chip,
-[data-theme="dracula"] .chip,
-[data-theme="monokai"] .chip,
 [data-theme="github-dark"] .chip {
     background: var(--bg-hover) !important;
     color: var(--text-main) !important;
     border: 1px solid var(--border) !important;
 }
-[data-theme="dark"] .chip:hover,
-[data-theme="dracula"] .chip:hover,
-[data-theme="monokai"] .chip:hover,
 [data-theme="github-dark"] .chip:hover {
     background: var(--border) !important;
 }
 
 /* Quill Editor Dark Theme Support */
-[data-theme="dark"] .ql-toolbar,
-[data-theme="dracula"] .ql-toolbar,
-[data-theme="monokai"] .ql-toolbar,
 [data-theme="github-dark"] .ql-toolbar {
     background: var(--bg-hover) !important;
     border-color: var(--border) !important;
 }
-[data-theme="dark"] .ql-container,
-[data-theme="dracula"] .ql-container,
-[data-theme="monokai"] .ql-container,
 [data-theme="github-dark"] .ql-container {
     border-color: var(--border) !important;
     background: var(--bg-surface) !important;
     color: var(--text-main) !important;
 }
-[data-theme="dark"] .ql-editor,
-[data-theme="dracula"] .ql-editor,
-[data-theme="monokai"] .ql-editor,
 [data-theme="github-dark"] .ql-editor {
     background: var(--bg-surface) !important;
     color: var(--text-main) !important;
 }
-[data-theme="dark"] .ql-snow .ql-stroke,
-[data-theme="dracula"] .ql-snow .ql-stroke,
-[data-theme="monokai"] .ql-snow .ql-stroke,
 [data-theme="github-dark"] .ql-snow .ql-stroke {
     stroke: var(--text-main) !important;
 }
-[data-theme="dark"] .ql-snow .ql-fill,
-[data-theme="dracula"] .ql-snow .ql-fill,
-[data-theme="monokai"] .ql-snow .ql-fill,
 [data-theme="github-dark"] .ql-snow .ql-fill {
     fill: var(--text-main) !important;
 }
-[data-theme="dark"] .ql-snow .ql-picker,
-[data-theme="dracula"] .ql-snow .ql-picker,
-[data-theme="monokai"] .ql-snow .ql-picker,
 [data-theme="github-dark"] .ql-snow .ql-picker {
     color: var(--text-main) !important;
 }
-[data-theme="dark"] .ql-snow .ql-picker-options,
-[data-theme="dracula"] .ql-snow .ql-picker-options,
-[data-theme="monokai"] .ql-snow .ql-picker-options,
 [data-theme="github-dark"] .ql-snow .ql-picker-options {
     background-color: var(--bg-surface) !important;
     border-color: var(--border) !important;
 }
 
 /* Scrollbar Theming for Dark Modes */
-[data-theme="dark"] ::-webkit-scrollbar, [data-theme="dracula"] ::-webkit-scrollbar, [data-theme="monokai"] ::-webkit-scrollbar, [data-theme="github-dark"] ::-webkit-scrollbar {
+[data-theme="github-dark"] ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
-[data-theme="dark"] ::-webkit-scrollbar-track, [data-theme="dracula"] ::-webkit-scrollbar-track, [data-theme="monokai"] ::-webkit-scrollbar-track, [data-theme="github-dark"] ::-webkit-scrollbar-track {
+[data-theme="github-dark"] ::-webkit-scrollbar-track {
     background: var(--bg-body); 
 }
-[data-theme="dark"] ::-webkit-scrollbar-thumb, [data-theme="dracula"] ::-webkit-scrollbar-thumb, [data-theme="monokai"] ::-webkit-scrollbar-thumb, [data-theme="github-dark"] ::-webkit-scrollbar-thumb {
+[data-theme="github-dark"] ::-webkit-scrollbar-thumb {
     background: var(--border); 
     border-radius: 4px;
 }
-[data-theme="dark"] ::-webkit-scrollbar-thumb:hover, [data-theme="dracula"] ::-webkit-scrollbar-thumb:hover, [data-theme="monokai"] ::-webkit-scrollbar-thumb:hover, [data-theme="github-dark"] ::-webkit-scrollbar-thumb:hover {
+[data-theme="github-dark"] ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted); 
 }
 

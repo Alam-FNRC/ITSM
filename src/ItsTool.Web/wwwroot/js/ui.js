@@ -1,8 +1,9 @@
 import { setLanguage, t, getCurrentLanguage, getLocale, LANGUAGES } from './i18n.js';
 (function() {
     try {
-        const savedTheme = localStorage.getItem('itsm_theme') || 'light';
-        document.documentElement.dataset.theme = savedTheme;
+        // A theme that no longer exists (dark, dracula, monokai were removed) falls back to the default
+        const savedTheme = localStorage.getItem('itsm_theme');
+        document.documentElement.dataset.theme = ['light', 'fnrc', 'github-dark'].includes(savedTheme) ? savedTheme : 'light';
     } catch(e) { console.error('Theme init failed', e); }
 })();
 
@@ -468,13 +469,10 @@ export function bindShellActions() {
         const themes = [
             { id: 'light', name: t('ui_theme_light') },
             { id: 'fnrc', name: 'FNRC' },
-            { id: 'dark', name: t('ui_theme_dark') },
-            { id: 'dracula', name: 'Dracula' },
-            { id: 'monokai', name: 'Monokai' },
             { id: 'github-dark', name: 'GitHub Dark' }
         ];
-        
-        const currentTheme = localStorage.getItem('itsm_theme') || 'light';
+
+        const currentTheme = document.documentElement.dataset.theme || 'light';
         themeDropdown.innerHTML = `<div class="dropdown-header">${t('topbar_theme')}</div><hr class="dropdown-divider">` + 
             themes.map(tObj => `<div class="dropdown-item theme-option ${tObj.id === currentTheme ? 'active' : ''}" data-theme-id="${tObj.id}" style="display:flex; justify-content:space-between; align-items:center;">
                 ${tObj.name}

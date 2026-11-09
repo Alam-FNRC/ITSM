@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="css/design-system.css?v=1010">
     <script>
         try {
-            const savedTheme = localStorage.getItem('itsm_theme') || 'light';
-            document.documentElement.dataset.theme = savedTheme;
+            const savedTheme = localStorage.getItem('itsm_theme');
+            document.documentElement.dataset.theme = ['light', 'fnrc', 'github-dark'].includes(savedTheme) ? savedTheme : 'light';
         } catch(e) {}
     </script>
     <style>
@@ -23,23 +23,14 @@
         .comment-thread { display: flex; flex-direction: column; gap: var(--spacing-md); }
         .comment { padding: var(--spacing-md); background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
         .comment.internal { background: #FFFAE6; border-color: #FFE380; } /* Yellowish for internal */
-        [data-theme="dark"] .comment.internal,
-        [data-theme="dracula"] .comment.internal,
-        [data-theme="monokai"] .comment.internal,
         [data-theme="github-dark"] .comment.internal {
             background: rgba(245, 158, 11, 0.12) !important;
             border-color: rgba(245, 158, 11, 0.35) !important;
             color: var(--text-main) !important;
         }
-        [data-theme="dark"] .comment.internal .comment-body,
-        [data-theme="dracula"] .comment.internal .comment-body,
-        [data-theme="monokai"] .comment.internal .comment-body,
         [data-theme="github-dark"] .comment.internal .comment-body {
             color: var(--text-main) !important;
         }
-        [data-theme="dark"] .comment.internal strong,
-        [data-theme="dracula"] .comment.internal strong,
-        [data-theme="monokai"] .comment.internal strong,
         [data-theme="github-dark"] .comment.internal strong {
             color: var(--text-main) !important;
         }
@@ -78,54 +69,33 @@
         }
 
         /* AI Copilot Panel Dark Mode Overrides */
-        [data-theme="dark"] #aiCopilotPanel,
-        [data-theme="dracula"] #aiCopilotPanel,
-        [data-theme="monokai"] #aiCopilotPanel,
         [data-theme="github-dark"] #aiCopilotPanel {
             background: linear-gradient(180deg, rgba(76, 154, 255, 0.08) 0%, var(--bg-surface) 100%) !important;
             border-color: var(--border) !important;
             border-top: 3.5px solid var(--primary) !important;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
         }
-        [data-theme="dark"] .ai-panel-header-icon,
-        [data-theme="dracula"] .ai-panel-header-icon,
-        [data-theme="monokai"] .ai-panel-header-icon,
         [data-theme="github-dark"] .ai-panel-header-icon {
             background: var(--primary-light) !important;
             color: var(--primary) !important;
         }
-        [data-theme="dark"] .ai-panel-title,
-        [data-theme="dracula"] .ai-panel-title,
-        [data-theme="monokai"] .ai-panel-title,
         [data-theme="github-dark"] .ai-panel-title {
             color: var(--primary) !important;
         }
-        [data-theme="dark"] .ai-panel-settings-btn,
-        [data-theme="dracula"] .ai-panel-settings-btn,
-        [data-theme="monokai"] .ai-panel-settings-btn,
         [data-theme="github-dark"] .ai-panel-settings-btn {
             background: var(--bg-surface) !important;
             border-color: var(--border) !important;
             color: var(--text-main) !important;
         }
-        [data-theme="dark"] .ai-panel-status-row,
-        [data-theme="dracula"] .ai-panel-status-row,
-        [data-theme="monokai"] .ai-panel-status-row,
         [data-theme="github-dark"] .ai-panel-status-row {
             background: var(--bg-hover) !important;
             border-color: var(--border) !important;
         }
-        [data-theme="dark"] .ai-panel-lang-select,
-        [data-theme="dracula"] .ai-panel-lang-select,
-        [data-theme="monokai"] .ai-panel-lang-select,
         [data-theme="github-dark"] .ai-panel-lang-select {
             background: var(--bg-surface) !important;
             color: var(--text-main) !important;
             border-color: var(--border) !important;
         }
-        [data-theme="dark"] .ai-panel-desc,
-        [data-theme="dracula"] .ai-panel-desc,
-        [data-theme="monokai"] .ai-panel-desc,
         [data-theme="github-dark"] .ai-panel-desc {
             color: var(--text-muted) !important;
         }
@@ -159,17 +129,11 @@
             border-color: #1D4ED8;
             box-shadow: 0 2px 8px rgba(29, 78, 216, 0.25);
         }
-        [data-theme="dark"] .ai-btn-suggest,
-        [data-theme="dracula"] .ai-btn-suggest,
-        [data-theme="monokai"] .ai-btn-suggest,
         [data-theme="github-dark"] .ai-btn-suggest {
             background: rgba(29, 78, 216, 0.18) !important;
             color: #93c5fd !important;
             border-color: rgba(147, 197, 253, 0.3) !important;
         }
-        [data-theme="dark"] .ai-btn-suggest:hover:not(:disabled),
-        [data-theme="dracula"] .ai-btn-suggest:hover:not(:disabled),
-        [data-theme="monokai"] .ai-btn-suggest:hover:not(:disabled),
         [data-theme="github-dark"] .ai-btn-suggest:hover:not(:disabled) {
             background: #1D4ED8 !important;
             color: #FFFFFF !important;
@@ -188,17 +152,11 @@
             border-color: #047857;
             box-shadow: 0 2px 8px rgba(4, 120, 87, 0.25);
         }
-        [data-theme="dark"] .ai-btn-summarize,
-        [data-theme="dracula"] .ai-btn-summarize,
-        [data-theme="monokai"] .ai-btn-summarize,
         [data-theme="github-dark"] .ai-btn-summarize {
             background: rgba(4, 120, 87, 0.18) !important;
             color: #6ee7b7 !important;
             border-color: rgba(110, 231, 183, 0.3) !important;
         }
-        [data-theme="dark"] .ai-btn-summarize:hover:not(:disabled),
-        [data-theme="dracula"] .ai-btn-summarize:hover:not(:disabled),
-        [data-theme="monokai"] .ai-btn-summarize:hover:not(:disabled),
         [data-theme="github-dark"] .ai-btn-summarize:hover:not(:disabled) {
             background: #047857 !important;
             color: #FFFFFF !important;
@@ -217,17 +175,11 @@
             border-color: #B45309;
             box-shadow: 0 2px 8px rgba(180, 83, 9, 0.25);
         }
-        [data-theme="dark"] .ai-btn-draft,
-        [data-theme="dracula"] .ai-btn-draft,
-        [data-theme="monokai"] .ai-btn-draft,
         [data-theme="github-dark"] .ai-btn-draft {
             background: rgba(180, 83, 9, 0.18) !important;
             color: #fcd34d !important;
             border-color: rgba(252, 211, 77, 0.3) !important;
         }
-        [data-theme="dark"] .ai-btn-draft:hover:not(:disabled),
-        [data-theme="dracula"] .ai-btn-draft:hover:not(:disabled),
-        [data-theme="monokai"] .ai-btn-draft:hover:not(:disabled),
         [data-theme="github-dark"] .ai-btn-draft:hover:not(:disabled) {
             background: #B45309 !important;
             color: #FFFFFF !important;
@@ -246,17 +198,11 @@
             border-color: #0E7490;
             box-shadow: 0 2px 8px rgba(14, 116, 144, 0.25);
         }
-        [data-theme="dark"] .ai-btn-ask,
-        [data-theme="dracula"] .ai-btn-ask,
-        [data-theme="monokai"] .ai-btn-ask,
         [data-theme="github-dark"] .ai-btn-ask {
             background: rgba(14, 116, 144, 0.18) !important;
             color: #67e8f9 !important;
             border-color: rgba(103, 232, 249, 0.3) !important;
         }
-        [data-theme="dark"] .ai-btn-ask:hover:not(:disabled),
-        [data-theme="dracula"] .ai-btn-ask:hover:not(:disabled),
-        [data-theme="monokai"] .ai-btn-ask:hover:not(:disabled),
         [data-theme="github-dark"] .ai-btn-ask:hover:not(:disabled) {
             background: #0E7490 !important;
             color: #FFFFFF !important;
