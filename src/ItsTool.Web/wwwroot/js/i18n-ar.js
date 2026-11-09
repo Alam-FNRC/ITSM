@@ -776,7 +776,7 @@ export const ar = {
     "workload_joined": "تاريخ الانضمام:",
     "workload_dept": "الإدارة:",
     "workload_groups": "المجموعات:",
-    "app_name": "ITSM Tool",
+    "app_name": "FNRC - ITSM",
     "page_admin": "الإدارة",
     "page_survey": "استبيان الرضا",
     "kb_toggle_publish": "نشر أو إلغاء النشر",

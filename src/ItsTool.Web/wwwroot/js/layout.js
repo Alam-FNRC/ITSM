@@ -114,7 +114,7 @@ const shellHtml = `
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <svg viewBox="0 0 24 24" width="24" height="24" style="fill: var(--primary); margin-inline-end: 8px;"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z"/></svg> ITSM Tool
+                FNRC - ITSM
             </div>
             <nav class="sidebar-nav">
                 <a href="dashboard.html?v=2" class="sidebar-nav-item">
