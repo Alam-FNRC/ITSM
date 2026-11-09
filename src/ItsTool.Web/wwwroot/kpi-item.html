@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="page_kpi" data-i18n-target="document-title">FNRC - ITSM - KPI</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 13px; margin-bottom: var(--spacing-md); }
+        .back-link:hover { color: var(--primary); }
+        .kpi-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: var(--spacing-lg); align-items: start; }
+        .card { border: 1px solid var(--border); padding: var(--spacing-lg); }
+        .card h3 { margin: 0 0 var(--spacing-sm) 0; font-size: 15px; }
+        .card-hint { color: var(--text-muted); font-size: 12px; margin: -4px 0 var(--spacing-md) 0; }
+        .kpi-ref { font-family: monospace; color: var(--text-muted); font-size: 13px; }
+        .kpi-title { margin: 4px 0 8px 0; font-size: 22px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+        .notice { background: var(--bg-hover); border-inline-start: 3px solid var(--primary); padding: 8px 12px; border-radius: 4px; font-size: 13px; margin-bottom: var(--spacing-md); }
+        .values-table { table-layout: fixed; width: 100%; }
+        .values-table td, .values-table th { vertical-align: top; padding: 8px 6px; }
+        .values-table th:first-child, .values-table td:first-child { width: 72px; }
+        .values-table th:nth-child(2), .values-table td:nth-child(2) { width: 112px; }
+        .values-table th:last-child, .values-table td:last-child { width: 68px; }
+        .values-table input.form-control { width: 100%; min-width: 0; padding: 6px 8px; }
+        .values-table .who { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .computed { font-size: 12px; color: var(--info); margin-top: 2px; }
+        @media (max-width: 1200px) { .kpi-layout { grid-template-columns: 1fr; } }
+        .inline { display: flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap; }
+        .inline .form-control { width: auto; }
+        .earlier { font-size: 12px; color: var(--text-muted); margin-top: var(--spacing-sm); }
+        @media (max-width: 700px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="app-shell" data-shell>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <h2 data-i18n="page_kpi">KPI</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-bell-container dropdown" style="position:relative; margin-inline-end: 16px;">
+                        <button class="btn btn-ghost dropdown-toggle" type="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="badge" id="notificationBadge" style="display:none; position:absolute; top:4px; inset-inline-end:4px; background:var(--danger); color:white; border-radius:50%; font-size:10px; padding:2px 4px;"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bellDropdown" id="notificationList" style="width: 320px; max-height: 400px; overflow-y:auto;">
+                            <li><h6 class="dropdown-header" data-i18n="topbar_notifications">Notifications</h6></li>
+                            <div id="notificationItems"></div>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item text-center text-muted" onclick="markAllAsRead(event)" data-i18n="topbar_mark_all_read" style="width: 100%; border: none; background: none;">Mark all as read</button></li>
+                        </ul>
+                    </div>
+                    <div class="avatar">U</div>
+                    <button class="btn btn-ghost" id="shellLogoutBtn" data-i18n="topbar_logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <a href="kpi-register.html" class="back-link">
+                    <svg class="flip-rtl" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    <span data-i18n="kpir_back">Back to the IT KPIs</span>
+                </a>
+
+                <div id="notFound" class="card" style="display: none; color: var(--text-muted);" data-i18n="kpir_not_found">This KPI does not exist, or you do not have access to it.</div>
+
+                <div class="kpi-layout" id="kpiLayout" style="display: none;">
+                    <form id="kpiForm">
+                        <section class="card" style="margin-bottom: var(--spacing-md);">
+                            <div class="kpi-ref" id="kpiRef"></div>
+                            <h1 class="kpi-title" id="kpiHeading" dir="auto"></h1>
+                            <div id="kpiBadges"></div>
+                        </section>
+
+                        <div class="notice" id="readOnlyNotice" style="display: none;" data-i18n="kpir_read_only">You can enter this KPI's values because you own it. The administrator keeps its definition.</div>
+
+                        <section class="card" style="margin-bottom: var(--spacing-md);">
+                            <h3 data-i18n="kpir_sec_definition">Definition</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fNumber" data-i18n="kpir_lbl_number">Number *</label>
+                                    <input id="fNumber" type="number" min="1" max="999999" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fCapability" data-i18n="kpir_lbl_capability">Capability *</label>
+                                    <select id="fCapability" class="form-control" required></select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fNameEn" data-i18n="kpir_lbl_name_en">Name (English) *</label>
+                                    <input id="fNameEn" class="form-control" required maxlength="300" dir="ltr">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fNameAr" data-i18n="kpir_lbl_name_ar">Name (Arabic) *</label>
+                                    <input id="fNameAr" class="form-control" required maxlength="300" dir="rtl">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="fDescription" data-i18n="kpir_lbl_description">Description</label>
+                                <textarea id="fDescription" class="form-control" maxlength="2000" rows="2" dir="auto"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fFormula" data-i18n="kpir_lbl_formula">Formula</label>
+                                    <input id="fFormula" class="form-control" maxlength="1000" dir="auto">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fDataSource" data-i18n="kpir_lbl_source_text">Data source</label>
+                                    <input id="fDataSource" class="form-control" maxlength="500" dir="auto">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fScope" data-i18n="kpir_lbl_scope">Scope</label>
+                                    <input id="fScope" class="form-control" maxlength="100" dir="auto">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fUnit" data-i18n="kpir_lbl_unit">Unit</label>
+                                    <input id="fUnit" class="form-control" maxlength="100" dir="auto">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fResultType" data-i18n="kpir_lbl_result">Result type</label>
+                                    <select id="fResultType" class="form-control"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fDirection" data-i18n="kpir_lbl_direction">Direction</label>
+                                    <select id="fDirection" class="form-control"></select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fCycle" data-i18n="kpir_lbl_cycle">Measurement cycle</label>
+                                    <select id="fCycle" class="form-control"></select>
+                                    <div class="card-hint" style="margin: 4px 0 0;" data-i18n="kpir_cycle_hint">Set by the administrator. The owner enters one value per period.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fYearEnd" data-i18n="kpir_lbl_year_end">Year-end figure</label>
+                                    <select id="fYearEnd" class="form-control"></select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fSource" data-i18n="kpir_lbl_source">Source of the values</label>
+                                    <select id="fSource" class="form-control"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fOwner" data-i18n="kpir_lbl_owner">Owner</label>
+                                    <select id="fOwner" class="form-control"></select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary manage-only" id="btnSave" data-i18n="kpir_btn_save">Save</button>
+                        </section>
+                    </form>
+
+                    <aside id="sidePanel">
+                        <section class="card" style="margin-bottom: var(--spacing-md);">
+                            <h3 data-i18n="kpir_sec_values">Values</h3>
+                            <p class="card-hint" data-i18n="kpir_values_hint">One value per period, once the period has started. A value can be corrected; who entered it is kept.</p>
+                            <div class="inline" style="margin-bottom: var(--spacing-sm);">
+                                <label class="form-label" for="valuesYear" style="margin: 0;" data-i18n="kpir_year">Year</label>
+                                <select id="valuesYear" class="form-control"></select>
+                            </div>
+                            <table class="table values-table">
+                                <thead><tr><th data-i18n="kpir_col_period">Period</th><th data-i18n="kpir_col_value">Value</th><th data-i18n="kpir_col_note">Note</th><th></th></tr></thead>
+                                <tbody id="valuesBody"></tbody>
+                            </table>
+                            <div id="earlierEntries" class="earlier"></div>
+                        </section>
+                        <section class="card manage-only" id="targetCard" style="display: none;">
+                            <h3 data-i18n="kpir_sec_target">Target</h3>
+                            <p class="card-hint" data-i18n="kpir_target_hint">Optional. The report marks the year met or missed following the direction.</p>
+                            <div class="inline">
+                                <span id="targetYearLabel"></span>
+                                <input id="targetValue" type="number" step="any" class="form-control">
+                                <button type="button" class="btn btn-primary" id="btnSaveTarget" data-i18n="kpir_btn_save">Save</button>
+                                <button type="button" class="btn btn-ghost" id="btnClearTarget" data-i18n="kpir_btn_clear">Clear</button>
+                            </div>
+                        </section>
+                    </aside>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { injectShell } from './js/layout.js?v=999';
+        import './js/api.js';
+        import { bindShellActions, showToast, escapeHtml } from './js/ui.js';
+        import { t } from './js/i18n.js';
+        import {
+            CYCLES, RESULT_TYPES, DIRECTIONS, YEAR_ENDS, SOURCES, nameOf, cycleLabel, resultLabel, directionLabel, yearEndLabel, sourceLabel,
+            periodCount, periodLabel, periodStarted, formatValue, formatDateTime, optionsHtml, kpiIdFromUrl
+        } from './js/kpi-register.js';
+        injectShell();
+
+        if (!window.api.token) window.location.href = 'login.html';
+        bindShellActions();
+
+        const kpiId = kpiIdFromUrl(window.location.search);
+        const thisYear = new Date().getFullYear();
+        let kpi = null;
+        let capabilities = [];
+        const $ = (id) => document.getElementById(id);
+
+        $('fResultType').innerHTML = optionsHtml(RESULT_TYPES, resultLabel, 'Number');
+        $('fDirection').innerHTML = optionsHtml(DIRECTIONS, directionLabel, 'Up');
+        $('fCycle').innerHTML = optionsHtml(CYCLES, cycleLabel, 'Yearly');
+        $('fYearEnd').innerHTML = optionsHtml(YEAR_ENDS, yearEndLabel, 'Last');
+        $('fSource').innerHTML = optionsHtml(SOURCES, sourceLabel, 'Manual');
+
+        const canManage = () => kpiId == null || !!kpi?.canManage;
+        const canEnter = () => !!kpi?.canEnter;
+        const name = (id) => id == null ? '—' : (kpi?.userNames?.[id] ?? `#${id}`);
+
+        function fillForm(k) {
+            $('fNumber').value = k.number;
+            $('fCapability').value = String(k.capabilityId);
+            $('fNameEn').value = k.nameEn; $('fNameAr').value = k.nameAr;
+            $('fDescription').value = k.description || ''; $('fFormula').value = k.formula || ''; $('fDataSource').value = k.dataSource || '';
+            $('fScope').value = k.scope || ''; $('fUnit').value = k.unit || '';
+            $('fResultType').value = k.resultType; $('fDirection').value = k.direction; $('fCycle').value = k.cycle; $('fYearEnd').value = k.yearEnd; $('fSource').value = k.source;
+        }
+
+        async function fillOwners(selected) {
+            // Only the administrator picks owners; an owner sees their own name from the KPI itself
+            const people = canManage() ? (await window.api.getUsers().catch(() => [])).filter(u => u.isActive || u.id === selected) : [];
+            const options = people.map(u => ({ id: u.id, label: `${u.firstName} ${u.lastName}`.trim() }));
+            if (selected != null && !options.some(o => o.id === selected)) options.push({ id: selected, label: name(selected) });
+            $('fOwner').innerHTML = `<option value="">${escapeHtml(t('kpir_no_owner'))}</option>` +
+                options.map(o => `<option value="${Number(o.id)}"${o.id === selected ? ' selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
+        }
+
+        function renderHeader() {
+            if (!kpi) { $('kpiRef').textContent = t('kpir_new_title'); $('kpiHeading').textContent = ''; $('kpiBadges').innerHTML = ''; return; }
+            $('kpiRef').textContent = `KPI ${kpi.number}`;
+            $('kpiHeading').textContent = nameOf(kpi);
+            const capability = capabilities.find(c => c.id === kpi.capabilityId);
+            $('kpiBadges').innerHTML = [capability ? nameOf(capability) : null, cycleLabel(kpi.cycle), directionLabel(kpi.direction), kpi.ownerUserId ? name(kpi.ownerUserId) : t('kpir_no_owner')]
+                .filter(Boolean).map(x => `<span class="badge badge-default" dir="auto" style="margin-inline-end: 4px;">${escapeHtml(x)}</span>`).join('');
+        }
+
+        // ---- Values for the chosen year, one row per period of the KPI's cycle ----
+        function renderValues() {
+            if (!kpi) { $('sidePanel').style.display = 'none'; return; }
+            $('sidePanel').style.display = '';
+            const year = Number($('valuesYear').value);
+            const today = new Date();
+            const rows = [];
+            for (let period = 1; period <= periodCount(kpi.cycle); period++) {
+                const stored = kpi.values.find(v => v.year === year && v.cycle === kpi.cycle && v.period === period && !v.computed);
+                const computed = kpi.values.find(v => v.year === year && v.cycle === kpi.cycle && v.period === period && v.computed);
+                const started = periodStarted(kpi.cycle, year, period, today);
+                const editable = canEnter() && started;
+                rows.push(`<tr data-period="${period}">
+                    <td class="nowrap">${escapeHtml(periodLabel(kpi.cycle, year, period))}</td>
+                    <td>
+                        <input type="number" step="any" class="form-control value-input" value="${stored ? Number(stored.value) : ''}"${editable ? '' : ' disabled'} aria-label="${escapeHtml(t('kpir_col_value'))}">
+                        ${computed && !stored ? `<div class="computed">${escapeHtml(t('kpir_computed').replaceAll('{0}', formatValue(computed.value, kpi.resultType, kpi.unit)))}${editable ? ` <button type="button" class="btn btn-ghost use-computed" style="padding: 0 6px; font-size: 12px;" data-value="${Number(computed.value)}">${escapeHtml(t('kpir_btn_use'))}</button>` : ''}</div>` : ''}
+                        ${!started ? `<div class="who">${escapeHtml(t('kpir_not_started'))}</div>` : ''}
+                    </td>
+                    <td>
+                        <input class="form-control note-input" maxlength="2000" value="${escapeHtml(stored?.note ?? '')}"${editable ? '' : ' disabled'} dir="auto" aria-label="${escapeHtml(t('kpir_col_note'))}">
+                        ${stored ? `<div class="who" dir="auto">${escapeHtml(name(stored.enteredByUserId))} · ${escapeHtml(formatDateTime(stored.enteredAt))}</div>` : ''}
+                    </td>
+                    <td class="nowrap">${editable ? `<button type="button" class="btn btn-primary save-value" style="padding: 4px 10px;">${escapeHtml(t('kpir_btn_save'))}</button>` : ''}</td>
+                </tr>`);
+            }
+            $('valuesBody').innerHTML = rows.join('');
+
+            const earlier = kpi.values.filter(v => v.year === year && !v.computed && v.cycle !== kpi.cycle);
+            $('earlierEntries').innerHTML = earlier.length
+                ? `<div>${escapeHtml(t('kpir_earlier_entries'))}</div>` + earlier.map(v => `<div dir="auto">${escapeHtml(periodLabel(v.cycle, v.year, v.period))}: ${escapeHtml(formatValue(v.value, kpi.resultType, kpi.unit))} · ${escapeHtml(name(v.enteredByUserId))}</div>`).join('')
+                : '';
+
+            $('targetCard').style.display = kpi.canManage ? '' : 'none';
+            $('targetYearLabel').textContent = String(year);
+            $('targetValue').value = kpi.targets.find(x => x.year === year)?.value ?? '';
+        }
+
+        $('valuesBody').addEventListener('click', async (e) => {
+            const row = e.target.closest('tr[data-period]');
+            if (!row) return;
+            if (e.target.classList.contains('use-computed')) {
+                row.querySelector('.value-input').value = e.target.dataset.value;
+                return;
+            }
+            if (!e.target.classList.contains('save-value')) return;
+            const raw = row.querySelector('.value-input').value.trim();
+            const payload = { value: raw === '' ? null : Number(raw), note: row.querySelector('.note-input').value };
+            try {
+                await window.api.request(`/kpi-register/${kpiId}/values/${Number($('valuesYear').value)}/${Number(row.dataset.period)}`, { method: 'PUT', body: JSON.stringify(payload), silent: true });
+                showToast(t(raw === '' ? 'kpir_cleared' : 'kpir_saved'));
+                await load();
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('kpir_save_failed')), 'error');
+            }
+        });
+
+        async function saveTarget(value) {
+            try {
+                await window.api.request(`/kpi-register/${kpiId}/targets/${Number($('valuesYear').value)}`, { method: 'PUT', body: JSON.stringify({ value }), silent: true });
+                showToast(t(value == null ? 'kpir_cleared' : 'kpir_saved'));
+                await load();
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('kpir_save_failed')), 'error');
+            }
+        }
+        $('btnSaveTarget').addEventListener('click', () => { const raw = $('targetValue').value.trim(); saveTarget(raw === '' ? null : Number(raw)); });
+        $('btnClearTarget').addEventListener('click', () => saveTarget(null));
+        $('valuesYear').addEventListener('change', renderValues);
+
+        function applyMode() {
+            const editable = canManage();
+            document.querySelectorAll('#kpiForm input, #kpiForm select, #kpiForm textarea').forEach(el => { el.disabled = !editable; });
+            document.querySelectorAll('#kpiForm .manage-only').forEach(el => { el.style.display = editable ? '' : 'none'; });
+            $('readOnlyNotice').style.display = editable || kpiId == null ? 'none' : '';
+        }
+
+        async function load() {
+            try {
+                const register = await window.api.request('/kpi-register', { silent: true });
+                capabilities = register.capabilities;
+                $('fCapability').innerHTML = capabilities.map(c => `<option value="${Number(c.id)}">${Number(c.number)} · ${escapeHtml(nameOf(c))}</option>`).join('');
+                if (kpiId != null) {
+                    kpi = await window.api.request(`/kpi-register/${kpiId}`, { silent: true });
+                    fillForm(kpi);
+                    const years = new Set([thisYear, thisYear - 1, ...kpi.values.map(v => v.year), ...kpi.targets.map(x => x.year)]);
+                    const selected = Number($('valuesYear').value) || thisYear;
+                    $('valuesYear').innerHTML = [...years].sort((a, b) => b - a).map(y => `<option value="${y}"${y === selected ? ' selected' : ''}>${y}</option>`).join('');
+                }
+                await fillOwners(kpi?.ownerUserId ?? null);
+                $('kpiLayout').style.display = '';
+                renderHeader();
+                renderValues();
+                applyMode();
+            } catch (err) {
+                console.error(err);
+                $('notFound').style.display = '';
+                $('kpiLayout').style.display = 'none';
+            }
+        }
+
+        $('kpiForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                number: Number($('fNumber').value), capabilityId: Number($('fCapability').value),
+                nameEn: $('fNameEn').value, nameAr: $('fNameAr').value, description: $('fDescription').value, formula: $('fFormula').value,
+                dataSource: $('fDataSource').value, scope: $('fScope').value, unit: $('fUnit').value,
+                resultType: $('fResultType').value, direction: $('fDirection').value, cycle: $('fCycle').value, yearEnd: $('fYearEnd').value, source: $('fSource').value,
+                ownerUserId: $('fOwner').value ? Number($('fOwner').value) : null
+            };
+            try {
+                if (kpiId == null) {
+                    const created = await window.api.request('/kpi-register', { method: 'POST', body: JSON.stringify(payload), silent: true });
+                    showToast(t('kpir_created').replaceAll('{0}', String(created.number)));
+                    window.location.href = `kpi-item.html?id=${Number(created.id)}`;
+                    return;
+                }
+                await window.api.request(`/kpi-register/${kpiId}`, { method: 'PUT', body: JSON.stringify(payload), silent: true });
+                showToast(t('kpir_saved'));
+                await load();
+            } catch (err) {
+                console.error(err);
+                showToast(window.api.errorMessage(err, t('kpir_save_failed')), 'error');
+            }
+        });
+
+        load();
+    </script>
+</body>
+</html>
