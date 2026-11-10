@@ -52,10 +52,10 @@ if ($isNew -and -not $env:Bootstrap__AdminPassword) {
     $env:Bootstrap__AdminUsername = Read-Host 'Username'
     $env:Bootstrap__AdminEmail = Read-Host 'Email'
     do {
-        $secure = Read-Host 'Temporary password (12 or more characters)' -AsSecureString
+        $secure = Read-Host 'Temporary password (8 or more characters: upper case, lower case, digit, symbol)' -AsSecureString
         $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR([Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure))
-        if ($plain.Length -lt 12) { Write-Host 'The password must be at least 12 characters.' }
-    } while ($plain.Length -lt 12)
+        if ($plain.Length -lt 8) { Write-Host 'The password must be at least 8 characters.' }
+    } while ($plain.Length -lt 8)
     $env:Bootstrap__AdminPassword = $plain
 }
 

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ItsTool.IntegrationTests.Api;
 
 /// <summary>
-/// Password changes need the current password and meet the policy (12+ characters); passwords an administrator
+/// Password changes need the current password and meet the policy (8+ characters with upper case, lower case, a digit and a symbol); passwords an administrator
 /// sets must be replaced at next login, and the API itself enforces that (review A6).
 /// </summary>
 [Collection(ApiCollection.Name)]
@@ -72,6 +72,8 @@ public class PasswordChangeTests
 
     [Theory]
     [InlineData("Short-1")]
+    [InlineData("no-upper-case-1")]
+    [InlineData("NoSymbol2026")]
     [InlineData("contains-{username}-inside")]
     public async Task Weak_passwords_are_refused(string pattern)
     {

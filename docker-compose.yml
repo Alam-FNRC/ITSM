@@ -4,7 +4,7 @@
 # and, for the first start only (the account must change its password at first login):
 #   BOOTSTRAP_ADMIN_USERNAME=<first administrator's username>
 #   BOOTSTRAP_ADMIN_EMAIL=<first administrator's e-mail>
-#   BOOTSTRAP_ADMIN_PASSWORD=<12+ characters>
+#   BOOTSTRAP_ADMIN_PASSWORD=<8+ characters: upper, lower, digit, symbol>
 # and optionally:
 #   APP_BASE_URL=<the address users open, for example https://itsm.fnrc.gov.ae; e-mail links use it>
 

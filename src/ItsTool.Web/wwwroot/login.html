@@ -245,16 +245,16 @@
                         <div class="signin-field">
                             <label class="signin-label" for="forceNewPassword" data-i18n="login_force_new_pwd">New Password</label>
                             <div class="signin-input-wrap">
-                                <input type="password" id="forceNewPassword" class="signin-input" autocomplete="new-password" required minlength="12"
+                                <input type="password" id="forceNewPassword" class="signin-input" autocomplete="new-password" required minlength="8"
                                        placeholder="Enter your new password" data-i18n="login_force_new_pwd_ph" data-i18n-target="placeholder">
                                 <button type="button" class="signin-eye" data-reveal="forceNewPassword" aria-pressed="false" aria-label="Show/Hide Password" data-i18n="login_toggle_password" data-i18n-target="aria-label"></button>
                             </div>
-                            <div class="signin-hint" data-i18n="login_force_min_chars">Must be at least 12 characters.</div>
+                            <div class="signin-hint" data-i18n="login_force_min_chars">At least 8 characters, with an upper-case letter, a lower-case letter, a digit and a symbol.</div>
                         </div>
                         <div class="signin-field">
                             <label class="signin-label" for="forceConfirmPassword" data-i18n="login_force_confirm_pwd">Confirm New Password</label>
                             <div class="signin-input-wrap">
-                                <input type="password" id="forceConfirmPassword" class="signin-input" autocomplete="new-password" required minlength="12"
+                                <input type="password" id="forceConfirmPassword" class="signin-input" autocomplete="new-password" required minlength="8"
                                        placeholder="Enter your new password again" data-i18n="login_force_confirm_pwd_ph" data-i18n-target="placeholder">
                                 <button type="button" class="signin-eye" data-reveal="forceConfirmPassword" aria-pressed="false" aria-label="Show/Hide Password" data-i18n="login_toggle_password" data-i18n-target="aria-label"></button>
                             </div>
@@ -296,6 +296,7 @@
 <script type="module">
     import './js/api.js';
     import { t, getCurrentLanguage, setLanguage } from './js/i18n.js';
+    import { passwordMeetsPolicy } from './js/password.js';
 
     // The button switches between the two languages offered
     const other = getCurrentLanguage() === 'ar' ? { id: 'en', name: 'English' } : { id: 'ar', name: 'العربية' };
@@ -380,7 +381,7 @@
         successDiv.hidden = true;
 
         if (!newPass || !confirmPass) return showError(errDiv, t('login_force_empty'));
-        if (newPass.length < 12) return showError(errDiv, t('login_force_short'));
+        if (!passwordMeetsPolicy(newPass)) return showError(errDiv, t('login_force_short'));
         if (newPass !== confirmPass) return showError(errDiv, t('login_force_mismatch'));
 
         btn.disabled = true;

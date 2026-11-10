@@ -26,7 +26,7 @@ dotnet tool restore
 # settings and must change the password at first login. Values stay on your machine.
 dotnet user-secrets set Bootstrap:AdminUsername "<your username>" --project src/ItsTool.API
 dotnet user-secrets set Bootstrap:AdminEmail "<your e-mail>" --project src/ItsTool.API
-dotnet user-secrets set Bootstrap:AdminPassword "<12+ characters>" --project src/ItsTool.API
+dotnet user-secrets set Bootstrap:AdminPassword "<8+ characters: upper, lower, digit, symbol>" --project src/ItsTool.API
 
 # Optional: keeps you logged in across restarts (otherwise Development uses a new random key each run)
 dotnet user-secrets set Jwt:Secret "<32+ random characters>" --project src/ItsTool.API
@@ -52,7 +52,7 @@ node --test tests/frontend/*.test.js # front-end tests
 ## Security defaults
 
 - Every endpoint needs a login, except login itself and `/api/health`.
-- No demo accounts or default passwords. Passwords must be 12 to 64 characters, and passwords set by an administrator must be changed at next login.
+- No demo accounts or default passwords. Passwords must be 8 to 64 characters with an upper-case letter, a lower-case letter, a digit and a symbol (FNRC's ISO standard), and passwords set by an administrator must be changed at next login.
 - Five wrong passwords lock an account for 15 minutes; logins are limited per IP address; every login attempt is recorded in the `AuthEvents` table.
 - Access changes (roles, permissions, deactivation, password changes) apply to the next request.
 - The AI copilot is switched off (`AI:Enabled` is false) until an AI provider is approved.

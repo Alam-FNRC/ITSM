@@ -1,6 +1,7 @@
 // layout.js - Common UI Layout Injector
 import { applyTranslations, t } from './i18n.js';
 import { initNotifications } from './notifications.js?v=4';
+import { passwordMeetsPolicy } from './password.js';
 
 
 function injectSignalR() {
@@ -273,7 +274,7 @@ function showMandatoryPasswordModal() {
                     <div class="form-group" style="margin-bottom: 14px; text-align: start;">
                         <label class="form-label" for="mForceNewPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">${t('login_force_new_pwd')}</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="${t('layout_force_min_ph')}" style="padding-inline-end: 40px; font-size: 13.5px;">
+                            <input type="password" id="mForceNewPass" class="form-control" autocomplete="new-password" required minlength="8" placeholder="${t('layout_force_min_ph')}" style="padding-inline-end: 40px; font-size: 13.5px;">
                             <button type="button" id="mToggleNewPass" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="${t('login_toggle_password')}">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
@@ -282,7 +283,7 @@ function showMandatoryPasswordModal() {
                     <div class="form-group" style="margin-bottom: 16px; text-align: start;">
                         <label class="form-label" for="mForceConfirmPass" style="font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">${t('login_force_confirm_pwd')}</label>
                         <div style="position: relative;">
-                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="12" placeholder="${t('login_force_confirm_pwd_ph')}" style="padding-inline-end: 40px; font-size: 13.5px;">
+                            <input type="password" id="mForceConfirmPass" class="form-control" autocomplete="new-password" required minlength="8" placeholder="${t('login_force_confirm_pwd_ph')}" style="padding-inline-end: 40px; font-size: 13.5px;">
                             <button type="button" id="mToggleConfirmPass" tabindex="-1" style="position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; display: flex; align-items: center; justify-content: center;" title="${t('login_toggle_password')}">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="${EYE_OPEN}"/></svg>
                             </button>
@@ -338,7 +339,7 @@ function showMandatoryPasswordModal() {
             err.style.display = 'block';
             return;
         }
-        if (p1.length < 12) {
+        if (!passwordMeetsPolicy(p1)) {
             err.textContent = t('login_force_short');
             err.style.display = 'block';
             return;

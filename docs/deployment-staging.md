@@ -141,7 +141,7 @@ Set-ItsmSetting 'Bootstrap__AdminPassword' '<a temporary password>'
 | `AppBaseUrl` | The address used in links in e-mails |
 | `FileStorage__*` | Where attachments and evidence are kept (UNC paths, never a mapped drive) |
 | `AutoSeed` | At each start: adds the roles, permissions and reference data a new release brings. In an empty database it also creates the starting data (statuses, priorities, sample departments, groups and knowledge articles) and the first administrator |
-| `Bootstrap__*` | The first administrator. The password must be at least 12 characters and must not contain the username. It has to be changed at the first sign-in |
+| `Bootstrap__*` | The first administrator. The password must be at least 8 characters with an upper-case letter, a lower-case letter, a digit and a symbol, and must not contain the username. It has to be changed at the first sign-in |
 
 Optional, for e-mail notifications: `Smtp__Host`, `Smtp__Port`, `Smtp__Username`, `Smtp__Password`. Without
 `Smtp__Host` the app sends no e-mail.

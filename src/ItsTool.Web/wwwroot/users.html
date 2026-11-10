@@ -597,11 +597,11 @@
         function generateRandomPassword() {
             const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
             const numbers = '23456789';
-            // 16 characters: the API requires at least 12
-            let pass = '';
+            // 16 characters; the policy needs 8 with upper case, lower case, a digit and a symbol, so one of each case is forced
             const randomValues = new Uint32Array(15);
             window.crypto.getRandomValues(randomValues);
-            for (let i = 0; i < 12; i++) {
+            let pass = letters.charAt(randomValues[0] % 23) + letters.charAt(23 + randomValues[1] % 23);
+            for (let i = 2; i < 12; i++) {
                 pass += letters.charAt(randomValues[i] % letters.length);
             }
             for (let i = 0; i < 3; i++) {
