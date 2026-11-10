@@ -245,7 +245,7 @@ public class AuthService : IAuthService
             throw new ArgumentException("The current password is incorrect.");
         }
 
-        PasswordPolicy.Validate(request.NewPassword, user.Username);
+        PasswordPolicy.Validate(request.NewPassword);
         if (request.NewPassword == request.CurrentPassword)
             throw new ArgumentException("The new password must be different from the current one.");
 

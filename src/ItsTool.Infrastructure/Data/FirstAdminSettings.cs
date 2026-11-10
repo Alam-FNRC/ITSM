@@ -27,7 +27,7 @@ public sealed record FirstAdminSettings(string Username, string Email, string Pa
             throw new InvalidOperationException("Set all of Bootstrap:AdminUsername, Bootstrap:AdminEmail and Bootstrap:AdminPassword, or none.");
         }
 
-        var problem = PasswordPolicy.Check(password, username);
+        var problem = PasswordPolicy.Check(password);
         if (problem != null)
         {
             throw new InvalidOperationException($"Bootstrap:AdminPassword: {problem}");

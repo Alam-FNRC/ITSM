@@ -50,7 +50,7 @@ public class UserService : IUserService
 
     public async Task<UserDto> CreateAsync(CreateUserDto dto)
     {
-        PasswordPolicy.Validate(dto.Password, dto.Username);
+        PasswordPolicy.Validate(dto.Password);
         if (await _context.Users.AnyAsync(u => !u.IsDeleted && (u.Username == dto.Username || u.Email == dto.Email)))
             throw new InvalidOperationException("A user with this username or e-mail already exists.");
 
@@ -240,7 +240,7 @@ public class UserService : IUserService
     /// </summary>
     private void SetPasswordByAdmin(User user, string password)
     {
-        PasswordPolicy.Validate(password, user.Username);
+        PasswordPolicy.Validate(password);
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
         user.MustChangePassword = true;
         user.FailedLoginCount = 0;
