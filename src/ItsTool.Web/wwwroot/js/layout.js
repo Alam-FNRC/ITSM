@@ -120,7 +120,8 @@ const shellHtml = `
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                FNRC - ITSM
+                <img class="sidebar-logo" src="img/fnrc-logo-mark.png" alt="">
+                <span>FNRC - ITSM</span>
             </div>
             <nav class="sidebar-nav">
                 <a href="dashboard.html?v=2" class="sidebar-nav-item">

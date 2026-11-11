@@ -76,42 +76,64 @@
    THEMES (FNRC, GitHub Dark)
    ========================================= */
 
-/* 0. FNRC: the teal green of the sign-in page with the warm neutrals and the Dubai typeface of the FNRC
-   employee portal (Workspace v2), so staff see one style. Every text colour here passes WCAG AA. */
+/* 0. FNRC (the default): the colours of the FNRC Visual Identity Guide 2023 as used in FNRC POMS
+   (docs/reference/fnrc-theme.zip): brown primary, orange accent, the five-colour brand strip, warm off-white
+   page, with the Dubai typeface. Every text colour here passes WCAG AA; the brand green and orange are
+   used for fills and marks only, their darker "strong" shades for text. */
 [data-theme="fnrc"] {
-    --primary: #0B5254;
-    --primary-hover: #08403F;
-    --primary-light: #E3EEEC;
+    --primary: #512D2D;
+    --primary-hover: #3D2121;
+    --primary-light: #F3EBEA;
+    --fnrc-orange: #F69227;
+    --fnrc-blue: #4056A4;
+    --fnrc-green: #78943F;
+    --fnrc-grey: #D2D3D3;
+    --brand-strip: linear-gradient(to right, #512D2D 0 22%, #4056A4 22% 25%, #F69227 25% 28%, #D2D3D3 28% 89%, #78943F 89% 100%);
 
-    --success: #15803D;
-    --success-light: #DCFCE7;
-    --warning: #A15C07;
-    --warning-light: #FEF3C7;
-    --danger: #A23C1B;
-    --danger-light: #FDF4F1;
-    /* Blue, so info badges do not read as the teal primary */
-    --info: #1D5F9E;
-    --info-light: #E4EEF8;
+    --chart-1: var(--primary);
+    --chart-2: var(--fnrc-blue);
+    --chart-3: var(--fnrc-orange);
+    --chart-4: var(--fnrc-green);
 
-    --text-main: #183B3B;
-    --text-muted: #5D6B69;
-    --text-danger-strong: #A23C1B;
+    --success: #4D6526;
+    --success-light: #EEF4E2;
+    --warning: #7A4A10;
+    --warning-light: #FEF4E7;
+    --danger: #A3302A;
+    --danger-light: #FBECEA;
+    --info: #34478C;
+    --info-light: #E8EBF6;
 
-    --bg-body: #FAF9F6;
+    --text-main: #2B1A19;
+    --text-muted: #6E635E;
+    --text-danger-strong: #A3302A;
+
+    --bg-body: #F6F5F1;
     --bg-surface: #FFFFFF;
-    --bg-hover: #EEF2F0;
-    --bg-danger-light: #FDF4F1;
-    --border: #EAE4D8;
-    --border-danger-light: #F0D9CF;
+    --bg-hover: #F7F1EF;
+    --bg-danger-light: #FBECEA;
+    --border: #E4E1DA;
+    --border-danger-light: #E3B8B4;
 
-    --shadow-sm: 0 1px 2px rgba(40, 30, 15, 0.06), 0 0 0 1px rgba(40, 30, 15, 0.04);
-    --shadow-md: 0 4px 10px rgba(40, 30, 15, 0.10), 0 0 1px rgba(40, 30, 15, 0.22);
+    --shadow-sm: 0 1px 2px rgba(81, 45, 45, 0.06), 0 4px 16px rgba(81, 45, 45, 0.06);
+    --shadow-md: 0 2px 4px rgba(81, 45, 45, 0.08), 0 10px 28px rgba(81, 45, 45, 0.12);
 
     --font-family: 'Dubai', 'Segoe UI', system-ui, sans-serif;
 }
-/* The portal marks the current page with a soft tint; its warning text is darker than the default's */
-[data-theme="fnrc"] .sidebar-nav-item.active { background-color: var(--primary-light); }
-[data-theme="fnrc"] .badge-warning { color: #92400E; }
+/* The brand strip runs along the top of every page, left to right in both languages (guide rule 4) */
+[data-theme="fnrc"] body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: 5px; background: var(--brand-strip); z-index: 2000; pointer-events: none; }
+/* The current page: brown with white text and an orange marker on the start edge, as in POMS */
+[data-theme="fnrc"] .sidebar-nav-item { position: relative; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-inline-end: var(--spacing-sm); }
+[dir="rtl"][data-theme="fnrc"] .sidebar-nav-item { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+[data-theme="fnrc"] .sidebar-nav-item.active { background-color: var(--primary); color: var(--text-inverse); }
+[data-theme="fnrc"] .sidebar-nav-item.active svg { color: var(--fnrc-orange); }
+[data-theme="fnrc"] .sidebar-nav-item.active::before { content: ''; position: absolute; inset-inline-start: 0; top: 6px; bottom: 6px; width: 4px; border-radius: 0 4px 4px 0; background: var(--fnrc-orange); }
+/* Fujairah fort ornaments, faint, at the foot of the menu */
+[data-theme="fnrc"] .sidebar::after { content: ''; flex: none; height: 44px; border-top: 1px solid var(--border); background: url('../img/fnrc-ornament-band.png') center bottom / auto 40px repeat-x; opacity: 0.45; }
+[data-theme="fnrc"] .badge-warning { color: var(--warning); }
+[data-theme="fnrc"] .badge-info { background: var(--info-light); color: var(--info); }
+[data-theme="fnrc"] input:focus, [data-theme="fnrc"] select:focus, [data-theme="fnrc"] textarea:focus { border-color: var(--fnrc-orange); box-shadow: 0 0 0 3px rgba(246, 146, 39, 0.18); }
+[data-theme="fnrc"] :focus-visible { outline-color: rgba(246, 146, 39, 0.55); }
 
 /* 4. GitHub Dark Theme */
 [data-theme="github-dark"] {
@@ -532,7 +554,10 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
     font-size: 16px;
     color: var(--primary);
+    gap: 10px;
 }
+/* The three mountains of the FNRC logo, next to the app name */
+.sidebar-logo { height: 26px; width: auto; flex: none; }
 
 .sidebar-nav {
     flex: 1;
